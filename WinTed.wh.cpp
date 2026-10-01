@@ -1,10 +1,9 @@
 // ==WindhawkMod==
 // @id winted
 // @name WinTed
-// @description Fenêtres Windows translucides avec Blur (AccentBlurBehind) à 50 %.
-// @version 1.0.0
+// @description Transparence 50 % + Blur AccentBlurBehind pour les fenêtres Windows.
+// @version 1.1.0
 // @author Teddy
-// @github https://github.com/PredaX6
 // @include *
 // @compilerOptions -ldwmapi
 // ==/WindhawkMod==
@@ -13,7 +12,7 @@
 #include <dwmapi.h>
 
 constexpr DWORD WCA_ACCENT_POLICY = 19;
-constexpr int ACCENT_ENABLE_ACRYLICBLURBEHIND = 4;
+constexpr int ACCENT_ENABLE_BLURBEHIND = 3;
 
 struct ACCENT_POLICY {
     int AccentState;
@@ -31,62 +30,53 @@ struct WINDOWCOMPOSITIONATTRIBDATA {
 using SetWindowCompositionAttribute_t =
     BOOL(WINAPI*)(HWND, WINDOWCOMPOSITIONATTRIBDATA*);
 
-static SetWindowCompositionAttribute_t SetWindowCompositionAttribute_Original = nullptr;
+static SetWindowCompositionAttribute_t g_SetWindowCompositionAttribute = nullptr;
 
 static void ApplyWinTed(HWND hWnd) {
-    if (!hWnd || !IsWindow(hWnd) || !SetWindowCompositionAttribute_Original)
+    if (!hWnd || !IsWindow(hWnd) || !g_SetWindowCompositionAttribute)
         return;
 
-    // Étend le frame DWM à toute la fenêtre : barre de titre + contenu.
     MARGINS margins = {-1, -1, -1, -1};
     DwmExtendFrameIntoClientArea(hWnd, &margins);
 
-    ACCENT_POLICY accent = {};
-    accent.AccentState = ACCENT_ENABLE_ACRYLICBLURBEHIND;
-
-    // AABBGGRR : 0x80 = 50 % d'opacité du calque.
-    accent.GradientColor = 0x80000000;
+    ACCENT_POLICY policy = {};
+    policy.AccentState = ACCENT_ENABLE_BLURBEHIND;
+    policy.GradientColor = 0x80000000;
 
     WINDOWCOMPOSITIONATTRIBDATA data = {};
     data.Attrib = WCA_ACCENT_POLICY;
-    data.pvData = &accent;
-    data.cbData = sizeof(accent);
+    data.pvData = &policy;
+    data.cbData = sizeof(policy);
 
-    SetWindowCompositionAttribute_Original(hWnd, &data);
+    g_SetWindowCompositionAttribute(hWnd, &data);
 
-    SetWindowPos(
-        hWnd, nullptr, 0, 0, 0, 0,
+    SetWindowPos(hWnd, nullptr, 0, 0, 0, 0,
         SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER |
         SWP_NOACTIVATE | SWP_FRAMECHANGED);
 
-    RedrawWindow(
-        hWnd, nullptr, nullptr,
-        RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
+    RedrawWindow(hWnd, nullptr, nullptr,
+        RDW_INVALIDATE | RDW_FRAME | RDW_ALLCHILDREN);
+}
+
+static BOOL CALLBACK EnumWindowsProc(HWND hWnd, LPARAM) {
+    if (IsWindowVisible(hWnd) && GetWindow(hWnd, GW_OWNER) == nullptr)
+        ApplyWinTed(hWnd);
+    return TRUE;
 }
 
 using CreateWindowExW_t = decltype(&CreateWindowExW);
 static CreateWindowExW_t CreateWindowExW_Original = nullptr;
 
 static HWND WINAPI CreateWindowExW_Hook(
-    DWORD dwExStyle,
-    LPCWSTR lpClassName,
-    LPCWSTR lpWindowName,
-    DWORD dwStyle,
-    int X,
-    int Y,
-    int nWidth,
-    int nHeight,
-    HWND hWndParent,
-    HMENU hMenu,
-    HINSTANCE hInstance,
-    LPVOID lpParam) {
+    DWORD exStyle, LPCWSTR className, LPCWSTR windowName,
+    DWORD style, int x, int y, int width, int height,
+    HWND parent, HMENU menu, HINSTANCE instance, LPVOID param) {
 
     HWND hWnd = CreateWindowExW_Original(
-        dwExStyle, lpClassName, lpWindowName, dwStyle,
-        X, Y, nWidth, nHeight, hWndParent, hMenu,
-        hInstance, lpParam);
+        exStyle, className, windowName, style,
+        x, y, width, height, parent, menu, instance, param);
 
-    if (hWnd)
+    if (hWnd && !parent)
         ApplyWinTed(hWnd);
 
     return hWnd;
@@ -97,12 +87,14 @@ BOOL Wh_ModInit() {
     if (!user32)
         return FALSE;
 
-    SetWindowCompositionAttribute_Original =
+    g_SetWindowCompositionAttribute =
         reinterpret_cast<SetWindowCompositionAttribute_t>(
             GetProcAddress(user32, "SetWindowCompositionAttribute"));
 
-    if (!SetWindowCompositionAttribute_Original)
+    if (!g_SetWindowCompositionAttribute)
         return FALSE;
+
+    EnumWindows(EnumWindowsProc, 0);
 
     return Wh_SetFunctionHook(
         reinterpret_cast<void*>(CreateWindowExW),
