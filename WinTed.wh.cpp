@@ -2,7 +2,7 @@
 // @id              winted
 // @name            WinTed
 // @description     Windows 11 25H2 : thème Translucent Explorer 11 avec transparence DWM.
-// @version         1.5.12
+// @version         1.5.3
 // @author          Teddy
 // @github          https://github.com/PredaX6
 // @include         explorer.exe
@@ -98,38 +98,6 @@ const Theme g_themeTranslucent_Explorer11 = {{
     ThemeTargetStyles{L"Grid#DetailsViewControlRootGrid", {
         L"Background=Transparent"}},
     ThemeTargetStyles{L"StackPanel#DetailsViewThumbnail > Grid", {
-        L"Background=Transparent"}},
-    // Make the WinUI scrollbar track transparent so the DWM/XAML backdrop
-    // remains visible behind it. The thumb itself keeps the native appearance.
-    ThemeTargetStyles{L"ScrollBar", {
-        L"Background=Transparent"}},
-    ThemeTargetStyles{L"ScrollBar > Grid", {
-        L"Background=Transparent"}},
-    ThemeTargetStyles{L"ScrollBar > Border", {
-        L"Background=Transparent"}},
-    ThemeTargetStyles{L"ScrollBar#VerticalScrollBar", {
-        L"Background=Transparent"}},
-    ThemeTargetStyles{L"ScrollBar#HorizontalScrollBar", {
-        L"Background=Transparent"}},
-    // Remove the opaque ScrollViewer surface behind the WinUI scrollbar.
-    // The scrollbar itself is an overlay inside this visual tree, so making
-    // only ScrollBar transparent is not sufficient.
-    ThemeTargetStyles{L"ScrollViewer", {
-        L"Background=Transparent",
-        L"BorderBrush=Transparent"}},
-    ThemeTargetStyles{L"ScrollViewer > Border", {
-        L"Background=Transparent",
-        L"BorderBrush=Transparent"}},
-    ThemeTargetStyles{L"ScrollViewer > Grid", {
-        L"Background=Transparent"}},
-    ThemeTargetStyles{L"ScrollContentPresenter", {
-        L"Background=Transparent"}},
-    // The WinUI scrollbar track is hosted by these two containers. Keeping
-    // them transparent lets the same DWM backdrop used by the Explorer
-    // content show through instead of the title-bar/track surface.
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Border#ScrollDecreaseButtonContainer", {
-        L"Background=Transparent"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Border#ScrollIncreaseButtonContainer", {
         L"Background=Transparent"}},
 }, {}, {}, /*explorerFrameContainerHeight=*/0, BackgroundTranslucentEffect::kAcrylic};
 
@@ -8424,12 +8392,6 @@ HRESULT WINAPI DwmExtendFrameIntoClientArea_Hook(HWND hWnd,
 // mod.
 thread_local HWND g_entireWindowEffectWndForThread;
 
-// Some Explorer scrollbar theme DCs don't map to an HWND and aren't tracked
-// as memory DCs. During our scrollbar paint hook, explicitly treat that DC as
-// belonging to the translucent Explorer window so the GDI alpha path can turn
-// the black theme background into transparent pixels.
-thread_local bool g_forceEntireWindowEffectForThemePart;
-
 bool IsFileExplorerWindowPart(HWND hWnd) {
     return GetTargetWindowType(GetAncestor(hWnd, GA_ROOT)) ==
            TargetWindowType::FileExplorer;
@@ -8482,10 +8444,6 @@ void PopPaintingWnd(HWND hWnd) {
 bool IsEntireWindowEffectDC(HDC hdc) {
     if (!g_entireWindowEffectWndForThread) {
         return false;
-    }
-
-    if (g_forceEntireWindowEffectForThemePart) {
-        return true;
     }
 
     HWND hWnd = WindowFromDC(hdc);
@@ -9368,9 +9326,6 @@ bool PaintScrollBarPart(HDC hdc,
         case SBP_UPPERTRACKHORZ:
         case SBP_LOWERTRACKVERT:
         case SBP_UPPERTRACKVERT:
-            // Keep the native track handling used by the translucent
-            // Explorer GDI path. Do not touch the gripper: it is part of the
-            // thumb rendering and must keep its native appearance.
             FillRect(hdc, pRect, (HBRUSH)GetStockObject(BLACK_BRUSH));
             return true;
     }
@@ -9458,48 +9413,13 @@ using GetThemeClass_t = HRESULT(WINAPI*)(HTHEME hTheme,
                                          int cchClassName);
 GetThemeClass_t g_pGetThemeClass;
 
-thread_local int g_scrollBarDiagCount;
-
-void LogScrollBarThemeCall(HTHEME hTheme,
-                           HDC hdc,
-                           int iPartId,
-                           int iStateId,
-                           LPCRECT pRect) {
-    if (g_scrollBarDiagCount >= 40 || !g_pGetThemeClass) {
-        return;
-    }
-
-    WCHAR themeClass[64];
-    if (FAILED(g_pGetThemeClass(hTheme, themeClass, ARRAYSIZE(themeClass))) ||
-        _wcsicmp(themeClass, L"ScrollBar") != 0) {
-        return;
-    }
-
-    ++g_scrollBarDiagCount;
-
-    HWND hWnd = WindowFromDC(hdc);
-    HWND rootWnd = hWnd ? GetAncestor(hWnd, GA_ROOT) : nullptr;
-    bool explorerPart = hWnd && IsFileExplorerWindowPart(hWnd);
-    bool entireDc = IsEntireWindowEffectDC(hdc);
-
-    Wh_Log(
-        L"ScrollBar paint #%d: part=%d state=%d rect=(%ld,%ld)-(%ld,%ld) "
-        L"hdcWnd=%p root=%p explorerPart=%d entireDC=%d effectWnd=%p force=%d",
-        g_scrollBarDiagCount, iPartId, iStateId,
-        pRect ? pRect->left : 0, pRect ? pRect->top : 0,
-        pRect ? pRect->right : 0, pRect ? pRect->bottom : 0,
-        hWnd, rootWnd, explorerPart, entireDc,
-        g_entireWindowEffectWndForThread,
-        g_forceEntireWindowEffectForThemePart);
-}
-
 bool PaintThemeBackground(HTHEME hTheme,
                           HDC hdc,
                           int iPartId,
                           int iStateId,
                           LPCRECT pRect,
                           LPCRECT pClipRect) {
-    if (!g_pGetThemeClass) {
+    if (!g_pGetThemeClass || !IsEntireWindowEffectDC(hdc)) {
         return false;
     }
 
@@ -9519,9 +9439,6 @@ bool PaintThemeBackground(HTHEME hTheme,
     } else {
         return false;
     }
-
-    if (part != Part::ScrollBar && !IsEntireWindowEffectDC(hdc)) return false;
-    if (part == Part::ScrollBar && !g_entireWindowEffectWndForThread) return false;
 
     int savedDC = 0;
     if (pClipRect) {
@@ -9564,7 +9481,6 @@ HRESULT WINAPI DrawThemeBackground_Hook(HTHEME hTheme,
                                         int iStateId,
                                         LPCRECT pRect,
                                         LPCRECT pClipRect) {
-    LogScrollBarThemeCall(hTheme, hdc, iPartId, iStateId, pRect);
     if (PaintThemeBackground(hTheme, hdc, iPartId, iStateId, pRect,
                              pClipRect)) {
         return S_OK;
@@ -9582,7 +9498,6 @@ HRESULT WINAPI DrawThemeBackgroundEx_Hook(HTHEME hTheme,
                                           int iStateId,
                                           LPCRECT pRect,
                                           const DTBGOPTS* pOptions) {
-    LogScrollBarThemeCall(hTheme, hdc, iPartId, iStateId, pRect);
     LPCRECT pClipRect = pOptions && (pOptions->dwFlags & DTBG_CLIPRECT)
                             ? &pOptions->rcClip
                             : nullptr;
