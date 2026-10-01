@@ -6,6 +6,8 @@
 // @author          Teddy
 // @github          https://github.com/PredaX6
 // @include         explorer.exe
+// @include         ShellExperienceHost.exe
+// @include         ShellHost.exe
 // @architecture    x86-64
 // @compilerOptions -lcomctl32 -ld2d1 -ldwmapi -lgdi32 -lmsimg32 -lole32 -loleaut32 -lruntimeobject -lshlwapi -luxtheme
 // ==/WindhawkMod==
@@ -32,6 +34,16 @@ Aucun autre thème ou réglage utilisateur n'est conservé.
 - transparencyType: default
   $name: Type de transparence
   $description: Choisissez le rendu de transparence de l'Explorateur.
+  $options:
+  - default: Par défaut
+  - blur: Blur (AccentBlurBehind)
+  - acrylic: Acrylic (SystemBackdrop)
+  - mica: Mica (SystemBackdrop)
+  - micaAlt: MicaAlt (SystemBackdrop)
+
+- notificationTransparencyType: default
+  $name: Type de transparence du Centre de notification
+  $description: Choisissez le rendu de transparence du Centre de notification.
   $options:
   - default: Par défaut
   - blur: Blur (AccentBlurBehind)
@@ -120,6 +132,8 @@ struct {
     int explorerFrameContainerHeight = 0;
     XamlDiagnosticsHandling xamlDiagnosticsHandling =
         XamlDiagnosticsHandling::kBlock;
+    std::optional<BackgroundTranslucentEffect> notificationTransparencyEffect =
+        BackgroundTranslucentEffect::kAcrylic;
 } g_settings;
 
 BackgroundTranslucentEffect g_themeBackgroundTranslucentEffect;
@@ -8280,6 +8294,7 @@ enum class TargetWindowType {
     None,
     FileExplorer,
     XamlExplorerHost,
+    NotificationCenter,
 };
 
 TargetWindowType GetTargetWindowType(HWND hWnd) {
@@ -8297,6 +8312,27 @@ TargetWindowType GetTargetWindowType(HWND hWnd) {
         return TargetWindowType::XamlExplorerHost;
     }
 
+    // Windows 11 24H2+: Notification Center / Quick Settings / Calendar.
+    if (_wcsicmp(className, L"ControlCenterWindow") == 0) {
+        return TargetWindowType::NotificationCenter;
+    }
+
+    // Windows 11 versions where the shell flyouts are hosted by
+    // ShellExperienceHost.exe. CoreWindow is generic, so require a matching
+    // flyout title to avoid touching unrelated shell surfaces.
+    if (_wcsicmp(className, L"Windows.UI.Core.CoreWindow") == 0) {
+        WCHAR title[128];
+        GetWindowTextW(hWnd, title, ARRAYSIZE(title));
+        if (_wcsicmp(title, L"Notification Center") == 0 ||
+            _wcsicmp(title, L"Notification Centre") == 0 ||
+            _wcsicmp(title, L"Action Center") == 0 ||
+            _wcsicmp(title, L"Action Centre") == 0 ||
+            _wcsicmp(title, L"Control Center") == 0 ||
+            _wcsicmp(title, L"Control Centre") == 0) {
+            return TargetWindowType::NotificationCenter;
+        }
+    }
+
     return TargetWindowType::None;
 }
 
@@ -8307,6 +8343,11 @@ BackgroundTranslucentEffect GetEffectiveBackgroundTranslucentEffect() {
 
     return g_settings.backgroundTranslucentEffect.value_or(
         g_themeBackgroundTranslucentEffect);
+}
+
+BackgroundTranslucentEffect GetEffectiveNotificationTransparencyEffect() {
+    return g_settings.notificationTransparencyEffect.value_or(
+        BackgroundTranslucentEffect::kAcrylic);
 }
 
 using DwmSetWindowAttribute_t = decltype(&DwmSetWindowAttribute);
@@ -8325,12 +8366,16 @@ HRESULT WINAPI DwmSetWindowAttribute_Hook(HWND hWnd,
         return original();
     }
 
-    if (GetTargetWindowType(hWnd) != TargetWindowType::FileExplorer) {
+    TargetWindowType windowType = GetTargetWindowType(hWnd);
+    if (windowType != TargetWindowType::FileExplorer &&
+        windowType != TargetWindowType::NotificationCenter) {
         return original();
     }
 
     auto backgroundTranslucentEffect =
-        GetEffectiveBackgroundTranslucentEffect();
+        windowType == TargetWindowType::NotificationCenter
+            ? GetEffectiveNotificationTransparencyEffect()
+            : GetEffectiveBackgroundTranslucentEffect();
 
     int backdropType;
     switch (backgroundTranslucentEffect) {
@@ -8367,12 +8412,16 @@ HRESULT WINAPI DwmExtendFrameIntoClientArea_Hook(HWND hWnd,
         return DwmExtendFrameIntoClientArea_Original(hWnd, pMarInset);
     };
 
-    if (GetTargetWindowType(hWnd) != TargetWindowType::FileExplorer) {
+    TargetWindowType windowType = GetTargetWindowType(hWnd);
+    if (windowType != TargetWindowType::FileExplorer &&
+        windowType != TargetWindowType::NotificationCenter) {
         return original();
     }
 
     auto backgroundTranslucentEffect =
-        GetEffectiveBackgroundTranslucentEffect();
+        windowType == TargetWindowType::NotificationCenter
+            ? GetEffectiveNotificationTransparencyEffect()
+            : GetEffectiveBackgroundTranslucentEffect();
     if (backgroundTranslucentEffect == BackgroundTranslucentEffect::kDefault ||
         g_settings.backgroundTranslucentEffectRegion !=
             BackgroundTranslucentEffectRegion::kEntireWindow) {
@@ -9581,8 +9630,10 @@ void ApplyBackgroundTranslucentEffect(
     constexpr WCHAR kBackgroundTranslucentEffectAppliedKey[] =
         L"windhawk_background_effect-" WH_MOD_ID;
 
-    auto effect =
-        effectToApply.value_or(GetEffectiveBackgroundTranslucentEffect());
+    auto effect = effectToApply.value_or(
+        GetTargetWindowType(hWnd) == TargetWindowType::NotificationCenter
+            ? GetEffectiveNotificationTransparencyEffect()
+            : GetEffectiveBackgroundTranslucentEffect());
 
     bool entireWindowEffect =
         effect != BackgroundTranslucentEffect::kDefault &&
@@ -9669,7 +9720,8 @@ void OnWindowCreated(HWND hWnd, PCSTR funcName) {
         Wh_Log(L"Initializing - Created window %08X via %S",
                (DWORD)(ULONG_PTR)hWnd, funcName);
 
-        if (windowType == TargetWindowType::FileExplorer) {
+        if (windowType == TargetWindowType::FileExplorer ||
+            windowType == TargetWindowType::NotificationCenter) {
             ApplyBackgroundTranslucentEffect(hWnd);
         }
 
@@ -10166,6 +10218,8 @@ void StopStatsTimer() {
 
 void LoadSettings() {
     PCWSTR transparencyType = Wh_GetStringSetting(L"transparencyType");
+    PCWSTR notificationTransparencyType =
+        Wh_GetStringSetting(L"notificationTransparencyType");
 
     if (!transparencyType || !*transparencyType ||
         wcscmp(transparencyType, L"default") == 0) {
@@ -10190,6 +10244,32 @@ void LoadSettings() {
 
     if (transparencyType) {
         Wh_FreeStringSetting(transparencyType);
+    }
+
+    if (!notificationTransparencyType ||
+        !*notificationTransparencyType ||
+        wcscmp(notificationTransparencyType, L"default") == 0) {
+        g_settings.notificationTransparencyEffect =
+            BackgroundTranslucentEffect::kAcrylic;
+    } else if (wcscmp(notificationTransparencyType, L"blur") == 0) {
+        g_settings.notificationTransparencyEffect =
+            BackgroundTranslucentEffect::kBlur;
+    } else if (wcscmp(notificationTransparencyType, L"acrylic") == 0) {
+        g_settings.notificationTransparencyEffect =
+            BackgroundTranslucentEffect::kAcrylic;
+    } else if (wcscmp(notificationTransparencyType, L"mica") == 0) {
+        g_settings.notificationTransparencyEffect =
+            BackgroundTranslucentEffect::kMica;
+    } else if (wcscmp(notificationTransparencyType, L"micaAlt") == 0) {
+        g_settings.notificationTransparencyEffect =
+            BackgroundTranslucentEffect::kMicaAlt;
+    } else {
+        g_settings.notificationTransparencyEffect =
+            BackgroundTranslucentEffect::kAcrylic;
+    }
+
+    if (notificationTransparencyType) {
+        Wh_FreeStringSetting(notificationTransparencyType);
     }
 
     g_settings.backgroundTranslucentEffectRegion =
@@ -10316,7 +10396,9 @@ void Wh_ModAfterInit() {
                 InitializeForCurrentThread();
 
                 if (GetTargetWindowType(hTargetWnd) ==
-                    TargetWindowType::FileExplorer) {
+                        TargetWindowType::FileExplorer ||
+                    GetTargetWindowType(hTargetWnd) ==
+                        TargetWindowType::NotificationCenter) {
                     ApplyBackgroundTranslucentEffect(hTargetWnd);
                     TriggerWindowCompositionUpdate(hTargetWnd);
                 }
@@ -10352,7 +10434,9 @@ void Wh_ModUninit() {
                 UninitializeForCurrentThread();
 
                 if (GetTargetWindowType(hTargetWnd) ==
-                    TargetWindowType::FileExplorer) {
+                        TargetWindowType::FileExplorer ||
+                    GetTargetWindowType(hTargetWnd) ==
+                        TargetWindowType::NotificationCenter) {
                     ApplyBackgroundTranslucentEffect(
                         hTargetWnd, BackgroundTranslucentEffect::kDefault);
                     TriggerWindowCompositionUpdate(hTargetWnd);
@@ -10384,7 +10468,9 @@ void Wh_ModSettingsChanged() {
                 InitializeForCurrentThread();
 
                 if (GetTargetWindowType(hTargetWnd) ==
-                    TargetWindowType::FileExplorer) {
+                        TargetWindowType::FileExplorer ||
+                    GetTargetWindowType(hTargetWnd) ==
+                        TargetWindowType::NotificationCenter) {
                     ApplyBackgroundTranslucentEffect(hTargetWnd);
                     TriggerWindowCompositionUpdate(hTargetWnd);
                 }
