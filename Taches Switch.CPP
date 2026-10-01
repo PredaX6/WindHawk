@@ -1,7 +1,7 @@
 // ==WindhawkMod==
 // @id              taskbar-wheel-cycle-fork
 // @name            Taches Switch
-// @description     Use the mouse wheel and/or keyboard shortcuts to cycle between taskbar buttons
+// @description     Utilise la molette de la souris et/ou des raccourcis clavier pour parcourir les boutons de la barre des tâches
 // @version         1.1.11
 // @author          m417z
 // @github          https://github.com/m417z
@@ -22,55 +22,48 @@
 
 // ==WindhawkModReadme==
 /*
-# Cycle taskbar buttons with mouse wheel
+# Changer de tâche avec la molette
 
-Use the mouse wheel while hovering over the taskbar to cycle between taskbar
-buttons.
+Utilisez la molette de la souris au-dessus de la barre des tâches pour passer d'un bouton de la barre des tâches à l'autre.
 
-In addition, keyboard shortcuts can be used. The default shortcuts are `Alt+[`
-and `Alt+]`, but they can be changed in the mod settings.
+Des raccourcis clavier peuvent également être utilisés. Les raccourcis par défaut sont `Alt+[` et `Alt+]`, mais ils peuvent être modifiés dans les paramètres du mod.
 
-Only Windows 10 64-bit and Windows 11 are supported. For older Windows versions
-check out [7+ Taskbar Tweaker](https://tweaker.ramensoftware.com/).
+Seuls Windows 10 64 bits et Windows 11 sont pris en charge. Pour les versions plus anciennes de Windows, utilisez [7+ Taskbar Tweaker](https://tweaker.ramensoftware.com/).
 
-![Demonstration](https://i.imgur.com/FtpUjt1.gif)
+![Démonstration](https://i.imgur.com/FtpUjt1.gif)
 */
 // ==/WindhawkModReadme==
 
 // ==WindhawkModSettings==
 /*
 - skipMinimizedWindows: true
-  $name: Skip minimized windows
+  $name: Ignorer les fenêtres réduites
 - wrapAround: true
-  $name: Wrap around
+  $name: Boucler en fin de liste
 - reverseScrollingDirection: false
-  $name: Reverse scrolling direction
+  $name: Inverser le sens du défilement
 - enableMouseWheelCycling: true
-  $name: Enable mouse wheel cycling
+  $name: Activer le changement avec la molette
   $description: >-
-    Disable to only use keyboard shortcuts for cycling between taskbar buttons.
+    Désactivez cette option pour utiliser uniquement les raccourcis clavier pour changer de tâche.
 - customScrollRegions: ""
-  $name: Custom scroll regions
+  $name: Zones de défilement personnalisées
   $description: >-
-    A comma-separated list of custom regions along the taskbar where scrolling
-    will cycle between taskbar buttons. If set, it will override the default
-    behavior of using the task list area for scrolling. Each region is a range
-    like "100-200" (pixels) or "20%-50%" (percentage of taskbar length).
+    Liste de zones personnalisées séparées par des virgules sur la barre des tâches où le défilement changera de tâche. Si cette option est définie, elle remplace l'utilisation par défaut de la zone des tâches. Chaque zone est une plage comme "100-200" (pixels) ou "20%-50%" (pourcentage de la longueur de la barre des tâches).
 - cycleLeftKeyboardShortcut: Alt+VK_OEM_4
-  $name: Cycle left keyboard shortcut
+  $name: Raccourci clavier pour la tâche précédente
   $description: >-
-    Possible modifier keys: Alt, Ctrl, Shift, Win. For possible shortcut keys,
-    refer to the following page:
+    Touches modificatrices possibles : Alt, Ctrl, Maj, Win. Pour connaître les touches utilisables,
+    consultez la page suivante :
     https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
 
-    Set to an empty string to disable.
+    Laissez vide pour désactiver.
 - cycleRightKeyboardShortcut: Alt+VK_OEM_6
-  $name: Cycle right keyboard shortcut
+  $name: Raccourci clavier pour la tâche suivante
 - oldTaskbarOnWin11: false
-  $name: Customize the old taskbar on Windows 11
+  $name: Personnaliser l'ancienne barre des tâches sous Windows 11
   $description: >-
-    Enable this option to customize the old taskbar on Windows 11 (if using
-    ExplorerPatcher or a similar tool).
+    Activez cette option pour personnaliser l'ancienne barre des tâches de Windows 11 (si vous utilisez ExplorerPatcher ou un outil similaire).
 */
 // ==/WindhawkModSettings==
 
