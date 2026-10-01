@@ -8328,7 +8328,7 @@ VisualTreeWatcher::VisualTreeWatcher(winrt::com_ptr<IUnknown> site) :
     // calling it from there fixes it.
     HANDLE thread = CreateThread(
         nullptr, 0,
-        [](LPVOID lpParam) -> DWORD {
+        [](LPVOID lpParam) WINAPI -> DWORD {
             auto watcher = reinterpret_cast<VisualTreeWatcher*>(lpParam);
             HRESULT hr = watcher->m_XamlDiagnostics.as<IVisualTreeService3>()->AdviseVisualTreeChange(watcher);
             watcher->Release();
@@ -11190,7 +11190,7 @@ void SubmitImageDownloadWork() {
     if (!g_imageDownloadWork) {
         g_imageDownloadWork =
             CreateThreadpoolWork([](PTP_CALLBACK_INSTANCE, PVOID,
-                                    PTP_WORK) { ProcessImageDownloads(); },
+                                    PTP_WORK) WINAPI { ProcessImageDownloads(); },
                                  nullptr, nullptr);
         if (!g_imageDownloadWork) {
             Wh_Log(L"Failed to create the image download work item");
@@ -17867,7 +17867,7 @@ bool RunFromWindowThread(HWND hWnd,
 
     HHOOK hook = SetWindowsHookEx(
         WH_CALLWNDPROC,
-        [](int nCode, WPARAM wParam, LPARAM lParam) -> LRESULT {
+        [](int nCode, WPARAM wParam, LPARAM lParam) WINAPI -> LRESULT {
             if (nCode == HC_ACTION) {
                 const CWPSTRUCT* cwp = (const CWPSTRUCT*)lParam;
                 if (cwp->message == runFromWindowThreadRegisteredMsg) {
@@ -17902,7 +17902,7 @@ std::vector<HWND> GetTargetWnds() {
     std::vector<HWND> hWnds;
     ENUM_WINDOWS_PARAM param = {&hWnds};
     EnumWindows(
-        [](HWND hWnd, LPARAM lParam) -> BOOL {
+        [](HWND hWnd, LPARAM lParam) WINAPI -> BOOL {
             ENUM_WINDOWS_PARAM& param = *(ENUM_WINDOWS_PARAM*)lParam;
 
             DWORD dwProcessId = 0;
@@ -18011,7 +18011,7 @@ bool StartStatsTimer() {
     }
 
     g_statsTimer = CreateThreadpoolTimer(
-        [](PTP_CALLBACK_INSTANCE, PVOID, PTP_TIMER) {
+        [](PTP_CALLBACK_INSTANCE, PVOID, PTP_TIMER) WINAPI {
             Wh_Log(L">");
 
             string_setting_unique_ptr themeName(Wh_GetStringSetting(L"theme"));
@@ -18265,7 +18265,7 @@ void StylerWh_ModAfterInit() {
         Wh_Log(L"Initializing for %08X", (DWORD)(ULONG_PTR)hTargetWnd);
         RunFromWindowThread(
             hTargetWnd,
-            [](PVOID param) {
+            [](PVOID param) WINAPI {
                 HWND hTargetWnd = (HWND)param;
 
                 InitializeForCurrentThread();
@@ -18303,7 +18303,7 @@ void StylerWh_ModUninit() {
         Wh_Log(L"Uninitializing for %08X", (DWORD)(ULONG_PTR)hTargetWnd);
         RunFromWindowThread(
             hTargetWnd,
-            [](PVOID param) {
+            [](PVOID param) WINAPI {
                 HWND hTargetWnd = (HWND)param;
 
                 UninitializeForCurrentThread();
@@ -18334,7 +18334,7 @@ void StylerWh_ModSettingsChanged() {
         Wh_Log(L"Reinitializing for %08X", (DWORD)(ULONG_PTR)hTargetWnd);
         RunFromWindowThread(
             hTargetWnd,
-            [](PVOID param) {
+            [](PVOID param) WINAPI {
                 HWND hTargetWnd = (HWND)param;
 
                 UninitializeForCurrentThread();
