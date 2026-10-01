@@ -6813,74 +6813,6 @@ VOID LoadSettings()
 template <> inline constexpr winrt::guid winrt::impl::guid_v<winrt::impl::abi_t<winrt::Windows::Foundation::IPropertyValue>>{
     winrt::impl::guid_v<winrt::Windows::Foundation::IPropertyValue>
 };
-
-typedef enum MY_D2D1_GAUSSIANBLUR_OPTIMIZATION
-{
-    MY_D2D1_GAUSSIANBLUR_OPTIMIZATION_SPEED = 0,
-    MY_D2D1_GAUSSIANBLUR_OPTIMIZATION_BALANCED = 1,
-    MY_D2D1_GAUSSIANBLUR_OPTIMIZATION_QUALITY = 2,
-    MY_D2D1_GAUSSIANBLUR_OPTIMIZATION_FORCE_DWORD = 0xffffffff
-
-} MY_D2D1_GAUSSIANBLUR_OPTIMIZATION;
-
-////////////////////////////////////////////////////////////////////////////////
-// XamlBlurBrush.h
-class XamlBlurBrush : public Media::XamlCompositionBrushBaseT<XamlBlurBrush>
-{
-public:
-    XamlBlurBrush(UIElement element,
-                  float blurAmount,
-                  winrt::Windows::UI::Color tint,
-                  std::optional<uint8_t> tintOpacity,
-                  winrt::hstring tintThemeResourceKey,
-                  std::optional<float> tintLuminosityOpacity,
-                  std::optional<float> tintSaturation,
-                  std::optional<float> noiseOpacity,
-                  std::optional<float> noiseDensity,
-                  std::optional<winrt::Windows::UI::Color> fallbackColor,
-                  winrt::hstring fallbackThemeResourceKey);
-    ~XamlBlurBrush();
-
-    void OnConnected();
-    void OnDisconnected();
-
-private:
-    void RefreshThemeTint();
-    void RefreshFallbackColor();
-    bool ShouldUseFallback() const;
-    void RefreshBrush();
-    muc::CompositionBrush CreateEffectBrush();
-    muc::CompositionBrush CreateFallbackBrush();
-
-    muc::Compositor m_compositor;
-    float m_blurAmount;
-    winrt::Windows::UI::Color m_tint;
-    std::optional<uint8_t> m_tintOpacity;
-    winrt::hstring m_tintThemeResourceKey;
-    std::optional<float> m_tintLuminosityOpacity;
-    std::optional<float> m_tintSaturation;
-    std::optional<float> m_noiseOpacity;
-    std::optional<float> m_noiseDensity;
-    std::optional<winrt::Windows::UI::Color> m_fallbackColor;
-    winrt::hstring m_fallbackThemeResourceKey;
-    Media::SolidColorBrush m_proxyBrush{nullptr};
-    Media::SolidColorBrush m_fallbackProxyBrush{nullptr};
-    winrt::weak_ref<FrameworkElement> m_weakProxyElement;
-    winrt::hstring m_proxyKey;
-    winrt::hstring m_fallbackProxyKey;
-    winrt::Windows::UI::ViewManagement::UISettings m_uiSettings{nullptr};
-    winrt::event_token m_advancedEffectsEnabledChangedToken{};
-    winrt::event_token m_energySaverStatusChangedToken{};
-    winrt::Microsoft::UI::Dispatching::DispatcherQueue m_dispatcher{nullptr};
-    HKEY m_powerKey{nullptr};
-    HANDLE m_regNotifyEvent{nullptr};
-    HANDLE m_regWaitHandle{nullptr};
-
-    static void CALLBACK OnEnergySaverRegistryChanged(PVOID context,
-                                                      BOOLEAN timerOrWaitFired);
-};
-
-////////////////////////////////////////////////////////////////////////////////
 // windows.graphics.effects.interop.h
 #ifndef BUILD_WINDOWS
 namespace ABI {
@@ -9659,6 +9591,75 @@ winrt::Windows::Storage::Streams::IRandomAccessStream CreateNoiseStream(
 // Blur background implementation, copied from TranslucentTB.
 ////////////////////////////////////////////////////////////////////////////////
 // clang-format off
+
+
+typedef enum MY_D2D1_GAUSSIANBLUR_OPTIMIZATION
+{
+    MY_D2D1_GAUSSIANBLUR_OPTIMIZATION_SPEED = 0,
+    MY_D2D1_GAUSSIANBLUR_OPTIMIZATION_BALANCED = 1,
+    MY_D2D1_GAUSSIANBLUR_OPTIMIZATION_QUALITY = 2,
+    MY_D2D1_GAUSSIANBLUR_OPTIMIZATION_FORCE_DWORD = 0xffffffff
+
+} MY_D2D1_GAUSSIANBLUR_OPTIMIZATION;
+
+////////////////////////////////////////////////////////////////////////////////
+// XamlBlurBrush.h
+class XamlBlurBrush : public Media::XamlCompositionBrushBaseT<XamlBlurBrush>
+{
+public:
+    XamlBlurBrush(UIElement element,
+                  float blurAmount,
+                  winrt::Windows::UI::Color tint,
+                  std::optional<uint8_t> tintOpacity,
+                  winrt::hstring tintThemeResourceKey,
+                  std::optional<float> tintLuminosityOpacity,
+                  std::optional<float> tintSaturation,
+                  std::optional<float> noiseOpacity,
+                  std::optional<float> noiseDensity,
+                  std::optional<winrt::Windows::UI::Color> fallbackColor,
+                  winrt::hstring fallbackThemeResourceKey);
+    ~XamlBlurBrush();
+
+    void OnConnected();
+    void OnDisconnected();
+
+private:
+    void RefreshThemeTint();
+    void RefreshFallbackColor();
+    bool ShouldUseFallback() const;
+    void RefreshBrush();
+    muc::CompositionBrush CreateEffectBrush();
+    muc::CompositionBrush CreateFallbackBrush();
+
+    muc::Compositor m_compositor;
+    float m_blurAmount;
+    winrt::Windows::UI::Color m_tint;
+    std::optional<uint8_t> m_tintOpacity;
+    winrt::hstring m_tintThemeResourceKey;
+    std::optional<float> m_tintLuminosityOpacity;
+    std::optional<float> m_tintSaturation;
+    std::optional<float> m_noiseOpacity;
+    std::optional<float> m_noiseDensity;
+    std::optional<winrt::Windows::UI::Color> m_fallbackColor;
+    winrt::hstring m_fallbackThemeResourceKey;
+    Media::SolidColorBrush m_proxyBrush{nullptr};
+    Media::SolidColorBrush m_fallbackProxyBrush{nullptr};
+    winrt::weak_ref<FrameworkElement> m_weakProxyElement;
+    winrt::hstring m_proxyKey;
+    winrt::hstring m_fallbackProxyKey;
+    winrt::Windows::UI::ViewManagement::UISettings m_uiSettings{nullptr};
+    winrt::event_token m_advancedEffectsEnabledChangedToken{};
+    winrt::event_token m_energySaverStatusChangedToken{};
+    winrt::Microsoft::UI::Dispatching::DispatcherQueue m_dispatcher{nullptr};
+    HKEY m_powerKey{nullptr};
+    HANDLE m_regNotifyEvent{nullptr};
+    HANDLE m_regWaitHandle{nullptr};
+
+    static void CALLBACK OnEnergySaverRegistryChanged(PVOID context,
+                                                      BOOLEAN timerOrWaitFired);
+};
+
+////////////////////////////////////////////////////////////////////////////////
 
 
 
