@@ -547,6 +547,13 @@ VOID ApplyExcelWorksheetTransparencyToChildren(HWND hExcelWindow)
     EnumChildWindows(hExcelWindow, EnumExcelWorksheetProc, 0);
 }
 
+BOOL CALLBACK RestoreExcelWindowsProc(HWND hWnd, LPARAM)
+{
+    RestoreExcelWorksheetTransparency(hWnd);
+    EnumChildWindows(hWnd, RestoreExcelWorksheetProc, 0);
+    return TRUE;
+}
+
 BOOL IsWindowCloaked(HWND hwnd) {
     BOOL isCloaked = FALSE;
     return SUCCEEDED(DwmGetWindowAttribute(hwnd, DWMWA_CLOAKED, &isCloaked,
@@ -6696,25 +6703,7 @@ VOID Wh_ModAfterInit()
 VOID Wh_ModUninit(VOID) 
 {
     if (IsExcelProcess())
-    {
-        EnumWindows(
-            [](HWND hWnd, LPARAM) -> BOOL
-            {
-                RestoreExcelWorksheetTransparency(hWnd);
-                EnumChildWindows(
-                    hWnd,
-                    [](HWND hChild, LPARAM) -> BOOL
-                    {
-                        RestoreExcelWorksheetTransparency(hChild);
-                        return TRUE;
-                    },
-                    0
-                );
-                return TRUE;
-            },
-            0
-        );
-    }
+        EnumWindows(RestoreExcelWindowsProc, 0);
     if (g_explorerStylerNoBackgroundEffectAtom)
         DeleteAtom(g_explorerStylerNoBackgroundEffectAtom);
      
