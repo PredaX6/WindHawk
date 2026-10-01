@@ -8118,7 +8118,47 @@ const Theme* GetSelectedTheme() {
     return &g_themeTranslucent_Explorer11;
 }
 
+void ApplyNotificationTransparencyStyles() {
+    auto effect = GetEffectiveNotificationTransparencyEffect();
+
+    // DWM paints the material behind the XAML tree. The shell's own opaque
+    // surfaces must therefore be made transparent first; otherwise all five
+    // DWM choices are hidden by the XAML backgrounds.
+    if (effect == BackgroundTranslucentEffect::kDefault) {
+        return;
+    }
+
+    const std::vector<PCWSTR> targets = {
+        L"Grid#NotificationCenterGrid",
+        L"Grid#CalendarCenterGrid",
+        L"Grid#ControlCenterRegion",
+        L"Windows.UI.Xaml.Controls.Grid#L1Grid > Border",
+        L"Windows.UI.Xaml.Controls.Grid#MediaTransportControlsRegion",
+        L"Grid#MediaTransportControlsRoot",
+        L"ContentPresenter#PageContent",
+        L"ContentPresenter#PageContent > Grid > Border",
+        L"QuickActions.ControlCenter.AccessibleWindow#PageWindow > ContentPresenter > Grid#FullScreenPageRoot",
+        L"QuickActions.ControlCenter.AccessibleWindow#PageWindow > ContentPresenter > Grid#FullScreenPageRoot > ContentPresenter#PageHeader",
+        L"ScrollViewer#ListContent",
+        L"ActionCenter.FlexibleToastView#FlexibleNormalToastView",
+        L"Border#ToastBackgroundBorder2",
+        L"ScrollViewer#CalendarControlScrollViewer",
+        L"Border#CalendarHeaderMinimizedOverlay",
+        L"ActionCenter.FocusSessionControl#FocusSessionControl > Grid#FocusGrid",
+    };
+
+    const std::vector<std::wstring> styles = {
+        L"Background:=<SolidColorBrush Color=\"Transparent\"/>",
+    };
+
+    for (PCWSTR target : targets) {
+        AddElementCustomizationRules(target, styles);
+    }
+}
+
 void ProcessAllStylesFromSettings() {
+    ApplyNotificationTransparencyStyles();
+
     const Theme* theme = GetSelectedTheme();
 
     StyleConstants styleConstants = LoadStyleConstants(
@@ -8352,6 +8392,10 @@ BackgroundTranslucentEffect GetEffectiveNotificationTransparencyEffect() {
         BackgroundTranslucentEffect::kAcrylic);
 }
 
+// Forward declaration: Blur mode for the Notification Center uses the
+// same AccentBlurBehind mechanism as the Explorer.
+void SetAccentBlurBehind(HWND hWnd, bool enable);
+
 using DwmSetWindowAttribute_t = decltype(&DwmSetWindowAttribute);
 DwmSetWindowAttribute_t DwmSetWindowAttribute_Original;
 HRESULT WINAPI DwmSetWindowAttribute_Hook(HWND hWnd,
@@ -8383,9 +8427,17 @@ HRESULT WINAPI DwmSetWindowAttribute_Hook(HWND hWnd,
     switch (backgroundTranslucentEffect) {
         case BackgroundTranslucentEffect::kDefault:
             return original();
-        case BackgroundTranslucentEffect::kBlur:
-            backdropType = DWMSBT_AUTO;
-            break;
+        case BackgroundTranslucentEffect::kBlur: {
+            // Do not let ShellExperienceHost replace AccentBlurBehind with
+            // DWMSBT_AUTO. That would make the Blur option indistinguishable
+            // from the Windows default material.
+            backdropType = DWMSBT_NONE;
+            HRESULT hr = DwmSetWindowAttribute_Original(
+                hWnd, DWMWA_SYSTEMBACKDROP_TYPE, &backdropType,
+                sizeof(backdropType));
+            SetAccentBlurBehind(hWnd, true);
+            return hr;
+        }
         case BackgroundTranslucentEffect::kAcrylic:
             backdropType = DWMSBT_TRANSIENTWINDOW;
             break;
@@ -8402,6 +8454,7 @@ HRESULT WINAPI DwmSetWindowAttribute_Hook(HWND hWnd,
 
     Wh_Log(L">");
 
+    SetAccentBlurBehind(hWnd, false);
     return DwmSetWindowAttribute_Original(hWnd, DWMWA_SYSTEMBACKDROP_TYPE,
                                           &backdropType, sizeof(backdropType));
 }
