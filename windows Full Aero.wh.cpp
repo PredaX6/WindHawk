@@ -116,7 +116,7 @@ La personnalisation complète de l'Explorateur de fichiers Windows 11 est intég
       - acrylicblur: Flou (AccentBlurBehind)
       - acrylicsystem: Acrylique (SystemBackdrop)
       - mica: Mica (SystemBackdrop)
-      - mica_tabbed: MicaAlt (SystemBackdrop)
+      - mica_tabbed: Mica Alt (SystemBackdrop)
     - AccentBlurBehind: "3A232323"
       $name: 🔷 Mélange de couleur AccentBlurBehind
       $description: >-
@@ -130,7 +130,7 @@ La personnalisation complète de l'Explorateur de fichiers Windows 11 est intég
      ✨It is recommended to enable this with both background translucent effects and Windows theme custom rendering.
 - RuledPrograms:
     - - target: "Notepad.exe"
-        $name: 🔶 Processus
+        $name: 🔶 Processusus
         $description: >-
          Entries can be process names, paths or subdirectories for example:
           • Notepad.exe
@@ -138,32 +138,32 @@ La personnalisation complète de l'Explorateur de fichiers Windows 11 est intég
           • C:\Users
       - RenderingMod:
           - ThemeBackground: FALSE
-            $name: 🔷 Windows theme custom rendering
+            $name: 🔷 Personnalisation du thème Windows
             $description: >-
               Modifies parts of the Windows theme using the Direct2D graphics API and modifies Windows GDI text rendering by patching the alpha channel and adjusting text colors.
                ✨It is recommended to enable this with background translucent effects.
           - AccentColorControls: FALSE
-            $name: 🔷 Windows theme accent colorizer
+            $name: 🔷 Colorisation selon la couleur d’accentuation
             $description: >-
-              Paint with accent color parts of windows theme. (Requires Windows theme custom rendering)
+              Colore certains éléments du thème Windows avec la couleur d’accentuation. (Nécessite la personnalisation du thème Windows)
         $name: 🔶 Theme Customization
       - BackgroundEffects:
         - type: none
           $name: 🔷 Background translucent effects
           $description: >-
-           Windows 11 version >= 22621.xxx (22H2) is required for SystemBackdrop effects.
+           Windows 11 version >= 22621.xxx (22H2) est requis pour les effets SystemBackdrop.
           $options:
-          - none: Default
-          - acrylicblur: Blur (AccentBlurBehind)
-          - acrylicsystem: Acrylic (SystemBackdrop)
+          - none: Par défaut
+          - acrylicblur: Flou (AccentBlurBehind)
+          - acrylicsystem: Acrylique (SystemBackdrop)
           - mica: Mica (SystemBackdrop)
-          - mica_tabbed: MicaAlt (SystemBackdrop)
+          - mica_tabbed: Mica Alt (SystemBackdrop)
         - AccentBlurBehind: "3A232323"
-          $name: 🔷 AccentBlurBehind color blend
+          $name: 🔷 Mélange de couleur AccentBlurBehind
           $description: >-
-           Blending color with blur background.
-            Color in hexadecimal ARGB format e.g. 3A232323
-        $name: 🔶 Translucent Effects
+           Mélange la couleur avec l’arrière-plan flouté.
+            Couleur au format hexadécimal ARGB, par exemple 3A232323
+        $name: 🔶 Effets de transparence
   $name: ⏩ Règles des processus
   $description: >-
       Ajoute des règles pour les processus spécifiés ou les processus situés dans certains sous-dossiers
@@ -174,9 +174,8 @@ La personnalisation complète de l'Explorateur de fichiers Windows 11 est intég
 - theme: ""
   $name: Thème
   $description: >-
-    Themes are collections of styles. For details about the themes below, or for
-    information about submitting your own theme, refer to the relevant section
-    in the mod details.
+    Les thèmes sont des ensembles de styles. Consultez la description du mod
+    pour plus de détails sur les thèmes disponibles.
   $options:
   - "": Aucun
   - Translucent Explorer11: Translucent Explorer11
@@ -195,16 +194,15 @@ La personnalisation complète de l'Explorateur de fichiers Windows 11 est intég
   - ZEUSosX_044: ZEUSosX_044
   - Compact Explorer11: Compact Explorer11
   - Float: Float
-- backgroundTranslucentEffect: ""
+- backgroundTranslucentEffect: acrylic
   $name: Effet d'arrière-plan translucide
   $description: >-
-    The translucent effect to use for the File Explorer background. For
-    additional translucent effects, check out the Translucent Windows mod.
+    Effet de transparence à appliquer à l’arrière-plan de l’Explorateur de fichiers.
   $options:
   - "": Par défaut pour le thème sélectionné
   - default: Par défaut de Windows
-  - acrylicblur: Blur (AccentBlurBehind)
-  - acrylic: Acrylique
+  - acrylicblur: Flou (AccentBlurBehind)
+  - acrylic: Acrylique (transparence interne + barre de titre)
   - mica: Mica
   - micaAlt: Mica Alt
   - none: Aucun
