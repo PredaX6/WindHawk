@@ -2,7 +2,7 @@
 // @id              winted
 // @name            WinTed
 // @description     Windows 11 25H2 : thème Translucent Explorer 11 avec transparence DWM.
-// @version         1.5.8
+// @version         1.5.9
 // @author          Teddy
 // @github          https://github.com/PredaX6
 // @include         explorer.exe
@@ -9445,6 +9445,41 @@ using GetThemeClass_t = HRESULT(WINAPI*)(HTHEME hTheme,
                                          int cchClassName);
 GetThemeClass_t g_pGetThemeClass;
 
+thread_local int g_scrollBarDiagCount;
+
+void LogScrollBarThemeCall(HTHEME hTheme,
+                           HDC hdc,
+                           int iPartId,
+                           int iStateId,
+                           LPCRECT pRect) {
+    if (g_scrollBarDiagCount >= 40 || !g_pGetThemeClass) {
+        return;
+    }
+
+    WCHAR themeClass[64];
+    if (FAILED(g_pGetThemeClass(hTheme, themeClass, ARRAYSIZE(themeClass))) ||
+        _wcsicmp(themeClass, L"ScrollBar") != 0) {
+        return;
+    }
+
+    ++g_scrollBarDiagCount;
+
+    HWND hWnd = WindowFromDC(hdc);
+    HWND rootWnd = hWnd ? GetAncestor(hWnd, GA_ROOT) : nullptr;
+    bool explorerPart = hWnd && IsFileExplorerWindowPart(hWnd);
+    bool entireDc = IsEntireWindowEffectDC(hdc);
+
+    Wh_Log(
+        L"ScrollBar paint #%d: part=%d state=%d rect=(%ld,%ld)-(%ld,%ld) "
+        L"hdcWnd=%p root=%p explorerPart=%d entireDC=%d effectWnd=%p force=%d",
+        g_scrollBarDiagCount, iPartId, iStateId,
+        pRect ? pRect->left : 0, pRect ? pRect->top : 0,
+        pRect ? pRect->right : 0, pRect ? pRect->bottom : 0,
+        hWnd, rootWnd, explorerPart, entireDc,
+        g_entireWindowEffectWndForThread,
+        g_forceEntireWindowEffectForThemePart);
+}
+
 bool PaintThemeBackground(HTHEME hTheme,
                           HDC hdc,
                           int iPartId,
@@ -9516,6 +9551,7 @@ HRESULT WINAPI DrawThemeBackground_Hook(HTHEME hTheme,
                                         int iStateId,
                                         LPCRECT pRect,
                                         LPCRECT pClipRect) {
+    LogScrollBarThemeCall(hTheme, hdc, iPartId, iStateId, pRect);
     if (PaintThemeBackground(hTheme, hdc, iPartId, iStateId, pRect,
                              pClipRect)) {
         return S_OK;
@@ -9533,6 +9569,7 @@ HRESULT WINAPI DrawThemeBackgroundEx_Hook(HTHEME hTheme,
                                           int iStateId,
                                           LPCRECT pRect,
                                           const DTBGOPTS* pOptions) {
+    LogScrollBarThemeCall(hTheme, hdc, iPartId, iStateId, pRect);
     LPCRECT pClipRect = pOptions && (pOptions->dwFlags & DTBG_CLIPRECT)
                             ? &pOptions->rcClip
                             : nullptr;
