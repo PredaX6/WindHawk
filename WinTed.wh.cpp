@@ -2,7 +2,7 @@
 // @id winted
 // @name WinTed
 // @description Windows 11 25H2 : thème Translucent Explorer 11 avec choix du type de transparence.
-// @version 1.4.6
+// @version 1.4.7
 // @author Teddy
 // @github https://github.com/PredaX6
 // @include explorer.exe
@@ -68,21 +68,20 @@ static DwmSetWindowAttribute_t DwmSetWindowAttribute_Original = nullptr;
 
 static HRESULT WINAPI DwmSetWindowAttribute_Hook(
     HWND hWnd, DWORD attribute, LPCVOID value, DWORD size) {
-    // Ne force le type que pour les fenêtres Explorer.
-    // Les autres appels DWM restent inchangés.
-    if (attribute == DWMWA_SYSTEMBACKDROP_TYPE_VALUE &&
-        hWnd && IsWindow(hWnd)) {
-        int backdrop = 1;
 
-        if (wcscmp(g_TransparencyType, L"blur") == 0) {
-            backdrop = 0; // Auto.
-        } else if (wcscmp(g_TransparencyType, L"acrylic") == 0) {
+    if (attribute == DWMWA_SYSTEMBACKDROP_TYPE &&
+        hWnd && IsWindow(hWnd)) {
+
+        int backdrop = 0; // Auto.
+
+        if (wcscmp(g_TransparencyType, L"acrylic") == 0) {
             backdrop = DWMSBT_ACRYLIC_VALUE;
         } else if (wcscmp(g_TransparencyType, L"mica") == 0) {
             backdrop = DWMSBT_MICA_VALUE;
         } else if (wcscmp(g_TransparencyType, L"micaAlt") == 0) {
             backdrop = DWMSBT_MICAALT_VALUE;
-        } else {
+        } else if (wcscmp(g_TransparencyType, L"default") == 0) {
+            // The default is the original Translucent Explorer 11 look.
             backdrop = DWMSBT_ACRYLIC_VALUE;
         }
 
@@ -93,23 +92,36 @@ static HRESULT WINAPI DwmSetWindowAttribute_Hook(
     return DwmSetWindowAttribute_Original(hWnd, attribute, value, size);
 }
 
-static void ApplyAccentBlur(HWND hWnd) {
-    HRGN blurRegion = CreateRectRgn(0, 0, -1, -1);
+static void SetAccentBlurBehind(HWND hWnd, bool enable) {
+    HRGN region = enable ? CreateRectRgn(0, 0, -1, -1) : nullptr;
 
     DWM_BLURBEHIND blur = {};
-    blur.dwFlags = DWM_BB_ENABLE | DWM_BB_BLURREGION;
-    blur.fEnable = TRUE;
-    blur.hRgnBlur = blurRegion;
+    blur.dwFlags = DWM_BB_ENABLE | (enable ? DWM_BB_BLURREGION : 0);
+    blur.fEnable = enable;
+    blur.hRgnBlur = region;
 
     DwmEnableBlurBehindWindow(hWnd, &blur);
 
-    if (blurRegion)
-        DeleteObject(blurRegion);
+    if (region)
+        DeleteObject(region);
+
+    if (!enable) {
+        // Restore the WinUI host backdrop when AccentBlurBehind is not used.
+        BOOL useHostBackdropBrush = TRUE;
+        DwmSetWindowAttribute(
+            hWnd,
+            DWMWA_USE_HOSTBACKDROPBRUSH,
+            &useHostBackdropBrush,
+            sizeof(useHostBackdropBrush));
+        return;
+    }
+
+    constexpr int ACCENT_ENABLE_ACRYLICBLURBEHIND = 4;
 
     ACCENT_POLICY accent = {};
-    accent.AccentState = ACCENT_ENABLE_BLURBEHIND;
+    accent.AccentState = ACCENT_ENABLE_ACRYLICBLURBEHIND;
     accent.AccentFlags = 0;
-    accent.GradientColor = 0x80000000;
+    accent.GradientColor = 0x3A232323;
     accent.AnimationId = 0;
 
     WINDOWCOMPOSITIONATTRIBDATA data = {};
@@ -128,22 +140,6 @@ static void SetSystemBackdrop(HWND hWnd, int backdrop) {
         sizeof(backdrop));
 }
 
-static void ApplyTransparentClient(HWND hWnd) {
-    // Rend le client transparent sans ajouter de blur.
-    ACCENT_POLICY accent = {};
-    accent.AccentState = ACCENT_ENABLE_TRANSPARENTGRADIENT;
-    accent.AccentFlags = 0;
-    accent.GradientColor = 0x00000000;
-    accent.AnimationId = 0;
-
-    WINDOWCOMPOSITIONATTRIBDATA data = {};
-    data.Attrib = WCA_ACCENT_POLICY;
-    data.pvData = &accent;
-    data.cbData = sizeof(accent);
-
-    g_SetWindowCompositionAttribute(hWnd, &data);
-}
-
 static void DisableAccent(HWND hWnd) {
     ACCENT_POLICY accent = {};
     accent.AccentState = 0;
@@ -160,39 +156,62 @@ static void ApplyWinTed(HWND hWnd) {
     if (!hWnd || !IsWindow(hWnd) || !g_SetWindowCompositionAttribute)
         return;
 
-    // Étend le rendu DWM jusque sous la barre de titre et les bordures.
-    const MARGINS margins = {-1, -1, -1, -1};
-    DwmExtendFrameIntoClientArea(hWnd, &margins);
+    const bool isDefault =
+        wcscmp(g_TransparencyType, L"default") == 0;
+    const bool isBlur =
+        wcscmp(g_TransparencyType, L"blur") == 0;
 
-    // Un seul mécanisme de fond par mode.
-    DisableAccent(hWnd);
-
-    if (wcscmp(g_TransparencyType, L"blur") == 0) {
-        // Blur : AccentBlurBehind, comme le rendu historique fonctionnel.
-        SetSystemBackdrop(hWnd, 0);
-        ApplyAccentBlur(hWnd);
-    } else if (wcscmp(g_TransparencyType, L"acrylic") == 0) {
-        // Acrylic : SystemBackdrop Acrylic, sans AccentBlur.
-        SetSystemBackdrop(hWnd, DWMSBT_ACRYLIC_VALUE);
-        ApplyTransparentClient(hWnd);
-    } else if (wcscmp(g_TransparencyType, L"mica") == 0) {
-        // Mica : SystemBackdrop Mica, sans AccentBlur.
-        SetSystemBackdrop(hWnd, DWMSBT_MICA_VALUE);
-        ApplyTransparentClient(hWnd);
-    } else if (wcscmp(g_TransparencyType, L"micaAlt") == 0) {
-        // MicaAlt : SystemBackdrop MicaAlt, sans AccentBlur.
-        SetSystemBackdrop(hWnd, DWMSBT_MICAALT_VALUE);
-        ApplyTransparentClient(hWnd);
+    // Les modes SystemBackdrop ont chacun leur propre matériau DWM.
+    // Le mode par défaut conserve le rendu historique de WinTed.
+    if (isDefault || isBlur) {
+        const MARGINS margins = {-1, -1, -1, -1};
+        DwmExtendFrameIntoClientArea(hWnd, &margins);
     } else {
-        // Par défaut : rendu Translucent Explorer 11 actuellement fonctionnel.
-        SetSystemBackdrop(hWnd, DWMSBT_ACRYLIC_VALUE);
-        ApplyAccentBlur(hWnd);
+        const MARGINS margins = {0, 0, 0, 0};
+        DwmExtendFrameIntoClientArea(hWnd, &margins);
+    }
+
+    if (isBlur) {
+        // Blur : AccentBlurBehind réel, sans SystemBackdrop forcé.
+        const int backdrop = 0; // DWMSBT_AUTO
+        DwmSetWindowAttribute(
+            hWnd, DWMWA_SYSTEMBACKDROP_TYPE,
+            &backdrop, sizeof(backdrop));
+        SetAccentBlurBehind(hWnd, true);
+    } else if (wcscmp(g_TransparencyType, L"acrylic") == 0) {
+        const int backdrop = DWMSBT_ACRYLIC_VALUE;
+        DwmSetWindowAttribute(
+            hWnd, DWMWA_SYSTEMBACKDROP_TYPE,
+            &backdrop, sizeof(backdrop));
+        SetAccentBlurBehind(hWnd, false);
+    } else if (wcscmp(g_TransparencyType, L"mica") == 0) {
+        const int backdrop = DWMSBT_MICA_VALUE;
+        DwmSetWindowAttribute(
+            hWnd, DWMWA_SYSTEMBACKDROP_TYPE,
+            &backdrop, sizeof(backdrop));
+        SetAccentBlurBehind(hWnd, false);
+    } else if (wcscmp(g_TransparencyType, L"micaAlt") == 0) {
+        const int backdrop = DWMSBT_MICAALT_VALUE;
+        DwmSetWindowAttribute(
+            hWnd, DWMWA_SYSTEMBACKDROP_TYPE,
+            &backdrop, sizeof(backdrop));
+        SetAccentBlurBehind(hWnd, false);
+    } else {
+        // Par défaut : même base que la version 1.3.0 fonctionnelle.
+        const int backdrop = DWMSBT_ACRYLIC_VALUE;
+        DwmSetWindowAttribute(
+            hWnd, DWMWA_SYSTEMBACKDROP_TYPE,
+            &backdrop, sizeof(backdrop));
+        SetAccentBlurBehind(hWnd, true);
     }
 
     SetWindowPos(
         hWnd, nullptr, 0, 0, 0, 0,
         SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER |
         SWP_NOACTIVATE | SWP_FRAMECHANGED);
+
+    SendMessage(hWnd, WM_WINDOWPOSCHANGED, 0, 0);
+    SendMessage(hWnd, WM_DWMCOMPOSITIONCHANGED, 0, 0);
 
     RedrawWindow(
         hWnd, nullptr, nullptr,
