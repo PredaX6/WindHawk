@@ -2,7 +2,7 @@
 // @id              winted
 // @name            WinTed
 // @description     Windows 11 25H2 : thème Translucent Explorer 11 avec transparence DWM.
-// @version         1.5.5
+// @version         1.5.6
 // @author          Teddy
 // @github          https://github.com/PredaX6
 // @include         explorer.exe
@@ -110,6 +110,13 @@ const Theme g_themeTranslucent_Explorer11 = {{
     ThemeTargetStyles{L"ScrollBar#VerticalScrollBar", {
         L"Background=Transparent"}},
     ThemeTargetStyles{L"ScrollBar#HorizontalScrollBar", {
+        L"Background=Transparent"}},
+    // The WinUI scrollbar track is hosted by these two containers. Keeping
+    // them transparent lets the same DWM backdrop used by the Explorer
+    // content show through instead of the title-bar/track surface.
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Border#ScrollDecreaseButtonContainer", {
+        L"Background=Transparent"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Border#ScrollIncreaseButtonContainer", {
         L"Background=Transparent"}},
 }, {}, {}, /*explorerFrameContainerHeight=*/0, BackgroundTranslucentEffect::kAcrylic};
 
