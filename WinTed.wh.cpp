@@ -1,11 +1,13 @@
 // ==WindhawkMod==
 // @id              winted
 // @name            WinTed
-// @description     Windows 11 25H2 : thème Translucent Explorer 11 avec transparence DWM.
-// @version         1.5.3
+// @description     Windows 11 25H2 : Translucent Explorer 11 + transparence du Centre de notifications et du Centre de contrôle.
+// @version         1.5.4
 // @author          Teddy
 // @github          https://github.com/PredaX6
 // @include         explorer.exe
+// @include         ShellExperienceHost.exe
+// @include         ShellHost.exe
 // @architecture    x86-64
 // @compilerOptions -lcomctl32 -ld2d1 -ldwmapi -lgdi32 -lmsimg32 -lole32 -loleaut32 -lruntimeobject -lshlwapi -luxtheme
 // ==/WindhawkMod==
@@ -22,6 +24,8 @@
   - Acrylic (SystemBackdrop)
   - Mica (SystemBackdrop)
   - MicaAlt (SystemBackdrop)
+- Le même matériau est appliqué au Centre de notifications, au calendrier et au Centre de contrôle Windows 11.
+- Les arrière-plans XAML de ces surfaces sont rendus transparents pour laisser apparaître le matériau DWM.
 
 Aucun autre thème ou réglage utilisateur n'est conservé.
 */
@@ -127,6 +131,7 @@ int g_themeExplorerFrameContainerHeight;
 
 std::atomic<bool> g_initialized;
 thread_local bool g_initializedForThread;
+bool g_isNotificationCenterProcess = false;
 
 // An InstanceHandle is the address of an interface on the element, so it names
 // an element only for as long as that element lives: an element allocated over
@@ -8102,7 +8107,41 @@ const Theme* GetSelectedTheme() {
     return &g_themeTranslucent_Explorer11;
 }
 
+void AddNotificationCenterTransparencyRules() {
+    static const ThemeTargetStyles styles[] = {
+        {L"Grid#NotificationCenterGrid", {L"Background=Transparent"}},
+        {L"Grid#CalendarCenterGrid", {L"Background=Transparent"}},
+        {L"Grid#ControlCenterRegion", {L"Background=Transparent"}},
+        {L"Grid#MediaTransportControlsRegion", {L"Background=Transparent"}},
+        {L"ScrollViewer#CalendarControlScrollViewer", {L"Background=Transparent"}},
+        {L"Border#CalendarHeaderMinimizedOverlay", {L"Background=Transparent"}},
+        {L"ActionCenter.FocusSessionControl#FocusSessionControl > Grid#FocusGrid",
+         {L"Background=Transparent"}},
+        {L"Windows.UI.Xaml.Controls.Grid#L1Grid > Border",
+         {L"Background=Transparent"}},
+        {L"Grid#MediaTransportControlsRoot", {L"Background=Transparent"}},
+        {L"ContentPresenter#PageContent", {L"Background=Transparent"}},
+        {L"ContentPresenter#PageContent > Grid > Border",
+         {L"Background=Transparent"}},
+        {L"ScrollViewer#ListContent", {L"Background=Transparent"}},
+    };
+
+    for (const auto& style : styles) {
+        try {
+            AddElementCustomizationRules(style.target, style.styles);
+        } catch (winrt::hresult_error const& ex) {
+            Wh_Log(L"Error %08X", ex.code());
+        } catch (std::exception const& ex) {
+            Wh_Log(L"Error: %S", ex.what());
+        }
+    }
+}
+
 void ProcessAllStylesFromSettings() {
+    if (g_isNotificationCenterProcess) {
+        AddNotificationCenterTransparencyRules();
+    }
+
     const Theme* theme = GetSelectedTheme();
 
     StyleConstants styleConstants = LoadStyleConstants(
@@ -8280,6 +8319,8 @@ enum class TargetWindowType {
     None,
     FileExplorer,
     XamlExplorerHost,
+    NotificationCenter,
+    ControlCenter,
 };
 
 TargetWindowType GetTargetWindowType(HWND hWnd) {
@@ -8295,6 +8336,14 @@ TargetWindowType GetTargetWindowType(HWND hWnd) {
     // Used by the desktop context menu.
     if (_wcsicmp(className, L"XamlExplorerHostIslandWindow_WASDK") == 0) {
         return TargetWindowType::XamlExplorerHost;
+    }
+
+    if (_wcsicmp(className, L"Windows.UI.Core.CoreWindow") == 0) {
+        return TargetWindowType::NotificationCenter;
+    }
+
+    if (_wcsicmp(className, L"ControlCenterWindow") == 0) {
+        return TargetWindowType::ControlCenter;
     }
 
     return TargetWindowType::None;
@@ -8325,7 +8374,10 @@ HRESULT WINAPI DwmSetWindowAttribute_Hook(HWND hWnd,
         return original();
     }
 
-    if (GetTargetWindowType(hWnd) != TargetWindowType::FileExplorer) {
+    TargetWindowType windowType = GetTargetWindowType(hWnd);
+    if (windowType != TargetWindowType::FileExplorer &&
+        windowType != TargetWindowType::NotificationCenter &&
+        windowType != TargetWindowType::ControlCenter) {
         return original();
     }
 
@@ -8367,7 +8419,10 @@ HRESULT WINAPI DwmExtendFrameIntoClientArea_Hook(HWND hWnd,
         return DwmExtendFrameIntoClientArea_Original(hWnd, pMarInset);
     };
 
-    if (GetTargetWindowType(hWnd) != TargetWindowType::FileExplorer) {
+    TargetWindowType windowType = GetTargetWindowType(hWnd);
+    if (windowType != TargetWindowType::FileExplorer &&
+        windowType != TargetWindowType::NotificationCenter &&
+        windowType != TargetWindowType::ControlCenter) {
         return original();
     }
 
@@ -9669,7 +9724,9 @@ void OnWindowCreated(HWND hWnd, PCSTR funcName) {
         Wh_Log(L"Initializing - Created window %08X via %S",
                (DWORD)(ULONG_PTR)hWnd, funcName);
 
-        if (windowType == TargetWindowType::FileExplorer) {
+        if (windowType == TargetWindowType::FileExplorer ||
+            windowType == TargetWindowType::NotificationCenter ||
+            windowType == TargetWindowType::ControlCenter) {
             ApplyBackgroundTranslucentEffect(hWnd);
         }
 
@@ -10213,6 +10270,15 @@ BOOL Wh_ModInit() {
     LoadSettings();
     LoadThemeSettings();
 
+    WCHAR moduleFilePath[MAX_PATH];
+    if (GetModuleFileName(nullptr, moduleFilePath, ARRAYSIZE(moduleFilePath))) {
+        PCWSTR moduleFileName = wcsrchr(moduleFilePath, L'\\');
+        moduleFileName = moduleFileName ? moduleFileName + 1 : moduleFilePath;
+        g_isNotificationCenterProcess =
+            _wcsicmp(moduleFileName, L"ShellExperienceHost.exe") == 0 ||
+            _wcsicmp(moduleFileName, L"ShellHost.exe") == 0;
+    }
+
     WindhawkUtils::SetFunctionHook(CreateWindowExW, CreateWindowExW_Hook,
                                    &CreateWindowExW_Original);
 
@@ -10315,8 +10381,11 @@ void Wh_ModAfterInit() {
 
                 InitializeForCurrentThread();
 
-                if (GetTargetWindowType(hTargetWnd) ==
-                    TargetWindowType::FileExplorer) {
+                TargetWindowType windowType =
+                    GetTargetWindowType(hTargetWnd);
+                if (windowType == TargetWindowType::FileExplorer ||
+                    windowType == TargetWindowType::NotificationCenter ||
+                    windowType == TargetWindowType::ControlCenter) {
                     ApplyBackgroundTranslucentEffect(hTargetWnd);
                     TriggerWindowCompositionUpdate(hTargetWnd);
                 }
@@ -10351,8 +10420,11 @@ void Wh_ModUninit() {
 
                 UninitializeForCurrentThread();
 
-                if (GetTargetWindowType(hTargetWnd) ==
-                    TargetWindowType::FileExplorer) {
+                TargetWindowType windowType =
+                    GetTargetWindowType(hTargetWnd);
+                if (windowType == TargetWindowType::FileExplorer ||
+                    windowType == TargetWindowType::NotificationCenter ||
+                    windowType == TargetWindowType::ControlCenter) {
                     ApplyBackgroundTranslucentEffect(
                         hTargetWnd, BackgroundTranslucentEffect::kDefault);
                     TriggerWindowCompositionUpdate(hTargetWnd);
@@ -10383,8 +10455,11 @@ void Wh_ModSettingsChanged() {
                 UninitializeForCurrentThread();
                 InitializeForCurrentThread();
 
-                if (GetTargetWindowType(hTargetWnd) ==
-                    TargetWindowType::FileExplorer) {
+                TargetWindowType windowType =
+                    GetTargetWindowType(hTargetWnd);
+                if (windowType == TargetWindowType::FileExplorer ||
+                    windowType == TargetWindowType::NotificationCenter ||
+                    windowType == TargetWindowType::ControlCenter) {
                     ApplyBackgroundTranslucentEffect(hTargetWnd);
                     TriggerWindowCompositionUpdate(hTargetWnd);
                 }
