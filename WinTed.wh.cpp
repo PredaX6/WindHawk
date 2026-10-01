@@ -22238,7 +22238,7 @@ void StopStatsTimer() {
     }
 }
 
-BOOL Initialize) {
+BOOL Initialize() {
     Wh_Log(L">");
 
     g_target = Target::ShellExperienceHost;
@@ -22303,7 +22303,7 @@ BOOL Initialize) {
     return TRUE;
 }
 
-void AfterInit) {
+void AfterInit() {
     Wh_Log(L">");
 
     bool initialize = false;
@@ -22320,7 +22320,7 @@ void AfterInit) {
     }
 }
 
-void Uninit) {
+void Uninit() {
     Wh_Log(L">");
 
     if (g_target == Target::ShellExperienceHost) {
@@ -22342,7 +22342,7 @@ void Uninit) {
     }
 }
 
-void SettingsChanged) {
+void SettingsChanged() {
     Wh_Log(L">");
 
     UninitializeSettingsAndTap();
