@@ -2,12 +2,12 @@
 // @id winted
 // @name WinTed
 // @description Windows 11 25H2 : fenêtres Explorer translucides avec Blur (AccentBlurBehind) à 50 %.
-// @version 1.2.0
+// @version 1.2.1
 // @author Teddy
 // @github https://github.com/PredaX6
 // @include explorer.exe
 // @architecture x86-64
-// @compilerOptions -ldwmapi
+// @compilerOptions -ldwmapi -lgdi32
 // ==/WindhawkMod==
 
 #include <windows.h>
