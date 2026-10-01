@@ -2,12 +2,12 @@
 // @id winted
 // @name WinTed
 // @description Windows 11 25H2 : Explorer translucide avec Blur (AccentBlurBehind) à 50 %, y compris la barre de commandes.
-// @version 1.4.2
+// @version 1.4.3
 // @author Teddy
 // @github https://github.com/PredaX6
 // @include explorer.exe
 // @architecture x86-64
-// @compilerOptions -ldwmapi -lgdi32 -lruntimeobject
+// @compilerOptions -ldwmapi -lgdi32 -loleaut32 -lruntimeobject
 // ==/WindhawkMod==
 
 #include <windows.h>
