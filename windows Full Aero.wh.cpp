@@ -270,6 +270,11 @@ La personnalisation complète de l'Explorateur de fichiers Windows 11 est intég
 #include <wrl.h>
 #include <ShellScalingApi.h>
 
+// The Win32 GetCurrentTime macro conflicts with the WinRT/XAML
+// GetCurrentTime member used by the generated Windows App SDK headers.
+#ifdef GetCurrentTime
+#undef GetCurrentTime
+#endif
 
 // Headers required by the integrated Windows 11 File Explorer Styler.
 #include <xamlom.h>
