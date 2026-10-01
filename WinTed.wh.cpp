@@ -99,7 +99,7 @@ const Theme g_themeTranslucent_Explorer11 = {{
         L"Background=Transparent"}},
     ThemeTargetStyles{L"StackPanel#DetailsViewThumbnail > Grid", {
         L"Background=Transparent"}},
-}, {}, {}, /*explorerFrameContainerHeight=*/0, BackgroundTranslucentEffect::kDefault};
+}, {}, {}, /*explorerFrameContainerHeight=*/0, BackgroundTranslucentEffect::kAcrylic};
 
 enum class BackgroundTranslucentEffectRegion {
     kEntireWindow,
@@ -10173,8 +10173,10 @@ void LoadSettings() {
         g_settings.backgroundTranslucentEffect =
             BackgroundTranslucentEffect::kMicaAlt;
     } else {
+        // "Par défaut" conserve le rendu translucide de WinTed :
+        // acrylique DWM sur toute la fenêtre.
         g_settings.backgroundTranslucentEffect =
-            BackgroundTranslucentEffect::kDefault;
+            BackgroundTranslucentEffect::kAcrylic;
     }
 
     // Toujours appliquer l'effet à toute la fenêtre.
