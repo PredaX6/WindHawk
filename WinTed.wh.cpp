@@ -2,7 +2,7 @@
 // @id winted
 // @name WinTed
 // @description Windows 11 25H2 : thème Translucent Explorer 11 avec choix du type de transparence.
-// @version 1.4.4
+// @version 1.4.5
 // @author Teddy
 // @github https://github.com/PredaX6
 // @include explorer.exe
@@ -62,6 +62,35 @@ using SetWindowCompositionAttribute_t =
 
 static SetWindowCompositionAttribute_t g_SetWindowCompositionAttribute = nullptr;
 static wchar_t g_TransparencyType[32] = L"default";
+
+using DwmSetWindowAttribute_t = decltype(&DwmSetWindowAttribute);
+static DwmSetWindowAttribute_t DwmSetWindowAttribute_Original = nullptr;
+
+static HRESULT WINAPI DwmSetWindowAttribute_Hook(
+    HWND hWnd, DWORD attribute, LPCVOID value, DWORD size) {
+
+    if (attribute == DWMWA_SYSTEMBACKDROP_TYPE_VALUE &&
+        hWnd && IsWindow(hWnd)) {
+
+        int backdrop = DWMSBT_ACRYLIC_VALUE;
+
+        if (wcscmp(g_TransparencyType, L"blur") == 0) {
+            backdrop = 0; // AUTO for Blur.
+        } else if (wcscmp(g_TransparencyType, L"mica") == 0) {
+            backdrop = DWMSBT_MICA_VALUE;
+        } else if (wcscmp(g_TransparencyType, L"micaAlt") == 0) {
+            backdrop = DWMSBT_MICAALT_VALUE;
+        } else if (wcscmp(g_TransparencyType, L"acrylic") == 0 ||
+                   wcscmp(g_TransparencyType, L"default") == 0) {
+            backdrop = DWMSBT_ACRYLIC_VALUE;
+        }
+
+        return DwmSetWindowAttribute_Original(
+            hWnd, attribute, &backdrop, sizeof(backdrop));
+    }
+
+    return DwmSetWindowAttribute_Original(hWnd, attribute, value, size);
+}
 
 static void ApplyAccentBlur(HWND hWnd) {
     HRGN blurRegion = CreateRectRgn(0, 0, -1, -1);
@@ -219,6 +248,15 @@ BOOL Wh_ModInit() {
             g_TransparencyType,
             ARRAYSIZE(g_TransparencyType))) {
         wcscpy_s(g_TransparencyType, L"default");
+    }
+
+    // Explorer peut réappliquer son propre SystemBackdrop après la création
+    // de la fenêtre. On intercepte donc ses changements pour conserver le choix.
+    if (!Wh_SetFunctionHook(
+            reinterpret_cast<void*>(DwmSetWindowAttribute),
+            reinterpret_cast<void*>(DwmSetWindowAttribute_Hook),
+            reinterpret_cast<void**>(&DwmSetWindowAttribute_Original))) {
+        return FALSE;
     }
 
     EnumWindows(EnumWindowsProc, 0);
