@@ -141,7 +141,7 @@ struct {
 BackgroundTranslucentEffect g_themeBackgroundTranslucentEffect;
 int g_themeExplorerFrameContainerHeight;
 
-std::atomic<bool> g_initialized;
+// Forward declaration used by the Notification Center transparency styles.\nBackgroundTranslucentEffect GetEffectiveNotificationTransparencyEffect();\n\nstd::atomic<bool> g_initialized;
 thread_local bool g_initializedForThread;
 
 // An InstanceHandle is the address of an interface on the element, so it names
