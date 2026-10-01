@@ -10315,6 +10315,10 @@ void LoadThemeSettings() {
 // ============================================================================
 namespace NotificationCenterStyler {
 
+// Keep the C++/WinRT namespace explicitly global inside this isolated Styler namespace.
+// Without this alias, unqualified winrt:: references can resolve as NotificationCenterStyler::winrt.
+namespace winrt = ::winrt;
+
 struct ThemeTargetStyles {
     PCWSTR target;
     std::vector<PCWSTR> styles;
