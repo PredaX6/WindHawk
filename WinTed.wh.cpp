@@ -2,7 +2,7 @@
 // @id              winted
 // @name            WinTed
 // @description     Windows 11 25H2 : thème Translucent Explorer 11 avec transparence DWM.
-// @version         1.5.7
+// @version         1.5.8
 // @author          Teddy
 // @github          https://github.com/PredaX6
 // @include         explorer.exe
@@ -8411,6 +8411,12 @@ HRESULT WINAPI DwmExtendFrameIntoClientArea_Hook(HWND hWnd,
 // mod.
 thread_local HWND g_entireWindowEffectWndForThread;
 
+// Some Explorer scrollbar theme DCs don't map to an HWND and aren't tracked
+// as memory DCs. During our scrollbar paint hook, explicitly treat that DC as
+// belonging to the translucent Explorer window so the GDI alpha path can turn
+// the black theme background into transparent pixels.
+thread_local bool g_forceEntireWindowEffectForThemePart;
+
 bool IsFileExplorerWindowPart(HWND hWnd) {
     return GetTargetWindowType(GetAncestor(hWnd, GA_ROOT)) ==
            TargetWindowType::FileExplorer;
@@ -8463,6 +8469,10 @@ void PopPaintingWnd(HWND hWnd) {
 bool IsEntireWindowEffectDC(HDC hdc) {
     if (!g_entireWindowEffectWndForThread) {
         return false;
+    }
+
+    if (g_forceEntireWindowEffectForThemePart) {
+        return true;
     }
 
     HWND hWnd = WindowFromDC(hdc);
@@ -9345,10 +9355,10 @@ bool PaintScrollBarPart(HDC hdc,
         case SBP_UPPERTRACKHORZ:
         case SBP_LOWERTRACKVERT:
         case SBP_UPPERTRACKVERT:
-            // Do not paint the track at all. The window has a full-window DWM
-            // backdrop, so leaving this area untouched makes it show exactly
-            // the same backdrop as the Explorer content instead of creating a
-            // scrollbar-specific surface.
+            // Paint transparent black. The GDI alpha path recognizes this
+            // theme DC as belonging to the Explorer window and therefore
+            // leaves the DWM backdrop visible underneath the scrollbar track.
+            FillRect(hdc, pRect, (HBRUSH)GetStockObject(BLACK_BRUSH));
             return true;
     }
 
