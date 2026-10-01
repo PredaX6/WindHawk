@@ -2,7 +2,7 @@
 // @id winted
 // @name WinTed
 // @description Windows 11 25H2 : thème Translucent Explorer 11 avec choix du type de transparence.
-// @version 1.4.1
+// @version 1.4.2
 // @author Teddy
 // @github https://github.com/PredaX6
 // @include explorer.exe
@@ -97,6 +97,23 @@ static void SetSystemBackdrop(HWND hWnd, int backdrop) {
         sizeof(backdrop));
 }
 
+static void DisableAccentBlur(HWND hWnd) {
+    DWM_BLURBEHIND blur = {};
+    blur.dwFlags = DWM_BB_ENABLE;
+    blur.fEnable = FALSE;
+    DwmEnableBlurBehindWindow(hWnd, &blur);
+
+    ACCENT_POLICY accent = {};
+    accent.AccentState = 0;
+
+    WINDOWCOMPOSITIONATTRIBDATA data = {};
+    data.Attrib = WCA_ACCENT_POLICY;
+    data.pvData = &accent;
+    data.cbData = sizeof(accent);
+
+    g_SetWindowCompositionAttribute(hWnd, &data);
+}
+
 static void ApplyWinTed(HWND hWnd) {
     if (!hWnd || !IsWindow(hWnd) || !g_SetWindowCompositionAttribute)
         return;
@@ -105,27 +122,26 @@ static void ApplyWinTed(HWND hWnd) {
     const MARGINS margins = {-1, -1, -1, -1};
     DwmExtendFrameIntoClientArea(hWnd, &margins);
 
-    // Nettoie d'abord les effets précédents.
-    DWM_BLURBEHIND disableBlur = {};
-    disableBlur.dwFlags = DWM_BB_ENABLE;
-    disableBlur.fEnable = FALSE;
-    DwmEnableBlurBehindWindow(hWnd, &disableBlur);
-
-    const int noBackdrop = 1;
-    SetSystemBackdrop(hWnd, noBackdrop);
+    // Chaque mode est maintenant réellement exclusif.
+    DisableAccentBlur(hWnd);
 
     if (wcscmp(g_TransparencyType, L"blur") == 0) {
+        // Blur = AccentBlurBehind uniquement.
+        const int autoBackdrop = 0;
+        SetSystemBackdrop(hWnd, autoBackdrop);
         ApplyAccentBlur(hWnd);
     } else if (wcscmp(g_TransparencyType, L"acrylic") == 0) {
+        // Acrylic = Desktop Acrylic (SystemBackdrop).
         SetSystemBackdrop(hWnd, DWMSBT_ACRYLIC_VALUE);
     } else if (wcscmp(g_TransparencyType, L"mica") == 0) {
+        // Mica = Mica standard (SystemBackdrop).
         SetSystemBackdrop(hWnd, DWMSBT_MICA_VALUE);
     } else if (wcscmp(g_TransparencyType, L"micaAlt") == 0) {
+        // MicaAlt = Mica alternate (SystemBackdrop).
         SetSystemBackdrop(hWnd, DWMSBT_MICAALT_VALUE);
     } else {
-        // Par défaut = rendu Translucent Explorer 11 fonctionnel :
-        // Blur + SystemBackdrop + AccentBlurBehind à 50 %.
-        ApplyAccentBlur(hWnd);
+        // Par défaut = le rendu natif du thème Translucent Explorer 11.
+        // Le thème Translucent Explorer 11 utilise Acrylic comme effet de fond.
         SetSystemBackdrop(hWnd, DWMSBT_ACRYLIC_VALUE);
     }
 
