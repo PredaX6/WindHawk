@@ -8108,27 +8108,29 @@ const Theme* GetSelectedTheme() {
 }
 
 void AddNotificationCenterTransparencyRules() {
-    static const ThemeTargetStyles styles[] = {
-        {L"Grid#NotificationCenterGrid", {L"Background=Transparent"}},
-        {L"Grid#CalendarCenterGrid", {L"Background=Transparent"}},
-        {L"Grid#ControlCenterRegion", {L"Background=Transparent"}},
-        {L"Grid#MediaTransportControlsRegion", {L"Background=Transparent"}},
-        {L"ScrollViewer#CalendarControlScrollViewer", {L"Background=Transparent"}},
-        {L"Border#CalendarHeaderMinimizedOverlay", {L"Background=Transparent"}},
+    static const std::pair<PCWSTR, PCWSTR> styles[] = {
+        {L"Grid#NotificationCenterGrid", L"Background=Transparent"},
+        {L"Grid#CalendarCenterGrid", L"Background=Transparent"},
+        {L"Grid#ControlCenterRegion", L"Background=Transparent"},
+        {L"Grid#MediaTransportControlsRegion", L"Background=Transparent"},
+        {L"ScrollViewer#CalendarControlScrollViewer", L"Background=Transparent"},
+        {L"Border#CalendarHeaderMinimizedOverlay", L"Background=Transparent"},
         {L"ActionCenter.FocusSessionControl#FocusSessionControl > Grid#FocusGrid",
-         {L"Background=Transparent"}},
+         L"Background=Transparent"},
         {L"Windows.UI.Xaml.Controls.Grid#L1Grid > Border",
-         {L"Background=Transparent"}},
-        {L"Grid#MediaTransportControlsRoot", {L"Background=Transparent"}},
-        {L"ContentPresenter#PageContent", {L"Background=Transparent"}},
+         L"Background=Transparent"},
+        {L"Grid#MediaTransportControlsRoot", L"Background=Transparent"},
+        {L"ContentPresenter#PageContent", L"Background=Transparent"},
         {L"ContentPresenter#PageContent > Grid > Border",
-         {L"Background=Transparent"}},
-        {L"ScrollViewer#ListContent", {L"Background=Transparent"}},
+         L"Background=Transparent"},
+        {L"ScrollViewer#ListContent", L"Background=Transparent"},
     };
 
     for (const auto& style : styles) {
         try {
-            AddElementCustomizationRules(style.target, style.styles);
+            std::vector<std::wstring> rules;
+            rules.emplace_back(style.second);
+            AddElementCustomizationRules(style.first, rules);
         } catch (winrt::hresult_error const& ex) {
             Wh_Log(L"Error %08X", ex.code());
         } catch (std::exception const& ex) {
