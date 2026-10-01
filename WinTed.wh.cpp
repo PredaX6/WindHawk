@@ -2,7 +2,7 @@
 // @id              winted
 // @name            WinTed
 // @description     Windows 11 25H2 : thème Translucent Explorer 11 avec transparence DWM.
-// @version         1.5.4
+// @version         1.5.5
 // @author          Teddy
 // @github          https://github.com/PredaX6
 // @include         explorer.exe
@@ -9431,7 +9431,7 @@ bool PaintThemeBackground(HTHEME hTheme,
                           int iStateId,
                           LPCRECT pRect,
                           LPCRECT pClipRect) {
-    if (!g_pGetThemeClass || !IsEntireWindowEffectDC(hdc)) {
+    if (!g_pGetThemeClass) {
         return false;
     }
 
@@ -9451,6 +9451,9 @@ bool PaintThemeBackground(HTHEME hTheme,
     } else {
         return false;
     }
+
+    if (part != Part::ScrollBar && !IsEntireWindowEffectDC(hdc)) return false;
+    if (part == Part::ScrollBar && !g_entireWindowEffectWndForThread) return false;
 
     int savedDC = 0;
     if (pClipRect) {
