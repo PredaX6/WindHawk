@@ -8358,7 +8358,8 @@ TargetWindowType GetTargetWindowType(HWND hWnd) {
     }
 
     // Windows 11 24H2+: Notification Center / Quick Settings / Calendar.
-    if (_wcsicmp(className, L"ControlCenterWindow") == 0) {
+    if (_wcsicmp(className, L"ControlCenterWindow") == 0 ||
+        _wcsicmp(className, L"QuickActionsWindow") == 0) {
         return TargetWindowType::NotificationCenter;
     }
 
@@ -8373,7 +8374,10 @@ TargetWindowType GetTargetWindowType(HWND hWnd) {
             _wcsicmp(title, L"Action Center") == 0 ||
             _wcsicmp(title, L"Action Centre") == 0 ||
             _wcsicmp(title, L"Control Center") == 0 ||
-            _wcsicmp(title, L"Control Centre") == 0) {
+            _wcsicmp(title, L"Control Centre") == 0 ||
+            _wcsicmp(title, L"Centre de notifications") == 0 ||
+            _wcsicmp(title, L"Centre de notification") == 0 ||
+            _wcsicmp(title, L"Centre de contrôle") == 0) {
             return TargetWindowType::NotificationCenter;
         }
     }
