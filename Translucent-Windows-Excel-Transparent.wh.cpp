@@ -1,6 +1,6 @@
 // ==WindhawkMod==
 // @id              translucent-windows
-// @name            Translucent Windows
+// @name            Windows Aero
 // @description     Enables native translucent effects in Windows 11
 // @version         1.8.2
 // @author          Undisputed00x
