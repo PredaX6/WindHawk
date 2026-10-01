@@ -85,6 +85,8 @@ This is caused by default by the AccentBlur API.❕
 
 La personnalisation complète de l'Explorateur de fichiers Windows 11 est intégrée directement à ce mode. Il n'est plus nécessaire d'installer séparément Windows 11 File Explorer Styler.
 
+*/
+
 // ==/WindhawkModReadme==
 
 // ==WindhawkModSettings==
@@ -271,6 +273,59 @@ La personnalisation complète de l'Explorateur de fichiers Windows 11 est intég
 #include <d2d1.h>
 #include <wrl.h>
 #include <ShellScalingApi.h>
+#include <atomic>
+#include <optional>
+#include <vector>
+#include <winrt/Microsoft.UI.Xaml.h>
+#include <Unknwn.h>
+#include <weakreference.h>
+#include <winrt/base.h>
+#include <ocidl.h>
+#include <combaseapi.h>
+#include <windhawk_utils.h>
+#include <algorithm>
+#include <charconv>
+#include <chrono>
+#include <cmath>
+#include <condition_variable>
+#include <filesystem>
+#include <limits>
+#include <list>
+#include <memory>
+#include <mutex>
+#include <random>
+#include <sstream>
+#include <string>
+#include <string_view>
+#include <type_traits>
+#include <unordered_map>
+#include <unordered_set>
+#include <variant>
+#include <initguid.h>
+#include <commctrl.h>
+#include <d2d1_1.h>
+#include <dwmapi.h>
+#include <roapi.h>
+#include <shlwapi.h>
+#include <uxtheme.h>
+#include <vssym32.h>
+#include <windows.graphics.effects.h>
+#include <winstring.h>
+#include <winrt/Microsoft.UI.Composition.h>
+#include <winrt/Microsoft.UI.Dispatching.h>
+#include <winrt/Microsoft.UI.Text.h>
+#include <winrt/Microsoft.UI.Xaml.Controls.h>
+#include <winrt/Microsoft.UI.Xaml.Hosting.h>
+#include <winrt/Microsoft.UI.Xaml.Markup.h>
+#include <winrt/Microsoft.UI.Xaml.Media.Imaging.h>
+#include <winrt/Microsoft.UI.Xaml.Media.h>
+#include <winrt/Windows.Foundation.Collections.h>
+#include <winrt/Windows.Foundation.h>
+#include <winrt/Windows.Graphics.Effects.h>
+#include <winrt/Windows.Networking.Connectivity.h>
+#include <winrt/Windows.Storage.Streams.h>
+#include <winrt/Windows.System.Power.h>
+#include <winrt/Windows.UI.ViewManagement.h>
 #include <xamlom.h>
 
 #define RECTWIDTH(lprc)     ((lprc)->right - (lprc)->left)
@@ -6762,13 +6817,9 @@ VOID LoadSettings()
 
 namespace FileExplorerStyler {
 
-#include <atomic>
-#include <optional>
-#include <vector>
 
 #undef GetCurrentTime
 
-#include <winrt/Microsoft.UI.Xaml.h>
 
 struct ThemeTargetStyles {
     PCWSTR target;
@@ -8087,9 +8138,6 @@ HMODULE GetCurrentModuleHandle() {
 
 #pragma region winrt_hpp
 
-#include <Unknwn.h>
-#include <weakreference.h>
-#include <winrt/base.h>
 
 // forward declare namespaces we alias
 namespace winrt {
@@ -8124,7 +8172,6 @@ winrt::weak_ref<wf::IInspectable> TryMakeWeak(wf::IInspectable const& object)
 
 #pragma region visualtreewatcher_hpp
 
-#include <winrt/Microsoft.UI.Xaml.h>
 
 // XamlDiagnostics implements this interface too, and xamlom.h does not declare
 // it. UnregisterInstance closes the runtime object cached for a handle, the
@@ -8374,7 +8421,6 @@ HRESULT VisualTreeWatcher::OnElementStateChanged(InstanceHandle, VisualElementSt
 
 #pragma region tap_hpp
 
-#include <ocidl.h>
 
 // Read by the UI threads while the thread which injects or uninitializes the TAP
 // replaces it.
@@ -8452,7 +8498,6 @@ HRESULT WindhawkTAP::GetSite(REFIID riid, void **ppvSite) noexcept
 
 #pragma region simplefactory_hpp
 
-#include <Unknwn.h>
 
 template<class T>
 struct SimpleFactory : winrt::implements<SimpleFactory<T>, IClassFactory, winrt::non_agile>
@@ -8486,7 +8531,6 @@ struct SimpleFactory : winrt::implements<SimpleFactory<T>, IClassFactory, winrt:
 
 #pragma region module_cpp
 
-#include <combaseapi.h>
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdll-attribute-on-redeclaration"
@@ -8590,59 +8634,12 @@ HRESULT InjectWindhawkTAP() noexcept
 // clang-format on
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <windhawk_utils.h>
 
-#include <algorithm>
-#include <charconv>
-#include <chrono>
-#include <cmath>
-#include <condition_variable>
-#include <filesystem>
-#include <limits>
-#include <list>
-#include <memory>
-#include <mutex>
-#include <optional>
-#include <random>
-#include <sstream>
-#include <string>
-#include <string_view>
-#include <type_traits>
-#include <unordered_map>
-#include <unordered_set>
-#include <variant>
-#include <vector>
 
 using namespace std::string_view_literals;
 
-#include <initguid.h>
 
-#include <commctrl.h>
-#include <d2d1_1.h>
-#include <dwmapi.h>
-#include <roapi.h>
-#include <shlwapi.h>
-#include <uxtheme.h>
-#include <vssym32.h>
-#include <windows.graphics.effects.h>
-#include <winstring.h>
 
-#include <winrt/Microsoft.UI.Composition.h>
-#include <winrt/Microsoft.UI.Dispatching.h>
-#include <winrt/Microsoft.UI.Text.h>
-#include <winrt/Microsoft.UI.Xaml.Controls.h>
-#include <winrt/Microsoft.UI.Xaml.Hosting.h>
-#include <winrt/Microsoft.UI.Xaml.Markup.h>
-#include <winrt/Microsoft.UI.Xaml.Media.Imaging.h>
-#include <winrt/Microsoft.UI.Xaml.Media.h>
-#include <winrt/Microsoft.UI.Xaml.h>
-#include <winrt/Windows.Foundation.Collections.h>
-#include <winrt/Windows.Foundation.h>
-#include <winrt/Windows.Graphics.Effects.h>
-#include <winrt/Windows.Networking.Connectivity.h>
-#include <winrt/Windows.Storage.Streams.h>
-#include <winrt/Windows.System.Power.h>
-#include <winrt/Windows.UI.ViewManagement.h>
 
 using namespace winrt::Microsoft::UI::Xaml;
 
