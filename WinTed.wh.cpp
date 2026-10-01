@@ -2,7 +2,7 @@
 // @id              winted
 // @name            WinTed
 // @description     Windows 11 25H2 : thème Translucent Explorer 11 avec transparence DWM.
-// @version         1.5.2
+// @version         1.5.3
 // @author          Teddy
 // @github          https://github.com/PredaX6
 // @include         explorer.exe
@@ -10165,15 +10165,13 @@ void StopStatsTimer() {
 }
 
 void LoadSettings() {
-    wchar_t transparencyType[32] = L"default";
-    if (!Wh_GetStringSetting(
-            L"transparencyType",
-            transparencyType,
-            ARRAYSIZE(transparencyType))) {
-        wcscpy_s(transparencyType, L"default");
-    }
+    PCWSTR transparencyType = Wh_GetStringSetting(L"transparencyType");
 
-    if (wcscmp(transparencyType, L"blur") == 0) {
+    if (!transparencyType || !*transparencyType ||
+        wcscmp(transparencyType, L"default") == 0) {
+        g_settings.backgroundTranslucentEffect =
+            BackgroundTranslucentEffect::kAcrylic;
+    } else if (wcscmp(transparencyType, L"blur") == 0) {
         g_settings.backgroundTranslucentEffect =
             BackgroundTranslucentEffect::kBlur;
     } else if (wcscmp(transparencyType, L"acrylic") == 0) {
@@ -10186,20 +10184,20 @@ void LoadSettings() {
         g_settings.backgroundTranslucentEffect =
             BackgroundTranslucentEffect::kMicaAlt;
     } else {
-        // "Par défaut" conserve le rendu translucide de WinTed :
-        // acrylique DWM sur toute la fenêtre.
         g_settings.backgroundTranslucentEffect =
             BackgroundTranslucentEffect::kAcrylic;
     }
 
-    // Toujours appliquer l'effet à toute la fenêtre.
+    if (transparencyType) {
+        Wh_FreeStringSetting(transparencyType);
+    }
+
     g_settings.backgroundTranslucentEffectRegion =
         BackgroundTranslucentEffectRegion::kEntireWindow;
 
     g_settings.explorerFrameContainerHeight = 0;
     g_settings.xamlDiagnosticsHandling = XamlDiagnosticsHandling::kBlock;
 }
-
 void LoadThemeSettings() {
     const Theme* theme = GetSelectedTheme();
     g_themeBackgroundTranslucentEffect =
