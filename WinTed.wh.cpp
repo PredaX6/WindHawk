@@ -8108,42 +8108,68 @@ const Theme* GetSelectedTheme() {
 }
 
 void AddNotificationCenterTransparencyRules() {
-    // These are the same transparent XAML layers used by the known
-    // TranslucentShell-style configurations. Keeping the layers transparent
-    // lets the DWM material applied to the host window remain visible.
-    static const std::pair<PCWSTR, PCWSTR> styles[] = {
-        {L"Grid#NotificationCenterGrid", L"Background=Transparent"},
-        {L"Grid#CalendarCenterGrid", L"Background=Transparent"},
-        {L"Grid#ControlCenterRegion", L"Background=Transparent"},
-        {L"Grid#MediaTransportControlsRegion", L"Background=Transparent"},
-        {L"ScrollViewer#CalendarControlScrollViewer", L"Background=Transparent"},
-        {L"Border#CalendarHeaderMinimizedOverlay", L"Background=Transparent"},
-        {L"ActionCenter.FocusSessionControl#FocusSessionControl > Grid#FocusGrid",
-         L"Background=Transparent"},
-        {L"Windows.UI.Xaml.Controls.Grid#L1Grid > Border",
-         L"Background=Transparent"},
-        {L"Grid#MediaTransportControlsRoot", L"Background=Transparent"},
-        {L"ContentPresenter#PageContent", L"Background=Transparent"},
-        {L"ContentPresenter#PageContent > Grid > Border",
-         L"Background=Transparent"},
-        {L"ScrollViewer#ListContent", L"Background=Transparent"},
-        {L"Grid > ScrollViewer#ListContent", L"Background=Transparent"},
-        {L"Grid#FocusGrid", L"Background=Transparent"},
-        {L"Grid#NotificationCenterTopBanner", L"Background=Transparent"},
-        {L"Grid#DoNotDisturbSubtext", L"Background=Transparent"},
-        {L"QuickActions.ControlCenter.AccessibleWindow#PageWindow > ContentPresenter > Grid#FullScreenPageRoot",
-         L"Background=Transparent"},
+    // Notification Center and Control Center use their own XAML surfaces.
+    // Do not apply the Explorer DWM backdrop to these flyouts: on current
+    // Windows 11 Shell builds that can produce an opaque/white host surface.
+    // Instead, apply the selected WinUI material directly to the same XAML
+    // regions that render the shell panels.
+    PCWSTR brush = L"Transparent";
+
+    switch (GetEffectiveBackgroundTranslucentEffect()) {
+        case BackgroundTranslucentEffect::kBlur:
+            brush = L"<AcrylicBrush TintColor=\"#232323\" TintOpacity=\"0.18\" BackgroundSource=\"Backdrop\"/>";
+            break;
+        case BackgroundTranslucentEffect::kAcrylic:
+            brush = L"<AcrylicBrush TintColor=\"#232323\" TintOpacity=\"0.30\" BackgroundSource=\"Backdrop\"/>";
+            break;
+        case BackgroundTranslucentEffect::kMica:
+            brush = L"<MicaBrush/>";
+            break;
+        case BackgroundTranslucentEffect::kMicaAlt:
+            brush = L"<MicaBrush TintColor=\"#202020\" TintOpacity=\"0.35\"/>";
+            break;
+        case BackgroundTranslucentEffect::kDefault:
+        case BackgroundTranslucentEffect::kNone:
+            brush = L"Transparent";
+            break;
+    }
+
+    static const PCWSTR targets[] = {
+        L"Grid#NotificationCenterGrid",
+        L"Grid#CalendarCenterGrid",
+        L"Grid#ControlCenterRegion",
+        L"Grid#MediaTransportControlsRegion",
     };
 
-    for (const auto& style : styles) {
+    for (PCWSTR target : targets) {
         try {
             std::vector<std::wstring> rules;
-            rules.emplace_back(style.second);
-            AddElementCustomizationRules(style.first, rules);
-        } catch (winrt::hresult_error const& ex) {
-            Wh_Log(L"Error %08X", ex.code());
-        } catch (std::exception const& ex) {
-            Wh_Log(L"Error: %S", ex.what());
+            rules.emplace_back(L"Background:=" + std::wstring(brush));
+            rules.emplace_back(L"BorderThickness=0,0,0,0");
+            AddElementCustomizationRules(target, rules);
+        } catch (...) {
+        }
+    }
+
+    static const PCWSTR transparentTargets[] = {
+        L"ScrollViewer#CalendarControlScrollViewer",
+        L"Border#CalendarHeaderMinimizedOverlay",
+        L"ActionCenter.FocusSessionControl#FocusSessionControl > Grid#FocusGrid",
+        L"Windows.UI.Xaml.Controls.Grid#L1Grid > Border",
+        L"Grid#MediaTransportControlsRoot",
+        L"ContentPresenter#PageContent",
+        L"ContentPresenter#PageContent > Grid > Border",
+        L"QuickActions.ControlCenter.AccessibleWindow#PageWindow > ContentPresenter > Grid#FullScreenPageRoot",
+        L"QuickActions.ControlCenter.AccessibleWindow#PageWindow > ContentPresenter > Grid#FullScreenPageRoot > ContentPresenter#PageHeader",
+        L"ScrollViewer#ListContent",
+    };
+
+    for (PCWSTR target : transparentTargets) {
+        try {
+            std::vector<std::wstring> rules;
+            rules.emplace_back(L"Background=Transparent");
+            AddElementCustomizationRules(target, rules);
+        } catch (...) {
         }
     }
 }
@@ -9738,12 +9764,9 @@ void OnWindowCreated(HWND hWnd, PCSTR funcName) {
         InitializeForCurrentThread();
         InitializeSettingsAndTap();
 
-        // Apply the material after XAML initialization. ShellExperienceHost /
-        // ShellHost can otherwise overwrite the DWM backdrop while constructing
-        // the visual tree.
-        if (windowType == TargetWindowType::FileExplorer ||
-            windowType == TargetWindowType::NotificationCenter ||
-            windowType == TargetWindowType::ControlCenter) {
+        // Explorer uses the DWM whole-window material. Notification Center
+        // and Control Center use XAML materials directly (see the rules above).
+        if (windowType == TargetWindowType::FileExplorer) {
             ApplyBackgroundTranslucentEffect(hWnd);
             TriggerWindowCompositionUpdate(hWnd);
         }
