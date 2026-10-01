@@ -2,7 +2,7 @@
 // @id              winted
 // @name            WinTed
 // @description     Windows 11 25H2 : thème Translucent Explorer 11 avec transparence DWM.
-// @version         1.5.11
+// @version         1.5.12
 // @author          Teddy
 // @github          https://github.com/PredaX6
 // @include         explorer.exe
@@ -110,6 +110,19 @@ const Theme g_themeTranslucent_Explorer11 = {{
     ThemeTargetStyles{L"ScrollBar#VerticalScrollBar", {
         L"Background=Transparent"}},
     ThemeTargetStyles{L"ScrollBar#HorizontalScrollBar", {
+        L"Background=Transparent"}},
+    // Remove the opaque ScrollViewer surface behind the WinUI scrollbar.
+    // The scrollbar itself is an overlay inside this visual tree, so making
+    // only ScrollBar transparent is not sufficient.
+    ThemeTargetStyles{L"ScrollViewer", {
+        L"Background=Transparent",
+        L"BorderBrush=Transparent"}},
+    ThemeTargetStyles{L"ScrollViewer > Border", {
+        L"Background=Transparent",
+        L"BorderBrush=Transparent"}},
+    ThemeTargetStyles{L"ScrollViewer > Grid", {
+        L"Background=Transparent"}},
+    ThemeTargetStyles{L"ScrollContentPresenter", {
         L"Background=Transparent"}},
     // The WinUI scrollbar track is hosted by these two containers. Keeping
     // them transparent lets the same DWM backdrop used by the Explorer
@@ -9355,11 +9368,9 @@ bool PaintScrollBarPart(HDC hdc,
         case SBP_UPPERTRACKHORZ:
         case SBP_LOWERTRACKVERT:
         case SBP_UPPERTRACKVERT:
-        case SBP_GRIPPERHORZ:
-        case SBP_GRIPPERVERT:
-            // Clear the theme-provided track/gripper surface. In the
-            // translucent Explorer paint path, black is treated as the
-            // transparent backdrop by the surrounding GDI alpha handling.
+            // Keep the native track handling used by the translucent
+            // Explorer GDI path. Do not touch the gripper: it is part of the
+            // thumb rendering and must keep its native appearance.
             FillRect(hdc, pRect, (HBRUSH)GetStockObject(BLACK_BRUSH));
             return true;
     }
