@@ -92,46 +92,45 @@ La personnalisation complète de l'Explorateur de fichiers Windows 11 est intég
 /*
 - RenderingMod:
     - ThemeBackground: TRUE
-      $name: 🔷 Windows theme custom rendering
+      $name: 🔷 Personnalisation du thème Windows
       $description: >-
-       Modifies parts of the Windows theme using the Direct2D graphics API and modifies 
-       Windows GDI text rendering by patching the alpha channel and adjusting text colors.
+       Modifie certaines parties du thème Windows avec Direct2D et adapte le rendu du texte GDI Windows.
         ✨It is recommended to enable this with background translucent effects.
     - SysColors: FALSE
-      $name: 🔷 New system colors
+      $name: 🔷 Nouvelles couleurs système
       $description: >-
-       Modifies additional system UI colors by calling SetSysColors API. (Requires Windows theme custom rendering)
+       Modifie des couleurs supplémentaires de l'interface Windows via l'API SetSysColors. (Nécessite la personnalisation du thème Windows)
         ⚠️For issues with excluded processes, use process rules in mod's settings. For more refer to the FAQ.
     - AccentColorControls: TRUE
-      $name: 🔷 Windows theme accent colorizer
+      $name: 🔷 Colorisation des éléments selon la couleur d’accentuation
       $description: >-
-       Paint with accent color parts of windows theme. (Requires Windows theme custom rendering)
+       Colore certains éléments du thème Windows avec la couleur d’accentuation. (Nécessite la personnalisation du thème Windows)
   $name: 🔶 Theme Customization
 - BackgroundEffects:
     - type: acrylicblur
-      $name: 🔷 Background effects
+      $name: 🔷 Effets d’arrière-plan
       $description: >-
-        Windows 11 version >= 22621.xxx (22H2) is required for SystemBackdrop effects.
+        Windows 11 version >= 22621.xxx (22H2) est requis pour les effets SystemBackdrop.
       $options:
-      - none: Default
-      - acrylicblur: Blur (AccentBlurBehind)
-      - acrylicsystem: Acrylic (SystemBackdrop)
+      - none: Par défaut
+      - acrylicblur: Flou (AccentBlurBehind)
+      - acrylicsystem: Acrylique (SystemBackdrop)
       - mica: Mica (SystemBackdrop)
       - mica_tabbed: MicaAlt (SystemBackdrop)
     - AccentBlurBehind: "3A232323"
-      $name: 🔷 AccentBlurBehind color blend
+      $name: 🔷 Mélange de couleur AccentBlurBehind
       $description: >-
-        Blending color with blur background.
-        Color in hexadecimal ARGB format e.g. 3A232323
-  $name: 🔶 Translucent Effects
+        Mélange la couleur avec l’arrière-plan flouté.
+        Couleur au format hexadécimal ARGB, par exemple 3A232323
+  $name: 🔶 Effets de transparence
 - FlyoutsEffects: TRUE
-  $name: 🔶 Flyout effects
+  $name: 🔶 Effets des menus
   $description: >-
-    Expand the effects to Win32 flyouts (context menus, dropdown menus, tooltips)
+    Étend les effets aux éléments Win32 (menus contextuels, menus déroulants, info-bulles)
      ✨It is recommended to enable this with both background translucent effects and Windows theme custom rendering.
 - RuledPrograms:
     - - target: "Notepad.exe"
-        $name: 🔶 Process
+        $name: 🔶 Processus
         $description: >-
          Entries can be process names, paths or subdirectories for example:
           • Notepad.exe
@@ -165,9 +164,9 @@ La personnalisation complète de l'Explorateur de fichiers Windows 11 est intég
            Blending color with blur background.
             Color in hexadecimal ARGB format e.g. 3A232323
         $name: 🔶 Translucent Effects
-  $name: ⏩ Process Rules
+  $name: ⏩ Règles des processus
   $description: >-
-      Add rules to each specified process or processes from specific subdirectories
+      Ajoute des règles pour les processus spécifiés ou les processus situés dans certains sous-dossiers
        ❗ Add process rules for the excluded process instead of using Windhawk's process exclusion when the "New system colors" global setting is enabled.
 
 
@@ -210,12 +209,12 @@ La personnalisation complète de l'Explorateur de fichiers Windows 11 est intég
   - micaAlt: Mica Alt
   - none: Aucun
 - backgroundTranslucentEffectRegion: ""
-  $name: Effet d'arrière-plan translucide region
+  $name: Région de l’effet d’arrière-plan translucide
   $description: >-
-    The region where the translucent background effect is applied.
+    Région dans laquelle l’effet d’arrière-plan translucide est appliqué.
   $options:
-  - "": Entire window
-  - explorerFrame: File Explorer frame only
+  - "": Fenêtre entière
+  - explorerFrame: Cadre de l’Explorateur uniquement
 - styleConstants: [""]
   $name: Constantes de style
   $description: >-
@@ -231,25 +230,24 @@ La personnalisation complète de l'Explorateur de fichiers Windows 11 est intég
 - themeResourceVariables: [""]
   $name: Variables de ressources
   $description: >-
-    Use "Key=Value" to override an existing resource with a new value.
+    Utilisez « Key=Value » pour remplacer une ressource existante.
 
-    Use "Key@Dark=Value" or "Key@Light=Value" to define theme-aware resources
-    that can be referenced with {ThemeResource Key} in styles.
+    Utilisez « Key@Dark=Value » ou « Key@Light=Value » pour définir des ressources
+    adaptées au thème, utilisables avec {ThemeResource Key} dans les styles.
 
-    The ":=" syntax can be used to set a XAML value. For details, refer to the
-    mod description.
+    La syntaxe « := » permet de définir une valeur XAML.
 - explorerFrameContainerHeight: 0
   $name: Hauteur du conteneur du cadre de l'Explorateur
   $description: >-
-    The height of the explorer frame container which includes the tabs, the
-    address bar, and the command bar, set to zero to use the default height.
+    Hauteur du conteneur du cadre de l’Explorateur comprenant les onglets,
+    la barre d’adresse et la barre de commandes. 0 utilise la hauteur par défaut.
 - xamlDiagnosticsHandling: alert
   $name: Gestion du consommateur de diagnostics XAML
   $description: >-
-    How to handle other programs (e.g. ExplorerBlurMica) that try to use XAML
-    diagnostics. There can only be one consumer at a time. Block will prevent
-    other programs from using it, which might break them. Allow will let them
-    use it, which might break this mod.
+    Détermine comment gérer les autres programmes (par exemple ExplorerBlurMica)
+    qui utilisent les diagnostics XAML. Un seul consommateur peut être actif à la fois.
+    Bloquer empêche les autres programmes de les utiliser ; autoriser leur utilisation
+    peut empêcher ce mod de fonctionner correctement.
   $options:
   - alert: Alerte (demander avant de bloquer)
   - block: Bloquer les autres consommateurs
