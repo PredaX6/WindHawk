@@ -12,32 +12,32 @@
 // ==WindhawkModReadme==
 /*
 
-### ⚠️ FAQ section below ⚠️
-### ❗For any excluded process, if the global "New system colors" setting is enabled, please add the excluded processes to the process rules in the mod settings instead.❗
+### ⚠️ Section FAQ ci-dessous ⚠️
+### ❗Si le paramètre global « Nouvelles couleurs système » est activé, ajoutez les processus exclus aux règles de processus du mod.❗
 
-- ## Theme Customization
-| **Default cleartype text** | **Greyscale text** |
+- ## Personnalisation du thème
+| **Texte ClearType par défaut** | **Texte en niveaux de gris** |
 |:---:|:---:|
 | ![Cleartype](https://i.imgur.com/utajxyq.png) | ![Greyscale](https://i.imgur.com/0OelxZH.png) |
 
-| **Default text** | **Alpha blended text** |
+| **Texte par défaut** | **Texte avec alpha** |
 |:---:|:---:|
-| ![Default](https://i.imgur.com/ZgrJMgP.png) | ![Composited](https://i.imgur.com/4lQU2a4.png) |
+| ![Par défaut](https://i.imgur.com/ZgrJMgP.png) | ![Composited](https://i.imgur.com/4lQU2a4.png) |
 
-| **Default themed controls** | **Custom themed controls** |
+| **Contrôles thématiques par défaut** | **Contrôles thématiques personnalisés** |
 |:---:|:---:|
-| ![Default Theme](https://i.imgur.com/8hYI1DZ.png) | ![Custom Theme](https://i.imgur.com/vWbelew.png) |
+| ![Thème par défaut](https://i.imgur.com/8hYI1DZ.png) | ![Thème personnalisé](https://i.imgur.com/vWbelew.png) |
 
-- ## Translucent effects
-| **Blur (AccentBlurBehind)** | **Acrylic (SystemBackdrop)** |
+- ## Effets de transparence
+| **Flou (AccentBlurBehind)** | **Acrylique (SystemBackdrop)** |
 |:---:|:---:|
 | ![AccentBlurBehind](https://i.imgur.com/tSf5ztk.png) | ![Acrylic SystemBackdrop](https://i.imgur.com/YNktLTu.png) |
 
-| **Mica (SystemBackdrop)** | **MicaAlt (SystemBackdrop)** |
+| **Mica (SystemBackdrop)** | **Mica Alt (SystemBackdrop)** |
 |:---:|:---:|
 | ![Mica](https://i.imgur.com/1ciJJck.png) | ![MicaTabbed](https://i.imgur.com/5Dxj5PS.png) |
 
-## Credits 
+## Crédits 
 The custom theme is a close copy of the Rectify 11 theme created by [WinExperiments](https://github.com/WinExperiments).
 #
 The inspiration for this mod came from the awesome Windows effects customization projects of [Maplespe](https://github.com/Maplespe) and [ALTaleX531](https://github.com/ALTaleX531).
@@ -95,22 +95,22 @@ La personnalisation complète de l'Explorateur de fichiers Windows 11 est intég
       $name: 🔷 Personnalisation du thème Windows
       $description: >-
        Modifie certaines parties du thème Windows avec Direct2D et adapte le rendu du texte GDI Windows.
-        ✨It is recommended to enable this with background translucent effects.
+        ✨Il est recommandé d’activer cette option avec les effets d’arrière-plan translucides.
     - SysColors: FALSE
       $name: 🔷 Nouvelles couleurs système
       $description: >-
        Modifie des couleurs supplémentaires de l'interface Windows via l'API SetSysColors. (Nécessite la personnalisation du thème Windows)
-        ⚠️For issues with excluded processes, use process rules in mod's settings. For more refer to the FAQ.
+        ⚠️En cas de problème avec les processus exclus, utilisez les règles de processus dans les paramètres du mod. Consultez la FAQ pour plus de détails.
     - AccentColorControls: TRUE
       $name: 🔷 Colorisation des éléments selon la couleur d’accentuation
       $description: >-
        Colore certains éléments du thème Windows avec la couleur d’accentuation. (Nécessite la personnalisation du thème Windows)
-  $name: 🔶 Theme Customization
+  $name: 🔶 Personnalisation du thème
 - BackgroundEffects:
     - type: acrylicblur
       $name: 🔷 Effets d’arrière-plan
       $description: >-
-        Windows 11 version >= 22621.xxx (22H2) est requis pour les effets SystemBackdrop.
+        Windows 11 version >= 22621.xxx (22H2) est requise pour les effets SystemBackdrop.
       $options:
       - none: Par défaut
       - acrylicblur: Flou (AccentBlurBehind)
@@ -127,12 +127,12 @@ La personnalisation complète de l'Explorateur de fichiers Windows 11 est intég
   $name: 🔶 Effets des menus
   $description: >-
     Étend les effets aux éléments Win32 (menus contextuels, menus déroulants, info-bulles)
-     ✨It is recommended to enable this with both background translucent effects and Windows theme custom rendering.
+     ✨It is recommended to enable this with both background translucent effects and Personnalisation du rendu du thème Windows.
 - RuledPrograms:
     - - target: "Notepad.exe"
-        $name: 🔶 Processusus
+        $name: 🔶 Processus
         $description: >-
-         Entries can be process names, paths or subdirectories for example:
+         Les entrées peuvent être des noms de processus, des chemins ou des sous-dossiers, par exemple :
           • Notepad.exe
           • C:\Program Files\Microsoft Office\root\Office16\EXCEL.EXE
           • C:\Users
@@ -140,18 +140,18 @@ La personnalisation complète de l'Explorateur de fichiers Windows 11 est intég
           - ThemeBackground: FALSE
             $name: 🔷 Personnalisation du thème Windows
             $description: >-
-              Modifies parts of the Windows theme using the Direct2D graphics API and modifies Windows GDI text rendering by patching the alpha channel and adjusting text colors.
-               ✨It is recommended to enable this with background translucent effects.
+              Modifie certaines parties du thème Windows avec l’API graphique Direct2D et adapte le rendu du texte GDI Windows en corrigeant le canal alpha et les couleurs du texte.
+               ✨Il est recommandé d’activer cette option avec les effets d’arrière-plan translucides.
           - AccentColorControls: FALSE
             $name: 🔷 Colorisation selon la couleur d’accentuation
             $description: >-
               Colore certains éléments du thème Windows avec la couleur d’accentuation. (Nécessite la personnalisation du thème Windows)
-        $name: 🔶 Theme Customization
+        $name: 🔶 Personnalisation du thème
       - BackgroundEffects:
         - type: none
-          $name: 🔷 Background translucent effects
+          $name: 🔷 Effets d’arrière-plan translucides
           $description: >-
-           Windows 11 version >= 22621.xxx (22H2) est requis pour les effets SystemBackdrop.
+           Windows 11 version >= 22621.xxx (22H2) est requise pour les effets SystemBackdrop.
           $options:
           - none: Par défaut
           - acrylicblur: Flou (AccentBlurBehind)
@@ -167,7 +167,7 @@ La personnalisation complète de l'Explorateur de fichiers Windows 11 est intég
   $name: ⏩ Règles des processus
   $description: >-
       Ajoute des règles pour les processus spécifiés ou les processus situés dans certains sous-dossiers
-       ❗ Add process rules for the excluded process instead of using Windhawk's process exclusion when the "New system colors" global setting is enabled.
+       ❗ Ajoutez une règle de processus pour le processus exclu au lieu d’utiliser l’exclusion de processus de Windhawk lorsque le paramètre global « Nouvelles couleurs système » est activé.
 
 
 # ===== Stylisation intégrée de l'Explorateur de fichiers Windows 11 =====
@@ -206,7 +206,7 @@ La personnalisation complète de l'Explorateur de fichiers Windows 11 est intég
   - mica: Mica
   - micaAlt: Mica Alt
   - none: Aucun
-- backgroundTranslucentEffectRegion: ""
+- backgroundTranslucentEffectRegion: entireWindow
   $name: Région de l’effet d’arrière-plan translucide
   $description: >-
     Région dans laquelle l’effet d’arrière-plan translucide est appliqué.
@@ -216,9 +216,9 @@ La personnalisation complète de l'Explorateur de fichiers Windows 11 est intég
 - styleConstants: [""]
   $name: Constantes de style
   $description: >-
-    Some themes support style constants for customization, such as colors. Refer
-    to the theme page for available constants. For technical details, refer to
-    the mod description.
+    Certains thèmes prennent en charge des constantes de style pour la personnalisation, notamment les couleurs. Consultez
+    la page du thème pour connaître les constantes disponibles. Pour les détails techniques, consultez
+    la description du mod.
 - controlStyles:
   - - target: ""
       $name: Cible
@@ -373,10 +373,10 @@ BOOL g_IsSysThemeDarkMode = ShouldSystemUseDarkMode();
 
 // Redirect per ruled program the system colors to hardcoded default ones 
 // when custom system colors are applied in global settings.
-BOOL g_DefaultSysColors = FALSE;
+BOOL g_Par défautSysColors = FALSE;
 // Global system colors buffers like Windows does.
 std::array<HBRUSH, COLOR_MENUBAR + 1> g_themeCachedCustomSysColorBrushes {nullptr};
-std::array<HBRUSH, COLOR_MENUBAR + 1> g_themeCachedDefaultSysColorBrushes {nullptr};
+std::array<HBRUSH, COLOR_MENUBAR + 1> g_themeCachedPar défautSysColorBrushes {nullptr};
 SRWLOCK g_SysColorsLock = SRWLOCK_INIT;
 
 // Helpers for resetting theming containers and attributes
@@ -408,12 +408,12 @@ struct Settings{
 
     enum BACKGROUNDTYPE
     {
-        Default,
+        Par défaut,
         AccentBlurBehind,
         AcrylicSystemBackdrop,
         Mica,
         MicaAlt,
-    } BgType = Default;
+    } BgType = Par défaut;
 
 } g_settings;
 
@@ -988,7 +988,7 @@ HRESULT WINAPI HookedDwmSetWindowAttribute(HWND hWnd, DWORD dwAttribute, LPCVOID
         return DwmSetWindowAttribute_orig(hWnd, DWMWA_WINDOW_CORNER_PREFERENCE, &menuCornerRadius, sizeof(menuCornerRadius));
     }
     
-    if ((dwAttribute == DWMWA_SYSTEMBACKDROP_TYPE || dwAttribute == DWMWA_USE_HOSTBACKDROPBRUSH) && g_settings.BgType != g_settings.Default)
+    if ((dwAttribute == DWMWA_SYSTEMBACKDROP_TYPE || dwAttribute == DWMWA_USE_HOSTBACKDROPBRUSH) && g_settings.BgType != g_settings.Par défaut)
     {
         if (g_settings.BgType == g_settings.AccentBlurBehind)
             return DwmSetWindowAttribute_orig(hWnd, DWMWA_SYSTEMBACKDROP_TYPE, &AUTO, sizeof(UINT));
@@ -1385,9 +1385,9 @@ HRESULT WINAPI HookedDrawThemeText(HTHEME hTheme, HDC hdc, INT iPartId, INT iSta
 // https://github.com/ramensoftware/windhawk-mods/blob/15e5d9838349e4b927ed8ac5433e9894ff6cda28/mods/uxtheme-hook.wh.cpp#L90
 typedef VOID(CALLBACK *Element_PaintBgT)(class Element*, HDC , class Value*, LPRECT, LPRECT, LPRECT, LPRECT);
 Element_PaintBgT Element_PaintBg;
-VOID CALLBACK Element_PaintBgHook(class Element* This, HDC hdc, class Value* value, LPRECT pRect, LPRECT pClipRect, LPRECT pExcludeRect, LPRECT pTargetRect)
+VOID CALLBACK Element_PaintBgHook(class Element* This, HDC hdc, class Value* value, LPRECT pRect, LPRECT pClipRect, LPRECT pExcludeRect, LPRECT pCibleRect)
 {   
-    Element_PaintBg(This, hdc, value, pRect, pClipRect, pExcludeRect, pTargetRect);
+    Element_PaintBg(This, hdc, value, pRect, pClipRect, pExcludeRect, pCibleRect);
 
     //unsigned char byteValue = *(reinterpret_cast<unsigned char*>(value) + 8);
     if ((INT)(*(DWORD *)value << 26) >> 26 != 9 )
@@ -1479,7 +1479,7 @@ VOID RevertSysColors()
     hThemeSysMetrics = nullptr;
 }
 
-static COLORREF GetDefaultSysColor(INT nIndex)
+static COLORREF GetPar défautSysColor(INT nIndex)
 {
     if (nIndex == COLOR_SCROLLBAR)
         return RGB(200, 200, 200);
@@ -1566,8 +1566,8 @@ static COLORREF GetCustomSysColor(INT nIndex)
 
 COLORREF WINAPI HookedGetSysColor(INT nIndex) 
 {
-    if (g_DefaultSysColors)
-        return GetDefaultSysColor(nIndex);
+    if (g_Par défautSysColors)
+        return GetPar défautSysColor(nIndex);
     else
         return GetCustomSysColor(nIndex);
 }
@@ -1577,7 +1577,7 @@ HBRUSH WINAPI HookedGetSysColorBrush(INT nIndex)
     if (nIndex < 0 || nIndex > COLOR_MENUBAR)
         return GetSysColorBrush_orig(nIndex);
     
-    auto& cacheArray = g_DefaultSysColors ? g_themeCachedDefaultSysColorBrushes : g_themeCachedCustomSysColorBrushes;
+    auto& cacheArray = g_Par défautSysColors ? g_themeCachedPar défautSysColorBrushes : g_themeCachedCustomSysColorBrushes;
     
     HBRUSH cachedBrush = cacheArray[nIndex];
     
@@ -1944,12 +1944,12 @@ HRESULT WINAPI HookedGetColorTheme(HTHEME hTheme, INT iPartId, INT iStateId, INT
     return hr;
 }
 
-HRESULT CreateBoundD2DRenderTarget(HDC hdc, LPCRECT pRect, ID2D1Factory* pFactory, ID2D1DCRenderTarget** ppRenderTarget)
+HRESULT CreateBoundD2DRenderCible(HDC hdc, LPCRECT pRect, ID2D1Factory* pFactory, ID2D1DCRenderCible** ppRenderCible)
 {
-    if (!pFactory || !ppRenderTarget)
+    if (!pFactory || !ppRenderCible)
         return FALSE;
 
-    D2D1_RENDER_TARGET_PROPERTIES rtProps = D2D1::RenderTargetProperties(
+    D2D1_RENDER_TARGET_PROPERTIES rtProps = D2D1::RenderCibleProperties(
         D2D1_RENDER_TARGET_TYPE_SOFTWARE,
         D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED),
         NULL,
@@ -1958,19 +1958,19 @@ HRESULT CreateBoundD2DRenderTarget(HDC hdc, LPCRECT pRect, ID2D1Factory* pFactor
         D2D1_FEATURE_LEVEL_DEFAULT
     );
 
-    Microsoft::WRL::ComPtr<ID2D1DCRenderTarget> renderTarget;
-    HRESULT hr = pFactory->CreateDCRenderTarget(&rtProps, &renderTarget);
+    Microsoft::WRL::ComPtr<ID2D1DCRenderCible> renderCible;
+    HRESULT hr = pFactory->CreateDCRenderCible(&rtProps, &renderCible);
     if (FAILED(hr)) {
         Wh_Log(L"Failed to create DC target [ERROR]: 0x%08X\n", hr);
         return hr;
     }
 
-    hr = renderTarget->BindDC(hdc, pRect);
+    hr = renderCible->BindDC(hdc, pRect);
     if (FAILED(hr)) {
         Wh_Log(L"Failed to Bind DC target [ERROR]: 0x%08X\n", hr);
         return hr;
     }
-    *ppRenderTarget = renderTarget.Detach();
+    *ppRenderCible = renderCible.Detach();
     return S_OK;
 }
 
@@ -2271,9 +2271,9 @@ BOOL CThemeCache::CacheScrollbar(INT iPartId, INT iStateId, INT stateIndex)
     if (!g_themeCache.CreateDIB(g_themeCache.scrollbar[stateIndex], width, height))
         return FALSE;
 
-    Microsoft::WRL::ComPtr<ID2D1DCRenderTarget> pRenderTarget;
+    Microsoft::WRL::ComPtr<ID2D1DCRenderCible> pRenderCible;
     RECT rc = { 0, 0, width, height};
-    if (FAILED(CreateBoundD2DRenderTarget(g_themeCache.scrollbar[stateIndex], &rc, g_d2dFactory, &pRenderTarget)))
+    if (FAILED(CreateBoundD2DRenderCible(g_themeCache.scrollbar[stateIndex], &rc, g_d2dFactory, &pRenderCible)))
         return FALSE;
 
     D2D1_RECT_F Rect;
@@ -2289,12 +2289,12 @@ BOOL CThemeCache::CacheScrollbar(INT iPartId, INT iStateId, INT stateIndex)
     D2D1_COLOR_F Color = (iStateId == SCRBS_NORMAL) ? MyD2D1Color(128, 160, 160, 160) : MyD2D1Color(160, 224, 224, 224);
 
     Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> brush = nullptr;
-    pRenderTarget->CreateSolidColorBrush(Color, &brush);
+    pRenderCible->CreateSolidColorBrush(Color, &brush);
     D2D1_ROUNDED_RECT rr = {Rect, cornerRadius, cornerRadius};
 
-    pRenderTarget->BeginDraw();
-    pRenderTarget->FillRoundedRectangle(&rr, brush.Get());
-    auto hr = pRenderTarget->EndDraw();
+    pRenderCible->BeginDraw();
+    pRenderCible->FillRoundedRectangle(&rr, brush.Get());
+    auto hr = pRenderCible->EndDraw();
     if (FAILED(hr)) {Wh_Log(L"Failed D2D drawing [ERROR]: 0x%08X\n", hr); return FALSE;}
     return TRUE;
 }
@@ -2304,8 +2304,8 @@ BOOL PaintScrollBarArrows(HDC hdc, INT iPartId, INT iStateId, LPCRECT pRect)
     if (iPartId != SBP_ARROWBTN || !g_d2dFactory)
         return FALSE;
 
-    Microsoft::WRL::ComPtr<ID2D1DCRenderTarget> dcRenderTarget = nullptr;
-    if (FAILED(CreateBoundD2DRenderTarget(hdc, pRect, g_d2dFactory, &dcRenderTarget)))
+    Microsoft::WRL::ComPtr<ID2D1DCRenderCible> dcRenderCible = nullptr;
+    if (FAILED(CreateBoundD2DRenderCible(hdc, pRect, g_d2dFactory, &dcRenderCible)))
         return FALSE;
 
     FLOAT scale = (FLOAT)g_Dpi / USER_DEFAULT_SCREEN_DPI;
@@ -2329,7 +2329,7 @@ BOOL PaintScrollBarArrows(HDC hdc, INT iPartId, INT iStateId, LPCRECT pRect)
         arrowColor = MyD2D1Color(128, 160, 160, 160);
 
     Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> brush = nullptr;
-    dcRenderTarget->CreateSolidColorBrush(arrowColor, &brush);
+    dcRenderCible->CreateSolidColorBrush(arrowColor, &brush);
     D2D1_POINT_2F points[6] = {};
     if ((iStateId > ABS_UPNORMAL && iStateId <= ABS_UPDISABLED) || iStateId == ABS_UPHOVER)
     {
@@ -2370,7 +2370,7 @@ BOOL PaintScrollBarArrows(HDC hdc, INT iPartId, INT iStateId, LPCRECT pRect)
 
     FillRect(hdc, pRect, (HBRUSH)GetStockObject(BLACK_BRUSH));
 
-    dcRenderTarget->BeginDraw();
+    dcRenderCible->BeginDraw();
 
     Microsoft::WRL::ComPtr<ID2D1PathGeometry> triangleGeo = nullptr;
     if (SUCCEEDED(g_d2dFactory->CreatePathGeometry(&triangleGeo)))
@@ -2387,10 +2387,10 @@ BOOL PaintScrollBarArrows(HDC hdc, INT iPartId, INT iStateId, LPCRECT pRect)
             sink->EndFigure(D2D1_FIGURE_END_CLOSED);
             sink->Close();
 
-            dcRenderTarget->FillGeometry(triangleGeo.Get(), brush.Get());
+            dcRenderCible->FillGeometry(triangleGeo.Get(), brush.Get());
         }
     }
-    auto hr = dcRenderTarget->EndDraw();
+    auto hr = dcRenderCible->EndDraw();
     if (FAILED(hr)) {Wh_Log(L"Failed D2D drawing [ERROR]: 0x%08X\n", hr); return FALSE;}
     return TRUE;
 }
@@ -2423,9 +2423,9 @@ BOOL CThemeCache::CachePushButton(INT iStateId, INT stateIndex)
     if (!g_themeCache.CreateDIB(g_themeCache.pushbutton[stateIndex], width, height))
         return FALSE;
 
-    Microsoft::WRL::ComPtr<ID2D1DCRenderTarget> pRenderTarget;
+    Microsoft::WRL::ComPtr<ID2D1DCRenderCible> pRenderCible;
     RECT rc = { 0, 0, width, height};
-    if (FAILED(CreateBoundD2DRenderTarget(g_themeCache.pushbutton[stateIndex], &rc, g_d2dFactory, &pRenderTarget)))
+    if (FAILED(CreateBoundD2DRenderCible(g_themeCache.pushbutton[stateIndex], &rc, g_d2dFactory, &pRenderCible)))
         return FALSE;
 
     D2D1_ROUNDED_RECT rr = {
@@ -2440,14 +2440,14 @@ BOOL CThemeCache::CachePushButton(INT iStateId, INT stateIndex)
                                      MyD2D1Color(96, 80, 80, 80);
 
     Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> fillBrush;
-    pRenderTarget->CreateSolidColorBrush(fillColor, &fillBrush);
+    pRenderCible->CreateSolidColorBrush(fillColor, &fillBrush);
     Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> borderBrush;
-    pRenderTarget->CreateSolidColorBrush(MyD2D1Color(96, 112, 112, 112), &borderBrush);
+    pRenderCible->CreateSolidColorBrush(MyD2D1Color(96, 112, 112, 112), &borderBrush);
     
-    pRenderTarget->BeginDraw();
-    pRenderTarget->FillRoundedRectangle(&rr, fillBrush.Get());
-    pRenderTarget->DrawRoundedRectangle(&rr, borderBrush.Get(), scale);
-    auto hr = pRenderTarget->EndDraw();
+    pRenderCible->BeginDraw();
+    pRenderCible->FillRoundedRectangle(&rr, fillBrush.Get());
+    pRenderCible->DrawRoundedRectangle(&rr, borderBrush.Get(), scale);
+    auto hr = pRenderCible->EndDraw();
     if (FAILED(hr)) {Wh_Log(L"Failed D2D drawing [ERROR]: 0x%08X\n", hr); return FALSE;}
     return TRUE;
 }
@@ -2474,9 +2474,9 @@ BOOL CThemeCache::CacheRadioButton(LPCRECT pRect,  INT iStateId, INT stateIndex)
     if (!g_themeCache.CreateDIB(g_themeCache.radiobutton[stateIndex], width, height))
         return FALSE;
 
-    Microsoft::WRL::ComPtr<ID2D1DCRenderTarget> pRenderTarget;
+    Microsoft::WRL::ComPtr<ID2D1DCRenderCible> pRenderCible;
     RECT rc = { 0, 0, (INT)width, (INT)height};
-    if (FAILED(CreateBoundD2DRenderTarget(g_themeCache.radiobutton[stateIndex], &rc, g_d2dFactory, &pRenderTarget)))
+    if (FAILED(CreateBoundD2DRenderCible(g_themeCache.radiobutton[stateIndex], &rc, g_d2dFactory, &pRenderCible)))
         return FALSE;
 
     FLOAT diameter = width - 1.f;
@@ -2527,12 +2527,12 @@ BOOL CThemeCache::CacheRadioButton(LPCRECT pRect,  INT iStateId, INT stateIndex)
     }
 
     Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> brush = nullptr;
-    pRenderTarget->CreateSolidColorBrush(radioColor, &brush);
+    pRenderCible->CreateSolidColorBrush(radioColor, &brush);
 
-    pRenderTarget->BeginDraw();
-    pRenderTarget->FillEllipse(outerEllipse, brush.Get());
+    pRenderCible->BeginDraw();
+    pRenderCible->FillEllipse(outerEllipse, brush.Get());
     brush->SetColor(borderColor);
-    pRenderTarget->DrawEllipse(outerEllipse, brush.Get(), scale);
+    pRenderCible->DrawEllipse(outerEllipse, brush.Get(), scale);
 
     if (innerRatio > 0.f)
     {
@@ -2542,10 +2542,10 @@ BOOL CThemeCache::CacheRadioButton(LPCRECT pRect,  INT iStateId, INT stateIndex)
             innerDiameter / 2.f, innerDiameter / 2.f
         );
 
-        pRenderTarget->CreateSolidColorBrush(innerColor, &brush);
-        pRenderTarget->FillEllipse(innerEllipse, brush.Get());
+        pRenderCible->CreateSolidColorBrush(innerColor, &brush);
+        pRenderCible->FillEllipse(innerEllipse, brush.Get());
     }
-    auto hr = pRenderTarget->EndDraw();
+    auto hr = pRenderCible->EndDraw();
     if (FAILED(hr)) {Wh_Log(L"Failed D2D drawing [ERROR]: 0x%08X\n", hr); return FALSE;}
     return TRUE;
 }
@@ -2573,9 +2573,9 @@ BOOL CThemeCache::CacheCheckButton(LPCRECT pRect, INT iStateId, INT stateIndex)
     if (!g_themeCache.CreateDIB(g_themeCache.checkbutton[stateIndex], width, height))
         return FALSE;
 
-    Microsoft::WRL::ComPtr<ID2D1DCRenderTarget> pRenderTarget;
+    Microsoft::WRL::ComPtr<ID2D1DCRenderCible> pRenderCible;
     RECT rc = { 0, 0, (INT)width, (INT)height};
-    if (FAILED(CreateBoundD2DRenderTarget(g_themeCache.checkbutton[stateIndex], &rc, g_d2dFactory, &pRenderTarget)))
+    if (FAILED(CreateBoundD2DRenderCible(g_themeCache.checkbutton[stateIndex], &rc, g_d2dFactory, &pRenderCible)))
         return FALSE;
     
     D2D1_ROUNDED_RECT roundedRect = {
@@ -2618,19 +2618,19 @@ BOOL CThemeCache::CacheCheckButton(LPCRECT pRect, INT iStateId, INT stateIndex)
         case CBS_IMPLICITDISABLED: case CBS_EXCLUDEDDISABLED:
             fillColor = MyD2D1Color(96, 96, 96);
     }
-    pRenderTarget->BeginDraw();
+    pRenderCible->BeginDraw();
 
     Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> Brush = nullptr;
-    pRenderTarget->CreateSolidColorBrush(fillColor, &Brush);
-    pRenderTarget->FillRoundedRectangle(&roundedRect, Brush.Get());
+    pRenderCible->CreateSolidColorBrush(fillColor, &Brush);
+    pRenderCible->FillRoundedRectangle(&roundedRect, Brush.Get());
 
     Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> glyphBrush = nullptr;
-    pRenderTarget->CreateSolidColorBrush(MyD2D1Color(0, 0, 0), &glyphBrush);
+    pRenderCible->CreateSolidColorBrush(MyD2D1Color(0, 0, 0), &glyphBrush);
 
     if (iStateId >= CBS_UNCHECKEDNORMAL && iStateId <= CBS_UNCHECKEDDISABLED)
     {
         Brush->SetColor(borderColor);
-        pRenderTarget->DrawRoundedRectangle
+        pRenderCible->DrawRoundedRectangle
         (D2D1_ROUNDED_RECT(D2D1::RectF(.5f, .5f, width - .5f, height - .5f), cornerRadius, cornerRadius), Brush.Get(), scale);
     }
     if (iStateId > CBS_UNCHECKEDDISABLED)
@@ -2652,18 +2652,18 @@ BOOL CThemeCache::CacheCheckButton(LPCRECT pRect, INT iStateId, INT stateIndex)
             D2D1_POINT_2F ptLeft  = D2D1::Point2F(ptTip.x - dxL, ptTip.y - dyL);
             D2D1_POINT_2F ptRight = D2D1::Point2F(ptTip.x + dxyR, ptTip.y - dxyR);
 
-            pRenderTarget->DrawLine(ptLeft, ptTip, glyphBrush.Get(), scale * 1.2f);
-            pRenderTarget->DrawLine(ptTip, ptRight, glyphBrush.Get(), scale * 1.2f);
+            pRenderCible->DrawLine(ptLeft, ptTip, glyphBrush.Get(), scale * 1.2f);
+            pRenderCible->DrawLine(ptTip, ptRight, glyphBrush.Get(), scale * 1.2f);
         }
         if (iStateId >= CBS_EXCLUDEDNORMAL && iStateId <= CBS_EXCLUDEDDISABLED) // X
         {
-            pRenderTarget->DrawLine((D2D1::Point2F(width *.3f, height/3.f)), (D2D1::Point2F(width *.7f, height/1.5f)), glyphBrush.Get());
-            pRenderTarget->DrawLine((D2D1::Point2F(width *.3f, height/1.5f)), (D2D1::Point2F(width *.7f, height/3.f)), glyphBrush.Get()); 
+            pRenderCible->DrawLine((D2D1::Point2F(width *.3f, height/3.f)), (D2D1::Point2F(width *.7f, height/1.5f)), glyphBrush.Get());
+            pRenderCible->DrawLine((D2D1::Point2F(width *.3f, height/1.5f)), (D2D1::Point2F(width *.7f, height/3.f)), glyphBrush.Get()); 
         }
         if (iStateId >= CBS_MIXEDNORMAL && iStateId <= CBS_MIXEDDISABLED) // Minus
-            pRenderTarget->DrawLine((D2D1::Point2F(width *.3f, height/2.f)), (D2D1::Point2F(width *.7f, height/2.f)), glyphBrush.Get());        
+            pRenderCible->DrawLine((D2D1::Point2F(width *.3f, height/2.f)), (D2D1::Point2F(width *.7f, height/2.f)), glyphBrush.Get());        
     }
-    auto hr = pRenderTarget->EndDraw();
+    auto hr = pRenderCible->EndDraw();
     if (FAILED(hr)) {Wh_Log(L"Failed D2D drawing [ERROR]: 0x%08X\n", hr); return FALSE;}
     return TRUE;
 }
@@ -2673,8 +2673,8 @@ BOOL PaintGroupBox(HDC hdc, INT iPartId, INT iStateId, LPCRECT pRect, LPCRECT pC
     if (!g_d2dFactory)
         return FALSE;
 
-    Microsoft::WRL::ComPtr<ID2D1DCRenderTarget> pRenderTarget;
-    if (FAILED(CreateBoundD2DRenderTarget(hdc, pRect, g_d2dFactory, &pRenderTarget)))
+    Microsoft::WRL::ComPtr<ID2D1DCRenderCible> pRenderCible;
+    if (FAILED(CreateBoundD2DRenderCible(hdc, pRect, g_d2dFactory, &pRenderCible)))
         return FALSE;
 
     const FLOAT radius = 4.0f;
@@ -2684,9 +2684,9 @@ BOOL PaintGroupBox(HDC hdc, INT iPartId, INT iStateId, LPCRECT pRect, LPCRECT pC
     const FLOAT h = static_cast<FLOAT>RECTHEIGHT(pRect) - 0.5f;
 
     Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> brush;
-    pRenderTarget->CreateSolidColorBrush(MyD2D1Color(96, 96, 96), &brush);
+    pRenderCible->CreateSolidColorBrush(MyD2D1Color(96, 96, 96), &brush);
 
-    pRenderTarget->BeginDraw();
+    pRenderCible->BeginDraw();
 
     Microsoft::WRL::ComPtr<ID2D1PathGeometry> geometry;
     Microsoft::WRL::ComPtr<ID2D1GeometrySink> sink;
@@ -2715,15 +2715,15 @@ BOOL PaintGroupBox(HDC hdc, INT iPartId, INT iStateId, LPCRECT pRect, LPCRECT pC
         const FLOAT cx = static_cast<FLOAT>(pClippedRect->left) + radius - .5f;
         const FLOAT cx2 = static_cast<FLOAT>(pClippedRect->right) - radius;
         // Top line right side of the label
-        pRenderTarget->DrawLine(
+        pRenderCible->DrawLine(
             D2D1::Point2F(cx, .5f),
             D2D1::Point2F(cx2, .5f),
             brush.Get()
         );
     }
     sink->Close();
-    pRenderTarget->DrawGeometry(geometry.Get(), brush.Get());
-    auto hr = pRenderTarget->EndDraw();
+    pRenderCible->DrawGeometry(geometry.Get(), brush.Get());
+    auto hr = pRenderCible->EndDraw();
     if (FAILED(hr)) {Wh_Log(L"Failed D2D drawing [ERROR]: 0x%08X\n", hr); return FALSE;}
 
     return TRUE;
@@ -2753,37 +2753,37 @@ BOOL CThemeCache::CacheCommandlinkButton(INT iStateId, INT stateIndex)
     if (!g_themeCache.CreateDIB(g_themeCache.commandlinkbutton[stateIndex], width, height))
         return FALSE;
 
-    Microsoft::WRL::ComPtr<ID2D1DCRenderTarget> pRenderTarget;
+    Microsoft::WRL::ComPtr<ID2D1DCRenderCible> pRenderCible;
     RECT rc = { 0, 0, width, height};
-    if (FAILED(CreateBoundD2DRenderTarget(g_themeCache.commandlinkbutton[stateIndex], &rc, g_d2dFactory, &pRenderTarget)))
+    if (FAILED(CreateBoundD2DRenderCible(g_themeCache.commandlinkbutton[stateIndex], &rc, g_d2dFactory, &pRenderCible)))
         return FALSE;
     
     D2D1_ROUNDED_RECT roundedRect = { D2D1::RectF(0, 0, width, height), cornerRadius, cornerRadius};
     Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> brush;
-    pRenderTarget->BeginDraw();
+    pRenderCible->BeginDraw();
     switch (iStateId)
     {
         case CMDLS_NORMAL:
         case CMDLS_DISABLED:
-            pRenderTarget->CreateSolidColorBrush(MyD2D1Color(0, 0, 0, 0), &brush);
-            pRenderTarget->FillRoundedRectangle(&roundedRect, brush.Get());
+            pRenderCible->CreateSolidColorBrush(MyD2D1Color(0, 0, 0, 0), &brush);
+            pRenderCible->FillRoundedRectangle(&roundedRect, brush.Get());
             break;
         case CMDLS_HOT:
-            pRenderTarget->CreateSolidColorBrush(MyD2D1Color(96, 144, 144, 144), &brush);
-            pRenderTarget->FillRoundedRectangle(&roundedRect, brush.Get());
+            pRenderCible->CreateSolidColorBrush(MyD2D1Color(96, 144, 144, 144), &brush);
+            pRenderCible->FillRoundedRectangle(&roundedRect, brush.Get());
             break;
         case CMDLS_PRESSED:
-            pRenderTarget->CreateSolidColorBrush(MyD2D1Color(64, 144, 144, 144), &brush);
-            pRenderTarget->FillRoundedRectangle(&roundedRect, brush.Get());
+            pRenderCible->CreateSolidColorBrush(MyD2D1Color(64, 144, 144, 144), &brush);
+            pRenderCible->FillRoundedRectangle(&roundedRect, brush.Get());
             break;
         case CMDLS_DEFAULTED:
         case CMDLS_DEFAULTED_ANIMATING:
             roundedRect = {D2D1::RectF(1.f * scale, 1.f * scale, width - 1.f * scale, height - 1.f * scale), cornerRadius - 1.f, cornerRadius - 1.f};
-            pRenderTarget->CreateSolidColorBrush(MyD2D1Color(255, 255, 255), &brush);
-            pRenderTarget->DrawRoundedRectangle(&roundedRect, brush.Get(), 2.f * scale);
+            pRenderCible->CreateSolidColorBrush(MyD2D1Color(255, 255, 255), &brush);
+            pRenderCible->DrawRoundedRectangle(&roundedRect, brush.Get(), 2.f * scale);
             break;
     }
-    auto hr = pRenderTarget->EndDraw();
+    auto hr = pRenderCible->EndDraw();
     if (FAILED(hr)) {Wh_Log(L"Failed D2D drawing [ERROR]: 0x%08X\n", hr); return FALSE;}
     return TRUE;
 }
@@ -2811,9 +2811,9 @@ BOOL CThemeCache::CacheCommandlinkGlyph(INT iStateId, INT stateIndex)
     if (!g_themeCache.CreateDIB(g_themeCache.commandlinkglyph[stateIndex], width, height))
         return FALSE;
 
-    Microsoft::WRL::ComPtr<ID2D1DCRenderTarget> pRenderTarget;
+    Microsoft::WRL::ComPtr<ID2D1DCRenderCible> pRenderCible;
     RECT rc = { 0, 0, width, height};
-    if (FAILED(CreateBoundD2DRenderTarget(g_themeCache.commandlinkglyph[stateIndex], &rc, g_d2dFactory, &pRenderTarget)))
+    if (FAILED(CreateBoundD2DRenderCible(g_themeCache.commandlinkglyph[stateIndex], &rc, g_d2dFactory, &pRenderCible)))
         return FALSE;
     
     FLOAT tailScale = 1.f;
@@ -2827,7 +2827,7 @@ BOOL CThemeCache::CacheCommandlinkGlyph(INT iStateId, INT stateIndex)
         arrowColor = MyD2D1Color(160, 160, 160);
 
     Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> brush;
-    pRenderTarget->CreateSolidColorBrush(arrowColor, &brush);
+    pRenderCible->CreateSolidColorBrush(arrowColor, &brush);
 
     FLOAT centerY = height / 2.f;
     FLOAT tailLength = width * tailScale;
@@ -2837,23 +2837,23 @@ BOOL CThemeCache::CacheCommandlinkGlyph(INT iStateId, INT stateIndex)
     FLOAT headSpan = tailLength * 0.4f;
     FLOAT headOffset = headSpan * 0.7071f; // 45 degrees
 
-    pRenderTarget->BeginDraw();
-    pRenderTarget->DrawLine(
+    pRenderCible->BeginDraw();
+    pRenderCible->DrawLine(
     D2D1::Point2F(x, centerY),
     D2D1::Point2F(tailLength, centerY),
     brush.Get(), 1.f
     );
-    pRenderTarget->DrawLine(
+    pRenderCible->DrawLine(
         D2D1::Point2F(tailEndX - headOffset, centerY - headOffset),
         D2D1::Point2F(tailEndX, centerY),
         brush.Get(), 1.f
     );
-    pRenderTarget->DrawLine(
+    pRenderCible->DrawLine(
         D2D1::Point2F(tailEndX - headOffset, centerY + headOffset),
         D2D1::Point2F(tailEndX, centerY),
         brush.Get()
     );  
-    auto hr = pRenderTarget->EndDraw();
+    auto hr = pRenderCible->EndDraw();
     if (FAILED(hr)) {Wh_Log(L"Failed D2D drawing [ERROR]: 0x%08X\n", hr); return FALSE;}
     return TRUE;
 }
@@ -2894,14 +2894,14 @@ BOOL CThemeCache::CacheCombobox(INT iPartId, INT iStateId, INT stateIndex)
         return FALSE;
     
     // Direct2D render target
-    Microsoft::WRL::ComPtr<ID2D1DCRenderTarget> pRenderTarget;
+    Microsoft::WRL::ComPtr<ID2D1DCRenderCible> pRenderCible;
     RECT rc = { 0, 0, width, height};
-    if (FAILED(CreateBoundD2DRenderTarget(g_themeCache.combobox[stateIndex], &rc, g_d2dFactory, &pRenderTarget)))
+    if (FAILED(CreateBoundD2DRenderCible(g_themeCache.combobox[stateIndex], &rc, g_d2dFactory, &pRenderCible)))
         return FALSE;
 
     D2D1_ROUNDED_RECT roundedRect = {D2D1::RectF(0.5, 0.5, width - .5f, height - .5f), cornerRadius, cornerRadius};
 
-    pRenderTarget->BeginDraw();
+    pRenderCible->BeginDraw();
     if (iPartId == CP_READONLY)
     {
         D2D1_COLOR_F fillColor = (iStateId == PBS_HOT)      ? MyD2D1Color(128, 96, 96, 96) : 
@@ -2909,28 +2909,28 @@ BOOL CThemeCache::CacheCombobox(INT iPartId, INT iStateId, INT stateIndex)
                                  (iStateId == PBS_DISABLED) ? MyD2D1Color(64, 64, 64, 64) :
                                                               MyD2D1Color(96, 80, 80, 80);
         Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> Brush;
-        pRenderTarget->CreateSolidColorBrush(fillColor, &Brush);
-        pRenderTarget->FillRoundedRectangle(&roundedRect, Brush.Get());
+        pRenderCible->CreateSolidColorBrush(fillColor, &Brush);
+        pRenderCible->FillRoundedRectangle(&roundedRect, Brush.Get());
 
         Brush->SetColor(MyD2D1Color(96, 112, 112, 112));
-        pRenderTarget->DrawRoundedRectangle(&roundedRect, Brush.Get(), scale);
+        pRenderCible->DrawRoundedRectangle(&roundedRect, Brush.Get(), scale);
     }
     else if (iPartId == CP_BORDER)
     {
         D2D1_COLOR_F borderColor = (iStateId == CBXS_HOT) ? MyD2D1Color(128, 160, 160, 160) : MyD2D1Color(96, 128, 128, 128);
         Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> borderBrush;
-        pRenderTarget->CreateSolidColorBrush(borderColor, &borderBrush);
-        pRenderTarget->DrawRoundedRectangle(&roundedRect, borderBrush.Get(), scale);
+        pRenderCible->CreateSolidColorBrush(borderColor, &borderBrush);
+        pRenderCible->DrawRoundedRectangle(&roundedRect, borderBrush.Get(), scale);
 
         if (iStateId == CBXS_PRESSED) 
         {
             borderBrush->SetColor(IsAccentColorPossibleD2D(105, 205, 255, SystemAccentColorLight2));
-            pRenderTarget->DrawLine(
+            pRenderCible->DrawLine(
                 D2D1::Point2F(cornerRadius/2 - 1.f * scale, height - 1.5f),
                 D2D1::Point2F(width - cornerRadius/2 + 1.f *scale, height - 1.5f),
                 borderBrush.Get()
             );
-            pRenderTarget->DrawLine(
+            pRenderCible->DrawLine(
                 D2D1::Point2F(2.f * scale, height - .5f),
                 D2D1::Point2F(width - 2.f * scale, height - .5f),
                 borderBrush.Get()
@@ -2939,11 +2939,11 @@ BOOL CThemeCache::CacheCombobox(INT iPartId, INT iStateId, INT stateIndex)
         else if (iStateId == CBXS_DISABLED)
         {
             Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> Brush;
-            pRenderTarget->CreateSolidColorBrush(MyD2D1Color(96, 80, 80, 80), &Brush);
-            pRenderTarget->FillRoundedRectangle(&roundedRect, Brush.Get());
+            pRenderCible->CreateSolidColorBrush(MyD2D1Color(96, 80, 80, 80), &Brush);
+            pRenderCible->FillRoundedRectangle(&roundedRect, Brush.Get());
         }
     }
-    auto hr = pRenderTarget->EndDraw();
+    auto hr = pRenderCible->EndDraw();
     if (FAILED(hr)) {Wh_Log(L"Failed D2D drawing [ERROR]: 0x%08X\n", hr); return FALSE;}
     return TRUE;
 }
@@ -2992,47 +2992,47 @@ BOOL CThemeCache::CacheEditBox(INT iPartId, INT iStateId, INT stateIndex)
     if(!g_themeCache.CreateDIB(g_themeCache.editbox[stateIndex], width, height))
         return FALSE;
     
-    Microsoft::WRL::ComPtr<ID2D1DCRenderTarget> pRenderTarget;
+    Microsoft::WRL::ComPtr<ID2D1DCRenderCible> pRenderCible;
     RECT rc = { 0, 0, width, height};
-    if (FAILED(CreateBoundD2DRenderTarget(g_themeCache.editbox[stateIndex], &rc, g_d2dFactory, &pRenderTarget)))
+    if (FAILED(CreateBoundD2DRenderCible(g_themeCache.editbox[stateIndex], &rc, g_d2dFactory, &pRenderCible)))
         return FALSE;
 
     D2D1_ROUNDED_RECT rect = D2D1::RoundedRect(D2D1::RectF(x + .5f, y + .5f, width - .5f, height - .5f), cornerRadius, cornerRadius);
-    pRenderTarget->BeginDraw();  
+    pRenderCible->BeginDraw();  
     if (iPartId == EP_BACKGROUNDWITHBORDER)
     {
         Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> brush;
-        pRenderTarget->CreateSolidColorBrush(g_IsSysThemeDarkMode ? MyD2D1Color(0, 0, 0) : MyD2D1Color(255, 255, 255), &brush);
+        pRenderCible->CreateSolidColorBrush(g_IsSysThemeDarkMode ? MyD2D1Color(0, 0, 0) : MyD2D1Color(255, 255, 255), &brush);
         D2D1_RECT_F rc (0, 0, (FLOAT)width, (FLOAT)height);
-        pRenderTarget->FillRectangle(&rc, brush.Get());
+        pRenderCible->FillRectangle(&rc, brush.Get());
     }
     if (iStateId == ETS_NORMAL || iStateId == ETS_HOT)
     {
         Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> brush;
         D2D1_COLOR_F borderColor = (iStateId == ETS_HOT) ? MyD2D1Color(128, 160, 160, 160) : MyD2D1Color(96, 112, 112, 112);
-        pRenderTarget->CreateSolidColorBrush(borderColor, &brush);
-        pRenderTarget->DrawRoundedRectangle(rect, brush.Get(), scale);
+        pRenderCible->CreateSolidColorBrush(borderColor, &brush);
+        pRenderCible->DrawRoundedRectangle(rect, brush.Get(), scale);
     }
     else if (iStateId == ETS_SELECTED)
     {
         FLOAT X = .5f;
         FLOAT Width = static_cast<FLOAT>(width) - .5f, Height = static_cast<FLOAT>(height) - .5f;
         Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> brush;
-        pRenderTarget->CreateSolidColorBrush(MyD2D1Color(96, 112, 112, 112), &brush);
-        pRenderTarget->DrawRoundedRectangle(rect, brush.Get(), scale);
+        pRenderCible->CreateSolidColorBrush(MyD2D1Color(96, 112, 112, 112), &brush);
+        pRenderCible->DrawRoundedRectangle(rect, brush.Get(), scale);
         Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> linebrush;
-        pRenderTarget->CreateSolidColorBrush(IsAccentColorPossibleD2D(105, 205, 255, SystemAccentColorLight2), &linebrush);
-        pRenderTarget->DrawLine(D2D1::Point2F(cornerRadius/2 - 1.f * scale, Height - 1.f), D2D1::Point2F(width - cornerRadius/2 + 1.f * scale, Height - 1.f), linebrush.Get());
-        pRenderTarget->DrawLine(D2D1::Point2F(X + 2.f * scale, Height), D2D1::Point2F(Width - 2.f * scale , Height), linebrush.Get());
+        pRenderCible->CreateSolidColorBrush(IsAccentColorPossibleD2D(105, 205, 255, SystemAccentColorLight2), &linebrush);
+        pRenderCible->DrawLine(D2D1::Point2F(cornerRadius/2 - 1.f * scale, Height - 1.f), D2D1::Point2F(width - cornerRadius/2 + 1.f * scale, Height - 1.f), linebrush.Get());
+        pRenderCible->DrawLine(D2D1::Point2F(X + 2.f * scale, Height), D2D1::Point2F(Width - 2.f * scale , Height), linebrush.Get());
     }
     else if (iStateId == ETS_DISABLED)
     {
         D2D1_ROUNDED_RECT rect = D2D1::RoundedRect(D2D1::RectF(x, y, width, height), cornerRadius, cornerRadius);
         Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> brush;
-        pRenderTarget->CreateSolidColorBrush(MyD2D1Color(96, 96, 96), &brush); 
-        pRenderTarget->FillRoundedRectangle(rect, brush.Get());
+        pRenderCible->CreateSolidColorBrush(MyD2D1Color(96, 96, 96), &brush); 
+        pRenderCible->FillRoundedRectangle(rect, brush.Get());
     }
-    auto hr = pRenderTarget->EndDraw();
+    auto hr = pRenderCible->EndDraw();
     if (FAILED(hr)) {Wh_Log(L"Failed D2D drawing [ERROR]: 0x%08X\n", hr); return FALSE;}
     return TRUE;
 }
@@ -3042,19 +3042,19 @@ BOOL PaintListBox(HDC hdc, INT iPartId, INT iStateId, LPCRECT pRect)
     if (!g_d2dFactory)
         return FALSE;
 
-    Microsoft::WRL::ComPtr<ID2D1DCRenderTarget> pRenderTarget;
-    if (FAILED(CreateBoundD2DRenderTarget(hdc, pRect, g_d2dFactory, &pRenderTarget)))
+    Microsoft::WRL::ComPtr<ID2D1DCRenderCible> pRenderCible;
+    if (FAILED(CreateBoundD2DRenderCible(hdc, pRect, g_d2dFactory, &pRenderCible)))
         return FALSE;
 
     D2D1_RECT_F rect((FLOAT)pRect->left, (FLOAT)pRect->top, (FLOAT)RECTWIDTH(pRect), (FLOAT)RECTHEIGHT(pRect));
 
-    pRenderTarget->BeginDraw();
+    pRenderCible->BeginDraw();
 
     if (iPartId == THEMECLS_COMMONPROPS_PART)
     {   
         Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> Brush;
-        pRenderTarget->CreateSolidColorBrush(MyD2D1Color(96, 96, 96), &Brush);
-        pRenderTarget->FillRectangle(&rect, Brush.Get());
+        pRenderCible->CreateSolidColorBrush(MyD2D1Color(96, 96, 96), &Brush);
+        pRenderCible->FillRectangle(&rect, Brush.Get());
     }
     else
     {
@@ -3076,10 +3076,10 @@ BOOL PaintListBox(HDC hdc, INT iPartId, INT iStateId, LPCRECT pRect)
             borderColor = MyD2D1Color(160, 160, 160);
             break;
         }
-        pRenderTarget->CreateSolidColorBrush(borderColor, &borderBrush);
-        pRenderTarget->FillRectangle(&rect, borderBrush.Get());
+        pRenderCible->CreateSolidColorBrush(borderColor, &borderBrush);
+        pRenderCible->FillRectangle(&rect, borderBrush.Get());
     }
-    auto hr = pRenderTarget->EndDraw();
+    auto hr = pRenderCible->EndDraw();
     if (FAILED(hr)) {Wh_Log(L"Failed D2D drawing [ERROR]: 0x%08X\n", hr); return FALSE;}
     return TRUE;
 }
@@ -3090,8 +3090,8 @@ BOOL PaintDropDownArrow(HDC hdc, INT iPartId, INT iStateId, LPCRECT pRect, BOOL 
         && iPartId != CP_DROPDOWNBUTTONLEFT))
         return FALSE;
 
-    Microsoft::WRL::ComPtr<ID2D1DCRenderTarget> pRenderTarget;
-    if (FAILED(CreateBoundD2DRenderTarget(hdc, pRect, g_d2dFactory, &pRenderTarget)))
+    Microsoft::WRL::ComPtr<ID2D1DCRenderCible> pRenderCible;
+    if (FAILED(CreateBoundD2DRenderCible(hdc, pRect, g_d2dFactory, &pRenderCible)))
         return FALSE;
 
     Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> brush;
@@ -3127,12 +3127,12 @@ BOOL PaintDropDownArrow(HDC hdc, INT iPartId, INT iStateId, LPCRECT pRect, BOOL 
     D2D1_POINT_2F ptLeft  = D2D1::Point2F(centerX - dx, centerY - dy);
     D2D1_POINT_2F ptRight = D2D1::Point2F(centerX + dx, centerY - dy);
 
-    pRenderTarget->CreateSolidColorBrush(arrowColor, &brush);
+    pRenderCible->CreateSolidColorBrush(arrowColor, &brush);
 
-    pRenderTarget->BeginDraw();
-    pRenderTarget->DrawLine(ptLeft, ptTip, brush.Get(), scale*1.2f);
-    pRenderTarget->DrawLine(ptRight, ptTip, brush.Get(), scale*1.2f);
-    auto hr = pRenderTarget->EndDraw();
+    pRenderCible->BeginDraw();
+    pRenderCible->DrawLine(ptLeft, ptTip, brush.Get(), scale*1.2f);
+    pRenderCible->DrawLine(ptRight, ptTip, brush.Get(), scale*1.2f);
+    auto hr = pRenderCible->EndDraw();
     if (FAILED(hr)) {Wh_Log(L"Failed D2D drawing [ERROR]: 0x%08X\n", hr); return FALSE;}
     return TRUE;
 }
@@ -3162,26 +3162,26 @@ BOOL CThemeCache::CacheTab(INT iStateId, INT stateIndex)
     if(!g_themeCache.CreateDIB(g_themeCache.tab[stateIndex], width, height))
         return FALSE;
 
-    Microsoft::WRL::ComPtr<ID2D1DCRenderTarget> pRenderTarget;
+    Microsoft::WRL::ComPtr<ID2D1DCRenderCible> pRenderCible;
     RECT rc = { 0, 0, width, height};
-    if (FAILED(CreateBoundD2DRenderTarget(g_themeCache.tab[stateIndex], &rc, g_d2dFactory, &pRenderTarget)))
+    if (FAILED(CreateBoundD2DRenderCible(g_themeCache.tab[stateIndex], &rc, g_d2dFactory, &pRenderCible)))
         return FALSE;
 
-    pRenderTarget->BeginDraw();
+    pRenderCible->BeginDraw();
     if (iStateId == TIS_NORMAL)
     {
         D2D1_RECT_F rect{0, 0, (FLOAT)width, (FLOAT)height};
         Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> brush;
-        pRenderTarget->CreateSolidColorBrush(MyD2D1Color(0, 0, 0, 0), &brush);
-        pRenderTarget->FillRectangle(rect, brush.Get());
+        pRenderCible->CreateSolidColorBrush(MyD2D1Color(0, 0, 0, 0), &brush);
+        pRenderCible->FillRectangle(rect, brush.Get());
     }
     else if (iStateId == TIS_HOT || iStateId == TIS_DISABLED)
     {
         D2D1_COLOR_F fillColor = (iStateId == TIS_HOT) ? MyD2D1Color(128, 96, 96, 96) : MyD2D1Color(96, 96, 96);
         Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> brush;
-        pRenderTarget->CreateSolidColorBrush(fillColor, &brush);
+        pRenderCible->CreateSolidColorBrush(fillColor, &brush);
         D2D1_ROUNDED_RECT tabRect = D2D1::RoundedRect(D2D1::RectF(0, 0, width, height), cornerRadius, cornerRadius);
-        pRenderTarget->FillRoundedRectangle(tabRect, brush.Get());
+        pRenderCible->FillRoundedRectangle(tabRect, brush.Get());
     }
     else if (iStateId == TIS_SELECTED || iStateId == TIS_FOCUSED)
     {
@@ -3199,10 +3199,10 @@ BOOL CThemeCache::CacheTab(INT iStateId, INT stateIndex)
 
         D2D1_COLOR_F pillColor = IsAccentColorPossibleD2D(102, 206, 255, SystemAccentColorLight2);
         Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> brush;
-        pRenderTarget->CreateSolidColorBrush(pillColor, &brush);
-        pRenderTarget->FillRoundedRectangle(pillRect, brush.Get());
+        pRenderCible->CreateSolidColorBrush(pillColor, &brush);
+        pRenderCible->FillRoundedRectangle(pillRect, brush.Get());
     }
-    auto hr = pRenderTarget->EndDraw();
+    auto hr = pRenderCible->EndDraw();
     if (FAILED(hr)) {Wh_Log(L"Failed D2D drawing [ERROR]: 0x%08X\n", hr); return FALSE;}
     return TRUE;
 }
@@ -3227,17 +3227,17 @@ BOOL CThemeCache::CacheTrackBar(INT iPartId, INT stateIndex)
     if(!g_themeCache.CreateDIB(g_themeCache.trackbar[stateIndex], width, height))
         return FALSE;
     
-    Microsoft::WRL::ComPtr<ID2D1DCRenderTarget> pRenderTarget;
+    Microsoft::WRL::ComPtr<ID2D1DCRenderCible> pRenderCible;
     RECT rc = { 0, 0, width, height};
-    if (FAILED(CreateBoundD2DRenderTarget(g_themeCache.trackbar[stateIndex], &rc, g_d2dFactory, &pRenderTarget)))
+    if (FAILED(CreateBoundD2DRenderCible(g_themeCache.trackbar[stateIndex], &rc, g_d2dFactory, &pRenderCible)))
         return FALSE;
     
-    pRenderTarget->BeginDraw();
+    pRenderCible->BeginDraw();
     D2D1_ROUNDED_RECT body = D2D1::RoundedRect(D2D1::RectF(0, 0, width, height), 2.f, 2.f);
     Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> brush;
-    pRenderTarget->CreateSolidColorBrush(MyD2D1Color(96, 96, 96), &brush);
-    pRenderTarget->FillRoundedRectangle(&body, brush.Get());
-    auto hr = pRenderTarget->EndDraw();
+    pRenderCible->CreateSolidColorBrush(MyD2D1Color(96, 96, 96), &brush);
+    pRenderCible->FillRoundedRectangle(&body, brush.Get());
+    auto hr = pRenderCible->EndDraw();
     if (FAILED(hr)) {Wh_Log(L"Failed D2D drawing [ERROR]: 0x%08X\n", hr); return FALSE;}
     return TRUE;
 }
@@ -3270,9 +3270,9 @@ BOOL CThemeCache::CacheTrackBarThumb(INT iPartId, INT iStateId, INT stateIndex)
     if(!g_themeCache.CreateDIB(g_themeCache.trackbarthumb[stateIndex], width, height))
         return FALSE;
     
-    Microsoft::WRL::ComPtr<ID2D1DCRenderTarget> pRenderTarget;
+    Microsoft::WRL::ComPtr<ID2D1DCRenderCible> pRenderCible;
     RECT rc = { 0, 0, width, height};
-    if (FAILED(CreateBoundD2DRenderTarget(g_themeCache.trackbarthumb[stateIndex], &rc, g_d2dFactory, &pRenderTarget)))
+    if (FAILED(CreateBoundD2DRenderCible(g_themeCache.trackbarthumb[stateIndex], &rc, g_d2dFactory, &pRenderCible)))
         return FALSE;
     
     D2D1_COLOR_F fillColor = (iStateId == TUBS_HOT) ? IsAccentColorPossibleD2D(102, 206, 255, SystemAccentColorLight3) : 
@@ -3280,10 +3280,10 @@ BOOL CThemeCache::CacheTrackBarThumb(INT iPartId, INT iStateId, INT stateIndex)
                              (iStateId == TUBS_DISABLED) ? MyD2D1Color(96, 96, 96) : MyD2D1Color(64, 64, 64);
     D2D1_ROUNDED_RECT body = D2D1::RoundedRect(D2D1::RectF(0, 0, width, height), cornerRadius, cornerRadius);
     Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> brush;
-    pRenderTarget->CreateSolidColorBrush(fillColor, &brush);
-    pRenderTarget->BeginDraw();
-    pRenderTarget->FillRoundedRectangle(&body, brush.Get());
-    auto hr = pRenderTarget->EndDraw();
+    pRenderCible->CreateSolidColorBrush(fillColor, &brush);
+    pRenderCible->BeginDraw();
+    pRenderCible->FillRoundedRectangle(&body, brush.Get());
+    auto hr = pRenderCible->EndDraw();
     if (FAILED(hr)) {Wh_Log(L"Failed D2D drawing [ERROR]: 0x%08X\n", hr); return FALSE;}
     return TRUE;
 }
@@ -3317,23 +3317,23 @@ BOOL CThemeCache::CacheTrackBarPointedThumb(INT iPartId, INT iStateId, INT state
     if(!g_themeCache.CreateDIB(g_themeCache.trackbarthumb[stateIndex], width, height))
         return FALSE;
     
-    Microsoft::WRL::ComPtr<ID2D1DCRenderTarget> pRenderTarget;
+    Microsoft::WRL::ComPtr<ID2D1DCRenderCible> pRenderCible;
     RECT rc = { 0, 0, width, height};
-    if (FAILED(CreateBoundD2DRenderTarget(g_themeCache.trackbarthumb[stateIndex], &rc, g_d2dFactory, &pRenderTarget)))
+    if (FAILED(CreateBoundD2DRenderCible(g_themeCache.trackbarthumb[stateIndex], &rc, g_d2dFactory, &pRenderCible)))
         return FALSE;
     
     D2D1_COLOR_F fillColor = (iStateId == TUBS_HOT) ? IsAccentColorPossibleD2D(102, 206, 255, SystemAccentColorLight3) : 
                              (iStateId == TUBS_PRESSED) ? IsAccentColorPossibleD2D(60, 110, 180, SystemAccentColorLight1) :
                              (iStateId == TUBS_DISABLED) ? MyD2D1Color(96, 96, 96) : MyD2D1Color(64, 64, 64);
     Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> brush;
-    pRenderTarget->CreateSolidColorBrush(fillColor, &brush);
+    pRenderCible->CreateSolidColorBrush(fillColor, &brush);
 
     FLOAT cx = width * 0.5f;
     FLOAT cy = height * 0.5f;
     Microsoft::WRL::ComPtr<ID2D1PathGeometry> triangleGeo;
     Microsoft::WRL::ComPtr<ID2D1GeometrySink> sink;
 
-    pRenderTarget->BeginDraw();
+    pRenderCible->BeginDraw();
     if (iPartId == TKP_THUMBBOTTOM)
     {
         FLOAT tipHeight = height * 0.3f;
@@ -3341,7 +3341,7 @@ BOOL CThemeCache::CacheTrackBarPointedThumb(INT iPartId, INT iStateId, INT state
         FLOAT bodyRadius = 2.f * scale;
 
         D2D1_ROUNDED_RECT body = D2D1::RoundedRect(D2D1::RectF(0, 0, width, bodyHeight), bodyRadius, bodyRadius);
-        pRenderTarget->FillRoundedRectangle(body, brush.Get());
+        pRenderCible->FillRoundedRectangle(body, brush.Get());
 
         D2D1_POINT_2F p1 = D2D1::Point2F(cx - width * 0.5f, bodyHeight - 1.f);
         D2D1_POINT_2F p2 = D2D1::Point2F(cx + width * 0.5f, bodyHeight - 1.f);
@@ -3354,7 +3354,7 @@ BOOL CThemeCache::CacheTrackBarPointedThumb(INT iPartId, INT iStateId, INT state
         sink->AddLine(p3);
         sink->EndFigure(D2D1_FIGURE_END_CLOSED);
         sink->Close();
-        pRenderTarget->FillGeometry(triangleGeo.Get(), brush.Get());
+        pRenderCible->FillGeometry(triangleGeo.Get(), brush.Get());
     }
     else if (iPartId == TKP_THUMBTOP)
     {
@@ -3363,7 +3363,7 @@ BOOL CThemeCache::CacheTrackBarPointedThumb(INT iPartId, INT iStateId, INT state
         FLOAT bodyRadius = 2.f * scale;
 
         D2D1_ROUNDED_RECT body = D2D1::RoundedRect(D2D1::RectF(0, bodyY, width, height), bodyRadius, bodyRadius);
-        pRenderTarget->FillRoundedRectangle(body, brush.Get());
+        pRenderCible->FillRoundedRectangle(body, brush.Get());
 
         D2D1_POINT_2F p1 = D2D1::Point2F(cx - width * 0.5f, tipHeight + 1.f);
         D2D1_POINT_2F p2 = D2D1::Point2F(cx + width * 0.5f, tipHeight + 1.f);
@@ -3377,7 +3377,7 @@ BOOL CThemeCache::CacheTrackBarPointedThumb(INT iPartId, INT iStateId, INT state
         sink->EndFigure(D2D1_FIGURE_END_CLOSED);
         sink->Close();
 
-        pRenderTarget->FillGeometry(triangleGeo.Get(), brush.Get());
+        pRenderCible->FillGeometry(triangleGeo.Get(), brush.Get());
     }
     else if (iPartId == TKP_THUMBLEFT)
     {
@@ -3385,7 +3385,7 @@ BOOL CThemeCache::CacheTrackBarPointedThumb(INT iPartId, INT iStateId, INT state
         FLOAT bodyRadius = 2.f * scale;
 
         D2D1_ROUNDED_RECT body = D2D1::RoundedRect(D2D1::RectF(tipWidth, 0, width, height), bodyRadius, bodyRadius);
-        pRenderTarget->FillRoundedRectangle(body, brush.Get());
+        pRenderCible->FillRoundedRectangle(body, brush.Get());
 
         D2D1_POINT_2F p1 = D2D1::Point2F(tipWidth + 1.f, cy - height * 0.5f);
         D2D1_POINT_2F p2 = D2D1::Point2F(tipWidth + 1.f, cy + height * 0.5f);
@@ -3399,7 +3399,7 @@ BOOL CThemeCache::CacheTrackBarPointedThumb(INT iPartId, INT iStateId, INT state
         sink->EndFigure(D2D1_FIGURE_END_CLOSED);
         sink->Close();
 
-        pRenderTarget->FillGeometry(triangleGeo.Get(), brush.Get());
+        pRenderCible->FillGeometry(triangleGeo.Get(), brush.Get());
     }
     else if (iPartId == TKP_THUMBRIGHT)
     {
@@ -3408,7 +3408,7 @@ BOOL CThemeCache::CacheTrackBarPointedThumb(INT iPartId, INT iStateId, INT state
         FLOAT bodyRadius = 2.f * scale;
 
         D2D1_ROUNDED_RECT body = D2D1::RoundedRect(D2D1::RectF(0, 0, bodyWidth, height), bodyRadius, bodyRadius);
-        pRenderTarget->FillRoundedRectangle(body, brush.Get());
+        pRenderCible->FillRoundedRectangle(body, brush.Get());
 
         D2D1_POINT_2F p1 = D2D1::Point2F(bodyWidth - 1.f, cy - height * 0.5f);
         D2D1_POINT_2F p2 = D2D1::Point2F(bodyWidth - 1.f, cy + height * 0.5f);
@@ -3422,9 +3422,9 @@ BOOL CThemeCache::CacheTrackBarPointedThumb(INT iPartId, INT iStateId, INT state
         sink->EndFigure(D2D1_FIGURE_END_CLOSED);
         sink->Close();
 
-        pRenderTarget->FillGeometry(triangleGeo.Get(), brush.Get());
+        pRenderCible->FillGeometry(triangleGeo.Get(), brush.Get());
     }
-    auto hr = pRenderTarget->EndDraw();
+    auto hr = pRenderCible->EndDraw();
     if (FAILED(hr)) {Wh_Log(L"Failed D2D drawing [ERROR]: 0x%08X\n", hr); return FALSE;}
     return TRUE;
 }
@@ -3466,27 +3466,27 @@ BOOL CThemeCache::CacheProgressBar(INT iPartId, INT iStateId, INT stateIndex)
     if(!g_themeCache.CreateDIB(g_themeCache.progressbar[stateIndex], width, height))
         return FALSE;
     
-    Microsoft::WRL::ComPtr<ID2D1DCRenderTarget> pRenderTarget;
+    Microsoft::WRL::ComPtr<ID2D1DCRenderCible> pRenderCible;
     RECT rc = { x, y, width, height};
-    if (FAILED(CreateBoundD2DRenderTarget(g_themeCache.progressbar[stateIndex], &rc, g_d2dFactory, &pRenderTarget)))
+    if (FAILED(CreateBoundD2DRenderCible(g_themeCache.progressbar[stateIndex], &rc, g_d2dFactory, &pRenderCible)))
         return FALSE;
     
     D2D1_RECT_F rect = D2D1::RectF(0, 0, width, height);
     D2D1_ROUNDED_RECT rounded = D2D1::RoundedRect(rect, cornerRadius, cornerRadius);
 
-    pRenderTarget->BeginDraw();
+    pRenderCible->BeginDraw();
     if (iPartId == PP_BAR || iPartId == PP_BARVERT ||
         iPartId == PP_TRANSPARENTBAR || iPartId == PP_TRANSPARENTBARVERT)
     {
         Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> brush;
-        pRenderTarget->CreateSolidColorBrush(MyD2D1Color(96, 96, 96), &brush);
-        pRenderTarget->FillRoundedRectangle(rounded, brush.Get());
+        pRenderCible->CreateSolidColorBrush(MyD2D1Color(96, 96, 96), &brush);
+        pRenderCible->FillRoundedRectangle(rounded, brush.Get());
     }
     else if (iPartId == PP_CHUNK || iPartId == PP_CHUNKVERT)
     {
         Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> brush;
-        pRenderTarget->CreateSolidColorBrush(IsAccentColorPossibleD2D(102, 206, 255, SystemAccentColorLight2), &brush);
-        pRenderTarget->FillRoundedRectangle(rounded, brush.Get());
+        pRenderCible->CreateSolidColorBrush(IsAccentColorPossibleD2D(102, 206, 255, SystemAccentColorLight2), &brush);
+        pRenderCible->FillRoundedRectangle(rounded, brush.Get());
     }
     else if (iPartId == PP_FILL || iPartId == PP_FILLVERT)
     {
@@ -3503,8 +3503,8 @@ BOOL CThemeCache::CacheProgressBar(INT iPartId, INT iStateId, INT stateIndex)
             case PBFS_NORMAL:
             {
                 Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> solidBrush;
-                pRenderTarget->CreateSolidColorBrush(IsAccentColorPossibleD2D(102, 206, 255, SystemAccentColorLight2), &solidBrush);
-                pRenderTarget->FillRoundedRectangle(rounded, solidBrush.Get());
+                pRenderCible->CreateSolidColorBrush(IsAccentColorPossibleD2D(102, 206, 255, SystemAccentColorLight2), &solidBrush);
+                pRenderCible->FillRoundedRectangle(rounded, solidBrush.Get());
                 break;
             }
             case PBFS_ERROR:
@@ -3535,15 +3535,15 @@ BOOL CThemeCache::CacheProgressBar(INT iPartId, INT iStateId, INT stateIndex)
         if (iStateId != PBFS_NORMAL)
         {
             Microsoft::WRL::ComPtr<ID2D1GradientStopCollection> gradientStops;
-            pRenderTarget->CreateGradientStopCollection(stops, 2, D2D1_GAMMA_2_2, D2D1_EXTEND_MODE_CLAMP, &gradientStops);
+            pRenderCible->CreateGradientStopCollection(stops, 2, D2D1_GAMMA_2_2, D2D1_EXTEND_MODE_CLAMP, &gradientStops);
 
             Microsoft::WRL::ComPtr<ID2D1LinearGradientBrush> gradientBrush;
-            pRenderTarget->CreateLinearGradientBrush(props, gradientStops.Get(), &gradientBrush);
+            pRenderCible->CreateLinearGradientBrush(props, gradientStops.Get(), &gradientBrush);
 
-            pRenderTarget->FillRoundedRectangle(rounded, gradientBrush.Get());
+            pRenderCible->FillRoundedRectangle(rounded, gradientBrush.Get());
         }
     }
-    auto hr = pRenderTarget->EndDraw();
+    auto hr = pRenderCible->EndDraw();
     if (FAILED(hr)) {Wh_Log(L"Failed D2D drawing [ERROR]: 0x%08X\n", hr); return FALSE;}
     return TRUE;
 }
@@ -3591,18 +3591,18 @@ BOOL CThemeCache::CacheIndeterminateBar(INT iPartId, INT stateIndex)
     if(!g_themeCache.CreateDIB(g_themeCache.indeterminatebar[stateIndex], width, height))
         return FALSE;
     
-    Microsoft::WRL::ComPtr<ID2D1DCRenderTarget> pRenderTarget;
+    Microsoft::WRL::ComPtr<ID2D1DCRenderCible> pRenderCible;
     RECT rc = {0, 0, width, height};
-    if (FAILED(CreateBoundD2DRenderTarget(g_themeCache.indeterminatebar[stateIndex], &rc, g_d2dFactory, &pRenderTarget)))
+    if (FAILED(CreateBoundD2DRenderCible(g_themeCache.indeterminatebar[stateIndex], &rc, g_d2dFactory, &pRenderCible)))
         return FALSE;
     
     D2D1_ROUNDED_RECT rounded = D2D1::RoundedRect(D2D1::RectF(0, 0, width, height), cornerRadius, cornerRadius);
     Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> brush;
-    pRenderTarget->CreateSolidColorBrush(IsAccentColorPossibleD2D(102, 206, 255, SystemAccentColorLight2), &brush);
+    pRenderCible->CreateSolidColorBrush(IsAccentColorPossibleD2D(102, 206, 255, SystemAccentColorLight2), &brush);
 
-    pRenderTarget->BeginDraw();
-    pRenderTarget->FillRoundedRectangle(&rounded, brush.Get());
-    auto hr = pRenderTarget->EndDraw();
+    pRenderCible->BeginDraw();
+    pRenderCible->FillRoundedRectangle(&rounded, brush.Get());
+    auto hr = pRenderCible->EndDraw();
     if (FAILED(hr)) {Wh_Log(L"Failed D2D drawing [ERROR]: 0x%08X\n", hr); return FALSE;}
     return TRUE;
 }
@@ -3658,19 +3658,19 @@ BOOL CThemeCache::CacheListItem(INT iPartId, INT iStateId, INT stateIndex)
     if(!g_themeCache.CreateDIB(g_themeCache.listview[stateIndex], width, height))
         return FALSE;
     
-    Microsoft::WRL::ComPtr<ID2D1DCRenderTarget> pRenderTarget;
+    Microsoft::WRL::ComPtr<ID2D1DCRenderCible> pRenderCible;
     RECT rc = { 0, 0, width, height};
-    if (FAILED(CreateBoundD2DRenderTarget(g_themeCache.listview[stateIndex], &rc, g_d2dFactory, &pRenderTarget)))
+    if (FAILED(CreateBoundD2DRenderCible(g_themeCache.listview[stateIndex], &rc, g_d2dFactory, &pRenderCible)))
         return FALSE;
 
     Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> brush;
     if (iPartId == THEMECLS_COMMONPROPS_PART)
     {
         D2D1_RECT_F rect = D2D1::RectF(x, y, width, height);
-        pRenderTarget->CreateSolidColorBrush(MyD2D1Color(96, 96, 96), &brush);
-        pRenderTarget->BeginDraw();
-        pRenderTarget->FillRectangle(&rect, brush.Get());
-        auto hr = pRenderTarget->EndDraw();
+        pRenderCible->CreateSolidColorBrush(MyD2D1Color(96, 96, 96), &brush);
+        pRenderCible->BeginDraw();
+        pRenderCible->FillRectangle(&rect, brush.Get());
+        auto hr = pRenderCible->EndDraw();
         if (FAILED(hr)) {Wh_Log(L"Failed D2D drawing [ERROR]: 0x%08X\n", hr); return FALSE;}
     }
     else
@@ -3702,9 +3702,9 @@ BOOL CThemeCache::CacheListItem(INT iPartId, INT iStateId, INT stateIndex)
         }
         
         D2D1_ROUNDED_RECT rounded = D2D1::RoundedRect(D2D1::RectF(x, y, width , height), cornerRadius, cornerRadius);
-        pRenderTarget->CreateSolidColorBrush(fillColor, &brush);
-        pRenderTarget->BeginDraw();
-        pRenderTarget->FillRoundedRectangle(&rounded, brush.Get());
+        pRenderCible->CreateSolidColorBrush(fillColor, &brush);
+        pRenderCible->BeginDraw();
+        pRenderCible->FillRoundedRectangle(&rounded, brush.Get());
 
         if (iStateId == LISS_HOTSELECTED || iStateId == LISS_NORMAL || iStateId == LISS_DISABLED)
         {
@@ -3712,9 +3712,9 @@ BOOL CThemeCache::CacheListItem(INT iPartId, INT iStateId, INT stateIndex)
             width = height -= 1.f;
             rounded = D2D1::RoundedRect(D2D1::RectF(x, y, width , height), cornerRadius - 1.f, cornerRadius - 1.f);
             brush->SetColor(borderColor);
-            pRenderTarget->DrawRoundedRectangle(&rounded, brush.Get(), 2.f * scale);
+            pRenderCible->DrawRoundedRectangle(&rounded, brush.Get(), 2.f * scale);
         }
-        auto hr = pRenderTarget->EndDraw();
+        auto hr = pRenderCible->EndDraw();
         if (FAILED(hr)) {Wh_Log(L"Failed D2D drawing [ERROR]: 0x%08X\n", hr); return FALSE;}
     }
     return TRUE;
@@ -3733,20 +3733,20 @@ BOOL CThemeCache::CacheListGroupHeader(INT iPartId, INT iStateId, INT stateIndex
     if (!g_themeCache.CreateDIB(g_themeCache.listview[stateIndex], width, height))
         return FALSE;
     
-    Microsoft::WRL::ComPtr<ID2D1DCRenderTarget> pRenderTarget;
+    Microsoft::WRL::ComPtr<ID2D1DCRenderCible> pRenderCible;
     RECT rc = { 0, 0, width, height};
-    if (FAILED(CreateBoundD2DRenderTarget(g_themeCache.listview[stateIndex], &rc, g_d2dFactory, &pRenderTarget)))
+    if (FAILED(CreateBoundD2DRenderCible(g_themeCache.listview[stateIndex], &rc, g_d2dFactory, &pRenderCible)))
         return FALSE;
 
     Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> brush;
     if (iPartId == LVP_COLUMNDETAIL)
     {
         Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> brush;
-        pRenderTarget->CreateSolidColorBrush(MyD2D1Color(128, 160, 160, 160), &brush);
+        pRenderCible->CreateSolidColorBrush(MyD2D1Color(128, 160, 160, 160), &brush);
 
-        pRenderTarget->BeginDraw();
-        pRenderTarget->DrawLine(D2D1_POINT_2F(width, y), D2D1_POINT_2F(width, height), brush.Get());
-        auto hr = pRenderTarget->EndDraw();
+        pRenderCible->BeginDraw();
+        pRenderCible->DrawLine(D2D1_POINT_2F(width, y), D2D1_POINT_2F(width, height), brush.Get());
+        auto hr = pRenderCible->EndDraw();
         if (FAILED(hr)) {Wh_Log(L"Failed D2D drawing [ERROR]: 0x%08X\n", hr); return FALSE;}
     }
     else if (iPartId == LVP_GROUPHEADER)
@@ -3780,11 +3780,11 @@ BOOL CThemeCache::CacheListGroupHeader(INT iPartId, INT iStateId, INT stateIndex
                 return FALSE;
         }
         D2D1_ROUNDED_RECT rounded = D2D1::RoundedRect(D2D1::RectF(x, y, width , height), cornerRadius, cornerRadius);
-        pRenderTarget->BeginDraw();
+        pRenderCible->BeginDraw();
         if (iStateId != LVGHL_CLOSESELECTEDNOTFOCUSED)
         {
-            pRenderTarget->CreateSolidColorBrush(fillColor, &brush);
-            pRenderTarget->FillRoundedRectangle(&rounded, brush.Get());
+            pRenderCible->CreateSolidColorBrush(fillColor, &brush);
+            pRenderCible->FillRoundedRectangle(&rounded, brush.Get());
         }
 
         if (iStateId == LVGHL_CLOSESELECTEDNOTFOCUSED || iStateId == LVGHL_CLOSESELECTEDNOTFOCUSEDHOT)
@@ -3792,19 +3792,19 @@ BOOL CThemeCache::CacheListGroupHeader(INT iPartId, INT iStateId, INT stateIndex
             x = y = 1.f;
             width = height -= 1.f;
             rounded = D2D1::RoundedRect(D2D1::RectF(x, y, width , height), cornerRadius - 1.f, cornerRadius - 1.f);
-            pRenderTarget->CreateSolidColorBrush(borderColor, &brush);
-            pRenderTarget->DrawRoundedRectangle(&rounded, brush.Get(), 2.f * scale);
+            pRenderCible->CreateSolidColorBrush(borderColor, &brush);
+            pRenderCible->DrawRoundedRectangle(&rounded, brush.Get(), 2.f * scale);
         }
-        auto hr = pRenderTarget->EndDraw();
+        auto hr = pRenderCible->EndDraw();
         if (FAILED(hr)) {Wh_Log(L"Failed D2D drawing [ERROR]: 0x%08X\n", hr); return FALSE;}
     }
     else
     {
         D2D1_RECT_F rect = D2D1::RectF(x, y, width, height);
-        pRenderTarget->CreateSolidColorBrush(MyD2D1Color(96, 160, 160, 160), &brush);
-        pRenderTarget->BeginDraw();
-        pRenderTarget->FillRectangle(&rect, brush.Get());
-        auto hr = pRenderTarget->EndDraw();
+        pRenderCible->CreateSolidColorBrush(MyD2D1Color(96, 160, 160, 160), &brush);
+        pRenderCible->BeginDraw();
+        pRenderCible->FillRectangle(&rect, brush.Get());
+        auto hr = pRenderCible->EndDraw();
         if (FAILED(hr)) {Wh_Log(L"Failed D2D drawing [ERROR]: 0x%08X\n", hr); return FALSE;}
     }
     return TRUE;
@@ -3835,18 +3835,18 @@ BOOL CThemeCache::CacheTreeViewButton(INT iPartId, INT iStateId, INT stateIndex)
     if (!g_themeCache.CreateDIB(g_themeCache.treeview[stateIndex], width, height))
         return FALSE;
 
-    Microsoft::WRL::ComPtr<ID2D1DCRenderTarget> pRenderTarget;
+    Microsoft::WRL::ComPtr<ID2D1DCRenderCible> pRenderCible;
     RECT rc = { 0, 0, width, height};
-    if (FAILED(CreateBoundD2DRenderTarget(g_themeCache.treeview[stateIndex], &rc, g_d2dFactory, &pRenderTarget)))
+    if (FAILED(CreateBoundD2DRenderCible(g_themeCache.treeview[stateIndex], &rc, g_d2dFactory, &pRenderCible)))
         return FALSE;
     
     D2D1_ROUNDED_RECT roundedRect = D2D1::RoundedRect(D2D1::RectF(x, y, width, height), cornerRadius, cornerRadius);
-    pRenderTarget->BeginDraw();
+    pRenderCible->BeginDraw();
     if (iPartId == THEMECLS_COMMONPROPS_PART)
     {
         Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> borderBrush;
-        pRenderTarget->CreateSolidColorBrush(MyD2D1Color(96, 96, 96), &borderBrush);
-        pRenderTarget->FillRectangle(D2D1::RectF(x, y, width, height), borderBrush.Get());
+        pRenderCible->CreateSolidColorBrush(MyD2D1Color(96, 96, 96), &borderBrush);
+        pRenderCible->FillRectangle(D2D1::RectF(x, y, width, height), borderBrush.Get());
     }
     else if (iPartId == TVP_TREEITEM)
     {
@@ -3857,17 +3857,17 @@ BOOL CThemeCache::CacheTreeViewButton(INT iPartId, INT iStateId, INT stateIndex)
                                                                         MyD2D1Color(64, 144, 144, 144); 
 
         Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> brush;
-        pRenderTarget->CreateSolidColorBrush(fillColor, &brush);
-        pRenderTarget->FillRoundedRectangle(&roundedRect, brush.Get());
+        pRenderCible->CreateSolidColorBrush(fillColor, &brush);
+        pRenderCible->FillRoundedRectangle(&roundedRect, brush.Get());
 
         if (iStateId == TREIS_SELECTED || iStateId == TREIS_SELECTEDNOTFOCUS || iStateId == TREIS_HOTSELECTED)
         {
             FLOAT pillOffsetY = 7, pillWidth = round(3.4f + scale), pillRadius = round(1.4f + scale);
             brush->SetColor(IsAccentColorPossibleD2D(102, 206, 255, SystemAccentColorLight2));
-            pRenderTarget->FillRoundedRectangle(D2D1::RoundedRect(D2D1::RectF(x, y + pillOffsetY, x + pillWidth, height - pillOffsetY), pillRadius, pillRadius),brush.Get());
+            pRenderCible->FillRoundedRectangle(D2D1::RoundedRect(D2D1::RectF(x, y + pillOffsetY, x + pillWidth, height - pillOffsetY), pillRadius, pillRadius),brush.Get());
         }
     }
-    auto hr = pRenderTarget->EndDraw();
+    auto hr = pRenderCible->EndDraw();
     if (FAILED(hr)) {Wh_Log(L"Failed D2D drawing [ERROR]: 0x%08X\n", hr); return FALSE;}
     return TRUE;
 }
@@ -3910,8 +3910,8 @@ BOOL CThemeCache::CacheTreeViewGlyph(INT iPartId, INT iStateId, INT stateIndex, 
         return FALSE;
 
     RECT rc {0, 0, width, height};
-    Microsoft::WRL::ComPtr<ID2D1DCRenderTarget> pRenderTarget;
-    if (FAILED(CreateBoundD2DRenderTarget(g_themeCache.treeviewglyph[stateIndex], &rc, g_d2dFactory, &pRenderTarget)))
+    Microsoft::WRL::ComPtr<ID2D1DCRenderCible> pRenderCible;
+    if (FAILED(CreateBoundD2DRenderCible(g_themeCache.treeviewglyph[stateIndex], &rc, g_d2dFactory, &pRenderCible)))
         return FALSE;
     
     D2D1_COLOR_F arrowColor;
@@ -3925,7 +3925,7 @@ BOOL CThemeCache::CacheTreeViewGlyph(INT iPartId, INT iStateId, INT stateIndex, 
     }
 
     Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> arrowBrush;
-    pRenderTarget->CreateSolidColorBrush(arrowColor, &arrowBrush);
+    pRenderCible->CreateSolidColorBrush(arrowColor, &arrowBrush);
 
     FLOAT centerX = width / 2.f;
     FLOAT centerY = height / 2.f;
@@ -3949,12 +3949,12 @@ BOOL CThemeCache::CacheTreeViewGlyph(INT iPartId, INT iStateId, INT stateIndex, 
         ptRight = { centerX - dy, centerY + dx };
     }
 
-    pRenderTarget->BeginDraw();
+    pRenderCible->BeginDraw();
 
-    pRenderTarget->DrawLine(ptLeft, ptTip, arrowBrush.Get(), 1.5f * scale);
-    pRenderTarget->DrawLine(ptRight, ptTip, arrowBrush.Get(), 1.5f * scale);
+    pRenderCible->DrawLine(ptLeft, ptTip, arrowBrush.Get(), 1.5f * scale);
+    pRenderCible->DrawLine(ptRight, ptTip, arrowBrush.Get(), 1.5f * scale);
 
-    auto hr = pRenderTarget->EndDraw();
+    auto hr = pRenderCible->EndDraw();
     if (FAILED(hr)) {Wh_Log(L"Failed D2D drawing [ERROR]: 0x%08X\n", hr); return FALSE;}
     return TRUE;
 }
@@ -3991,33 +3991,33 @@ BOOL CThemeCache::CacheItemsView(INT iPartId, INT iStateId, INT stateIndex)
     if(!g_themeCache.CreateDIB(g_themeCache.itemsview[stateIndex], width, height))
         return FALSE;
     
-    Microsoft::WRL::ComPtr<ID2D1DCRenderTarget> pRenderTarget;
+    Microsoft::WRL::ComPtr<ID2D1DCRenderCible> pRenderCible;
     RECT rc = { x, y, width, height};
-    if (FAILED(CreateBoundD2DRenderTarget(g_themeCache.itemsview[stateIndex], &rc, g_d2dFactory, &pRenderTarget)))
+    if (FAILED(CreateBoundD2DRenderCible(g_themeCache.itemsview[stateIndex], &rc, g_d2dFactory, &pRenderCible)))
         return FALSE;
 
     x = y += 1;
     width = height -= 1;
 
-    pRenderTarget->BeginDraw();
+    pRenderCible->BeginDraw();
     if (iPartId == 1)
     {
         if (iStateId == 1 || iStateId == 3)
         {
             D2D1_ROUNDED_RECT rect = D2D1::RoundedRect(D2D1::RectF(x, y, width, height), cornerRadius, cornerRadius);
             Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> brush;
-            pRenderTarget->CreateSolidColorBrush(IsAccentColorPossibleD2D(0, 96, 188, SystemAccentColorLight2), &brush);
-            pRenderTarget->FillRoundedRectangle(rect, brush.Get());
+            pRenderCible->CreateSolidColorBrush(IsAccentColorPossibleD2D(0, 96, 188, SystemAccentColorLight2), &brush);
+            pRenderCible->FillRoundedRectangle(rect, brush.Get());
 
             brush->SetColor(IsAccentColorPossibleD2D(0, 120, 215, SystemAccentColorLight2));
-            pRenderTarget->DrawRoundedRectangle(rect, brush.Get(), 2.0f * scale);
+            pRenderCible->DrawRoundedRectangle(rect, brush.Get(), 2.0f * scale);
         }
         else if (iStateId == 2 || iStateId == 4)
         {
             D2D1_ROUNDED_RECT rect = D2D1::RoundedRect(D2D1::RectF(x, y, width, height), cornerRadius, cornerRadius);
             Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> fillBrush;
-            pRenderTarget->CreateSolidColorBrush(IsAccentColorPossibleD2D(0, 96, 188, SystemAccentColorLight2), &fillBrush);
-            pRenderTarget->FillRoundedRectangle(rect, fillBrush.Get());
+            pRenderCible->CreateSolidColorBrush(IsAccentColorPossibleD2D(0, 96, 188, SystemAccentColorLight2), &fillBrush);
+            pRenderCible->FillRoundedRectangle(rect, fillBrush.Get());
         }
     }
     else if (iPartId == 3 || iPartId == 6)
@@ -4027,19 +4027,19 @@ BOOL CThemeCache::CacheItemsView(INT iPartId, INT iStateId, INT stateIndex)
             FLOAT radius = (iPartId == 6) ? 2.f * scale : 3.f * scale;
             D2D1_ROUNDED_RECT rect = D2D1::RoundedRect(D2D1::RectF(x, y, width, height), radius, radius);
             Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> borderBrush;
-            pRenderTarget->CreateSolidColorBrush(MyD2D1Color(255, 255, 255), &borderBrush);
-            pRenderTarget->DrawRoundedRectangle(rect, borderBrush.Get(), 2.0f * scale);
+            pRenderCible->CreateSolidColorBrush(MyD2D1Color(255, 255, 255), &borderBrush);
+            pRenderCible->DrawRoundedRectangle(rect, borderBrush.Get(), 2.0f * scale);
         }
         else if (iStateId == 2)
         {
             D2D1_ROUNDED_RECT rect = D2D1::RoundedRect(D2D1::RectF(x-1, y-1, width+1, height+1), cornerRadius, cornerRadius);
             Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> fillBrush;
-            pRenderTarget->CreateSolidColorBrush(MyD2D1Color(128, 144, 144, 144), &fillBrush);
-            pRenderTarget->FillRoundedRectangle(rect, fillBrush.Get());
+            pRenderCible->CreateSolidColorBrush(MyD2D1Color(128, 144, 144, 144), &fillBrush);
+            pRenderCible->FillRoundedRectangle(rect, fillBrush.Get());
         }
     }
 
-    auto hr = pRenderTarget->EndDraw();
+    auto hr = pRenderCible->EndDraw();
     if (FAILED(hr)) {Wh_Log(L"Failed D2D drawing [ERROR]: 0x%08X\n", hr); return FALSE;}
     return TRUE;
 }
@@ -4069,9 +4069,9 @@ BOOL CThemeCache::CacheHeader(INT iStateId, INT stateIndex)
     if(!g_themeCache.CreateDIB(g_themeCache.header[stateIndex], width, height))
         return FALSE;
     
-    Microsoft::WRL::ComPtr<ID2D1DCRenderTarget> pRenderTarget;
+    Microsoft::WRL::ComPtr<ID2D1DCRenderCible> pRenderCible;
     RECT rc = { x, y, width, height};
-    if (FAILED(CreateBoundD2DRenderTarget(g_themeCache.header[stateIndex], &rc, g_d2dFactory, &pRenderTarget)))
+    if (FAILED(CreateBoundD2DRenderCible(g_themeCache.header[stateIndex], &rc, g_d2dFactory, &pRenderCible)))
         return FALSE;
 
     D2D1_COLOR_F fillColor;
@@ -4091,7 +4091,7 @@ BOOL CThemeCache::CacheHeader(INT iStateId, INT stateIndex)
     }
     Microsoft::WRL::ComPtr<ID2D1PathGeometry> geometry;
     Microsoft::WRL::ComPtr<ID2D1GeometrySink> sink;
-    pRenderTarget->BeginDraw();
+    pRenderCible->BeginDraw();
 
     g_d2dFactory->CreatePathGeometry(&geometry);
     geometry->Open(&sink);
@@ -4109,10 +4109,10 @@ BOOL CThemeCache::CacheHeader(INT iStateId, INT stateIndex)
     sink->EndFigure(D2D1_FIGURE_END_CLOSED);
     sink->Close();
     Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> brush;
-    pRenderTarget->CreateSolidColorBrush(fillColor, &brush);
-    pRenderTarget->FillGeometry(geometry.Get(), brush.Get());
+    pRenderCible->CreateSolidColorBrush(fillColor, &brush);
+    pRenderCible->FillGeometry(geometry.Get(), brush.Get());
 
-    auto hr = pRenderTarget->EndDraw();
+    auto hr = pRenderCible->EndDraw();
     if (FAILED(hr)) {Wh_Log(L"Failed D2D drawing [ERROR]: 0x%08X\n", hr); return FALSE;}
     return TRUE;
 }
@@ -4138,17 +4138,17 @@ BOOL CThemeCache::CachePreviewPaneSeparator()
     if(!g_themeCache.CreateDIB(g_themeCache.previewseparator[0], width, height))
         return FALSE;
     
-    Microsoft::WRL::ComPtr<ID2D1DCRenderTarget> pRenderTarget;
+    Microsoft::WRL::ComPtr<ID2D1DCRenderCible> pRenderCible;
     RECT rc = { x, y, width, height};
-    if (FAILED(CreateBoundD2DRenderTarget(g_themeCache.previewseparator[0], &rc, g_d2dFactory, &pRenderTarget)))
+    if (FAILED(CreateBoundD2DRenderCible(g_themeCache.previewseparator[0], &rc, g_d2dFactory, &pRenderCible)))
         return FALSE;
 
     Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> brush;
-    pRenderTarget->CreateSolidColorBrush(g_IsSysThemeDarkMode ? MyD2D1Color(128, 160, 160, 160) : MyD2D1Color(128, 0, 0, 0), &brush);
+    pRenderCible->CreateSolidColorBrush(g_IsSysThemeDarkMode ? MyD2D1Color(128, 160, 160, 160) : MyD2D1Color(128, 0, 0, 0), &brush);
 
-    pRenderTarget->BeginDraw();
-    pRenderTarget->DrawLine(D2D1_POINT_2F(x, y), D2D1_POINT_2F(x, height), brush.Get());
-    auto hr = pRenderTarget->EndDraw();
+    pRenderCible->BeginDraw();
+    pRenderCible->DrawLine(D2D1_POINT_2F(x, y), D2D1_POINT_2F(x, height), brush.Get());
+    auto hr = pRenderCible->EndDraw();
 
     if (FAILED(hr)) {Wh_Log(L"Failed D2D drawing [ERROR]: 0x%08X\n", hr); return FALSE;}
     return TRUE;
@@ -4179,9 +4179,9 @@ BOOL CThemeCache::CacheModuleButton(INT iStateId, INT stateIndex)
     if(!g_themeCache.CreateDIB(g_themeCache.modulebutton[stateIndex], width, height))
         return FALSE;
     
-    Microsoft::WRL::ComPtr<ID2D1DCRenderTarget> pRenderTarget;
+    Microsoft::WRL::ComPtr<ID2D1DCRenderCible> pRenderCible;
     RECT rc = { x, y, width, height};
-    if (FAILED(CreateBoundD2DRenderTarget(g_themeCache.modulebutton[stateIndex], &rc, g_d2dFactory, &pRenderTarget)))
+    if (FAILED(CreateBoundD2DRenderCible(g_themeCache.modulebutton[stateIndex], &rc, g_d2dFactory, &pRenderCible)))
         return FALSE;
 
     D2D1_COLOR_F fillColor;
@@ -4207,21 +4207,21 @@ BOOL CThemeCache::CacheModuleButton(INT iStateId, INT stateIndex)
         cornerRadius, cornerRadius
     };
 
-    pRenderTarget->BeginDraw();
+    pRenderCible->BeginDraw();
     if (iStateId != 4)
     {
         Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> fillBrush;
-        pRenderTarget->CreateSolidColorBrush(fillColor, &fillBrush);
-        pRenderTarget->FillRoundedRectangle(&roundedRect, fillBrush.Get());
+        pRenderCible->CreateSolidColorBrush(fillColor, &fillBrush);
+        pRenderCible->FillRoundedRectangle(&roundedRect, fillBrush.Get());
     }
     if (iStateId == 4 || iStateId == 5)
     {
         Border2pxOffset += 1.f;
         Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> borderBrush;
-        pRenderTarget->CreateSolidColorBrush(borderColor, &borderBrush);
-        pRenderTarget->DrawRoundedRectangle(&roundedRect, borderBrush.Get(), Border2pxOffset);
+        pRenderCible->CreateSolidColorBrush(borderColor, &borderBrush);
+        pRenderCible->DrawRoundedRectangle(&roundedRect, borderBrush.Get(), Border2pxOffset);
     }
-    auto hr = pRenderTarget->EndDraw();
+    auto hr = pRenderCible->EndDraw();
     if (FAILED(hr)) {Wh_Log(L"Failed D2D drawing [ERROR]: 0x%08X\n", hr); return FALSE;}
     return TRUE;
 }
@@ -4249,9 +4249,9 @@ BOOL CThemeCache::CacheModuleLocationButton(INT iStateId, INT stateIndex)
     if(!g_themeCache.CreateDIB(g_themeCache.modulelocationbutton[stateIndex], width, height))
         return FALSE;
     
-    Microsoft::WRL::ComPtr<ID2D1DCRenderTarget> pRenderTarget;
+    Microsoft::WRL::ComPtr<ID2D1DCRenderCible> pRenderCible;
     RECT rc = { x, y, width, height};
-    if (FAILED(CreateBoundD2DRenderTarget(g_themeCache.modulelocationbutton[stateIndex], &rc, g_d2dFactory, &pRenderTarget)))
+    if (FAILED(CreateBoundD2DRenderCible(g_themeCache.modulelocationbutton[stateIndex], &rc, g_d2dFactory, &pRenderCible)))
         return FALSE;
     
     D2D1_COLOR_F fillColor;
@@ -4283,20 +4283,20 @@ BOOL CThemeCache::CacheModuleLocationButton(INT iStateId, INT stateIndex)
         cornerRadius, cornerRadius
     };
 
-    pRenderTarget->BeginDraw();
+    pRenderCible->BeginDraw();
     if (iStateId != 4)
     {
         Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> fillBrush;
-        pRenderTarget->CreateSolidColorBrush(fillColor, &fillBrush);
-        pRenderTarget->FillRoundedRectangle(&roundedRect, fillBrush.Get());
+        pRenderCible->CreateSolidColorBrush(fillColor, &fillBrush);
+        pRenderCible->FillRoundedRectangle(&roundedRect, fillBrush.Get());
     }
 
     Border2pxOffset += 1.f;
     Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> borderBrush;
-    pRenderTarget->CreateSolidColorBrush(borderColor, &borderBrush);
-    pRenderTarget->DrawRoundedRectangle(&roundedRect, borderBrush.Get(), Border2pxOffset);
+    pRenderCible->CreateSolidColorBrush(borderColor, &borderBrush);
+    pRenderCible->DrawRoundedRectangle(&roundedRect, borderBrush.Get(), Border2pxOffset);
 
-    auto hr = pRenderTarget->EndDraw();
+    auto hr = pRenderCible->EndDraw();
     if (FAILED(hr)) {Wh_Log(L"Failed D2D drawing [ERROR]: 0x%08X\n", hr); return FALSE;}
     return TRUE;
 }
@@ -4326,9 +4326,9 @@ BOOL CThemeCache::CacheModuleSplitButton(INT iPartId, INT iStateId, INT stateInd
     if(!g_themeCache.CreateDIB(g_themeCache.modulesplitbutton[stateIndex], width, height))
         return FALSE;
     
-    Microsoft::WRL::ComPtr<ID2D1DCRenderTarget> pRenderTarget;
+    Microsoft::WRL::ComPtr<ID2D1DCRenderCible> pRenderCible;
     RECT rc = { x, y, width, height};
-    if (FAILED(CreateBoundD2DRenderTarget(g_themeCache.modulesplitbutton[stateIndex], &rc, g_d2dFactory, &pRenderTarget)))
+    if (FAILED(CreateBoundD2DRenderCible(g_themeCache.modulesplitbutton[stateIndex], &rc, g_d2dFactory, &pRenderCible)))
         return FALSE;
 
     D2D1_COLOR_F fillColor;
@@ -4339,7 +4339,7 @@ BOOL CThemeCache::CacheModuleSplitButton(INT iPartId, INT iStateId, INT stateInd
         width = height -= 1;
     }
 
-    pRenderTarget->BeginDraw();
+    pRenderCible->BeginDraw();
     if (iPartId == 4)
     {
         Microsoft::WRL::ComPtr<ID2D1PathGeometry> path;
@@ -4367,13 +4367,13 @@ BOOL CThemeCache::CacheModuleSplitButton(INT iPartId, INT iStateId, INT stateInd
         Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> brush;
         if (iStateId == 2 || iStateId == 3 || iStateId == 5)
         {
-            pRenderTarget->CreateSolidColorBrush(fillColor, &brush);
-            pRenderTarget->FillGeometry(path.Get(), brush.Get());
+            pRenderCible->CreateSolidColorBrush(fillColor, &brush);
+            pRenderCible->FillGeometry(path.Get(), brush.Get());
         }
         else if (iStateId == 4)
         {
-            pRenderTarget->CreateSolidColorBrush(MyD2D1Color(255, 255, 255), &brush);
-            pRenderTarget->DrawGeometry(path.Get(), brush.Get(), 2.f * scale);
+            pRenderCible->CreateSolidColorBrush(MyD2D1Color(255, 255, 255), &brush);
+            pRenderCible->DrawGeometry(path.Get(), brush.Get(), 2.f * scale);
         }
     }
     else if (iPartId == 5)
@@ -4403,16 +4403,16 @@ BOOL CThemeCache::CacheModuleSplitButton(INT iPartId, INT iStateId, INT stateInd
         Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> brush;
         if (iStateId == 2 || iStateId == 3 || iStateId == 5)
         {
-            pRenderTarget->CreateSolidColorBrush(fillColor, &brush);
-            pRenderTarget->FillGeometry(path.Get(), brush.Get());
+            pRenderCible->CreateSolidColorBrush(fillColor, &brush);
+            pRenderCible->FillGeometry(path.Get(), brush.Get());
         }
         else if (iStateId == 4)
         {
-            pRenderTarget->CreateSolidColorBrush(MyD2D1Color(255, 255, 255), &brush);
-            pRenderTarget->DrawGeometry(path.Get(), brush.Get(), 2.f * scale);
+            pRenderCible->CreateSolidColorBrush(MyD2D1Color(255, 255, 255), &brush);
+            pRenderCible->DrawGeometry(path.Get(), brush.Get(), 2.f * scale);
         }
     }
-    auto hr = pRenderTarget->EndDraw();
+    auto hr = pRenderCible->EndDraw();
     if (FAILED(hr)) {Wh_Log(L"Failed D2D drawing [ERROR]: 0x%08X\n", hr); return FALSE;}
     return TRUE;
 }
@@ -4443,9 +4443,9 @@ BOOL CThemeCache::CacheNavigationButton(INT iPartId, INT iStateId, INT stateInde
     if(!g_themeCache.CreateDIB(g_themeCache.navigationbutton[stateIndex], width, height))
         return FALSE;
     
-    Microsoft::WRL::ComPtr<ID2D1DCRenderTarget> pRenderTarget;
+    Microsoft::WRL::ComPtr<ID2D1DCRenderCible> pRenderCible;
     RECT rc = { x, y, width, height};
-    if (FAILED(CreateBoundD2DRenderTarget(g_themeCache.navigationbutton[stateIndex], &rc, g_d2dFactory, &pRenderTarget)))
+    if (FAILED(CreateBoundD2DRenderCible(g_themeCache.navigationbutton[stateIndex], &rc, g_d2dFactory, &pRenderCible)))
         return FALSE;
     D2D1_COLOR_F fillColor, arrowColor;
     switch (iStateId) 
@@ -4469,14 +4469,14 @@ BOOL CThemeCache::CacheNavigationButton(INT iPartId, INT iStateId, INT stateInde
     }
 
     D2D1_ROUNDED_RECT Rect = D2D1::RoundedRect(D2D1::RectF(0, 0, width, height), cornerRadius, cornerRadius);
-    pRenderTarget->BeginDraw();
+    pRenderCible->BeginDraw();
 
     Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> fillBrush;
-    pRenderTarget->CreateSolidColorBrush(fillColor, &fillBrush);
-    pRenderTarget->FillRoundedRectangle(&Rect, fillBrush.Get());
+    pRenderCible->CreateSolidColorBrush(fillColor, &fillBrush);
+    pRenderCible->FillRoundedRectangle(&Rect, fillBrush.Get());
 
     Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> arrowBrush;
-    pRenderTarget->CreateSolidColorBrush(arrowColor, &arrowBrush);
+    pRenderCible->CreateSolidColorBrush(arrowColor, &arrowBrush);
 
     if (iPartId == NAV_BACKBUTTON)
     {
@@ -4488,19 +4488,19 @@ BOOL CThemeCache::CacheNavigationButton(INT iPartId, INT iStateId, INT stateInde
         FLOAT headSpand = tailLength * .5f;
         FLOAT headOffset = headSpand * 0.866f;
 
-        pRenderTarget->DrawLine(
+        pRenderCible->DrawLine(
         D2D1::Point2F(tailStartX, centerY),
         D2D1::Point2F(tailEndX+1.5f, centerY),
         arrowBrush.Get(), 1.5f
         );
         
-        pRenderTarget->DrawLine(
+        pRenderCible->DrawLine(
             D2D1::Point2F(tailEndX + headOffset, centerY + headOffset),
             D2D1::Point2F(tailEndX, centerY),
             arrowBrush.Get(), 1.5f
         );
 
-        pRenderTarget->DrawLine(
+        pRenderCible->DrawLine(
             D2D1::Point2F(tailEndX + headOffset, centerY - headOffset),
             D2D1::Point2F(tailEndX, centerY),
             arrowBrush.Get(), 1.5f
@@ -4516,19 +4516,19 @@ BOOL CThemeCache::CacheNavigationButton(INT iPartId, INT iStateId, INT stateInde
         FLOAT headSpand = tailLength * .5f;
         FLOAT headOffset = headSpand * 0.866f;
 
-        pRenderTarget->DrawLine(
+        pRenderCible->DrawLine(
         D2D1::Point2F(tailStartX, centerY),
         D2D1::Point2F(tailEndX-1.5f, centerY),
         arrowBrush.Get(), 1.5f
         );
         
-        pRenderTarget->DrawLine(
+        pRenderCible->DrawLine(
             D2D1::Point2F(tailEndX - headOffset, centerY - headOffset),
             D2D1::Point2F(tailEndX, centerY),
             arrowBrush.Get(), 1.5f
         );
 
-        pRenderTarget->DrawLine(
+        pRenderCible->DrawLine(
             D2D1::Point2F(tailEndX - headOffset, centerY + headOffset),
             D2D1::Point2F(tailEndX, centerY),
             arrowBrush.Get(), 2.f
@@ -4548,10 +4548,10 @@ BOOL CThemeCache::CacheNavigationButton(INT iPartId, INT iStateId, INT stateInde
         D2D1_POINT_2F ptLeft  = D2D1::Point2F(centerX - dx, centerY - dy);
         D2D1_POINT_2F ptRight = D2D1::Point2F(centerX + dx, centerY - dy);
 
-        pRenderTarget->DrawLine(ptLeft, ptTip, arrowBrush.Get(), 2.f);
-        pRenderTarget->DrawLine(ptRight, ptTip, arrowBrush.Get(), 2.f);
+        pRenderCible->DrawLine(ptLeft, ptTip, arrowBrush.Get(), 2.f);
+        pRenderCible->DrawLine(ptRight, ptTip, arrowBrush.Get(), 2.f);
     }
-    auto hr = pRenderTarget->EndDraw();
+    auto hr = pRenderCible->EndDraw();
     if (FAILED(hr)) {Wh_Log(L"Failed D2D drawing [ERROR]: 0x%08X\n", hr); return FALSE;}
     return TRUE;
 }
@@ -4580,28 +4580,28 @@ BOOL CThemeCache::CacheToolbarButton(INT iStateId, INT stateIndex)
     if (!g_themeCache.CreateDIB(g_themeCache.toolbarbutton[stateIndex], width, height))
         return FALSE;
 
-    Microsoft::WRL::ComPtr<ID2D1DCRenderTarget> pRenderTarget;
+    Microsoft::WRL::ComPtr<ID2D1DCRenderCible> pRenderCible;
     RECT rc = { 0, 0, width, height};
-    if (FAILED(CreateBoundD2DRenderTarget(g_themeCache.toolbarbutton[stateIndex], &rc, g_d2dFactory, &pRenderTarget)))
+    if (FAILED(CreateBoundD2DRenderCible(g_themeCache.toolbarbutton[stateIndex], &rc, g_d2dFactory, &pRenderCible)))
         return FALSE;
     D2D1_COLOR_F fillColor = (iStateId == TS_HOT || iStateId == TS_OTHERSIDEHOT) ? MyD2D1Color(96, 144, 144, 144) :
                              (iStateId == TS_PRESSED || iStateId == TS_CHECKED) ? MyD2D1Color(64, 144, 144, 144) : MyD2D1Color(80, 144, 144, 144);
 
-    pRenderTarget->BeginDraw();
+    pRenderCible->BeginDraw();
 
     D2D1_ROUNDED_RECT Rect = D2D1::RoundedRect(D2D1::RectF(0, 0, width, height), cornerRadius, cornerRadius);
     Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> fillBrush;
-    pRenderTarget->CreateSolidColorBrush(fillColor, &fillBrush);
-    pRenderTarget->FillRoundedRectangle(&Rect, fillBrush.Get());
+    pRenderCible->CreateSolidColorBrush(fillColor, &fillBrush);
+    pRenderCible->FillRoundedRectangle(&Rect, fillBrush.Get());
 
     if (iStateId == TS_HOTCHECKED || iStateId == TS_CHECKED)
     {
         FLOAT pillOffset = width * 0.2f;
         D2D1_COLOR_F pillColor = IsAccentColorPossibleD2D(105, 205, 255, SystemAccentColorLight2);
         fillBrush->SetColor(pillColor);
-        pRenderTarget->DrawLine(D2D1::Point2F(pillOffset, height-1), D2D1::Point2F(width - pillOffset, height-1), fillBrush.Get(), 2.0f);
+        pRenderCible->DrawLine(D2D1::Point2F(pillOffset, height-1), D2D1::Point2F(width - pillOffset, height-1), fillBrush.Get(), 2.0f);
     }
-    auto hr = pRenderTarget->EndDraw();
+    auto hr = pRenderCible->EndDraw();
     if (FAILED(hr)) {Wh_Log(L"Failed D2D drawing [ERROR]: 0x%08X\n", hr); return FALSE;}
     return TRUE;
 }
@@ -4615,15 +4615,15 @@ BOOL PaintToolbarSplitDropDown(HDC hdc, INT iPartId,  INT iStateId, LPCRECT pRec
     FLOAT cornerRadius = 4.f * scale;
     INT width = RECTWIDTH(pRect), height = RECTHEIGHT(pRect);
 
-    Microsoft::WRL::ComPtr<ID2D1DCRenderTarget> pRenderTarget;
-    if (FAILED(CreateBoundD2DRenderTarget(hdc, pRect, g_d2dFactory, &pRenderTarget)))
+    Microsoft::WRL::ComPtr<ID2D1DCRenderCible> pRenderCible;
+    if (FAILED(CreateBoundD2DRenderCible(hdc, pRect, g_d2dFactory, &pRenderCible)))
         return FALSE;
 
     D2D1_COLOR_F fillColor = (iStateId == TS_HOT || iStateId == TS_HOTCHECKED || iStateId == TS_OTHERSIDEHOT) ? MyD2D1Color(96, 144, 144, 144) : 
                              (iStateId == TS_PRESSED || iStateId == TS_CHECKED) ? MyD2D1Color(64, 144, 144, 144) : MyD2D1Color(0, 0, 0, 0);
 
     Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> brush;
-    pRenderTarget->CreateSolidColorBrush(fillColor, &brush);
+    pRenderCible->CreateSolidColorBrush(fillColor, &brush);
     
     D2D1_ROUNDED_RECT Rect = D2D1::RoundedRect(D2D1::RectF(1.f, 0.f, (FLOAT)width, (FLOAT)height),cornerRadius, cornerRadius);
     FLOAT centerX = width/2.f + 1;
@@ -4632,24 +4632,24 @@ BOOL PaintToolbarSplitDropDown(HDC hdc, INT iPartId,  INT iStateId, LPCRECT pRec
     FLOAT arrowLen = width * .25f;
     FLOAT dx = arrowLen * 0.707f;
 
-    pRenderTarget->BeginDraw();
+    pRenderCible->BeginDraw();
 
-    pRenderTarget->FillRoundedRectangle(&Rect, brush.Get());
+    pRenderCible->FillRoundedRectangle(&Rect, brush.Get());
     if (iStateId == TS_DISABLED) 
         brush->SetColor(MyD2D1Color(64, 64, 64));
     else
         brush->SetColor( g_IsSysThemeDarkMode ?  MyD2D1Color(255, 255, 255) : MyD2D1Color(0, 0, 0));
 
     if (iStateId == TS_PRESSED) {
-        pRenderTarget->DrawLine(D2D1::Point2F(centerX , centerY + arrowLen/2.f), D2D1::Point2F(centerX - dx , centerY - arrowLen/2.f), brush.Get(), scale * 1.5f);
-        pRenderTarget->DrawLine(D2D1::Point2F(centerX , centerY + arrowLen/2.f), D2D1::Point2F(centerX + dx, centerY - arrowLen/2.f), brush.Get(), scale * 1.5f);
+        pRenderCible->DrawLine(D2D1::Point2F(centerX , centerY + arrowLen/2.f), D2D1::Point2F(centerX - dx , centerY - arrowLen/2.f), brush.Get(), scale * 1.5f);
+        pRenderCible->DrawLine(D2D1::Point2F(centerX , centerY + arrowLen/2.f), D2D1::Point2F(centerX + dx, centerY - arrowLen/2.f), brush.Get(), scale * 1.5f);
     }
     else {
-        pRenderTarget->DrawLine(D2D1::Point2F(centerX + arrowLen/2.f, centerY), D2D1::Point2F(centerX - arrowLen/2.f, centerY - dx), brush.Get(), scale * 1.5f);
-        pRenderTarget->DrawLine(D2D1::Point2F(centerX + arrowLen/2.f, centerY), D2D1::Point2F(centerX - arrowLen/2.f, centerY + dx), brush.Get(), scale * 1.5f);
+        pRenderCible->DrawLine(D2D1::Point2F(centerX + arrowLen/2.f, centerY), D2D1::Point2F(centerX - arrowLen/2.f, centerY - dx), brush.Get(), scale * 1.5f);
+        pRenderCible->DrawLine(D2D1::Point2F(centerX + arrowLen/2.f, centerY), D2D1::Point2F(centerX - arrowLen/2.f, centerY + dx), brush.Get(), scale * 1.5f);
     }
 
-    auto hr = pRenderTarget->EndDraw();
+    auto hr = pRenderCible->EndDraw();
     if (FAILED(hr)) {Wh_Log(L"Failed D2D drawing [ERROR]: 0x%08X\n", hr); return FALSE;}
     return TRUE;
 }
@@ -4676,9 +4676,9 @@ BOOL CThemeCache::CacheAddressBand(INT iStateId, INT stateIndex)
     if (!g_themeCache.CreateDIB(g_themeCache.addressband[stateIndex], width, height))
         return FALSE;
 
-    Microsoft::WRL::ComPtr<ID2D1DCRenderTarget> pRenderTarget;
+    Microsoft::WRL::ComPtr<ID2D1DCRenderCible> pRenderCible;
     RECT rc = { 0, 0, width, height};
-    if (FAILED(CreateBoundD2DRenderTarget(g_themeCache.addressband[stateIndex], &rc, g_d2dFactory, &pRenderTarget)))
+    if (FAILED(CreateBoundD2DRenderCible(g_themeCache.addressband[stateIndex], &rc, g_d2dFactory, &pRenderCible)))
         return FALSE;
     D2D1_COLOR_F fillColor, borderColor;
     switch (iStateId) 
@@ -4702,16 +4702,16 @@ BOOL CThemeCache::CacheAddressBand(INT iStateId, INT stateIndex)
     }
     D2D1_ROUNDED_RECT Rect = D2D1::RoundedRect(D2D1::RectF(0, 0, width, height), cornerRadius, cornerRadius);
     Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> fillBrush;
-    pRenderTarget->CreateSolidColorBrush(fillColor, &fillBrush);
+    pRenderCible->CreateSolidColorBrush(fillColor, &fillBrush);
 
-    pRenderTarget->BeginDraw();
+    pRenderCible->BeginDraw();
 
-    pRenderTarget->FillRoundedRectangle(&Rect, fillBrush.Get());
+    pRenderCible->FillRoundedRectangle(&Rect, fillBrush.Get());
     fillBrush->SetColor(borderColor);
-    pRenderTarget->DrawLine(D2D1::Point2F(cornerRadius/2, height-.5f), D2D1::Point2F(width-cornerRadius/2, height-.5f), fillBrush.Get());
-    pRenderTarget->DrawLine(D2D1::Point2F(cornerRadius/2 - 1.5f, height-1.5f), D2D1::Point2F(width - cornerRadius/2 + 1.5f, height-1.5f), fillBrush.Get());
+    pRenderCible->DrawLine(D2D1::Point2F(cornerRadius/2, height-.5f), D2D1::Point2F(width-cornerRadius/2, height-.5f), fillBrush.Get());
+    pRenderCible->DrawLine(D2D1::Point2F(cornerRadius/2 - 1.5f, height-1.5f), D2D1::Point2F(width - cornerRadius/2 + 1.5f, height-1.5f), fillBrush.Get());
 
-    auto hr = pRenderTarget->EndDraw();
+    auto hr = pRenderCible->EndDraw();
     if (FAILED(hr)) {Wh_Log(L"Failed D2D drawing [ERROR]: 0x%08X\n", hr); return FALSE;}
     return TRUE;
 }
@@ -4751,36 +4751,36 @@ BOOL CThemeCache::CacheMenuItem(INT iPartId, INT iStateId, INT indexState)
     if (!g_themeCache.CreateDIB(g_themeCache.menuitem[indexState], width, height))
         return FALSE;
 
-    Microsoft::WRL::ComPtr<ID2D1DCRenderTarget> pRenderTarget;
+    Microsoft::WRL::ComPtr<ID2D1DCRenderCible> pRenderCible;
     RECT rc = { 0, 0, width, height};
-    if (FAILED(CreateBoundD2DRenderTarget(g_themeCache.menuitem[indexState], &rc, g_d2dFactory, &pRenderTarget)))
+    if (FAILED(CreateBoundD2DRenderCible(g_themeCache.menuitem[indexState], &rc, g_d2dFactory, &pRenderCible)))
         return FALSE;
     
-    pRenderTarget->BeginDraw();
+    pRenderCible->BeginDraw();
     
     if (iPartId == MENU_POPUPITEM || iPartId == 27)
     {
         D2D1_COLOR_F fillColor = IsAccentColorPossibleD2D(0, 160, 255, SystemAccentColorLight1);
         D2D1_ROUNDED_RECT Rect = D2D1::RoundedRect(D2D1::RectF(0, 0, width, height), cornerRadius, cornerRadius);
         Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> fillBrush;
-        pRenderTarget->CreateSolidColorBrush(fillColor, &fillBrush);
-        pRenderTarget->FillRoundedRectangle(&Rect, fillBrush.Get());
+        pRenderCible->CreateSolidColorBrush(fillColor, &fillBrush);
+        pRenderCible->FillRoundedRectangle(&Rect, fillBrush.Get());
     }
     else if (iPartId == MENU_POPUPSEPARATOR) {
         D2D1_COLOR_F lineColor = (g_IsSysThemeDarkMode) ? MyD2D1Color(96, 255, 255, 255) : MyD2D1Color(64, 0, 0, 0);
         Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> lineBrush;
-        pRenderTarget->CreateSolidColorBrush(lineColor, &lineBrush);
+        pRenderCible->CreateSolidColorBrush(lineColor, &lineBrush);
 
-        pRenderTarget->DrawLine({0, (FLOAT)height/2}, {(FLOAT)width, (FLOAT)height/2}, lineBrush.Get());
+        pRenderCible->DrawLine({0, (FLOAT)height/2}, {(FLOAT)width, (FLOAT)height/2}, lineBrush.Get());
     }
     else {
         D2D1_COLOR_F fillColor = (iStateId == MBI_PUSHED) ? MyD2D1Color(64, 144, 144, 144) : MyD2D1Color(128, 96, 96, 96);
         D2D1_ROUNDED_RECT Rect = D2D1::RoundedRect(D2D1::RectF(0, 0, width, height), cornerRadius, cornerRadius);
         Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> fillBrush;
-        pRenderTarget->CreateSolidColorBrush(fillColor, &fillBrush);
-        pRenderTarget->FillRoundedRectangle(&Rect, fillBrush.Get());
+        pRenderCible->CreateSolidColorBrush(fillColor, &fillBrush);
+        pRenderCible->FillRoundedRectangle(&Rect, fillBrush.Get());
     }
-    auto hr = pRenderTarget->EndDraw();
+    auto hr = pRenderCible->EndDraw();
     if (FAILED(hr)) {Wh_Log(L"Failed D2D drawing [ERROR]: 0x%08X\n", hr); return FALSE;}
     return TRUE;
 }
@@ -4806,19 +4806,19 @@ BOOL CThemeCache::CacheDragDrop()
     if (!g_themeCache.CreateDIB(g_themeCache.dragdrop[0], width, height))
         return FALSE;
 
-    Microsoft::WRL::ComPtr<ID2D1DCRenderTarget> pRenderTarget;
+    Microsoft::WRL::ComPtr<ID2D1DCRenderCible> pRenderCible;
     RECT rc = { 0, 0, width, height};
-    if (FAILED(CreateBoundD2DRenderTarget(g_themeCache.dragdrop[0], &rc, g_d2dFactory, &pRenderTarget)))
+    if (FAILED(CreateBoundD2DRenderCible(g_themeCache.dragdrop[0], &rc, g_d2dFactory, &pRenderCible)))
         return FALSE;
     
     D2D1_ROUNDED_RECT roundedRect = { D2D1::RectF(0, 0, width, height), cornerRadius, cornerRadius};
     Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> brush;
-    pRenderTarget->BeginDraw();
+    pRenderCible->BeginDraw();
 
-    pRenderTarget->CreateSolidColorBrush(MyD2D1Color(128, 96, 96, 96), &brush);
-    pRenderTarget->FillRoundedRectangle(&roundedRect, brush.Get());
+    pRenderCible->CreateSolidColorBrush(MyD2D1Color(128, 96, 96, 96), &brush);
+    pRenderCible->FillRoundedRectangle(&roundedRect, brush.Get());
 
-    auto hr = pRenderTarget->EndDraw();
+    auto hr = pRenderCible->EndDraw();
     if (FAILED(hr)) {Wh_Log(L"Failed D2D drawing [ERROR]: 0x%08X\n", hr); return FALSE;}
     return TRUE;
 }
@@ -4831,8 +4831,8 @@ BOOL PaintSpinArrowGlyph(HDC hdc, INT iPartId, INT iStateId, LPCRECT pRect)
     INT width = RECTWIDTH(pRect);
     INT height = RECTHEIGHT(pRect);
 
-    Microsoft::WRL::ComPtr<ID2D1DCRenderTarget> pRenderTarget;
-    if (FAILED(CreateBoundD2DRenderTarget(hdc, pRect, g_d2dFactory, &pRenderTarget)))
+    Microsoft::WRL::ComPtr<ID2D1DCRenderCible> pRenderCible;
+    if (FAILED(CreateBoundD2DRenderCible(hdc, pRect, g_d2dFactory, &pRenderCible)))
         return FALSE;
 
     D2D1_COLOR_F arrowColor =
@@ -4842,7 +4842,7 @@ BOOL PaintSpinArrowGlyph(HDC hdc, INT iPartId, INT iStateId, LPCRECT pRect)
                                      MyD2D1Color(192, 192, 192);
 
     Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> arrowBrush;
-    pRenderTarget->CreateSolidColorBrush(arrowColor, &arrowBrush);
+    pRenderCible->CreateSolidColorBrush(arrowColor, &arrowBrush);
 
     FLOAT centerX = width / 2.f;
     FLOAT centerY = height / 2.f;
@@ -4876,12 +4876,12 @@ BOOL PaintSpinArrowGlyph(HDC hdc, INT iPartId, INT iStateId, LPCRECT pRect)
         ptRight = { centerX - dy, centerY + dx };
     }
 
-    pRenderTarget->BeginDraw();
+    pRenderCible->BeginDraw();
 
-    pRenderTarget->DrawLine(ptLeft, ptTip, arrowBrush.Get(), 1.5f);
-    pRenderTarget->DrawLine(ptRight, ptTip, arrowBrush.Get(), 1.5f);
+    pRenderCible->DrawLine(ptLeft, ptTip, arrowBrush.Get(), 1.5f);
+    pRenderCible->DrawLine(ptRight, ptTip, arrowBrush.Get(), 1.5f);
     
-    auto hr = pRenderTarget->EndDraw();
+    auto hr = pRenderCible->EndDraw();
     if (FAILED(hr)) {Wh_Log(L"Failed D2D drawing [ERROR]: 0x%08X\n", hr); return FALSE;}
     return TRUE;
 }
@@ -4923,9 +4923,9 @@ BOOL CThemeCache::CacheSpinButton(INT iPartId, INT iStateId, INT stateIndex)
     if (!g_themeCache.CreateDIB(g_themeCache.spin[stateIndex], width, height))
         return FALSE;
 
-    Microsoft::WRL::ComPtr<ID2D1DCRenderTarget> pRenderTarget;
+    Microsoft::WRL::ComPtr<ID2D1DCRenderCible> pRenderCible;
     RECT rc = { 0, 0, width, height};
-    if (FAILED(CreateBoundD2DRenderTarget(g_themeCache.spin[stateIndex], &rc, g_d2dFactory, &pRenderTarget)))
+    if (FAILED(CreateBoundD2DRenderCible(g_themeCache.spin[stateIndex], &rc, g_d2dFactory, &pRenderCible)))
         return FALSE;
     
     D2D1_ROUNDED_RECT roundedRect = {{0.f, 0.f, (FLOAT)width, (FLOAT)height}, cornerRadius, cornerRadius};
@@ -4938,16 +4938,16 @@ BOOL CThemeCache::CacheSpinButton(INT iPartId, INT iStateId, INT stateIndex)
                                      MyD2D1Color(96, 80, 80, 80);
 
     Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> fillBrush;
-    pRenderTarget->CreateSolidColorBrush(fillColor, &fillBrush);
+    pRenderCible->CreateSolidColorBrush(fillColor, &fillBrush);
 
-    pRenderTarget->BeginDraw();
+    pRenderCible->BeginDraw();
 
     if (iPartId == SPNP_UP || iPartId == SPNP_DOWN)
-        pRenderTarget->FillRectangle(&Rect, fillBrush.Get());
+        pRenderCible->FillRectangle(&Rect, fillBrush.Get());
     else
-        pRenderTarget->FillRoundedRectangle(&roundedRect, fillBrush.Get());
+        pRenderCible->FillRoundedRectangle(&roundedRect, fillBrush.Get());
 
-    auto hr = pRenderTarget->EndDraw();
+    auto hr = pRenderCible->EndDraw();
     if (FAILED(hr)) {Wh_Log(L"Failed D2D drawing [ERROR]: 0x%08X\n", hr); return FALSE;}
     return TRUE;
 }
@@ -5467,7 +5467,7 @@ VOID HandleEffects(HWND hWnd)
         DwmSetWindowAttribute(hWnd, DWMWA_SYSTEMBACKDROP_TYPE, &g_settings.BgType, sizeof(UINT));
     }
 
-    if (!isFlyoutWindow && g_settings.BgType != g_settings.Default) {
+    if (!isFlyoutWindow && g_settings.BgType != g_settings.Par défaut) {
         MARGINS margins = {-1, -1, -1, -1};
         DwmExtendFrameIntoClientArea(hWnd, &margins);
     }
@@ -5681,7 +5681,7 @@ VOID RestoreWindowCustomizations(HWND hWnd)
     DwmSetWindowAttribute(hWnd, DWMWA_SYSTEMBACKDROP_TYPE , &backdrop, sizeof(UINT));
 
     // Manually restore frame extension
-    if(!(IsWindowClass(hWnd,  L"TaskManagerWindow") && g_settings.BgType != g_settings.Default))
+    if(!(IsWindowClass(hWnd,  L"TaskManagerWindow") && g_settings.BgType != g_settings.Par défaut))
     {
         MARGINS margins = { 0, 0, 0, 0 };
         DwmExtendFrameIntoClientArea(hWnd, &margins);
@@ -5809,27 +5809,27 @@ LRESULT MyRealDefWindowProcWorker(UINT msg, WPARAM wParam)
     HBRUSH sysBrush = nullptr;
     if (msg == WM_CTLCOLOR || msg == WM_CTLCOLOREDIT || msg == WM_CTLCOLORLISTBOX)
     {
-        sysColorBk = GetSysColor(COLOR_WINDOW);                                 // Default: *gpsi + 4588 (COLOR_WINDOW)
-        sysColorTxt = g_IsSysThemeDarkMode ? RGB(255, 255, 255) : RGB(0, 0, 0); // Default: *gpsi + 4600 (COLOR_WINDOWTEXT)
-        sysBrush = GetSysColorBrush(COLOR_WINDOW);                              // Default: *gpsi + 4736 (COLOR_WINDOW)
+        sysColorBk = GetSysColor(COLOR_WINDOW);                                 // Par défaut: *gpsi + 4588 (COLOR_WINDOW)
+        sysColorTxt = g_IsSysThemeDarkMode ? RGB(255, 255, 255) : RGB(0, 0, 0); // Par défaut: *gpsi + 4600 (COLOR_WINDOWTEXT)
+        sysBrush = GetSysColorBrush(COLOR_WINDOW);                              // Par défaut: *gpsi + 4736 (COLOR_WINDOW)
     }
     else if (msg == WM_CTLCOLORMSGBOX || msg == WM_CTLCOLORDLG || msg == WM_CTLCOLORSTATIC)
     {
-        sysColorBk = GetSysColor(COLOR_BTNFACE);                                // Default: *gpsi + 4628 (COLOR_BTNTEXT)
-        sysColorTxt = g_IsSysThemeDarkMode ? RGB(255, 255, 255) : RGB(0, 0, 0); // Default: *gpsi + 4600 (COLOR_WINDOWTEXT)
-        sysBrush = GetSysColorBrush(COLOR_BTNFACE);                             // Default: *gpsi + 4816 (COLOR_BTNTEXT)
+        sysColorBk = GetSysColor(COLOR_BTNFACE);                                // Par défaut: *gpsi + 4628 (COLOR_BTNTEXT)
+        sysColorTxt = g_IsSysThemeDarkMode ? RGB(255, 255, 255) : RGB(0, 0, 0); // Par défaut: *gpsi + 4600 (COLOR_WINDOWTEXT)
+        sysBrush = GetSysColorBrush(COLOR_BTNFACE);                             // Par défaut: *gpsi + 4816 (COLOR_BTNTEXT)
     }
     else if (msg == WM_CTLCOLORBTN)
     {
-        sysColorBk = GetSysColor(COLOR_BTNFACE);                                // Default: *gpsi + 4628 (COLOR_BTNTEXT)
-        sysColorTxt = g_IsSysThemeDarkMode ? RGB(255, 255, 255) : RGB(0, 0, 0); // Default: *gpsi + 4816 (COLOR_BTNTEXT)
-        sysBrush = GetSysColorBrush(COLOR_BTNFACE);                             // Default: *gpsi + 4816 (COLOR_BTNTEXT)
+        sysColorBk = GetSysColor(COLOR_BTNFACE);                                // Par défaut: *gpsi + 4628 (COLOR_BTNTEXT)
+        sysColorTxt = g_IsSysThemeDarkMode ? RGB(255, 255, 255) : RGB(0, 0, 0); // Par défaut: *gpsi + 4816 (COLOR_BTNTEXT)
+        sysBrush = GetSysColorBrush(COLOR_BTNFACE);                             // Par défaut: *gpsi + 4816 (COLOR_BTNTEXT)
     }
     else if (msg == WM_CTLCOLORSCROLLBAR)
     {
-        sysColorBk = GetSysColor(COLOR_BTNHIGHLIGHT);                           // Default: *gpsi + 4648 (COLOR_BTNHIGHLIGHT)
-        sysColorTxt = g_IsSysThemeDarkMode ? RGB(255, 255, 255) : RGB(0, 0, 0); // Default: *gpsi + 4840 (COLOR_BTNTEXT)
-        sysBrush = GetSysColorBrush(COLOR_BTNHIGHLIGHT);                        // Default: *gpsi + 4856 (COLOR_BTNHIGHLIGHT)
+        sysColorBk = GetSysColor(COLOR_BTNHIGHLIGHT);                           // Par défaut: *gpsi + 4648 (COLOR_BTNHIGHLIGHT)
+        sysColorTxt = g_IsSysThemeDarkMode ? RGB(255, 255, 255) : RGB(0, 0, 0); // Par défaut: *gpsi + 4840 (COLOR_BTNTEXT)
+        sysBrush = GetSysColorBrush(COLOR_BTNHIGHLIGHT);                        // Par défaut: *gpsi + 4856 (COLOR_BTNHIGHLIGHT)
     }
 
     HDC hdc = reinterpret_cast<HDC>(wParam);
@@ -5890,7 +5890,7 @@ HBRUSH (STDCALL *MB_DlgProc_orig)(HWND, UINT, WPARAM, LPARAM);
 HBRUSH STDCALL Hooked_MB_DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     if (msg == WM_CTLCOLORDLG || msg == WM_CTLCOLORSTATIC)
-        return GetSysColorBrush(COLOR_WINDOW); // Default: gpsi + 4736 (COLOR_WINDOW)
+        return GetSysColorBrush(COLOR_WINDOW); // Par défaut: gpsi + 4736 (COLOR_WINDOW)
     return MB_DlgProc_orig(hwnd, msg, wParam, lParam);
 }
 
@@ -5908,7 +5908,7 @@ void THISCALL Hooked_DrawCommandRectangle(HWND hWnd)
     GetClientRect(hWnd, &rc);
 
     // Match USER behavior
-    HBRUSH hBrush = CreateSolidBrush(GetSysColor(COLOR_WINDOW)); // Default: gpsi + 4736 (COLOR_WINDOW)
+    HBRUSH hBrush = CreateSolidBrush(GetSysColor(COLOR_WINDOW)); // Par défaut: gpsi + 4736 (COLOR_WINDOW)
     HGDIOBJ oldBrush = SelectObject(hdc, hBrush);
 
     HPEN hPen = CreatePen(PS_NULL, 0, 0);
@@ -5982,8 +5982,8 @@ void __fastcall HookedRenderTooltip(HWND hWnd, HDC hdc, HGDIOBJ *a3)
         GetClientRect(hWnd, &clientRect);
     }
 
-    COLORREF oldTextClr = SetTextColor(hdc, g_IsSysThemeDarkMode ? RGB(255, 255, 255) : RGB(0, 0, 0));  // Default: gpsi + 4660 (COLOR_WINDOWTEXT)
-    COLORREF oldBkClr = SetBkColor(hdc, RGB(0, 0, 0));                                                  // Default: gpsi + 4888 (COLOR_INFOTEXT)
+    COLORREF oldTextClr = SetTextColor(hdc, g_IsSysThemeDarkMode ? RGB(255, 255, 255) : RGB(0, 0, 0));  // Par défaut: gpsi + 4660 (COLOR_WINDOWTEXT)
+    COLORREF oldBkClr = SetBkColor(hdc, RGB(0, 0, 0));                                                  // Par défaut: gpsi + 4888 (COLOR_INFOTEXT)
 
     INT textX = (clientRect.right - textSize.cx) / 2;
     INT textY = (clientRect.bottom - textSize.cy) / 2;
@@ -6144,7 +6144,7 @@ COLORREF __fastcall HookedFillRectClr(HDC hdc, LPRECT lprect, COLORREF color)
 HBRUSH (__fastcall *ListBox_GetBrush_orig)(struct tagLBIV*, HBRUSH*);
 HBRUSH __fastcall HookedListBox_GetBrush(struct tagLBIV *a1, HBRUSH *hbr)
 {   
-    // Default return brush: GetSysColorBrush(COLOR_WINDOW)
+    // Par défaut return brush: GetSysColorBrush(COLOR_WINDOW)
     HBRUSH ret = g_IsSysThemeDarkMode ? ListBox_GetBrush_orig(a1, hbr) : (HBRUSH)GetStockObject(WHITE_BRUSH);
     return ret;
 }
@@ -6269,19 +6269,19 @@ BOOL CThemeCache::CacheNavigationDivider()
 
     RECT rc = {(INT)x, (INT)y, (INT)width, (INT)height};
     
-    Microsoft::WRL::ComPtr<ID2D1DCRenderTarget> pRenderTarget;
-    if (FAILED(CreateBoundD2DRenderTarget(g_themeCache.navigationdivider[0], &rc, g_d2dFactory, &pRenderTarget)))
+    Microsoft::WRL::ComPtr<ID2D1DCRenderCible> pRenderCible;
+    if (FAILED(CreateBoundD2DRenderCible(g_themeCache.navigationdivider[0], &rc, g_d2dFactory, &pRenderCible)))
         return FALSE;
     
     Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> brush;
-    pRenderTarget->CreateSolidColorBrush(g_IsSysThemeDarkMode ? MyD2D1Color(96, 160, 160, 160) : MyD2D1Color(96, 0, 0, 0), &brush);
+    pRenderCible->CreateSolidColorBrush(g_IsSysThemeDarkMode ? MyD2D1Color(96, 160, 160, 160) : MyD2D1Color(96, 0, 0, 0), &brush);
 
-    pRenderTarget->BeginDraw();
+    pRenderCible->BeginDraw();
 
     // 0.5f makes stroke height 1px
-    pRenderTarget->DrawLine(D2D1_POINT_2F(x, y + .5f), D2D1_POINT_2F(width, y + .5f), brush.Get());
+    pRenderCible->DrawLine(D2D1_POINT_2F(x, y + .5f), D2D1_POINT_2F(width, y + .5f), brush.Get());
 
-    HRESULT hr = pRenderTarget->EndDraw();
+    HRESULT hr = pRenderCible->EndDraw();
     if (FAILED(hr)) {Wh_Log(L"Failed D2D drawing [ERROR]: 0x%08X\n", hr); return FALSE;}
     return TRUE;
 }
@@ -6403,7 +6403,7 @@ void RecolorBrandingLogoBackground(HBITMAP hbm)
         // Check if the first pixel is RGB(240, 240, 240). If not, it's probably a custom image -> abort.
         if ((px[0] & 0x00FFFFFF) == 0x00F0F0F0)
         {
-            // Target color to keep: RGB(0, 120, 212)
+            // Cible color to keep: RGB(0, 120, 212)
             constexpr COLORREF targetColor = 0x000078D4; 
 
             for (size_t i = 0; i < pixels; ++i)
@@ -6620,7 +6620,7 @@ VOID ApplyHooks()
 {
     if(g_settings.FillBg)
         CustomRenderingHooks();
-    if (g_settings.BgType != g_settings.Default) {
+    if (g_settings.BgType != g_settings.Par défaut) {
         DwmSetWindowAttributeHook();
         DwmExpandFrameIntoClientAreaHook();
     }        
@@ -6743,10 +6743,10 @@ VOID LoadWindowProcessRules()
 
             // Reset system colors to default values if the system color setting is disabled for the specific ruled process
             if (!g_settings.FillBg && globalSetting_SetSysColorAPI)
-                g_DefaultSysColors = TRUE;
+                g_Par défautSysColors = TRUE;
             
             // Hook all necessary APIs to restore system colors when SetSysColors API has been executed by the mod
-            if (g_DefaultSysColors) {
+            if (g_Par défautSysColors) {
                 WindhawkUtils::SetFunctionHook(GetSysColor, HookedGetSysColor, &GetSysColor_orig);
                 WindhawkUtils::SetFunctionHook(GetSysColorBrush, HookedGetSysColorBrush, &GetSysColorBrush_orig);               
                 WindhawkUtils::SetFunctionHook(FillRect, HookedFillRect, &FillRect_orig);
@@ -6763,7 +6763,7 @@ VOID LoadWindowProcessRules()
             else if (0 == wcscmp(strStyle, L"mica_tabbed"))
                 g_settings.BgType = g_settings.MicaAlt;
             else 
-                g_settings.BgType = g_settings.Default;
+                g_settings.BgType = g_settings.Par défaut;
 
             g_settings.AccentBlurBehindClr = GetColorSetting(WindhawkUtils::StringSetting(Wh_GetStringSetting(L"RuledPrograms[%d].BackgroundEffects.AccentBlurBehind", i)));
             
@@ -6797,7 +6797,7 @@ VOID LoadSettings()
     else if (0 == wcscmp(strStyle, L"mica_tabbed"))
         g_settings.BgType = g_settings.MicaAlt;
     else 
-        g_settings.BgType = g_settings.Default;
+        g_settings.BgType = g_settings.Par défaut;
     
     g_settings.AccentBlurBehindClr = GetColorSetting(WindhawkUtils::StringSetting(Wh_GetStringSetting(L"BackgroundEffects.AccentBlurBehind")));
 
@@ -6904,150 +6904,154 @@ namespace FileExplorerStyler {
 #undef GetCurrentTime
 
 
-struct ThemeTargetStyles {
+struct ThemeCibleStyles {
     PCWSTR target;
     std::vector<PCWSTR> styles;
 };
 
 enum class BackgroundTranslucentEffect {
-    kDefault,
+    kPar défaut,
     kBlur,
     kAcrylic,
     kMica,
     kMicaAlt,
-    kNone,
+    kAucun,
 };
 
 struct Theme {
-    std::vector<ThemeTargetStyles> targetStyles;
+    std::vector<ThemeCibleStyles> targetStyles;
     std::vector<PCWSTR> styleConstants;
     std::vector<PCWSTR> themeResourceVariables;
     int explorerFrameContainerHeight = 0;
     BackgroundTranslucentEffect backgroundTranslucentEffect =
-        BackgroundTranslucentEffect::kDefault;
+        BackgroundTranslucentEffect::kPar défaut;
 };
 
 // clang-format off
 
 const Theme g_themeTranslucent_Explorer11 = {{
-    ThemeTargetStyles{L"FileExplorerExtensions.CommandBarControl_Wave1 > Grid, Grid#CommandBarControlRootGrid", {
+    // Force les conteneurs de la barre de titre WinUI à laisser apparaître le fond DWM.
+    ThemeTargetStyles{L"Grid#TitleBar, Grid#AppTitleBar, Microsoft.UI.Xaml.Controls.Grid#TitleBar, Microsoft.UI.Xaml.Controls.Grid#AppTitleBar", {
+        L"Background=Transparent",
+        L"BorderBrush=Transparent"}},
+    ThemeCibleStyles{L"FileExplorerExtensions.CommandBarControl_Wave1 > Grid, Grid#CommandBarControlRootGrid", {
         L"Background=Transparent",
         L"BorderThickness=0,0,0,1",
         L"BorderBrush=#40A0A0A0"}},
-    ThemeTargetStyles{L"CommandBar#FileExplorerCommandBar", {
+    ThemeCibleStyles{L"CommandBar#FileExplorerCommandBar", {
         L"Background=Transparent"}},
-    ThemeTargetStyles{L"Grid#NavigationBarControlGrid", {
+    ThemeCibleStyles{L"Grid#NavigationBarControlGrid", {
         L"Background=Transparent"}},
-    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot > Canvas > Microsoft.UI.Xaml.Shapes.Path#SelectedBackgroundPath", {
+    ThemeCibleStyles{L"TabViewItem > Grid#LayoutRoot > Canvas > Microsoft.UI.Xaml.Shapes.Path#SelectedBackgroundPath", {
         L"Fill=#40404040"}},
-    ThemeTargetStyles{L"Grid#HomeViewRootGrid", {
+    ThemeCibleStyles{L"Grid#HomeViewRootGrid", {
         L"Background=Transparent"}},
-    ThemeTargetStyles{L"FileExplorerExtensions.GalleryViewControl#GalleryViewControl > Grid", {
+    ThemeCibleStyles{L"FileExplorerExtensions.GalleryViewControl#GalleryViewControl > Grid", {
         L"Background=Transparent"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#GalleryRootGrid", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Grid#GalleryRootGrid", {
         L"Background=Transparent"}},
-    ThemeTargetStyles{L"ToolTip", {
+    ThemeCibleStyles{L"ToolTip", {
         L"Background:=<AcrylicBrush TintColor=\"#121212\" Opacity=\"0.3\"/>"}},
-    ThemeTargetStyles{L"Grid#DetailsViewControlRootGrid", {
+    ThemeCibleStyles{L"Grid#DetailsViewControlRootGrid", {
         L"Background=Transparent"}},
-    ThemeTargetStyles{L"StackPanel#DetailsViewThumbnail > Grid", {
+    ThemeCibleStyles{L"StackPanel#DetailsViewThumbnail > Grid", {
         L"Background=Transparent"}},
 }, {}, {}, /*explorerFrameContainerHeight=*/0, BackgroundTranslucentEffect::kAcrylic};
 
 const Theme g_themeMicaBar = {{
-    ThemeTargetStyles{L"FileExplorerExtensions.CommandBarControl_Wave1 > Grid, Grid#CommandBarControlRootGrid", {
-        L"Background:=<SolidColorBrush Color=\"{ThemeResource LayerOnMicaBaseAltFillColorDefault}\"/>",
+    ThemeCibleStyles{L"FileExplorerExtensions.CommandBarControl_Wave1 > Grid, Grid#CommandBarControlRootGrid", {
+        L"Background:=<SolidColorBrush Color=\"{ThemeResource LayerOnMicaBaseAltFillColorPar défaut}\"/>",
         L"BorderThickness=0,0,0,1"}},
-    ThemeTargetStyles{L"CommandBar#FileExplorerCommandBar", {
+    ThemeCibleStyles{L"CommandBar#FileExplorerCommandBar", {
         L"Background=Transparent"}},
 }};
 
 const Theme g_themeNoCommandBar = {{
-    ThemeTargetStyles{L"FileExplorerExtensions.CommandBarControl_Wave1, FileExplorerExtensions.CommandBarControl", {
+    ThemeCibleStyles{L"FileExplorerExtensions.CommandBarControl_Wave1, FileExplorerExtensions.CommandBarControl", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"FileExplorerExtensions.NavigationBarControl", {
+    ThemeCibleStyles{L"FileExplorerExtensions.NavigationBarControl", {
         L"Grid.RowSpan=2",
         L"Margin=0,0,0,1"}},
 }, {}, {}, /*explorerFrameContainerHeight=*/87};
 
 const Theme g_themeMinimal_Explorer11 = {{
-    ThemeTargetStyles{L"AppBarButton#backButton > Grid#Root@CommonStates > Border#AppBarButtonInnerBorder", {
+    ThemeCibleStyles{L"AppBarButton#backButton > Grid#Root@CommonStates > Border#AppBarButtonInnerBorder", {
         L"Background@Normal:=<AcrylicBrush TintColor=\"Transparent\" Opacity=\"0.07\"/>",
         L"Background@PointerOver:=<AcrylicBrush TintColor=\"Transparent\" Opacity=\"0.12\"/>",
         L"Background@Pressed:=<AcrylicBrush TintColor=\"Transparent\" Opacity=\"0.12\"/>",
         L"Background@Disabled:=<AcrylicBrush TintColor=\"Transparent\" Opacity=\"0.05\"/>"}},
-    ThemeTargetStyles{L"AppBarButton#forwardButton > Grid#Root@CommonStates > Border#AppBarButtonInnerBorder", {
+    ThemeCibleStyles{L"AppBarButton#forwardButton > Grid#Root@CommonStates > Border#AppBarButtonInnerBorder", {
         L"Background@Normal:=<AcrylicBrush TintColor=\"Transparent\" Opacity=\"0.05\"/>",
         L"Background@PointerOver:=<AcrylicBrush TintColor=\"Transparent\" Opacity=\"0.12\"/>",
         L"Background@Pressed:=<AcrylicBrush TintColor=\"Transparent\" Opacity=\"0.12\"/>",
         L"Background@Disabled:=<AcrylicBrush TintColor=\"Transparent\" Opacity=\"0.05\"/>"}},
-    ThemeTargetStyles{L"AppBarButton#refreshButton", {
+    ThemeCibleStyles{L"AppBarButton#refreshButton", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"AppBarButton#upButton", {
+    ThemeCibleStyles{L"AppBarButton#upButton", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"Border#BottomBorderLine", {
+    ThemeCibleStyles{L"Border#BottomBorderLine", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"FileExplorerExtensions.CommandBarControl_Wave1, FileExplorerExtensions.CommandBarControl", {
+    ThemeCibleStyles{L"FileExplorerExtensions.CommandBarControl_Wave1, FileExplorerExtensions.CommandBarControl", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"FileExplorerExtensions.AddressBarControl > Grid#PART_LayoutRoot > Grid#NormalModeGrid", {
+    ThemeCibleStyles{L"FileExplorerExtensions.AddressBarControl > Grid#PART_LayoutRoot > Grid#NormalModeGrid", {
         L"BorderThickness=0,0,0,1",
         L"BorderBrush=#A0A0A0"}},
-    ThemeTargetStyles{L"Grid#DetailsViewControlRootGrid", {
+    ThemeCibleStyles{L"Grid#DetailsViewControlRootGrid", {
         L"Background=Transparent"}},
-    ThemeTargetStyles{L"Grid#TabContainerGrid > Border#LeftBottomBorderLine", {
+    ThemeCibleStyles{L"Grid#TabContainerGrid > Border#LeftBottomBorderLine", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"Grid#TabContainerGrid > Border#RightBottomBorderLine", {
+    ThemeCibleStyles{L"Grid#TabContainerGrid > Border#RightBottomBorderLine", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"StackPanel#DetailsViewThumbnail > Grid", {
+    ThemeCibleStyles{L"StackPanel#DetailsViewThumbnail > Grid", {
         L"Background=Transparent"}},
-    ThemeTargetStyles{L"TabViewItem", {
+    ThemeCibleStyles{L"TabViewItem", {
         L"Margin=0,0,3,0"}},
-    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot", {
+    ThemeCibleStyles{L"TabViewItem > Grid#LayoutRoot", {
         L"CornerRadius=4",
         L"Margin=0,-3,0,3",
         L"Height=28"}},
-    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot > Canvas", {
+    ThemeCibleStyles{L"TabViewItem > Grid#LayoutRoot > Canvas", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot > Grid#TabContainer", {
+    ThemeCibleStyles{L"TabViewItem > Grid#LayoutRoot > Grid#TabContainer", {
         L"Background=Transparent",
         L"BorderBrush=Transparent"}},
-    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot@CommonStates", {
+    ThemeCibleStyles{L"TabViewItem > Grid#LayoutRoot@CommonStates", {
         L"Background@Selected:=<SolidColorBrush Color=\"#808080\" Opacity=\"0.35\"/>",
         L"Background@PointerOverSelected:=<SolidColorBrush Color=\"#808080\" Opacity=\"0.35\"/>",
         L"Background@PointerOver:=<AcrylicBrush TintColor=\"Transparent\" Opacity=\"0.13\"/>",
         L"Background@Normal:=<AcrylicBrush TintColor=\"Transparent\" Opacity=\"0.05\"/>",
         L"Background@PressedSelected:=<SolidColorBrush Color=\"#808080\" Opacity=\"0.35\"/>"}},
-    ThemeTargetStyles{L"Grid#FileExplorerAddressBarGrid", {
+    ThemeCibleStyles{L"Grid#FileExplorerAddressBarGrid", {
         L"Grid.ColumnSpan=2",
         L"Margin=0,0,10,0"}},
-    ThemeTargetStyles{L"AutoSuggestBox#FileExplorerSearchBox", {
+    ThemeCibleStyles{L"AutoSuggestBox#FileExplorerSearchBox", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"AppBarButton#backButton > Grid#Root", {
+    ThemeCibleStyles{L"AppBarButton#backButton > Grid#Root", {
         L"Padding=2"}},
-    ThemeTargetStyles{L"AppBarButton#forwardButton > Grid#Root", {
+    ThemeCibleStyles{L"AppBarButton#forwardButton > Grid#Root", {
         L"Padding=2"}},
-    ThemeTargetStyles{L"AppBarButton#forwardButton > Grid#Root > Grid#ContentRoot > Viewbox#ContentViewbox", {
+    ThemeCibleStyles{L"AppBarButton#forwardButton > Grid#Root > Grid#ContentRoot > Viewbox#ContentViewbox", {
         L"Margin=9"}},
-    ThemeTargetStyles{L"AppBarButton#backButton > Grid#Root > Grid#ContentRoot > Viewbox#ContentViewbox", {
+    ThemeCibleStyles{L"AppBarButton#backButton > Grid#Root > Grid#ContentRoot > Viewbox#ContentViewbox", {
         L"Margin=9"}},
-    ThemeTargetStyles{L"Grid#PART_LayoutRoot", {
+    ThemeCibleStyles{L"Grid#PART_LayoutRoot", {
         L"MinHeight=28",
         L"Height=28"}},
-    ThemeTargetStyles{L"Grid#TabContainerGrid > Border > Button#AddButton", {
+    ThemeCibleStyles{L"Grid#TabContainerGrid > Border > Button#AddButton", {
         L"Margin=0,0,20,4"}},
-    ThemeTargetStyles{L"Border#ScrollIncreaseButtonContainer", {
+    ThemeCibleStyles{L"Border#ScrollIncreaseButtonContainer", {
         L"Margin=0,0,0,4"}},
-    ThemeTargetStyles{L"Border#ScrollDecreaseButtonContainer", {
+    ThemeCibleStyles{L"Border#ScrollDecreaseButtonContainer", {
         L"Margin=0,0,0,4"}},
-    ThemeTargetStyles{L"Grid#FileExplorerAddressBarGrid", {
+    ThemeCibleStyles{L"Grid#FileExplorerAddressBarGrid", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"FileExplorerExtensions.NavigationBarControl#NavigationBarControl", {
+    ThemeCibleStyles{L"FileExplorerExtensions.NavigationBarControl#NavigationBarControl", {
         L"Grid.Row=0",
         L"Grid.RowSpan=2"}},
-    ThemeTargetStyles{L"FileExplorerExtensions.FileExplorerTabControl", {
+    ThemeCibleStyles{L"FileExplorerExtensions.FileExplorerTabControl", {
         L"Margin=100,0,0,-15",
         L"Grid.RowSpan=2"}},
-    ThemeTargetStyles{L"FileExplorerExtensions.NavigationBarControl > Grid#NavigationBarControlGrid", {
+    ThemeCibleStyles{L"FileExplorerExtensions.NavigationBarControl > Grid#NavigationBarControlGrid", {
         L"Margin=0,0,0,-18",
         L"Background=Transparent",
         L"Width=100",
@@ -7055,36 +7059,36 @@ const Theme g_themeMinimal_Explorer11 = {{
 }, {}, {}, /*explorerFrameContainerHeight=*/42};
 
 const Theme g_themeTabless = {{
-    ThemeTargetStyles{L"FileExplorerExtensions.CommandBarControl_Wave1 > Grid, Grid#CommandBarControlRootGrid", {
+    ThemeCibleStyles{L"FileExplorerExtensions.CommandBarControl_Wave1 > Grid, Grid#CommandBarControlRootGrid", {
         L"Background=Transparent"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#ContentRoot", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Grid#ContentRoot", {
         L"Background=Transparent"}},
-    ThemeTargetStyles{L"FileExplorerExtensions.NavigationBarControl", {
+    ThemeCibleStyles{L"FileExplorerExtensions.NavigationBarControl", {
         L"Grid.Row=$NavigationBarGrid"}},
-    ThemeTargetStyles{L"FileExplorerExtensions.CommandBarControl_Wave1, FileExplorerExtensions.CommandBarControl", {
+    ThemeCibleStyles{L"FileExplorerExtensions.CommandBarControl_Wave1, FileExplorerExtensions.CommandBarControl", {
         L"Grid.Row=$CommandBarGrid"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#TabContainerGrid > Border", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Grid#TabContainerGrid > Border", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#TabContainer > Microsoft.UI.Xaml.Controls.Button#CloseButton", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Grid#TabContainer > Microsoft.UI.Xaml.Controls.Button#CloseButton", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.TabViewItem > Microsoft.UI.Xaml.Controls.Grid#LayoutRoot > Microsoft.UI.Xaml.Controls.Canvas", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.TabViewItem > Microsoft.UI.Xaml.Controls.Grid#LayoutRoot > Microsoft.UI.Xaml.Controls.Canvas", {
         L"Opacity=0"}},
-    ThemeTargetStyles{L"Grid#NavigationBarControlGrid", {
+    ThemeCibleStyles{L"Grid#NavigationBarControlGrid", {
         L"Background:=<SolidColorBrush Color=\"{ThemeResource SystemChromeLowColor}\" />"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#TabContainer", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Grid#TabContainer", {
         L"BorderThickness=0"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.ContentPresenter > Microsoft.UI.Xaml.Controls.StackPanel > Microsoft.UI.Xaml.Controls.TextBlock", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.ContentPresenter > Microsoft.UI.Xaml.Controls.StackPanel > Microsoft.UI.Xaml.Controls.TextBlock", {
         L"FontFamily=Segoe UI, Segoe Fluent Icons",
         L"FontWeight=Normal"}},
-    ThemeTargetStyles{L"FileExplorerExtensions.CommandBarControl_Wave1 > Grid, Grid#CommandBarControlRootGrid", {
+    ThemeCibleStyles{L"FileExplorerExtensions.CommandBarControl_Wave1 > Grid, Grid#CommandBarControlRootGrid", {
         L"BorderThickness=0,0,0,1"}},
-    ThemeTargetStyles{L"FileExplorerExtensions.FileExplorerTabControl", {
+    ThemeCibleStyles{L"FileExplorerExtensions.FileExplorerTabControl", {
         L"Height=36"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#TabContainer", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Grid#TabContainer", {
         L"Padding=1,0,0,1"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Viewbox#IconBox", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Viewbox#IconBox", {
         L"Margin=0,0,4,0"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.TabViewItem", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.TabViewItem", {
         L"Margin=0,-8,0,0"}},
 }, {
     L"NavigationBarGrid=2",
@@ -7092,77 +7096,77 @@ const Theme g_themeTabless = {{
 }};
 
 const Theme g_themeMatter = {{
-    ThemeTargetStyles{L"CommandBar#FileExplorerCommandBar", {
+    ThemeCibleStyles{L"CommandBar#FileExplorerCommandBar", {
         L"Background=Transparent",
         L"HorizontalAlignment  = 1"}},
-    ThemeTargetStyles{L"CommandBar#FileExplorerSecondaryCommandBar", {
+    ThemeCibleStyles{L"CommandBar#FileExplorerSecondaryCommandBar", {
         L"Background=Transparent",
         L"Visibility = 1"}},
-    ThemeTargetStyles{L"Grid#TabContainerGrid > Border#LeftBottomBorderLine", {
+    ThemeCibleStyles{L"Grid#TabContainerGrid > Border#LeftBottomBorderLine", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"Grid#TabContainerGrid > Border#RightBottomBorderLine", {
+    ThemeCibleStyles{L"Grid#TabContainerGrid > Border#RightBottomBorderLine", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"TabViewItem", {
+    ThemeCibleStyles{L"TabViewItem", {
         L"Margin=0,0,4,0"}},
-    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot", {
+    ThemeCibleStyles{L"TabViewItem > Grid#LayoutRoot", {
         L"CornerRadius=5",
         L"Margin=2,4,0,4",
         L"Height=29"}},
-    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot > Canvas", {
+    ThemeCibleStyles{L"TabViewItem > Grid#LayoutRoot > Canvas", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot > Grid#TabContainer", {
+    ThemeCibleStyles{L"TabViewItem > Grid#LayoutRoot > Grid#TabContainer", {
         L"Background = Transparent",
         L"BorderThickness = 0"}},
-    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot@CommonStates", {
+    ThemeCibleStyles{L"TabViewItem > Grid#LayoutRoot@CommonStates", {
         L"Background@Selected:= $accentColor2",
         L"Background@PointerOverSelected:= $accentColor",
         L"Background@PointerOver:= $accentColor2",
         L"Background@Normal=$accentColor",
         L"Background@PressedSelected:=$accentColor2",
         L"Background@Pressed := $accentColor2"}},
-    ThemeTargetStyles{L"Grid#TabContainerGrid > Border > Button#AddButton", {
+    ThemeCibleStyles{L"Grid#TabContainerGrid > Border > Button#AddButton", {
         L"Visibility  = 0",
         L"Margin = 0,0,0,3"}},
-    ThemeTargetStyles{L"FileExplorerExtensions.CommandBarControl_Wave1 > Grid, Grid#CommandBarControlRootGrid", {
+    ThemeCibleStyles{L"FileExplorerExtensions.CommandBarControl_Wave1 > Grid, Grid#CommandBarControlRootGrid", {
         L"Background=Transparent",
         L"BorderThickness = 0"}},
-    ThemeTargetStyles{L"Grid#NavigationBarControlGrid", {
+    ThemeCibleStyles{L"Grid#NavigationBarControlGrid", {
         L"Background=Transparent"}},
-    ThemeTargetStyles{L"Grid#PART_LayoutRoot", {
+    ThemeCibleStyles{L"Grid#PART_LayoutRoot", {
         L"Background :=<SolidColorBrush Color=\"{ThemeResource SystemAccentColorLight1}\" Opacity=\"0.4\" />",
         L"CornerRadius = 6",
         L"BorderThickness = 0"}},
-    ThemeTargetStyles{L"FileExplorerExtensions.CommandBarControl_Wave1, FileExplorerExtensions.CommandBarControl", {
+    ThemeCibleStyles{L"FileExplorerExtensions.CommandBarControl_Wave1, FileExplorerExtensions.CommandBarControl", {
         L"Margin = 0,-5,0,0"}},
-    ThemeTargetStyles{L"AutoSuggestBox#FileExplorerSearchBox > Grid#LayoutRoot > TextBox > Grid@CommonStates > Border#BorderElement", {
+    ThemeCibleStyles{L"AutoSuggestBox#FileExplorerSearchBox > Grid#LayoutRoot > TextBox > Grid@CommonStates > Border#BorderElement", {
         L"Background :=<SolidColorBrush Color=\"{ThemeResource SystemAccentColorLight1}\" Opacity=\"0.4\" />",
         L"CornerRadius = 6",
         L"BorderThickness = 0"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton[ToolTipService.ToolTip = Cut]", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton[ToolTipService.ToolTip = Cut]", {
         L"Visibility  = 1"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton[ToolTipService.ToolTip = Copy]", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton[ToolTipService.ToolTip = Copy]", {
         L"Visibility  = 1"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton[ToolTipService.ToolTip = Paste]", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton[ToolTipService.ToolTip = Paste]", {
         L"Visibility  = 1"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton[ToolTipService.ToolTip = Rename]", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton[ToolTipService.ToolTip = Rename]", {
         L"Visibility  = 1"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton[ToolTipService.ToolTip = Share]", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton[ToolTipService.ToolTip = Share]", {
         L"Visibility  = 1"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarSeparator", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarSeparator", {
         L"Visibility  = 1"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Border#ScrollDecreaseButtonContainer", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Border#ScrollDecreaseButtonContainer", {
         L"Margin = 0,0,0,3"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Border#ScrollIncreaseButtonContainer", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Border#ScrollIncreaseButtonContainer", {
         L"Margin = 0,0,0,3"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#refreshButton", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#refreshButton", {
         L"Visibility  =1"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#upButton", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#upButton", {
         L"Visibility  =1"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#forwardButton", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#forwardButton", {
         L"Visibility  =1"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#backButton", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#backButton", {
         L"Visibility  =1"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton[ToolTipService.ToolTip = Create a new item in the current location.]", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton[ToolTipService.ToolTip = Create a new item in the current location.]", {
         L"Visibility  = 1"}},
 }, {
     L"accentColor=<SolidColorBrush Color=\"{ThemeResource SystemAccentColorLight1}\" />",
@@ -7170,135 +7174,135 @@ const Theme g_themeMatter = {{
 }};
 
 const Theme g_themeWindowGlass = {{
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#PART_LayoutRoot", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Grid#PART_LayoutRoot", {
         L"Background=Transparent",
         L"RenderTransform:=<TranslateTransform X=\"0\"/>"}},
-    ThemeTargetStyles{L"FileExplorerExtensions.FirstCrumbStackPanelControl#FirstCrumbStackPanel", {
+    ThemeCibleStyles{L"FileExplorerExtensions.FirstCrumbStackPanelControl#FirstCrumbStackPanel", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"Windows.UI.Xaml.Controls.Grid#RootCommandSearchGrid > Windows.UI.Xaml.Controls.Border#BorderElement", {
+    ThemeCibleStyles{L"Windows.UI.Xaml.Controls.Grid#RootCommandSearchGrid > Windows.UI.Xaml.Controls.Border#BorderElement", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Primitives.NavigationViewItemPresenter#NavigationViewItemPresenter > Microsoft.UI.Xaml.Controls.Grid#LayoutRoot", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Primitives.NavigationViewItemPresenter#NavigationViewItemPresenter > Microsoft.UI.Xaml.Controls.Grid#LayoutRoot", {
         L"BorderThickness=$BorderThickness",
         L"Background:=$ButtonBackground",
         L"BorderBrush:=$ButtonBorder"}},
-    ThemeTargetStyles{L"FileExplorerExtensions.CommandBarControl_Wave1 > Grid, Grid#CommandBarControlRootGrid", {
+    ThemeCibleStyles{L"FileExplorerExtensions.CommandBarControl_Wave1 > Grid, Grid#CommandBarControlRootGrid", {
         L"Background=Transparent",
         L"BorderBrush=Transparent"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.CommandBar#FileExplorerCommandBar", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.CommandBar#FileExplorerCommandBar", {
         L"RenderTransform:=<TranslateTransform X=\"0\" Y=\"0\" />",
         L"HorizontalAlignment=Center",
         L"Margin=-4",
         L"Padding=10"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.CommandBar#FileExplorerSecondaryCommandBar", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.CommandBar#FileExplorerSecondaryCommandBar", {
         L"RenderTransform:=<TranslateTransform X=\"Auto\" />",
         L"HorizontalAlignment=Center",
         L"Margin=-4",
         L"Padding=10",
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.CommandBar#FileExplorerCommandBar > Microsoft.UI.Xaml.Controls.Grid#LayoutRoot > Microsoft.UI.Xaml.Controls.Grid#ContentRoot", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.CommandBar#FileExplorerCommandBar > Microsoft.UI.Xaml.Controls.Grid#LayoutRoot > Microsoft.UI.Xaml.Controls.Grid#ContentRoot", {
         L"CornerRadius=$CornerRadius",
         L"BorderThickness=$BorderThickness",
         L"BorderBrush=Transparent",
         L"Background=Transparent"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.CommandBar#FileExplorerSecondaryCommandBar > Microsoft.UI.Xaml.Controls.Grid#LayoutRoot > Microsoft.UI.Xaml.Controls.Grid#ContentRoot", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.CommandBar#FileExplorerSecondaryCommandBar > Microsoft.UI.Xaml.Controls.Grid#LayoutRoot > Microsoft.UI.Xaml.Controls.Grid#ContentRoot", {
         L"CornerRadius=$CornerRadius",
         L"BorderThickness=$BorderThickness",
         L"BorderBrush:=$BorderBrush",
         L"Background=#10808080",
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#NavigationBarControlGrid", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Grid#NavigationBarControlGrid", {
         L"Background=Transparent",
         L"BorderBrush=Transparent",
         L"ColumnDefinitions:=<ColumnDefinitionCollection><ColumnDefinition Width=\"Auto\"/><ColumnDefinition Width=\"*\"/><ColumnDefinition Width=\"430\"/></ColumnDefinitionCollection>"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#HomeViewRootGrid", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Grid#HomeViewRootGrid", {
         L"BorderBrush:=$MainContentBG",
         L"CornerRadius=8",
         L"BorderThickness=0",
         L"Margin=0,0,8,8",
         L"Background:=$MainContentBG"}},
-    ThemeTargetStyles{L"FileExplorerExtensions.GalleryViewControl#GalleryViewControl > Grid", {
+    ThemeCibleStyles{L"FileExplorerExtensions.GalleryViewControl#GalleryViewControl > Grid", {
         L"BorderBrush:=$MainContentBG",
         L"CornerRadius=8",
         L"BorderThickness=0",
         L"Margin=0,0,8,8",
         L"Background:=$MainContentBG"}},
-    ThemeTargetStyles{L"FileExplorerExtensions.GalleryViewControl#GalleryViewControl > Grid > Grid#GalleryRootGrid", {
+    ThemeCibleStyles{L"FileExplorerExtensions.GalleryViewControl#GalleryViewControl > Grid > Grid#GalleryRootGrid", {
         L"Background:=$MainContentBG"}},
-    ThemeTargetStyles{L"ToolTip", {
+    ThemeCibleStyles{L"ToolTip", {
         L"Background:=$Background"}},
-    ThemeTargetStyles{L"Grid#TabContainerGrid > Border#LeftBottomBorderLine", {
+    ThemeCibleStyles{L"Grid#TabContainerGrid > Border#LeftBottomBorderLine", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"Grid#TabContainerGrid > Border#RightBottomBorderLine", {
+    ThemeCibleStyles{L"Grid#TabContainerGrid > Border#RightBottomBorderLine", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot", {
+    ThemeCibleStyles{L"TabViewItem > Grid#LayoutRoot", {
         L"CornerRadius=8",
         L"Margin=5",
         L"Height=35"}},
-    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot > Canvas", {
+    ThemeCibleStyles{L"TabViewItem > Grid#LayoutRoot > Canvas", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot > Grid#TabContainer", {
+    ThemeCibleStyles{L"TabViewItem > Grid#LayoutRoot > Grid#TabContainer", {
         L"Background=Transparent",
         L"BorderBrush=Transparent"}},
-    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot@CommonStates", {
+    ThemeCibleStyles{L"TabViewItem > Grid#LayoutRoot@CommonStates", {
         L"Background@Selected:=<SolidColorBrush Color=\"#808080\" Opacity=\"0.10\"/>",
         L"Background@PointerOverSelected:=<SolidColorBrush Color=\"#808080\" Opacity=\"0.10\"/>",
         L"Background@PointerOver:=<AcrylicBrush TintColor=\"Transparent\" Opacity=\"0.13\"/>",
         L"Background@Normal:=<AcrylicBrush TintColor=\"Transparent\" Opacity=\"0.05\"/>",
         L"Background@PressedSelected:=<SolidColorBrush Color=\"#808080\" Opacity=\"0.10\"/>"}},
-    ThemeTargetStyles{L"Grid#TabContainerGrid > Border#LeftBottomBorderLine", {
+    ThemeCibleStyles{L"Grid#TabContainerGrid > Border#LeftBottomBorderLine", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"Grid#TabContainerGrid > Border#RightBottomBorderLine", {
+    ThemeCibleStyles{L"Grid#TabContainerGrid > Border#RightBottomBorderLine", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Border#BottomBorderLine", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Border#BottomBorderLine", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Shapes.Path#LeftRadiusRenderArc", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Shapes.Path#LeftRadiusRenderArc", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Shapes.Path#RightRadiusRenderArc", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Shapes.Path#RightRadiusRenderArc", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#TabContainer", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Grid#TabContainer", {
         L"Visibility=Visible"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Viewbox#IconBox", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Viewbox#IconBox", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Primitives.CommandBarFlyoutCommandBar > Grid#LayoutRoot > Grid#OuterContentRoot > Grid#ContentRoot > Grid#PrimaryItemsRoot", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Primitives.CommandBarFlyoutCommandBar > Grid#LayoutRoot > Grid#OuterContentRoot > Grid#ContentRoot > Grid#PrimaryItemsRoot", {
         L"Background:=$Background",
         L"BorderThickness=$BorderThickness",
         L"BorderBrush:=$BorderBrush",
         L"Margin=0,0,0,-5",
         L"CornerRadius=$CornerRadius"}},
-    ThemeTargetStyles{L"Grid#OuterOverflowContentRootV2 > Grid#OverflowContentRoot > CommandBarOverflowPresenter#SecondaryItemsControl > Grid#LayoutRoot", {
+    ThemeCibleStyles{L"Grid#OuterOverflowContentRootV2 > Grid#OverflowContentRoot > CommandBarOverflowPresenter#SecondaryItemsControl > Grid#LayoutRoot", {
         L"Background:=$Background",
         L"BorderThickness=$BorderThickness",
         L"BorderBrush:=$BorderBrush",
         L"CornerRadius=$CornerRadius"}},
-    ThemeTargetStyles{L"MenuFlyoutPresenter > Border", {
+    ThemeCibleStyles{L"MenuFlyoutPresenter > Border", {
         L"Background:=$Background",
         L"BorderThickness=$BorderThickness",
         L"BorderBrush:=$BorderBrush",
         L"CornerRadius=$CornerRadius"}},
-    ThemeTargetStyles{L"CommandBarOverflowPresenter#SecondaryItemsControl > Grid#LayoutRoot", {
+    ThemeCibleStyles{L"CommandBarOverflowPresenter#SecondaryItemsControl > Grid#LayoutRoot", {
         L"Background:=$Background",
         L"BorderThickness=$BorderThickness",
         L"BorderBrush:=$BorderBrush",
         L"CornerRadius=$CornerRadius"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AutoSuggestBox#FileExplorerSearchBox > Microsoft.UI.Xaml.Controls.Grid#LayoutRoot > Microsoft.UI.Xaml.Controls.TextBox#TextBox", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AutoSuggestBox#FileExplorerSearchBox > Microsoft.UI.Xaml.Controls.Grid#LayoutRoot > Microsoft.UI.Xaml.Controls.TextBox#TextBox", {
         L"CornerRadius=$CornerRadius",
         L"Margin=0,0,180,0",
         L"Background=Transparent",
         L"BorderBrush=Transparent"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#FileExplorerAddressBarGrid", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Grid#FileExplorerAddressBarGrid", {
         L"MaxWidth=750",
         L"CornerRadius=$CornerRadius"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AutoSuggestBox#PART_AutoSuggestBox > Microsoft.UI.Xaml.Controls.Grid#LayoutRoot > Microsoft.UI.Xaml.Controls.TextBox#TextBox", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AutoSuggestBox#PART_AutoSuggestBox > Microsoft.UI.Xaml.Controls.Grid#LayoutRoot > Microsoft.UI.Xaml.Controls.TextBox#TextBox", {
         L"CornerRadius=$CornerRadius"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.CommandBar#NavigationCommands", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.CommandBar#NavigationCommands", {
         L"Margin=180,0,0,0"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#RootContainer", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Grid#RootContainer", {
         L"Background=Transparent"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Border > Microsoft.UI.Xaml.Controls.Button#AddButton", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Border > Microsoft.UI.Xaml.Controls.Button#AddButton", {
         L"RenderTransform:=<TranslateTransform Y=\"-6\" />"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.TextBlock#TextLabel", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.TextBlock#TextLabel", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#SubItemChevronPanel > Microsoft.UI.Xaml.Controls.FontIcon#SubItemChevron", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Grid#SubItemChevronPanel > Microsoft.UI.Xaml.Controls.FontIcon#SubItemChevron", {
         L"RenderTransform:=<TranslateTransform X=\"-5\" Y=\"12\" />"}},
 }, {
     L"Background=<WindhawkBlur BlurAmount=\"15\" TintColor=\"#15323232\"/>",
@@ -7312,156 +7316,156 @@ const Theme g_themeWindowGlass = {{
 }, {}, /*explorerFrameContainerHeight=*/0, BackgroundTranslucentEffect::kAcrylic};
 
 const Theme g_themeAddressSearchOnly = {{
-    ThemeTargetStyles{L"FileExplorerExtensions.NavigationBarControl", {
+    ThemeCibleStyles{L"FileExplorerExtensions.NavigationBarControl", {
         L"Grid.Row=0",
         L"Background=Transparent",
         L"MinHeight=48",
         L"Margin=0,26,0,1"}},
-    ThemeTargetStyles{L"Grid#NavigationBarControlGrid", {
+    ThemeCibleStyles{L"Grid#NavigationBarControlGrid", {
         L"Background=Transparent"}},
-    ThemeTargetStyles{L"FileExplorerExtensions.FileExplorerTabControl", {
+    ThemeCibleStyles{L"FileExplorerExtensions.FileExplorerTabControl", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"AppBarButton#refreshButton", {
+    ThemeCibleStyles{L"AppBarButton#refreshButton", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"AppBarButton#upButton", {
+    ThemeCibleStyles{L"AppBarButton#upButton", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"AppBarButton#backButton", {
+    ThemeCibleStyles{L"AppBarButton#backButton", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"AppBarButton#forwardButton", {
+    ThemeCibleStyles{L"AppBarButton#forwardButton", {
         L"Visibility=Collapsed"}},
 }, {}, {}, /*explorerFrameContainerHeight=*/80};
 
 const Theme g_themeTintedGlass = {{
-    ThemeTargetStyles{L"FileExplorerExtensions.CommandBarControl_Wave1 > Grid, Grid#CommandBarControlRootGrid", {
+    ThemeCibleStyles{L"FileExplorerExtensions.CommandBarControl_Wave1 > Grid, Grid#CommandBarControlRootGrid", {
         L"Background:=$CommonBgBrush",
         L"BorderThickness=0,0,0,0",
         L"BorderBrush=$CommonBgBrush"}},
-    ThemeTargetStyles{L"CommandBar#FileExplorerCommandBar", {
+    ThemeCibleStyles{L"CommandBar#FileExplorerCommandBar", {
         L"Background=Transparent"}},
-    ThemeTargetStyles{L"Grid#NavigationBarControlGrid", {
+    ThemeCibleStyles{L"Grid#NavigationBarControlGrid", {
         L"Background:=$CommonBgBrush"}},
-    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot > Canvas > Microsoft.UI.Xaml.Shapes.Path#SelectedBackgroundPath", {
+    ThemeCibleStyles{L"TabViewItem > Grid#LayoutRoot > Canvas > Microsoft.UI.Xaml.Shapes.Path#SelectedBackgroundPath", {
         L"Fill:=$CommonBgBrush"}},
-    ThemeTargetStyles{L"Grid#HomeViewRootGrid", {
+    ThemeCibleStyles{L"Grid#HomeViewRootGrid", {
         L"Background:=$CommonBgBrush"}},
-    ThemeTargetStyles{L"FileExplorerExtensions.GalleryViewControl#GalleryViewControl > Grid", {
+    ThemeCibleStyles{L"FileExplorerExtensions.GalleryViewControl#GalleryViewControl > Grid", {
         L"Background:=$CommonBgBrush"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#GalleryRootGrid", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Grid#GalleryRootGrid", {
         L"Background:=$CommonBgBrush"}},
-    ThemeTargetStyles{L"ToolTip", {
+    ThemeCibleStyles{L"ToolTip", {
         L"Background:=$CommonBgBrush"}},
-    ThemeTargetStyles{L"Grid#DetailsViewControlRootGrid", {
+    ThemeCibleStyles{L"Grid#DetailsViewControlRootGrid", {
         L"Background:=$CommonBgBrush"}},
-    ThemeTargetStyles{L"StackPanel#DetailsViewThumbnail > Grid", {
+    ThemeCibleStyles{L"StackPanel#DetailsViewThumbnail > Grid", {
         L"Background:=$CommonBgBrush"}},
 }, {
     L"CommonBgBrush=<WindhawkBlur BlurAmount=\"18\" TintColor=\"#80000000\"/>",
 }, {}, /*explorerFrameContainerHeight=*/0, BackgroundTranslucentEffect::kAcrylic};
 
 const Theme g_themeLiquidGlass = {{
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#PART_LayoutRoot", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Grid#PART_LayoutRoot", {
         L"Background=Transparent",
         L"HorizontalAlignment=Stretch"}},
-    ThemeTargetStyles{L"FileExplorerExtensions.FirstCrumbStackPanelControl#FirstCrumbStackPanel", {
+    ThemeCibleStyles{L"FileExplorerExtensions.FirstCrumbStackPanelControl#FirstCrumbStackPanel", {
         L"Visibility=1"}},
-    ThemeTargetStyles{L"Windows.UI.Xaml.Controls.Grid#RootCommandSearchGrid > Windows.UI.Xaml.Controls.Border#BorderElement", {
+    ThemeCibleStyles{L"Windows.UI.Xaml.Controls.Grid#RootCommandSearchGrid > Windows.UI.Xaml.Controls.Border#BorderElement", {
         L"Visibility=1"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Primitives.NavigationViewItemPresenter#NavigationViewItemPresenter > Microsoft.UI.Xaml.Controls.Grid#LayoutRoot", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Primitives.NavigationViewItemPresenter#NavigationViewItemPresenter > Microsoft.UI.Xaml.Controls.Grid#LayoutRoot", {
         L"BorderThickness=$ElementBorderThickness",
         L"Background:=$ElementBackground",
         L"BorderBrush:=$ElementBorder",
         L"CornerRadius=$ElementCornerRadius"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#NavigationBarControlGrid", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Grid#NavigationBarControlGrid", {
         L"Background:=Transparent",
         L"BorderBrush:=Transparent"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#HomeViewRootGrid", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Grid#HomeViewRootGrid", {
         L"BorderBrush:=$ElementBorderBrush",
         L"CornerRadius=$ElementCornerRadius",
         L"BorderThickness=$ElementBorderThickness",
         L"Margin=4,0"}},
-    ThemeTargetStyles{L"FileExplorerExtensions.GalleryViewControl#GalleryViewControl > Grid", {
+    ThemeCibleStyles{L"FileExplorerExtensions.GalleryViewControl#GalleryViewControl > Grid", {
         L"BorderBrush:=$ElementBorderBrush",
         L"CornerRadius=$ElementCornerRadius",
         L"BorderThickness=$ElementBorderThickness",
         L"Margin=4,0"}},
-    ThemeTargetStyles{L"FileExplorerExtensions.GalleryViewControl#GalleryViewControl > Grid > Grid#GalleryRootGrid", {
+    ThemeCibleStyles{L"FileExplorerExtensions.GalleryViewControl#GalleryViewControl > Grid > Grid#GalleryRootGrid", {
         L"Background:=Transparent"}},
-    ThemeTargetStyles{L"ToolTip", {
+    ThemeCibleStyles{L"ToolTip", {
         L"BorderBrush:=$ElementBorderBrush",
         L"BorderThickness=$ElementBorderThickness",
         L"CornerRadius=$ElementCornerRadius"}},
-    ThemeTargetStyles{L"Grid#TabContainerGrid > Border#LeftBottomBorderLine", {
+    ThemeCibleStyles{L"Grid#TabContainerGrid > Border#LeftBottomBorderLine", {
         L"Visibility=1"}},
-    ThemeTargetStyles{L"Grid#TabContainerGrid > Border#RightBottomBorderLine", {
+    ThemeCibleStyles{L"Grid#TabContainerGrid > Border#RightBottomBorderLine", {
         L"Visibility=1"}},
-    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot", {
+    ThemeCibleStyles{L"TabViewItem > Grid#LayoutRoot", {
         L"Margin=5",
         L"Height=35",
         L"BorderThickness=$ElementBorderThickness",
         L"CornerRadius=$ElementCornerRadius",
         L"BorderBrush:=$ElementBorderBrush"}},
-    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot > Canvas", {
+    ThemeCibleStyles{L"TabViewItem > Grid#LayoutRoot > Canvas", {
         L"Visibility=1"}},
-    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot > Grid#TabContainer", {
+    ThemeCibleStyles{L"TabViewItem > Grid#LayoutRoot > Grid#TabContainer", {
         L"Background=Transparent",
         L"BorderBrush=Transparent"}},
-    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot@CommonStates", {
+    ThemeCibleStyles{L"TabViewItem > Grid#LayoutRoot@CommonStates", {
         L"Background@Selected:=$ElementBackground",
         L"Background@PointerOverSelected:=$AccentBackground",
         L"Background@PointerOver:=$AccentBackground",
         L"Background@Normal:=$ElementBackground",
         L"Background@PressedSelected:=$ButtonBackground2"}},
-    ThemeTargetStyles{L"Grid#TabContainerGrid > Border#LeftBottomBorderLine", {
+    ThemeCibleStyles{L"Grid#TabContainerGrid > Border#LeftBottomBorderLine", {
         L"Visibility=1"}},
-    ThemeTargetStyles{L"Grid#TabContainerGrid > Border#RightBottomBorderLine", {
+    ThemeCibleStyles{L"Grid#TabContainerGrid > Border#RightBottomBorderLine", {
         L"Visibility=1"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Border#BottomBorderLine", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Border#BottomBorderLine", {
         L"Visibility=1"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Shapes.Path#LeftRadiusRenderArc", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Shapes.Path#LeftRadiusRenderArc", {
         L"Visibility=1"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Shapes.Path#RightRadiusRenderArc", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Shapes.Path#RightRadiusRenderArc", {
         L"Visibility=1"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#TabContainer", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Grid#TabContainer", {
         L"Visibility=0"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Viewbox#IconBox", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Viewbox#IconBox", {
         L"Visibility=1"}},
-    ThemeTargetStyles{L"CommandBarOverflowPresenter#SecondaryItemsControl > Grid#LayoutRoot", {
+    ThemeCibleStyles{L"CommandBarOverflowPresenter#SecondaryItemsControl > Grid#LayoutRoot", {
         L"Background:=$ElementBackground",
         L"BorderThickness=$ElementBorderThickness",
         L"BorderBrush:=$ElementBorderBrush",
         L"CornerRadius=$ElementCornerRadius"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AutoSuggestBox#FileExplorerSearchBox > Microsoft.UI.Xaml.Controls.Grid#LayoutRoot > Microsoft.UI.Xaml.Controls.TextBox#TextBox", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AutoSuggestBox#FileExplorerSearchBox > Microsoft.UI.Xaml.Controls.Grid#LayoutRoot > Microsoft.UI.Xaml.Controls.TextBox#TextBox", {
         L"CornerRadius=$ElementCornerRadius",
         L"Background:=$ElementBackground",
         L"BorderBrush:=$ElementBorderBrush",
         L"BorderThickness=$ElementBorderThickness"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#FileExplorerAddressBarGrid", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Grid#FileExplorerAddressBarGrid", {
         L"CornerRadius=$ElementCornerRadius",
         L"Background:=$ElementBackground",
         L"BorderBrush:=$ElementBorderBrush",
         L"BorderThickness=$ElementBorderThickness"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AutoSuggestBox#PART_AutoSuggestBox > Microsoft.UI.Xaml.Controls.Grid#LayoutRoot > Microsoft.UI.Xaml.Controls.TextBox#TextBox", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AutoSuggestBox#PART_AutoSuggestBox > Microsoft.UI.Xaml.Controls.Grid#LayoutRoot > Microsoft.UI.Xaml.Controls.TextBox#TextBox", {
         L"CornerRadius=$ElementCornerRadius"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#RootContainer", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Grid#RootContainer", {
         L"Background:=Transparent"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Border > Microsoft.UI.Xaml.Controls.Button#AddButton", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Border > Microsoft.UI.Xaml.Controls.Button#AddButton", {
         L"RenderTransform:=<TranslateTransform Y=\"-8\" />"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.TextBlock#TextLabel", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.TextBlock#TextLabel", {
         L"Visibility=1"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#SubItemChevronPanel > Microsoft.UI.Xaml.Controls.FontIcon#SubItemChevron", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Grid#SubItemChevronPanel > Microsoft.UI.Xaml.Controls.FontIcon#SubItemChevron", {
         L"RenderTransform:=<TranslateTransform X=\"-5\" Y=\"12\" />"}},
-    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot", {
+    ThemeCibleStyles{L"TabViewItem > Grid#LayoutRoot", {
         L"Height = 28"}},
-    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot > Canvas", {
+    ThemeCibleStyles{L"TabViewItem > Grid#LayoutRoot > Canvas", {
         L"Visibility=1"}},
-    ThemeTargetStyles{L"FileExplorerExtensions.CommandBarControl_Wave1, FileExplorerExtensions.CommandBarControl", {
+    ThemeCibleStyles{L"FileExplorerExtensions.CommandBarControl_Wave1, FileExplorerExtensions.CommandBarControl", {
         L"Visibility=1"}},
-    ThemeTargetStyles{L"FileExplorerExtensions.NavigationBarControl", {
+    ThemeCibleStyles{L"FileExplorerExtensions.NavigationBarControl", {
         L"Grid.RowSpan=2",
         L"Margin=0,0,0,1"}},
-    ThemeTargetStyles{L"Grid#DetailsViewControlRootGrid", {
+    ThemeCibleStyles{L"Grid#DetailsViewControlRootGrid", {
         L"Background:=Transparent"}},
-    ThemeTargetStyles{L"StackPanel#DetailsViewThumbnail", {
+    ThemeCibleStyles{L"StackPanel#DetailsViewThumbnail", {
         L"Background:=Transparent"}},
 }, {
     L"ContentBG=<SolidColorBrush Color=\"{ThemeResource SystemChromeAltHighColor}\" Opacity=\"1\" />",
@@ -7478,50 +7482,50 @@ const Theme g_themeLiquidGlass = {{
 }, {}, /*explorerFrameContainerHeight=*/87};
 
 const Theme g_themeMicaTabless = {{
-    ThemeTargetStyles{L"FileExplorerExtensions.CommandBarControl_Wave1 > Grid, Grid#CommandBarControlRootGrid", {
+    ThemeCibleStyles{L"FileExplorerExtensions.CommandBarControl_Wave1 > Grid, Grid#CommandBarControlRootGrid", {
         L"Background=Transparent"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#ContentRoot", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Grid#ContentRoot", {
         L"Background=Transparent"}},
-    ThemeTargetStyles{L"FileExplorerExtensions.NavigationBarControl", {
+    ThemeCibleStyles{L"FileExplorerExtensions.NavigationBarControl", {
         L"Grid.Row=$NavigationBarGrid"}},
-    ThemeTargetStyles{L"FileExplorerExtensions.CommandBarControl_Wave1, FileExplorerExtensions.CommandBarControl", {
+    ThemeCibleStyles{L"FileExplorerExtensions.CommandBarControl_Wave1, FileExplorerExtensions.CommandBarControl", {
         L"Grid.Row=$CommandBarGrid"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#TabContainerGrid > Border", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Grid#TabContainerGrid > Border", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#TabContainer > Microsoft.UI.Xaml.Controls.Button#CloseButton", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Grid#TabContainer > Microsoft.UI.Xaml.Controls.Button#CloseButton", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.TabViewItem > Microsoft.UI.Xaml.Controls.Grid#LayoutRoot > Microsoft.UI.Xaml.Controls.Canvas", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.TabViewItem > Microsoft.UI.Xaml.Controls.Grid#LayoutRoot > Microsoft.UI.Xaml.Controls.Canvas", {
         L"Opacity=0"}},
-    ThemeTargetStyles{L"Grid#NavigationBarControlGrid", {
+    ThemeCibleStyles{L"Grid#NavigationBarControlGrid", {
         L"Background:=<SolidColorBrush Color=\"{ThemeResource SystemChromeLowColor}\" />"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#TabContainer", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Grid#TabContainer", {
         L"BorderThickness=0"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.ContentPresenter > Microsoft.UI.Xaml.Controls.StackPanel > Microsoft.UI.Xaml.Controls.TextBlock", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.ContentPresenter > Microsoft.UI.Xaml.Controls.StackPanel > Microsoft.UI.Xaml.Controls.TextBlock", {
         L"FontFamily=Segoe UI, Segoe Fluent Icons",
         L"FontWeight=Normal"}},
-    ThemeTargetStyles{L"FileExplorerExtensions.CommandBarControl_Wave1 > Grid, Grid#CommandBarControlRootGrid", {
+    ThemeCibleStyles{L"FileExplorerExtensions.CommandBarControl_Wave1 > Grid, Grid#CommandBarControlRootGrid", {
         L"BorderThickness=0,0,0,1"}},
-    ThemeTargetStyles{L"FileExplorerExtensions.FileExplorerTabControl", {
+    ThemeCibleStyles{L"FileExplorerExtensions.FileExplorerTabControl", {
         L"Height=36"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#TabContainer", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Grid#TabContainer", {
         L"Padding=1,0,0,1"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Viewbox#IconBox", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Viewbox#IconBox", {
         L"Margin=0,0,4,0"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.TabViewItem", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.TabViewItem", {
         L"Margin=0,-8,0,0"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#NavigationBarControlGrid", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Grid#NavigationBarControlGrid", {
         L"Background=Transparent"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#DetailsViewControlRootGrid", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Grid#DetailsViewControlRootGrid", {
         L"Background=Transparent"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarSeparator", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarSeparator", {
         L"Opacity=0"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#GalleryRootGrid", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Grid#GalleryRootGrid", {
         L"Background:="}},
-    ThemeTargetStyles{L"FileExplorerExtensions.GalleryViewControl#GalleryViewControl > Microsoft.UI.Xaml.Controls.Grid", {
+    ThemeCibleStyles{L"FileExplorerExtensions.GalleryViewControl#GalleryViewControl > Microsoft.UI.Xaml.Controls.Grid", {
         L"Background:="}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#HomeViewRootGrid", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Grid#HomeViewRootGrid", {
         L"Background:="}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.StackPanel#DetailsViewThumbnail > Microsoft.UI.Xaml.Controls.Grid", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.StackPanel#DetailsViewThumbnail > Microsoft.UI.Xaml.Controls.Grid", {
         L"Background:="}},
 }, {
     L"NavigationBarGrid=1",
@@ -7529,219 +7533,219 @@ const Theme g_themeMicaTabless = {{
 }};
 
 const Theme g_themeOS26_Liquid_Glass = {{
-    ThemeTargetStyles{L"Grid#DetailsViewControlRootGrid", {
+    ThemeCibleStyles{L"Grid#DetailsViewControlRootGrid", {
         L"Margin=20,20,20,1",
         L"Background:=<WindhawkBlur BlurAmount=\"30\" TintColor=\"#2D101010\" TintOpacity=\"0.4\"/>",
         L"CornerRadius=15"}},
-    ThemeTargetStyles{L"StackPanel#DetailsViewThumbnail > Grid", {
+    ThemeCibleStyles{L"StackPanel#DetailsViewThumbnail > Grid", {
         L"Background=Transparent"}},
-    ThemeTargetStyles{L"Grid#HomeViewRootGrid", {
+    ThemeCibleStyles{L"Grid#HomeViewRootGrid", {
         L"Margin=20,20,20,0",
         L"Background:=<WindhawkBlur BlurAmount=\"30\" TintColor=\"#2D101010\" TintOpacity=\"0.4\"/>",
         L"CornerRadius=15"}},
-    ThemeTargetStyles{L"FileExplorerExtensions.GalleryViewControl#GalleryViewControl > Grid", {
+    ThemeCibleStyles{L"FileExplorerExtensions.GalleryViewControl#GalleryViewControl > Grid", {
         L"Margin=20,20,20,0",
         L"Background:=<WindhawkBlur BlurAmount=\"30\" TintColor=\"#2D101010\" TintOpacity=\"0.4\"/>",
         L"CornerRadius=15"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#GalleryRootGrid", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Grid#GalleryRootGrid", {
         L"Margin=10",
         L"Background:=transparent",
         L"CornerRadius=15"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton > Grid@CommonStates", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton > Grid@CommonStates", {
         L"Background@Disabled:=<WindhawkBlur BlurAmount=\"8\" TintColor=\"#25ffffff\"/>",
         L"CornerRadius@Disabled=12",
         L"BorderThickness@Disabled=1",
         L"Margin@Disabled=2,6,2,6",
         L"Padding@Disabled=0,-7",
-        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#backButton > Grid@CommonStates", {
+        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorPar défaut}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>"}},
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#backButton > Grid@CommonStates", {
         L"Background@Disabled:=<WindhawkBlur BlurAmount=\"8\" TintColor=\"#25ffffff\"/>",
         L"CornerRadius@Disabled=11",
         L"BorderThickness@Disabled=1",
-        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>",
+        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorPar défaut}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>",
         L"Margin@Disabled=0,0,0,0",
         L"Height@Disabled=32",
         L"Width@Disabled=20",
         L"Padding@Disabled=0,-2,0,2"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#forwardButton > Grid@CommonStates", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#forwardButton > Grid@CommonStates", {
         L"Background@Disabled:=<WindhawkBlur BlurAmount=\"8\" TintColor=\"#25ffffff\"/>",
         L"CornerRadius@Disabled=11",
         L"BorderThickness@Disabled=1",
-        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>",
+        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorPar défaut}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>",
         L"Margin@Disabled=0,0,0,0",
         L"Height@Disabled=32",
         L"Width@Disabled=20",
         L"Padding@Disabled=0,-2,0,2"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#upButton > Grid@CommonStates", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#upButton > Grid@CommonStates", {
         L"Background@Disabled:=<WindhawkBlur BlurAmount=\"8\" TintColor=\"#25ffffff\"/>",
         L"CornerRadius@Disabled=11",
         L"BorderThickness@Disabled=1",
-        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>",
+        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorPar défaut}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>",
         L"Margin@Disabled=0,0,0,0",
         L"Height@Disabled=32",
         L"Width@Disabled=20",
         L"Padding@Disabled=0,-2,0,2"}},
-    ThemeTargetStyles{L"CommandBar#FileExplorerCommandBar", {
+    ThemeCibleStyles{L"CommandBar#FileExplorerCommandBar", {
         L"Background=Transparent",
         L"HorizontalAlignment=1"}},
-    ThemeTargetStyles{L"CommandBar#FileExplorerSecondaryCommandBar", {
+    ThemeCibleStyles{L"CommandBar#FileExplorerSecondaryCommandBar", {
         L"Background=Transparent",
         L"MinHeight=0"}},
-    ThemeTargetStyles{L"Grid#TabContainerGrid > Border#LeftBottomBorderLine", {
+    ThemeCibleStyles{L"Grid#TabContainerGrid > Border#LeftBottomBorderLine", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"Grid#TabContainerGrid > Border#RightBottomBorderLine", {
+    ThemeCibleStyles{L"Grid#TabContainerGrid > Border#RightBottomBorderLine", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"TabViewItem", {
+    ThemeCibleStyles{L"TabViewItem", {
         L"Margin=0,0,8,0"}},
-    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot", {
+    ThemeCibleStyles{L"TabViewItem > Grid#LayoutRoot", {
         L"CornerRadius=12",
         L"Margin=2,4,0,4",
         L"Height=27",
         L"BorderThickness=1",
-        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>"}},
-    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot > Canvas", {
+        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorPar défaut}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>"}},
+    ThemeCibleStyles{L"TabViewItem > Grid#LayoutRoot > Canvas", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot > Grid#TabContainer", {
+    ThemeCibleStyles{L"TabViewItem > Grid#LayoutRoot > Grid#TabContainer", {
         L"Background=Transparent",
         L"BorderThickness=0"}},
-    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot@CommonStates", {
+    ThemeCibleStyles{L"TabViewItem > Grid#LayoutRoot@CommonStates", {
         L"Background@Selected:=<WindhawkBlur BlurAmount=\"15\" TintColor=\"#25ffffff\" />",
         L"Background@PointerOverSelected:=<WindhawkBlur BlurAmount=\"15\" TintColor=\"#35ffffff\" />",
         L"Background@Normal:=<WindhawkBlur BlurAmount=\"15\" TintColor=\"#15ffffff\" />"}},
-    ThemeTargetStyles{L"Grid#TabContainerGrid > Border > Button#AddButton", {
+    ThemeCibleStyles{L"Grid#TabContainerGrid > Border > Button#AddButton", {
         L"Visibility=Visible",
         L"Margin=0,0,0,2",
         L"Background:=<WindhawkBlur BlurAmount=\"15\" TintColor=\"#25ffffff\"/>",
         L"CornerRadius=10",
         L"BorderThickness=1",
-        L"BorderBrush:=<LinearGradientBrush EndPoint=\"1,1\" StartPoint=\"0,0\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\"/><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\"/><GradientStop Color=\"#80ffffff\" Offset=\"1\"/></LinearGradientBrush>",
+        L"BorderBrush:=<LinearGradientBrush EndPoint=\"1,1\" StartPoint=\"0,0\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\"/><GradientStop Color=\"{ThemeResource SurfaceStrokeColorPar défaut}\" Offset=\"0.55\"/><GradientStop Color=\"#80ffffff\" Offset=\"1\"/></LinearGradientBrush>",
         L"Width=24",
         L"Height=24"}},
-    ThemeTargetStyles{L"FileExplorerExtensions.CommandBarControl_Wave1 > Grid, Grid#CommandBarControlRootGrid", {
+    ThemeCibleStyles{L"FileExplorerExtensions.CommandBarControl_Wave1 > Grid, Grid#CommandBarControlRootGrid", {
         L"Background=Transparent"}},
-    ThemeTargetStyles{L"Grid#NavigationBarControlGrid", {
+    ThemeCibleStyles{L"Grid#NavigationBarControlGrid", {
         L"Background=Transparent"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#FileExplorerAddressBarGrid", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Grid#FileExplorerAddressBarGrid", {
         L"Margin=-6,0,0,0"}},
-    ThemeTargetStyles{L"Grid#PART_LayoutRoot", {
+    ThemeCibleStyles{L"Grid#PART_LayoutRoot", {
         L"Background:=<WindhawkBlur BlurAmount=\"15\" TintColor=\"#25ffffff\" />",
         L"CornerRadius=14",
         L"BorderThickness=1",
         L"Margin=2",
-        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>"}},
-    ThemeTargetStyles{L"FileExplorerExtensions.CommandBarControl_Wave1, FileExplorerExtensions.CommandBarControl", {
+        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorPar défaut}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>"}},
+    ThemeCibleStyles{L"FileExplorerExtensions.CommandBarControl_Wave1, FileExplorerExtensions.CommandBarControl", {
         L"Margin=0,0,0,0"}},
-    ThemeTargetStyles{L"AutoSuggestBox#FileExplorerSearchBox > Grid#LayoutRoot > TextBox > Grid@CommonStates > Border#BorderElement", {
+    ThemeCibleStyles{L"AutoSuggestBox#FileExplorerSearchBox > Grid#LayoutRoot > TextBox > Grid@CommonStates > Border#BorderElement", {
         L"Background:=<WindhawkBlur BlurAmount=\"15\" TintColor=\"#25ffffff\" />",
         L"CornerRadius=14",
         L"BorderThickness=1",
-        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton", {
+        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorPar défaut}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>"}},
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton", {
         L"Background:=<WindhawkBlur BlurAmount=\"15\" TintColor=\"#25ffffff\" />",
         L"CornerRadius=12",
         L"BorderThickness=1",
         L"Margin=3,0,3,1",
-        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarToggleButton", {
+        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorPar défaut}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>"}},
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarToggleButton", {
         L"Background:=<WindhawkBlur BlurAmount=\"15\" TintColor=\"#25ffffff\" />",
         L"CornerRadius=12",
         L"BorderThickness=1",
         L"Margin=3,0,3,1",
-        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#OuterOverflowContentRootV2", {
+        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorPar défaut}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>"}},
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Grid#OuterOverflowContentRootV2", {
         L"CornerRadius=20"}},
-    ThemeTargetStyles{L"Button#MoreButton", {
+    ThemeCibleStyles{L"Button#MoreButton", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarSeparator", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarSeparator", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#backButton", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#backButton", {
         L"Margin=0,9,9,0"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#forwardButton", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#forwardButton", {
         L"Margin=0,9,9,0"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#upButton", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#upButton", {
         L"Margin=0,9,9,0"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#refreshButton", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#refreshButton", {
         L"Margin=0,9,9,0"}},
 }};
 
 const Theme g_themeOS26_Liquid_Glass_variant_Compact = {{
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Primitives.SuggestionsPopup", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Primitives.SuggestionsPopup", {
         L"Margin=0,0,0,900"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton > Grid@CommonStates", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton > Grid@CommonStates", {
         L"Background@Disabled:=<LinearGradientBrush StartPoint=\"-0.3,-0.3\" EndPoint=\"1.3,1.3\"><GradientStop Color=\"#55f0f07d\" Offset=\"0.0\"/><GradientStop Color=\"#2AF0F0F0\" Offset=\"0.3\"/><GradientStop Color=\"#00F0F0F0\" Offset=\"0.6\"/></LinearGradientBrush>",
-        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>",
+        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorPar défaut}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>",
         L"CornerRadius@Disabled=12",
         L"BorderThickness@Disabled=1",
         L"Margin@Disabled=2,6,2,6",
         L"Padding@Disabled=0,-7"}},
-    ThemeTargetStyles{L"CommandBar#FileExplorerCommandBar > Grid#LayoutRoot > Grid#ContentRoot > Button#MoreButton", {
+    ThemeCibleStyles{L"CommandBar#FileExplorerCommandBar > Grid#LayoutRoot > Grid#ContentRoot > Button#MoreButton", {
         L"Background:=<LinearGradientBrush StartPoint=\"-0.3,-0.3\" EndPoint=\"1.3,1.3\"><GradientStop Color=\"#55f0f07d\" Offset=\"0.0\"/><GradientStop Color=\"#2AF0F0F0\" Offset=\"0.3\"/><GradientStop Color=\"#00F0F0F0\" Offset=\"0.6\"/></LinearGradientBrush>",
-        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>",
+        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorPar défaut}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>",
         L"CornerRadius=12",
         L"BorderThickness=1",
         L"Margin=3,2,3,2",
         L"Width=45",
         L"Height=32"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#backButton > Grid@CommonStates", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#backButton > Grid@CommonStates", {
         L"Background@Disabled:=<LinearGradientBrush StartPoint=\"-0.3,-0.3\" EndPoint=\"1.3,1.3\"><GradientStop Color=\"#55f0f07d\" Offset=\"0.0\"/><GradientStop Color=\"#2AF0F0F0\" Offset=\"0.3\"/><GradientStop Color=\"#00F0F0F0\" Offset=\"0.6\"/></LinearGradientBrush>",
-        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>",
+        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorPar défaut}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>",
         L"CornerRadius@Disabled=11",
         L"BorderThickness@Disabled=1",
         L"Margin@Disabled=0,0,0,0",
         L"Height@Disabled=32",
         L"Width@Disabled=20",
         L"Padding@Disabled=0,-2,0,2"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#forwardButton > Grid@CommonStates", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#forwardButton > Grid@CommonStates", {
         L"Background@Disabled:=<LinearGradientBrush StartPoint=\"-0.3,-0.3\" EndPoint=\"1.3,1.3\"><GradientStop Color=\"#55f0f07d\" Offset=\"0.0\"/><GradientStop Color=\"#2AF0F0F0\" Offset=\"0.3\"/><GradientStop Color=\"#00F0F0F0\" Offset=\"0.6\"/></LinearGradientBrush>",
-        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>",
+        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorPar défaut}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>",
         L"CornerRadius@Disabled=11",
         L"BorderThickness@Disabled=1",
         L"Margin@Disabled=0,0,0,0",
         L"Height@Disabled=32",
         L"Width@Disabled=20",
         L"Padding@Disabled=0,-2,0,2"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#refreshButton > Grid@CommonStates", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#refreshButton > Grid@CommonStates", {
         L"Background@Disabled:=<LinearGradientBrush StartPoint=\"-0.3,-0.3\" EndPoint=\"1.3,1.3\"><GradientStop Color=\"#55f0f07d\" Offset=\"0.0\"/><GradientStop Color=\"#2AF0F0F0\" Offset=\"0.3\"/><GradientStop Color=\"#00F0F0F0\" Offset=\"0.6\"/></LinearGradientBrush>",
-        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>",
+        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorPar défaut}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>",
         L"CornerRadius@Disabled=11",
         L"BorderThickness@Disabled=1",
         L"Margin@Disabled=0,0,0,0",
         L"Height@Disabled=32",
         L"Width@Disabled=20",
         L"Padding@Disabled=0,-2,0,2"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarToggleButton > Grid@CommonStates", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarToggleButton > Grid@CommonStates", {
         L"Background@Disabled:=<WindhawkBlur BlurAmount=\"8\" TintColor=\"#2D101010\"/>"}},
-    ThemeTargetStyles{L"Grid#DetailsViewControlRootGrid", {
+    ThemeCibleStyles{L"Grid#DetailsViewControlRootGrid", {
         L"Margin=20,20,20,1",
         L"Background:=<WindhawkBlur BlurAmount=\"30\" TintColor=\"#2D101010\" TintOpacity=\"0.4\"/>",
         L"CornerRadius=15"}},
-    ThemeTargetStyles{L"StackPanel#DetailsViewThumbnail > Grid", {
+    ThemeCibleStyles{L"StackPanel#DetailsViewThumbnail > Grid", {
         L"Background=Transparent"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid > OuterOverflowContentRootV2", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Grid > OuterOverflowContentRootV2", {
         L"CornerRadius=250"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.CommandBarOverflowPresenter > Microsoft.UI.Xaml.Controls.CommandBarOverflowPresenter", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.CommandBarOverflowPresenter > Microsoft.UI.Xaml.Controls.CommandBarOverflowPresenter", {
         L"Background=transparent"}},
-    ThemeTargetStyles{L"AppBarButton[7]", {
+    ThemeCibleStyles{L"AppBarButton[7]", {
         L"Visibility=Collapsed",
         L"Width=0",
         L"MinWidth=0",
         L"Margin=0,0,0,0",
         L"Padding=0,0,0,0"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Viewbox > ContentViewB", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Viewbox > ContentViewB", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"Grid#HomeViewRootGrid", {
+    ThemeCibleStyles{L"Grid#HomeViewRootGrid", {
         L"Margin=20,20,20,0",
         L"Background:=<WindhawkBlur BlurAmount=\"30\" TintColor=\"#2D101010\" TintOpacity=\"0.4\"/>",
         L"CornerRadius=15"}},
-    ThemeTargetStyles{L"FileExplorerExtensions.GalleryViewControl#GalleryViewControl > Grid", {
+    ThemeCibleStyles{L"FileExplorerExtensions.GalleryViewControl#GalleryViewControl > Grid", {
         L"Margin=20,20,20,0",
         L"Background:=<WindhawkBlur BlurAmount=\"30\" TintColor=\"#2D101010\" TintOpacity=\"0.4\"/>",
         L"CornerRadius=15"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#GalleryRootGrid", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Grid#GalleryRootGrid", {
         L"Margin=10",
         L"Background:=transparent",
         L"CornerRadius=15"}},
-    ThemeTargetStyles{L"CommandBar#FileExplorerCommandBar", {
+    ThemeCibleStyles{L"CommandBar#FileExplorerCommandBar", {
         L"Grid.Row=0",
         L"Grid.RowSpan=1",
         L"CornerRadius:=15",
@@ -7749,118 +7753,118 @@ const Theme g_themeOS26_Liquid_Glass_variant_Compact = {{
         L"HorizontalAlignment=Left",
         L"Background:=transparent",
         L"Padding=0,0,0,0"}},
-    ThemeTargetStyles{L"CommandBar#FileExplorerCommandBar > Grid#LayoutRoot > Grid#ContentRoot > Grid#OverflowSeparator", {
+    ThemeCibleStyles{L"CommandBar#FileExplorerCommandBar > Grid#LayoutRoot > Grid#ContentRoot > Grid#OverflowSeparator", {
         L"Visibility=Collapsed",
         L"Width=0",
         L"MinWidth=0"}},
-    ThemeTargetStyles{L"CommandBar#FileExplorerCommandBar > Grid#LayoutRoot > Grid#ContentRoot", {
+    ThemeCibleStyles{L"CommandBar#FileExplorerCommandBar > Grid#LayoutRoot > Grid#ContentRoot", {
         L"HorizontalAlignment=Left"}},
-    ThemeTargetStyles{L"CommandBar#FileExplorerCommandBar > Grid#LayoutRoot > Grid#ContentRoot > ItemsControl#PrimaryItemsControl", {
+    ThemeCibleStyles{L"CommandBar#FileExplorerCommandBar > Grid#LayoutRoot > Grid#ContentRoot > ItemsControl#PrimaryItemsControl", {
         L"HorizontalAlignment=Left"}},
-    ThemeTargetStyles{L"CommandBar#FileExplorerSecondaryCommandBar", {
+    ThemeCibleStyles{L"CommandBar#FileExplorerSecondaryCommandBar", {
         L"Visibility=Visible",
         L"Margin=0,40,0,-20"}},
-    ThemeTargetStyles{L"Grid#TabContainerGrid", {
+    ThemeCibleStyles{L"Grid#TabContainerGrid", {
         L"Margin=370,1,0,1"}},
-    ThemeTargetStyles{L"Grid#TabContainerGrid > Border#LeftBottomBorderLine", {
+    ThemeCibleStyles{L"Grid#TabContainerGrid > Border#LeftBottomBorderLine", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"Grid#TabContainerGrid > Border#RightBottomBorderLine", {
+    ThemeCibleStyles{L"Grid#TabContainerGrid > Border#RightBottomBorderLine", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"TabViewItem", {
+    ThemeCibleStyles{L"TabViewItem", {
         L"Width=150",
         L"Height=40",
         L"Margin=0,0,8,0"}},
-    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot", {
+    ThemeCibleStyles{L"TabViewItem > Grid#LayoutRoot", {
         L"Background:=<WindhawkBlur BlurAmount=\"8\" TintColor=\"#25ffffff\"/>",
         L"CornerRadius=10",
         L"BorderThickness=1",
         L"Margin=2,2,0,2",
         L"Height=35"}},
-    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot > Canvas", {
+    ThemeCibleStyles{L"TabViewItem > Grid#LayoutRoot > Canvas", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot > Grid#TabContainer", {
+    ThemeCibleStyles{L"TabViewItem > Grid#LayoutRoot > Grid#TabContainer", {
         L"Background=Transparent",
         L"BorderThickness=0"}},
-    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot@CommonStates", {
+    ThemeCibleStyles{L"TabViewItem > Grid#LayoutRoot@CommonStates", {
         L"Background@Selected:=<WindhawkBlur BlurAmount=\"15\" TintColor=\"#20ffffff\"/>",
         L"Background@PointerOverSelected:=<WindhawkBlur BlurAmount=\"15\" TintColor=\"#25ffffff\"/>",
         L"Background@Normal:=<WindhawkBlur BlurAmount=\"15\" TintColor=\"#15ffffff\"/>",
-        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>"}},
-    ThemeTargetStyles{L"Grid#TabContainerGrid > Border > Button#AddButton", {
+        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorPar défaut}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>"}},
+    ThemeCibleStyles{L"Grid#TabContainerGrid > Border > Button#AddButton", {
         L"Visibility=Visible",
         L"Margin=0,0,0,4",
         L"Background:=<LinearGradientBrush StartPoint=\"-0.3,-0.3\" EndPoint=\"1.3,1.3\"><GradientStop Color=\"#55f0f07d\" Offset=\"0.0\"/><GradientStop Color=\"#2AF0F0F0\" Offset=\"0.3\"/><GradientStop Color=\"#00F0F0F0\" Offset=\"0.6\"/></LinearGradientBrush>",
-        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>",
+        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorPar défaut}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>",
         L"CornerRadius=8",
         L"BorderThickness=1",
-        L"BorderBrush:=<LinearGradientBrush EndPoint=\"1,1\" StartPoint=\"0,0\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\"/><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\"/><GradientStop Color=\"#80ffffff\" Offset=\"1\"/></LinearGradientBrush>",
+        L"BorderBrush:=<LinearGradientBrush EndPoint=\"1,1\" StartPoint=\"0,0\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\"/><GradientStop Color=\"{ThemeResource SurfaceStrokeColorPar défaut}\" Offset=\"0.55\"/><GradientStop Color=\"#80ffffff\" Offset=\"1\"/></LinearGradientBrush>",
         L"Width=24",
         L"Height=24"}},
-    ThemeTargetStyles{L"FileExplorerExtensions.CommandBarControl_Wave1 > Grid, Grid#CommandBarControlRootGrid", {
+    ThemeCibleStyles{L"FileExplorerExtensions.CommandBarControl_Wave1 > Grid, Grid#CommandBarControlRootGrid", {
         L"Background:=",
         L"BorderBrush:="}},
-    ThemeTargetStyles{L"Grid#NavigationBarControlGrid", {
+    ThemeCibleStyles{L"Grid#NavigationBarControlGrid", {
         L"Background=Transparent"}},
-    ThemeTargetStyles{L"Grid#PART_LayoutRoot", {
+    ThemeCibleStyles{L"Grid#PART_LayoutRoot", {
         L"Background:=<WindhawkBlur BlurAmount=\"8\" TintColor=\"#15ffffff\"/>",
-        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>",
+        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorPar défaut}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>",
         L"CornerRadius=10",
         L"BorderThickness=1",
         L"Margin=2"}},
-    ThemeTargetStyles{L"FileExplorerExtensions.CommandBarControl_Wave1, FileExplorerExtensions.CommandBarControl", {
+    ThemeCibleStyles{L"FileExplorerExtensions.CommandBarControl_Wave1, FileExplorerExtensions.CommandBarControl", {
         L"Grid.Row=0",
         L"Grid.RowSpan=2",
         L"Margin=0,0,0,0"}},
-    ThemeTargetStyles{L"AutoSuggestBox#FileExplorerSearchBox > Grid#LayoutRoot > TextBox > Grid@CommonStates", {
+    ThemeCibleStyles{L"AutoSuggestBox#FileExplorerSearchBox > Grid#LayoutRoot > TextBox > Grid@CommonStates", {
         L"BorderThickness=1",
         L"Background:=<WindhawkBlur BlurAmount=\"8\" TintColor=\"#15ffffff\"/>",
-        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>",
+        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorPar défaut}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>",
         L"CornerRadius=10",
         L"Margin=-90,0,90,0",
         L"Height=32"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#FileExplorerAddressBarGrid", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Grid#FileExplorerAddressBarGrid", {
         L"Margin=-8,0,90,0"}},
-    ThemeTargetStyles{L"CommandBarOverflowPresenter Microsoft.UI.Xaml.Controls.AppBarButton", {
+    ThemeCibleStyles{L"CommandBarOverflowPresenter Microsoft.UI.Xaml.Controls.AppBarButton", {
         L"Background=Transparent",
         L"CornerRadius=8",
         L"Margin=2,1,2,1"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton", {
         L"Background:=<LinearGradientBrush StartPoint=\"-0.3,-0.3\" EndPoint=\"1.3,1.3\"><GradientStop Color=\"#55f0f07d\" Offset=\"0.0\"/><GradientStop Color=\"#2AF0F0F0\" Offset=\"0.3\"/><GradientStop Color=\"#00F0F0F0\" Offset=\"0.6\"/></LinearGradientBrush>",
-        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>",
+        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorPar défaut}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>",
         L"CornerRadius=12",
         L"BorderThickness=1",
         L"Margin=3,2,3,2"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#OuterOverflowContentRootV2", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Grid#OuterOverflowContentRootV2", {
         L"CornerRadius=20"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarToggleButton", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarToggleButton", {
         L"Background:=<WindhawkBlur BlurAmount=\"8\" TintColor=\"#2D101010\"/>",
         L"CornerRadius=8",
         L"BorderThickness=1",
         L"Margin=3,0,3,1",
-        L"BorderBrush:=<LinearGradientBrush EndPoint=\"1,1\" StartPoint=\"0,0\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\"/><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\"/><GradientStop Color=\"#80ffffff\" Offset=\"1\"/></LinearGradientBrush>"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarSeparator", {
+        L"BorderBrush:=<LinearGradientBrush EndPoint=\"1,1\" StartPoint=\"0,0\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\"/><GradientStop Color=\"{ThemeResource SurfaceStrokeColorPar défaut}\" Offset=\"0.55\"/><GradientStop Color=\"#80ffffff\" Offset=\"1\"/></LinearGradientBrush>"}},
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarSeparator", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#backButton", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#backButton", {
         L"Margin=0,9,9,0",
         L"Visibility=Visible"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#forwardButton", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#forwardButton", {
         L"Margin=0,9,9,0",
         L"Visibility=Visible"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#upButton", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#upButton", {
         L"Margin=0,9,9,0",
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#refreshButton", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#refreshButton", {
         L"Visibility=Visible",
         L"Margin=0,9,9,0"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#stopButton", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#stopButton", {
         L"Visibility=Collapsed",
         L"Margin=0,9,9,0"}},
-    ThemeTargetStyles{L"FileExplorerExtensions.NavigationBarControl", {
+    ThemeCibleStyles{L"FileExplorerExtensions.NavigationBarControl", {
         L"Grid.RowSpan=2"}},
 }, {}, {}, /*explorerFrameContainerHeight=*/87};
 
 const Theme g_themeZEUSosX_044 = {{
-    ThemeTargetStyles{L"FileExplorerExtensions.CommandBarControl_Wave1 > Grid, Grid#CommandBarControlRootGrid", {
+    ThemeCibleStyles{L"FileExplorerExtensions.CommandBarControl_Wave1 > Grid, Grid#CommandBarControlRootGrid", {
         L"Background=Transparent",
         L"BorderThickness=0",
         L"Grid.Row=0",
@@ -7869,74 +7873,74 @@ const Theme g_themeZEUSosX_044 = {{
         L"VerticalAlignment=Top",
         L"Width=155",
         L"Margin=197,-30,0,0"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.CommandBar#FileExplorerCommandBar", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.CommandBar#FileExplorerCommandBar", {
         L"Background=Transparent",
         L"HorizontalAlignment=Left",
         L"VerticalAlignment=Top"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Border#BottomBorderLine", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Border#BottomBorderLine", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#NavigationBarControlGrid", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Grid#NavigationBarControlGrid", {
         L"Background=Transparent",
         L"BorderBrush=Transparent",
         L"ColumnDefinitions:=<ColumnDefinitionCollection><ColumnDefinition Width=\"Auto\"/><ColumnDefinition Width=\"*\"/><ColumnDefinition Width=\"380\"/></ColumnDefinitionCollection>",
         L"Margin=0,-16,0,-21"}},
-    ThemeTargetStyles{L"Grid#TabContainerGrid", {
+    ThemeCibleStyles{L"Grid#TabContainerGrid", {
         L"Grid.Row=0",
         L"HorizontalAlignment=Left",
         L"Margin=100,0,0,0",
         L"Width=1",
         L"MaxWidth=1"}},
-    ThemeTargetStyles{L"FileExplorerExtensions.FileExplorerTabControl", {
+    ThemeCibleStyles{L"FileExplorerExtensions.FileExplorerTabControl", {
         L"HorizontalAlignment=Left",
         L"Margin=100,0,0,0",
         L"Width=1",
         L"MaxWidth=1"}},
-    ThemeTargetStyles{L"TabViewItem", {
+    ThemeCibleStyles{L"TabViewItem", {
         L"Width=0",
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"Grid#TabContainerGrid > Border > Button#AddButton", {
+    ThemeCibleStyles{L"Grid#TabContainerGrid > Border > Button#AddButton", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"AutoSuggestBox#FileExplorerSearchBox > Grid#LayoutRoot > TextBox > Grid@CommonStates > Border#BorderElement", {
+    ThemeCibleStyles{L"AutoSuggestBox#FileExplorerSearchBox > Grid#LayoutRoot > TextBox > Grid@CommonStates > Border#BorderElement", {
         L"Background=Transparent",
         L"BorderThickness=0"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#FileExplorerAddressBarGrid > Grid#LayoutRoot > TextBox > Grid@CommonStates > Border#BorderElement", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Grid#FileExplorerAddressBarGrid > Grid#LayoutRoot > TextBox > Grid@CommonStates > Border#BorderElement", {
         L"Background=Transparent",
         L"BorderThickness=0"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AutoSuggestBox#FileExplorerSearchBox > Microsoft.UI.Xaml.Controls.Grid#LayoutRoot > Microsoft.UI.Xaml.Controls.TextBox#TextBox", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AutoSuggestBox#FileExplorerSearchBox > Microsoft.UI.Xaml.Controls.Grid#LayoutRoot > Microsoft.UI.Xaml.Controls.TextBox#TextBox", {
         L"Margin=0,0,140,0",
         L"Background=Transparent",
         L"BorderBrush=Transparent",
         L"TextAlignment=Center",
         L"HorizontalContentAlignment=Center"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#FileExplorerAddressBarGrid", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Grid#FileExplorerAddressBarGrid", {
         L"HorizontalAlignment=Stretch",
         L"Height=28",
         L"Margin=155,0,0,0"}},
-    ThemeTargetStyles{L"AutoSuggestBox#FileExplorerSearchBox", {
+    ThemeCibleStyles{L"AutoSuggestBox#FileExplorerSearchBox", {
         L"HorizontalAlignment=Stretch",
         L"Height=28",
         L"Margin=-7,-1,7,0"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.CommandBar#FileExplorerCommandBar Button", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.CommandBar#FileExplorerCommandBar Button", {
         L"FontSize=14"}},
 }, {}, {}, /*explorerFrameContainerHeight=*/44, BackgroundTranslucentEffect::kMica};
 
 const Theme g_themeCompact_Explorer11 = {{
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Primitives.SuggestionsPopup", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Primitives.SuggestionsPopup", {
         L"Margin=0,0,0,900"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton > Grid@CommonStates", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton > Grid@CommonStates", {
         L"Background@Disabled:=<WindhawkBlur BlurAmount=\"8\" TintColor=\"#25ffffff\"/>",
         L"CornerRadius@Disabled=10",
         L"BorderThickness@Disabled=1",
         L"Margin@Disabled=2,6,2,6",
         L"Padding@Disabled=0,-7"}},
-    ThemeTargetStyles{L"CommandBar#FileExplorerCommandBar > Grid#LayoutRoot > Grid#ContentRoot > Button#MoreButton", {
+    ThemeCibleStyles{L"CommandBar#FileExplorerCommandBar > Grid#LayoutRoot > Grid#ContentRoot > Button#MoreButton", {
         L"Background:=<WindhawkBlur BlurAmount=\"8\" TintColor=\"#25ffffff\"/>",
         L"CornerRadius=10",
         L"BorderThickness=1",
         L"Margin=3,2,3,2",
         L"Width=45",
         L"Height=32"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#backButton > Grid@CommonStates", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#backButton > Grid@CommonStates", {
         L"Background@Disabled:=<WindhawkBlur BlurAmount=\"8\" TintColor=\"#25ffffff\"/>",
         L"CornerRadius@Disabled=11",
         L"BorderThickness@Disabled=1",
@@ -7944,7 +7948,7 @@ const Theme g_themeCompact_Explorer11 = {{
         L"Height@Disabled=32",
         L"Width@Disabled=20",
         L"Padding@Disabled=0,-2,0,2"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#forwardButton > Grid@CommonStates", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#forwardButton > Grid@CommonStates", {
         L"Background@Disabled:=<WindhawkBlur BlurAmount=\"8\" TintColor=\"#25ffffff\"/>",
         L"CornerRadius@Disabled=11",
         L"BorderThickness@Disabled=1",
@@ -7952,7 +7956,7 @@ const Theme g_themeCompact_Explorer11 = {{
         L"Height@Disabled=32",
         L"Width@Disabled=20",
         L"Padding@Disabled=0,-2,0,2"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#refreshButton > Grid@CommonStates", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#refreshButton > Grid@CommonStates", {
         L"Background@Disabled:=<WindhawkBlur BlurAmount=\"8\" TintColor=\"#25ffffff\"/>",
         L"CornerRadius@Disabled=11",
         L"BorderThickness@Disabled=1",
@@ -7960,39 +7964,39 @@ const Theme g_themeCompact_Explorer11 = {{
         L"Height@Disabled=32",
         L"Width@Disabled=20",
         L"Padding@Disabled=0,-2,0,2"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarToggleButton > Grid@CommonStates", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarToggleButton > Grid@CommonStates", {
         L"Background@Disabled:=<WindhawkBlur BlurAmount=\"8\" TintColor=\"#2D101010\"/>"}},
-    ThemeTargetStyles{L"Grid#DetailsViewControlRootGrid", {
+    ThemeCibleStyles{L"Grid#DetailsViewControlRootGrid", {
         L"Margin=20,20,20,1",
         L"Background:=<WindhawkBlur BlurAmount=\"30\" TintColor=\"#2D101010\" TintOpacity=\"0.4\"/>",
         L"CornerRadius=15"}},
-    ThemeTargetStyles{L"StackPanel#DetailsViewThumbnail > Grid", {
+    ThemeCibleStyles{L"StackPanel#DetailsViewThumbnail > Grid", {
         L"Background=Transparent"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid > OuterOverflowContentRootV2", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Grid > OuterOverflowContentRootV2", {
         L"CornerRadius=250"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.CommandBarOverflowPresenter > Microsoft.UI.Xaml.Controls.CommandBarOverflowPresenter", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.CommandBarOverflowPresenter > Microsoft.UI.Xaml.Controls.CommandBarOverflowPresenter", {
         L"Background=transparent"}},
-    ThemeTargetStyles{L"AppBarButton[7]", {
+    ThemeCibleStyles{L"AppBarButton[7]", {
         L"Visibility=Collapsed",
         L"Width=0",
         L"MinWidth=0",
         L"Margin=0,0,0,0",
         L"Padding=0,0,0,0"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Viewbox > ContentViewB", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Viewbox > ContentViewB", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"Grid#HomeViewRootGrid", {
+    ThemeCibleStyles{L"Grid#HomeViewRootGrid", {
         L"Margin=20,20,20,0",
         L"Background:=<WindhawkBlur BlurAmount=\"30\" TintColor=\"#2D101010\" TintOpacity=\"0.4\"/>",
         L"CornerRadius=15"}},
-    ThemeTargetStyles{L"FileExplorerExtensions.GalleryViewControl#GalleryViewControl > Grid", {
+    ThemeCibleStyles{L"FileExplorerExtensions.GalleryViewControl#GalleryViewControl > Grid", {
         L"Margin=20,20,20,0",
         L"Background:=<WindhawkBlur BlurAmount=\"30\" TintColor=\"#2D101010\" TintOpacity=\"0.4\"/>",
         L"CornerRadius=15"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#GalleryRootGrid", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Grid#GalleryRootGrid", {
         L"Margin=10",
         L"Background:=transparent",
         L"CornerRadius=15"}},
-    ThemeTargetStyles{L"CommandBar#FileExplorerCommandBar", {
+    ThemeCibleStyles{L"CommandBar#FileExplorerCommandBar", {
         L"Grid.Row=0",
         L"Grid.RowSpan=1",
         L"CornerRadius:=15",
@@ -8000,159 +8004,159 @@ const Theme g_themeCompact_Explorer11 = {{
         L"HorizontalAlignment=Left",
         L"Background:=transparent",
         L"Padding=0,0,0,0"}},
-    ThemeTargetStyles{L"CommandBar#FileExplorerCommandBar > Grid#LayoutRoot > Grid#ContentRoot > Grid#OverflowSeparator", {
+    ThemeCibleStyles{L"CommandBar#FileExplorerCommandBar > Grid#LayoutRoot > Grid#ContentRoot > Grid#OverflowSeparator", {
         L"Visibility=Collapsed",
         L"Width=0",
         L"MinWidth=0"}},
-    ThemeTargetStyles{L"CommandBar#FileExplorerCommandBar > Grid#LayoutRoot > Grid#ContentRoot", {
+    ThemeCibleStyles{L"CommandBar#FileExplorerCommandBar > Grid#LayoutRoot > Grid#ContentRoot", {
         L"HorizontalAlignment=Left"}},
-    ThemeTargetStyles{L"CommandBar#FileExplorerCommandBar > Grid#LayoutRoot > Grid#ContentRoot > ItemsControl#PrimaryItemsControl", {
+    ThemeCibleStyles{L"CommandBar#FileExplorerCommandBar > Grid#LayoutRoot > Grid#ContentRoot > ItemsControl#PrimaryItemsControl", {
         L"HorizontalAlignment=Left"}},
-    ThemeTargetStyles{L"CommandBar#FileExplorerSecondaryCommandBar", {
+    ThemeCibleStyles{L"CommandBar#FileExplorerSecondaryCommandBar", {
         L"Visibility=Visible",
         L"Margin=0,40,0,-20"}},
-    ThemeTargetStyles{L"Grid#TabContainerGrid", {
+    ThemeCibleStyles{L"Grid#TabContainerGrid", {
         L"Margin=370,1,0,1"}},
-    ThemeTargetStyles{L"Grid#TabContainerGrid > Border#LeftBottomBorderLine", {
+    ThemeCibleStyles{L"Grid#TabContainerGrid > Border#LeftBottomBorderLine", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"Grid#TabContainerGrid > Border#RightBottomBorderLine", {
+    ThemeCibleStyles{L"Grid#TabContainerGrid > Border#RightBottomBorderLine", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"TabViewItem", {
+    ThemeCibleStyles{L"TabViewItem", {
         L"Width=150",
         L"Height=40",
         L"Margin=0,0,8,0"}},
-    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot", {
+    ThemeCibleStyles{L"TabViewItem > Grid#LayoutRoot", {
         L"Background:=<WindhawkBlur BlurAmount=\"8\" TintColor=\"#25ffffff\"/>",
         L"CornerRadius=10",
         L"BorderThickness=1",
         L"Margin=2,2,0,2",
         L"Height=35"}},
-    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot > Canvas", {
+    ThemeCibleStyles{L"TabViewItem > Grid#LayoutRoot > Canvas", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot > Grid#TabContainer", {
+    ThemeCibleStyles{L"TabViewItem > Grid#LayoutRoot > Grid#TabContainer", {
         L"Background=Transparent",
         L"BorderThickness=0"}},
-    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot@CommonStates", {
+    ThemeCibleStyles{L"TabViewItem > Grid#LayoutRoot@CommonStates", {
         L"Background@Selected:=<WindhawkBlur BlurAmount=\"15\" TintColor=\"#30ffffff\"/>",
         L"Background@PointerOverSelected:=<WindhawkBlur BlurAmount=\"15\" TintColor=\"#40ffffff\"/>",
         L"Background@Normal:=<WindhawkBlur BlurAmount=\"15\" TintColor=\"#20ffffff\"/>"}},
-    ThemeTargetStyles{L"Grid#TabContainerGrid > Border > Button#AddButton", {
+    ThemeCibleStyles{L"Grid#TabContainerGrid > Border > Button#AddButton", {
         L"Visibility=Visible",
         L"Margin=0,0,0,4",
         L"Background:=<WindhawkBlur BlurAmount=\"15\" TintColor=\"#25ffffff\"/>",
         L"CornerRadius=10",
         L"BorderThickness=0",
-        L"BorderBrush:=<LinearGradientBrush EndPoint=\"1,1\" StartPoint=\"0,0\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\"/><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\"/><GradientStop Color=\"#80ffffff\" Offset=\"1\"/></LinearGradientBrush>",
+        L"BorderBrush:=<LinearGradientBrush EndPoint=\"1,1\" StartPoint=\"0,0\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\"/><GradientStop Color=\"{ThemeResource SurfaceStrokeColorPar défaut}\" Offset=\"0.55\"/><GradientStop Color=\"#80ffffff\" Offset=\"1\"/></LinearGradientBrush>",
         L"Width=24",
         L"Height=24"}},
-    ThemeTargetStyles{L"FileExplorerExtensions.CommandBarControl_Wave1 > Grid, Grid#CommandBarControlRootGrid", {
+    ThemeCibleStyles{L"FileExplorerExtensions.CommandBarControl_Wave1 > Grid, Grid#CommandBarControlRootGrid", {
         L"Background:=",
         L"BorderBrush:="}},
-    ThemeTargetStyles{L"Grid#NavigationBarControlGrid", {
+    ThemeCibleStyles{L"Grid#NavigationBarControlGrid", {
         L"Background=Transparent"}},
-    ThemeTargetStyles{L"Grid#PART_LayoutRoot", {
+    ThemeCibleStyles{L"Grid#PART_LayoutRoot", {
         L"Background:=<WindhawkBlur BlurAmount=\"8\" TintColor=\"#25ffffff\"/>",
         L"CornerRadius=10",
         L"BorderThickness=1",
         L"Margin=1"}},
-    ThemeTargetStyles{L"FileExplorerExtensions.CommandBarControl_Wave1, FileExplorerExtensions.CommandBarControl", {
+    ThemeCibleStyles{L"FileExplorerExtensions.CommandBarControl_Wave1, FileExplorerExtensions.CommandBarControl", {
         L"Grid.Row=0",
         L"Grid.RowSpan=2",
         L"Margin=0,0,0,0"}},
-    ThemeTargetStyles{L"AutoSuggestBox#FileExplorerSearchBox > Grid#LayoutRoot > TextBox > Grid@CommonStates", {
+    ThemeCibleStyles{L"AutoSuggestBox#FileExplorerSearchBox > Grid#LayoutRoot > TextBox > Grid@CommonStates", {
         L"Background:=<WindhawkBlur BlurAmount=\"8\" TintColor=\"#25ffffff\"/>",
         L"CornerRadius=10",
         L"Margin=-90,0,90,0",
         L"Height=30"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#FileExplorerAddressBarGrid", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Grid#FileExplorerAddressBarGrid", {
         L"Margin=-8,0,90,0"}},
-    ThemeTargetStyles{L"CommandBarOverflowPresenter#SecondaryItemsControl > Microsoft.UI.Xaml.Controls.AppBarButton", {
+    ThemeCibleStyles{L"CommandBarOverflowPresenter#SecondaryItemsControl > Microsoft.UI.Xaml.Controls.AppBarButton", {
         L"Background=Transparent",
         L"CornerRadius=4",
         L"BorderThickness=0",
         L"Margin=0,0,0,0"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton", {
         L"Background:=<WindhawkBlur BlurAmount=\"8\" TintColor=\"#25ffffff\"/>",
         L"CornerRadius=10",
         L"BorderThickness=1",
         L"Margin=3,2,3,2"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarToggleButton", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarToggleButton", {
         L"Background:=<WindhawkBlur BlurAmount=\"8\" TintColor=\"#2D101010\"/>",
         L"CornerRadius=8",
         L"BorderThickness=1",
         L"Margin=3,0,3,1",
-        L"BorderBrush:=<LinearGradientBrush EndPoint=\"1,1\" StartPoint=\"0,0\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\"/><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\"/><GradientStop Color=\"#80ffffff\" Offset=\"1\"/></LinearGradientBrush>"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarSeparator", {
+        L"BorderBrush:=<LinearGradientBrush EndPoint=\"1,1\" StartPoint=\"0,0\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\"/><GradientStop Color=\"{ThemeResource SurfaceStrokeColorPar défaut}\" Offset=\"0.55\"/><GradientStop Color=\"#80ffffff\" Offset=\"1\"/></LinearGradientBrush>"}},
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarSeparator", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#backButton", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#backButton", {
         L"Margin=0,9,9,0",
         L"Visibility=Visible"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#forwardButton", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#forwardButton", {
         L"Margin=0,9,9,0",
         L"Visibility=Visible"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#upButton", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#upButton", {
         L"Margin=0,9,9,0",
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#refreshButton", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#refreshButton", {
         L"Visibility=Visible",
         L"Margin=0,9,9,0"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#stopButton", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#stopButton", {
         L"Visibility=Collapsed",
         L"Margin=0,9,9,0"}},
-    ThemeTargetStyles{L"FileExplorerExtensions.NavigationBarControl", {
+    ThemeCibleStyles{L"FileExplorerExtensions.NavigationBarControl", {
         L"Grid.RowSpan=2"}},
 }, {}, {}, /*explorerFrameContainerHeight=*/87};
 
 const Theme g_themeFloat = {{
-    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot@CommonStates", {
+    ThemeCibleStyles{L"TabViewItem > Grid#LayoutRoot@CommonStates", {
         L"Background@Selected:=<AcrylicBrush TintColor=\"{ThemeResource Tab}\" TintOpacity=\"0.9\" Opacity=\"0.6\"/>",
         L"Background@PointerOverSelected:=<AcrylicBrush TintColor=\"{ThemeResource Tab}\" TintOpacity=\"0.9\" Opacity=\"0.7\"/>",
         L"Background@PointerOver:=<AcrylicBrush TintColor=\"{ThemeResource Tab}\" TintOpacity=\"0.9\" Opacity=\"0.3\"/>",
         L"Background@Normal:=<AcrylicBrush TintColor=\"{ThemeResource Tab}\" TintOpacity=\"0.9\" Opacity=\"0\"/>",
         L"Background@PressedSelected:=<AcrylicBrush TintColor=\"{ThemeResource Tab}\" TintOpacity=\"0.9\" Opacity=\"0.9\"/>",
         L"CornerRadius=6"}},
-    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot > Grid#TabContainer", {
+    ThemeCibleStyles{L"TabViewItem > Grid#LayoutRoot > Grid#TabContainer", {
         L"Background=Transparent",
         L"BorderThickness=0"}},
-    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot > Canvas", {
+    ThemeCibleStyles{L"TabViewItem > Grid#LayoutRoot > Canvas", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot", {
+    ThemeCibleStyles{L"TabViewItem > Grid#LayoutRoot", {
         L"BorderThickness=1",
         L"Margin=2,0,0,0",
         L"Height=35"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Border#BottomBorderLine", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Border#BottomBorderLine", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"Grid#TabContainerGrid > Border#LeftBottomBorderLine", {
+    ThemeCibleStyles{L"Grid#TabContainerGrid > Border#LeftBottomBorderLine", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"Grid#TabContainerGrid > Border#RightBottomBorderLine", {
+    ThemeCibleStyles{L"Grid#TabContainerGrid > Border#RightBottomBorderLine", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"TabViewItem", {
+    ThemeCibleStyles{L"TabViewItem", {
         L"CornerRadius=4"}},
-    ThemeTargetStyles{L"Grid#TabContainerGrid > Border > Button#AddButton", {
+    ThemeCibleStyles{L"Grid#TabContainerGrid > Border > Button#AddButton", {
         L"Visibility=Visible",
         L"Margin=0,0,0,3",
         L"CornerRadius=10",
         L"BorderThickness=0",
         L"Width=24",
         L"Height=24"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#TabContainerGrid", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Grid#TabContainerGrid", {
         L"Height=44"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Border#RightBottomBorderLine", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Border#RightBottomBorderLine", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Border#LeftBottomBorderLine", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Border#LeftBottomBorderLine", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#NavigationBarControlGrid", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Grid#NavigationBarControlGrid", {
         L"CornerRadius=6",
         L"Margin=8,4,8,0",
         L"Height=54"}},
-    ThemeTargetStyles{L"FileExplorerExtensions.CommandBarControl_Wave1 > Grid, Grid#CommandBarControlRootGrid", {
+    ThemeCibleStyles{L"FileExplorerExtensions.CommandBarControl_Wave1 > Grid, Grid#CommandBarControlRootGrid", {
         L"Margin=0,8,0,0",
         L"BorderThickness=0,1,0,1"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Primitives.TabViewListView#TabListView", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Controls.Primitives.TabViewListView#TabListView", {
         L"Margin=-3,0,0,0"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Shapes.Path#RightRadiusRenderArc", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Shapes.Path#RightRadiusRenderArc", {
         L"Visibility=Collapsed"}},
-    ThemeTargetStyles{L"Microsoft.UI.Xaml.Shapes.Path#LeftRadiusRenderArc", {
+    ThemeCibleStyles{L"Microsoft.UI.Xaml.Shapes.Path#LeftRadiusRenderArc", {
         L"Visibility=Collapsed"}},
 }, {}, {
     L"Tab@Light=#ffffffff",
@@ -8190,7 +8194,7 @@ thread_local bool g_initializedForThread;
 // a destroyed one is reported under the same handle. Everything the mod records
 // is therefore keyed by an id minted per reported element, which is never
 // reused, rather than by the handle itself.
-enum class ElementId : uint64_t { None = 0 };
+enum class ElementId : uint64_t { Aucun = 0 };
 
 ElementId GetOrCreateElementId(
     InstanceHandle handle,
@@ -8431,7 +8435,7 @@ HRESULT VisualTreeWatcher::OnVisualTreeChange(ParentChildRelation relation, Visu
             if (frameworkElement)
             {
                 Wh_Log(L"FrameworkElement name: %s", frameworkElement.Name().c_str());
-                if (elementId == ElementId::None)
+                if (elementId == ElementId::Aucun)
                 {
                     Wh_Log(L"Skipping element which can't be given an id");
                 }
@@ -8855,7 +8859,7 @@ using PropertyOverridesMaybeUnresolved =
 // value change on some other capture of the same name be skipped.
 struct StyleVariableDependency {
     std::wstring name;
-    ElementId owner = ElementId::None;  // None when the variable was undefined
+    ElementId owner = ElementId::Aucun;  // Aucun when the variable was undefined
 };
 
 // Interned node of an element's visual-tree spine. Nodes are shared by every
@@ -9089,7 +9093,7 @@ thread_local std::unordered_map<ElementId, ElementCustomizationState>
 // entry whose element is gone, or is no longer the element being asked about,
 // belongs to that destroyed predecessor and must not name the new one.
 struct ElementIdEntry {
-    ElementId id = ElementId::None;
+    ElementId id = ElementId::Aucun;
     winrt::weak_ref<wf::IInspectable> element;
 };
 
@@ -9099,11 +9103,11 @@ thread_local uint64_t g_lastElementId;
 ElementId GetOrCreateElementId(InstanceHandle handle,
                                wf::IInspectable const& element) {
     if (!handle || !element) {
-        return ElementId::None;
+        return ElementId::Aucun;
     }
 
     auto& entry = g_elementIds[handle];
-    if (entry.id != ElementId::None && entry.element.get() == element) {
+    if (entry.id != ElementId::Aucun && entry.element.get() == element) {
         return entry.id;
     }
 
@@ -9123,7 +9127,7 @@ ElementId GetOrCreateElementId(InstanceHandle handle,
         // could ever tear down, on an element nothing would then hold back from
         // being released.
         g_elementIds.erase(handle);
-        return ElementId::None;
+        return ElementId::Aucun;
     }
 
     entry.element = std::move(weakElement);
@@ -9135,7 +9139,7 @@ ElementId GetOrCreateElementId(InstanceHandle handle,
 // destroyed, whose state is due for teardown either way.
 ElementId FindElementId(InstanceHandle handle) {
     auto it = g_elementIds.find(handle);
-    return it != g_elementIds.end() ? it->second.id : ElementId::None;
+    return it != g_elementIds.end() ? it->second.id : ElementId::Aucun;
 }
 
 void ForgetElementId(InstanceHandle handle) {
@@ -9316,7 +9320,7 @@ struct TrackedImage {
     Media::Imaging::DecodePixelType decodePixelType =
         Media::Imaging::DecodePixelType::Physical;
     Media::Imaging::BitmapCreateOptions createOptions =
-        Media::Imaging::BitmapCreateOptions::None;
+        Media::Imaging::BitmapCreateOptions::Aucun;
     bool autoPlay = true;
 
     Media::ImageBrush::ImageFailed_revoker brushImageFailedRevoker;
@@ -9421,7 +9425,7 @@ bool g_imageDownloadRunning;
 bool g_imageDownloadStopping;
 
 enum class ResourceVariableTheme {
-    None,
+    Aucun,
     Dark,
     Light,
 };
@@ -10777,7 +10781,7 @@ muc::CompositionBrush XamlBlurBrush::CreateEffectBrush()
         auto surface =
             Media::LoadedImageSurface::StartLoadFromStream(stream);
         noiseBrush = m_compositor.CreateSurfaceBrush(surface);
-        noiseBrush.Stretch(muc::CompositionStretch::None);
+        noiseBrush.Stretch(muc::CompositionStretch::Aucun);
 
         // Tile via border effect (wrap mode).
         auto borderEffect = winrt::make_self<BorderEffect>();
@@ -11698,8 +11702,8 @@ void SetupImageTracking(DependencyObject const& target,
 
     auto it = std::find_if(images.begin(), images.end(),
                            [&target](const auto& tracked) {
-                               if (auto trackedTarget = tracked->target.get()) {
-                                   return trackedTarget == target;
+                               if (auto trackedCible = tracked->target.get()) {
+                                   return trackedCible == target;
                                }
                                return false;
                            });
@@ -12395,13 +12399,13 @@ Style GetStyleFromXamlSetters(const std::wstring_view type,
         xaml += EscapeXmlAttribute(typeNamespace);
         xaml +=
             L"\">\n"
-            L"    <Style TargetType=\"windhawkstyler:";
+            L"    <Style CibleType=\"windhawkstyler:";
         xaml += EscapeXmlAttribute(typeName);
         xaml += L"\">\n";
     } else {
         xaml +=
             L">\n"
-            L"    <Style TargetType=\"";
+            L"    <Style CibleType=\"";
         xaml += EscapeXmlAttribute(type);
         xaml += L"\">\n";
     }
@@ -12981,7 +12985,7 @@ struct StyleVariableResolution {
     // Points into state->variables; only valid until that map is next touched,
     // so read it out before doing anything that could apply a style.
     const StyleVariableValue* value = nullptr;
-    ElementId owner = ElementId::None;
+    ElementId owner = ElementId::Aucun;
 };
 
 // How well a capture serves a consumer, as a sort key -- smaller is better.
@@ -13051,7 +13055,7 @@ StyleVariableResolution FindWinningCapture(
 // snapshot stays usable even after re-entrant work tears the owning element
 // down.
 struct StyleVariableCandidate {
-    ElementId owner = ElementId::None;
+    ElementId owner = ElementId::Aucun;
     std::shared_ptr<ElementTreeNode> node;
 };
 
@@ -13087,7 +13091,7 @@ std::vector<StyleVariableCandidate> SnapshotStyleVariableCaptures(
 ElementId PickWinningCaptureOwner(
     const std::vector<StyleVariableCandidate>& candidates,
     ElementTreeNode const* consumerNode) {
-    ElementId owner = ElementId::None;
+    ElementId owner = ElementId::Aucun;
     bool haveBest = false;
     std::pair<int, int> bestRank;
 
@@ -14080,7 +14084,7 @@ void PropagateStyleVariableChangeCore(StyleVariableState* state,
         // A handful of pointer comparisons against the snapshot above, far
         // cheaper than the re-parse it avoids.
         ElementId winningOwner =
-            changedOwner ? ElementId::None
+            changedOwner ? ElementId::Aucun
                          : PickWinningCaptureOwner(
                                candidates, EnsureElementTreeNode(elementState));
 
@@ -14701,23 +14705,23 @@ thread_local std::unordered_map<ElementId, VirtualizingRepeaterState>
     g_virtualizingRepeaters;
 
 // The id of an element which was reached some other way, e.g. by walking the
-// visual tree. None for an element the mutation callbacks never reported, which
+// visual tree. Aucun for an element the mutation callbacks never reported, which
 // leaves callers to skip it rather than key it by something made up.
 ElementId ElementIdFromElement(FrameworkElement const& element) {
     if (!element) {
-        return ElementId::None;
+        return ElementId::Aucun;
     }
 
     try {
         auto it = g_elementIds.find(HandleFromInspectable(element));
         if (it == g_elementIds.end() || it->second.element.get() != element) {
-            return ElementId::None;
+            return ElementId::Aucun;
         }
 
         return it->second.id;
     } catch (winrt::hresult_error const& ex) {
         Wh_Log(L"Error %08X: %s", ex.code(), ex.message().c_str());
-        return ElementId::None;
+        return ElementId::Aucun;
     }
 }
 
@@ -14731,7 +14735,7 @@ void ReapplyCustomizationsForSubtree(FrameworkElement element) {
     // the subtree.
     try {
         if (auto elementId = ElementIdFromElement(element);
-            elementId != ElementId::None) {
+            elementId != ElementId::Aucun) {
             CleanupCustomizations(elementId);
             auto className = winrt::get_class_name(element);
             ApplyCustomizations(elementId, element, className.c_str());
@@ -14825,7 +14829,7 @@ void HandleVirtualizingRepeater(ElementId elementId, FrameworkElement element) {
             }
 
             auto elementId = ElementIdFromElement(element);
-            if (elementId == ElementId::None) {
+            if (elementId == ElementId::Aucun) {
                 return;
             }
 
@@ -14848,7 +14852,7 @@ void HandleVirtualizingRepeater(ElementId elementId, FrameworkElement element) {
             }
 
             auto elementId = ElementIdFromElement(element);
-            if (elementId == ElementId::None) {
+            if (elementId == ElementId::Aucun) {
                 return;
             }
 
@@ -15020,7 +15024,7 @@ constexpr ULONGLONG kDiagnosticsReleaseDrainDelay = 1;
 // match File Explorer match almost nothing of such a tree, so what this retains
 // is small, but a rule written against a bare type would retain much more.
 bool ElementHasState(ElementId elementId) {
-    if (elementId == ElementId::None) {
+    if (elementId == ElementId::Aucun) {
         return false;
     }
 
@@ -15533,7 +15537,7 @@ std::wstring AdjustTypeName(std::wstring_view type) {
 
 // Splits a target string on the commas which separate targets, ignoring commas
 // which are part of a `[Property=Value]` clause.
-std::vector<std::wstring_view> SplitTargetString(std::wstring_view target) {
+std::vector<std::wstring_view> SplitCibleString(std::wstring_view target) {
     std::vector<std::wstring_view> result;
 
     size_t partBegin = 0;
@@ -15562,7 +15566,7 @@ std::vector<std::wstring_view> SplitTargetString(std::wstring_view target) {
     return result;
 }
 
-void AddElementCustomizationRulesForSingleTarget(
+void AddElementCustomizationRulesForSingleCible(
     std::wstring_view target,
     const std::vector<std::wstring>& styles) {
     ElementCustomizationRules elementCustomizationRules;
@@ -15662,24 +15666,24 @@ void AddElementCustomizationRulesForSingleTarget(
 
 void AddElementCustomizationRules(std::wstring_view target,
                                   const std::vector<std::wstring>& styles) {
-    auto targets = SplitTargetString(target);
+    auto targets = SplitCibleString(target);
 
-    for (const auto& singleTarget : targets) {
+    for (const auto& singleCible : targets) {
         try {
-            AddElementCustomizationRulesForSingleTarget(singleTarget, styles);
+            AddElementCustomizationRulesForSingleCible(singleCible, styles);
         } catch (winrt::hresult_error const& ex) {
             Wh_Log(L"Error %08X for target %.*s", ex.code(),
-                   static_cast<int>(singleTarget.length()),
-                   singleTarget.data());
+                   static_cast<int>(singleCible.length()),
+                   singleCible.data());
         } catch (std::exception const& ex) {
             Wh_Log(L"Error for target %.*s: %S",
-                   static_cast<int>(singleTarget.length()), singleTarget.data(),
+                   static_cast<int>(singleCible.length()), singleCible.data(),
                    ex.what());
         }
     }
 }
 
-bool ProcessSingleTargetStylesFromSettings(
+bool ProcessSingleCibleStylesFromSettings(
     int index,
     const StyleConstants& styleConstants) {
     string_setting_unique_ptr targetStringSetting(
@@ -15755,7 +15759,7 @@ std::optional<ResourceVariableEntry> ParseResourceVariable(
                          value.size() - kThemeResourcePrefix.size() - 1));
     }
 
-    ResourceVariableTheme theme = ResourceVariableTheme::None;
+    ResourceVariableTheme theme = ResourceVariableTheme::Aucun;
     std::wstring key;
 
     // Check for @theme suffix in key part.
@@ -15799,7 +15803,7 @@ bool ProcessResourceVariable(ResourceDictionary resources,
                              const ResourceVariableEntry& entry) {
     auto boxedKey = winrt::box_value(entry.key);
 
-    if (entry.theme != ResourceVariableTheme::None) {
+    if (entry.theme != ResourceVariableTheme::Aucun) {
         ResourceDictionary& targetDict =
             entry.theme == ResourceVariableTheme::Dark ? darkDict : lightDict;
 
@@ -15973,7 +15977,7 @@ void MergeResourceVariables() {
 
         try {
             if (ProcessResourceVariable(resources, darkDict, lightDict, *it)) {
-                if (it->theme != ResourceVariableTheme::None) {
+                if (it->theme != ResourceVariableTheme::Aucun) {
                     hasThemeResources = true;
                 }
 
@@ -16056,15 +16060,15 @@ void ProcessAllStylesFromSettings() {
         theme ? theme->styleConstants : std::vector<PCWSTR>{});
 
     if (theme) {
-        for (const auto& themeTargetStyle : theme->targetStyles) {
+        for (const auto& themeCibleStyle : theme->targetStyles) {
             try {
                 std::vector<std::wstring> styles;
-                styles.reserve(themeTargetStyle.styles.size());
-                for (const auto& s : themeTargetStyle.styles) {
+                styles.reserve(themeCibleStyle.styles.size());
+                for (const auto& s : themeCibleStyle.styles) {
                     styles.push_back(ApplyStyleConstants(s, styleConstants));
                 }
 
-                AddElementCustomizationRules(themeTargetStyle.target, styles);
+                AddElementCustomizationRules(themeCibleStyle.target, styles);
             } catch (winrt::hresult_error const& ex) {
                 Wh_Log(L"Error %08X", ex.code());
             } catch (std::exception const& ex) {
@@ -16075,7 +16079,7 @@ void ProcessAllStylesFromSettings() {
 
     for (int i = 0;; i++) {
         try {
-            if (!ProcessSingleTargetStylesFromSettings(i, styleConstants)) {
+            if (!ProcessSingleCibleStylesFromSettings(i, styleConstants)) {
                 break;
             }
         } catch (winrt::hresult_error const& ex) {
@@ -16223,33 +16227,33 @@ void InitializeSettingsAndTap() {
     }
 }
 
-enum class TargetWindowType {
-    None,
+enum class CibleWindowType {
+    Aucun,
     FileExplorer,
     XamlExplorerHost,
 };
 
-TargetWindowType GetTargetWindowType(HWND hWnd) {
+CibleWindowType GetCibleWindowType(HWND hWnd) {
     WCHAR className[64];
     if (!GetClassName(hWnd, className, ARRAYSIZE(className))) {
-        return TargetWindowType::None;
+        return CibleWindowType::Aucun;
     }
 
     if (_wcsicmp(className, L"CabinetWClass") == 0) {
-        return TargetWindowType::FileExplorer;
+        return CibleWindowType::FileExplorer;
     }
 
     // Used by the desktop context menu.
     if (_wcsicmp(className, L"XamlExplorerHostIslandWindow_WASDK") == 0) {
-        return TargetWindowType::XamlExplorerHost;
+        return CibleWindowType::XamlExplorerHost;
     }
 
-    return TargetWindowType::None;
+    return CibleWindowType::Aucun;
 }
 
 BackgroundTranslucentEffect GetEffectiveBackgroundTranslucentEffect() {
     if (FindAtom(L"WindhawkFileExplorerStylerNoBackgroundEffect")) {
-        return BackgroundTranslucentEffect::kDefault;
+        return BackgroundTranslucentEffect::kPar défaut;
     }
 
     return g_settings.backgroundTranslucentEffect.value_or(
@@ -16272,7 +16276,7 @@ HRESULT WINAPI DwmSetWindowAttribute_Hook(HWND hWnd,
         return original();
     }
 
-    if (GetTargetWindowType(hWnd) != TargetWindowType::FileExplorer) {
+    if (GetCibleWindowType(hWnd) != CibleWindowType::FileExplorer) {
         return original();
     }
 
@@ -16281,7 +16285,7 @@ HRESULT WINAPI DwmSetWindowAttribute_Hook(HWND hWnd,
 
     int backdropType;
     switch (backgroundTranslucentEffect) {
-        case BackgroundTranslucentEffect::kDefault:
+        case BackgroundTranslucentEffect::kPar défaut:
             return original();
         case BackgroundTranslucentEffect::kBlur:
             backdropType = DWMSBT_AUTO;
@@ -16295,7 +16299,7 @@ HRESULT WINAPI DwmSetWindowAttribute_Hook(HWND hWnd,
         case BackgroundTranslucentEffect::kMicaAlt:
             backdropType = DWMSBT_TABBEDWINDOW;
             break;
-        case BackgroundTranslucentEffect::kNone:
+        case BackgroundTranslucentEffect::kAucun:
             backdropType = DWMSBT_NONE;
             break;
     }
@@ -16314,13 +16318,13 @@ HRESULT WINAPI DwmExtendFrameIntoClientArea_Hook(HWND hWnd,
         return DwmExtendFrameIntoClientArea_Original(hWnd, pMarInset);
     };
 
-    if (GetTargetWindowType(hWnd) != TargetWindowType::FileExplorer) {
+    if (GetCibleWindowType(hWnd) != CibleWindowType::FileExplorer) {
         return original();
     }
 
     auto backgroundTranslucentEffect =
         GetEffectiveBackgroundTranslucentEffect();
-    if (backgroundTranslucentEffect == BackgroundTranslucentEffect::kDefault ||
+    if (backgroundTranslucentEffect == BackgroundTranslucentEffect::kPar défaut ||
         g_settings.backgroundTranslucentEffectRegion !=
             BackgroundTranslucentEffectRegion::kEntireWindow) {
         return original();
@@ -16340,8 +16344,8 @@ HRESULT WINAPI DwmExtendFrameIntoClientArea_Hook(HWND hWnd,
 thread_local HWND g_entireWindowEffectWndForThread;
 
 bool IsFileExplorerWindowPart(HWND hWnd) {
-    return GetTargetWindowType(GetAncestor(hWnd, GA_ROOT)) ==
-           TargetWindowType::FileExplorer;
+    return GetCibleWindowType(GetAncestor(hWnd, GA_ROOT)) ==
+           CibleWindowType::FileExplorer;
 }
 
 struct DCWnd {
@@ -17023,7 +17027,7 @@ D2D1_COLOR_F ThemePartColor(BYTE a, BYTE r, BYTE g, BYTE b) {
     return D2D1::ColorF(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
 }
 
-winrt::com_ptr<ID2D1DCRenderTarget> CreateBoundRenderTarget(HDC hdc,
+winrt::com_ptr<ID2D1DCRenderCible> CreateBoundRenderCible(HDC hdc,
                                                             const RECT* rect) {
     if (!g_d2dFactory &&
         FAILED(D2D1CreateFactory(D2D1_FACTORY_TYPE_MULTI_THREADED,
@@ -17032,20 +17036,20 @@ winrt::com_ptr<ID2D1DCRenderTarget> CreateBoundRenderTarget(HDC hdc,
         return nullptr;
     }
 
-    D2D1_RENDER_TARGET_PROPERTIES props = D2D1::RenderTargetProperties(
+    D2D1_RENDER_TARGET_PROPERTIES props = D2D1::RenderCibleProperties(
         D2D1_RENDER_TARGET_TYPE_SOFTWARE,
         D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM,
                           D2D1_ALPHA_MODE_PREMULTIPLIED),
         0, 0, D2D1_RENDER_TARGET_USAGE_GDI_COMPATIBLE);
 
-    winrt::com_ptr<ID2D1DCRenderTarget> renderTarget;
+    winrt::com_ptr<ID2D1DCRenderCible> renderCible;
     if (FAILED(
-            g_d2dFactory->CreateDCRenderTarget(&props, renderTarget.put())) ||
-        FAILED(renderTarget->BindDC(hdc, rect))) {
+            g_d2dFactory->CreateDCRenderCible(&props, renderCible.put())) ||
+        FAILED(renderCible->BindDC(hdc, rect))) {
         return nullptr;
     }
 
-    return renderTarget;
+    return renderCible;
 }
 
 // Returns a memory DC with a 32-bit bitmap selected, painted by drawFunc.
@@ -17075,15 +17079,15 @@ HDC CreateThemePartBitmap(int width, int height, DrawFunc drawFunc) {
     SelectObject(hdc, bitmap);
 
     RECT rect = {0, 0, width, height};
-    auto renderTarget = CreateBoundRenderTarget(hdc, &rect);
-    if (!renderTarget) {
+    auto renderCible = CreateBoundRenderCible(hdc, &rect);
+    if (!renderCible) {
         DeleteThemePartBitmap(hdc);
         return nullptr;
     }
 
-    renderTarget->BeginDraw();
-    drawFunc(renderTarget.get());
-    if (FAILED(renderTarget->EndDraw())) {
+    renderCible->BeginDraw();
+    drawFunc(renderCible.get());
+    if (FAILED(renderCible->EndDraw())) {
         DeleteThemePartBitmap(hdc);
         return nullptr;
     }
@@ -17149,7 +17153,7 @@ bool PaintScrollBarThumb(HDC hdc,
         int width = (horizontal ? 20 : 17) * scale;
         int height = (horizontal ? 17 : 11) * scale;
         cached = CreateThemePartBitmap(
-            width, height, [&](ID2D1RenderTarget* renderTarget) {
+            width, height, [&](ID2D1RenderCible* renderCible) {
                 // The thumb gets wider when hovered.
                 float inset = normal ? 0.35f : 0.25f;
                 D2D1_RECT_F rect =
@@ -17160,12 +17164,12 @@ bool PaintScrollBarThumb(HDC hdc,
                 float radius = 4.0f * scale;
 
                 winrt::com_ptr<ID2D1SolidColorBrush> brush;
-                renderTarget->CreateSolidColorBrush(
+                renderCible->CreateSolidColorBrush(
                     normal ? ThemePartColor(128, 160, 160, 160)
                            : ThemePartColor(160, 224, 224, 224),
                     brush.put());
                 if (brush) {
-                    renderTarget->FillRoundedRectangle(
+                    renderCible->FillRoundedRectangle(
                         D2D1::RoundedRect(rect, radius, radius), brush.get());
                 }
             });
@@ -17230,8 +17234,8 @@ bool PaintScrollBarArrow(HDC hdc, int iStateId, LPCRECT pRect, UINT dpi) {
     // Up, down, left, right.
     constexpr float kRotationAngles[] = {0, 180, 270, 90};
 
-    auto renderTarget = CreateBoundRenderTarget(hdc, pRect);
-    if (!renderTarget) {
+    auto renderCible = CreateBoundRenderCible(hdc, pRect);
+    if (!renderCible) {
         return false;
     }
 
@@ -17240,7 +17244,7 @@ bool PaintScrollBarArrow(HDC hdc, int iStateId, LPCRECT pRect, UINT dpi) {
     winrt::com_ptr<ID2D1SolidColorBrush> brush;
     if (FAILED(g_d2dFactory->CreatePathGeometry(geometry.put())) ||
         FAILED(geometry->Open(sink.put())) ||
-        FAILED(renderTarget->CreateSolidColorBrush(color, brush.put()))) {
+        FAILED(renderCible->CreateSolidColorBrush(color, brush.put()))) {
         return false;
     }
 
@@ -17249,11 +17253,11 @@ bool PaintScrollBarArrow(HDC hdc, int iStateId, LPCRECT pRect, UINT dpi) {
     sink->EndFigure(D2D1_FIGURE_END_CLOSED);
     sink->Close();
 
-    renderTarget->BeginDraw();
-    renderTarget->SetTransform(
+    renderCible->BeginDraw();
+    renderCible->SetTransform(
         D2D1::Matrix3x2F::Rotation(kRotationAngles[direction], center));
-    renderTarget->FillGeometry(geometry.get(), brush.get());
-    return SUCCEEDED(renderTarget->EndDraw());
+    renderCible->FillGeometry(geometry.get(), brush.get());
+    return SUCCEEDED(renderCible->EndDraw());
 }
 
 bool PaintScrollBarPart(HDC hdc,
@@ -17303,13 +17307,13 @@ bool PaintHeaderPart(HDC hdc,
     if (!cached) {
         int size = 24 * scale;
         cached = CreateThemePartBitmap(
-            size, size, [&](ID2D1RenderTarget* renderTarget) {
+            size, size, [&](ID2D1RenderCible* renderCible) {
                 winrt::com_ptr<ID2D1PathGeometry> geometry;
                 winrt::com_ptr<ID2D1GeometrySink> sink;
                 winrt::com_ptr<ID2D1SolidColorBrush> brush;
                 if (FAILED(g_d2dFactory->CreatePathGeometry(geometry.put())) ||
                     FAILED(geometry->Open(sink.put())) ||
-                    FAILED(renderTarget->CreateSolidColorBrush(
+                    FAILED(renderCible->CreateSolidColorBrush(
                         hot ? ThemePartColor(96, 144, 144, 144)
                             : ThemePartColor(64, 144, 144, 144),
                         brush.put()))) {
@@ -17333,7 +17337,7 @@ bool PaintHeaderPart(HDC hdc,
                 sink->EndFigure(D2D1_FIGURE_END_CLOSED);
                 sink->Close();
 
-                renderTarget->FillGeometry(geometry.get(), brush.get());
+                renderCible->FillGeometry(geometry.get(), brush.get());
             });
         if (!cached) {
             return false;
@@ -17532,12 +17536,12 @@ void ApplyBackgroundTranslucentEffect(
         effectToApply.value_or(GetEffectiveBackgroundTranslucentEffect());
 
     bool entireWindowEffect =
-        effect != BackgroundTranslucentEffect::kDefault &&
+        effect != BackgroundTranslucentEffect::kPar défaut &&
         g_settings.backgroundTranslucentEffectRegion ==
             BackgroundTranslucentEffectRegion::kEntireWindow;
     g_entireWindowEffectWndForThread = entireWindowEffect ? hWnd : nullptr;
 
-    if (effect == BackgroundTranslucentEffect::kDefault) {
+    if (effect == BackgroundTranslucentEffect::kPar défaut) {
         if (!RemoveProp(hWnd, kBackgroundTranslucentEffectAppliedKey)) {
             return;
         }
@@ -17548,7 +17552,7 @@ void ApplyBackgroundTranslucentEffect(
     Wh_Log(L"Applying background translucent effect %d for %08X",
            static_cast<int>(effect), (DWORD)(ULONG_PTR)hWnd);
 
-    if (effect != BackgroundTranslucentEffect::kDefault &&
+    if (effect != BackgroundTranslucentEffect::kPar défaut &&
         g_settings.backgroundTranslucentEffectRegion ==
             BackgroundTranslucentEffectRegion::kEntireWindow) {
         MARGINS margins = {-1, -1, -1, -1};
@@ -17557,7 +17561,7 @@ void ApplyBackgroundTranslucentEffect(
 
     int backdropType;
     switch (effect) {
-        case BackgroundTranslucentEffect::kDefault:
+        case BackgroundTranslucentEffect::kPar défaut:
             backdropType = DWMSBT_TABBEDWINDOW;
             break;
         case BackgroundTranslucentEffect::kBlur:
@@ -17572,7 +17576,7 @@ void ApplyBackgroundTranslucentEffect(
         case BackgroundTranslucentEffect::kMicaAlt:
             backdropType = DWMSBT_TABBEDWINDOW;
             break;
-        case BackgroundTranslucentEffect::kNone:
+        case BackgroundTranslucentEffect::kAucun:
             backdropType = DWMSBT_NONE;
             break;
     }
@@ -17598,12 +17602,12 @@ void TriggerWindowCompositionUpdate(HWND hWnd) {
 }
 
 void OnWindowCreated(HWND hWnd, PCSTR funcName) {
-    TargetWindowType windowType = GetTargetWindowType(hWnd);
-    if (windowType != TargetWindowType::None) {
+    CibleWindowType windowType = GetCibleWindowType(hWnd);
+    if (windowType != CibleWindowType::Aucun) {
         Wh_Log(L"Initializing - Created window %08X via %S",
                (DWORD)(ULONG_PTR)hWnd, funcName);
 
-        if (windowType == TargetWindowType::FileExplorer) {
+        if (windowType == CibleWindowType::FileExplorer) {
             ApplyBackgroundTranslucentEffect(hWnd);
         }
 
@@ -17890,7 +17894,7 @@ bool RunFromWindowThread(HWND hWnd,
     return true;
 }
 
-std::vector<HWND> GetTargetWnds() {
+std::vector<HWND> GetCibleWnds() {
     struct ENUM_WINDOWS_PARAM {
         std::vector<HWND>* hWnds;
     };
@@ -17907,7 +17911,7 @@ std::vector<HWND> GetTargetWnds() {
                 return TRUE;
             }
 
-            if (GetTargetWindowType(hWnd) != TargetWindowType::None) {
+            if (GetCibleWindowType(hWnd) != CibleWindowType::Aucun) {
                 param.hWnds->push_back(hWnd);
             }
 
@@ -18114,7 +18118,7 @@ void LoadSettings() {
     g_settings.backgroundTranslucentEffect.reset();
     if (wcscmp(backgroundTranslucentEffect, L"default") == 0) {
         g_settings.backgroundTranslucentEffect =
-            BackgroundTranslucentEffect::kDefault;
+            BackgroundTranslucentEffect::kPar défaut;
     } else if (wcscmp(backgroundTranslucentEffect, L"acrylicblur") == 0) {
         g_settings.backgroundTranslucentEffect =
             BackgroundTranslucentEffect::kBlur;
@@ -18129,7 +18133,7 @@ void LoadSettings() {
             BackgroundTranslucentEffect::kMicaAlt;
     } else if (wcscmp(backgroundTranslucentEffect, L"none") == 0) {
         g_settings.backgroundTranslucentEffect =
-            BackgroundTranslucentEffect::kNone;
+            BackgroundTranslucentEffect::kAucun;
     }
     Wh_FreeStringSetting(backgroundTranslucentEffect);
 
@@ -18151,7 +18155,7 @@ void LoadThemeSettings() {
     const Theme* theme = GetSelectedTheme();
     g_themeBackgroundTranslucentEffect =
         theme ? theme->backgroundTranslucentEffect
-              : BackgroundTranslucentEffect::kDefault;
+              : BackgroundTranslucentEffect::kPar défaut;
     g_themeExplorerFrameContainerHeight =
         theme ? theme->explorerFrameContainerHeight : 0;
 }
@@ -18256,26 +18260,26 @@ BOOL StylerWh_ModInit() {
 void StylerWh_ModAfterInit() {
     Wh_Log(L">");
 
-    auto hTargetWnds = GetTargetWnds();
-    for (auto hTargetWnd : hTargetWnds) {
-        Wh_Log(L"Initializing for %08X", (DWORD)(ULONG_PTR)hTargetWnd);
+    auto hCibleWnds = GetCibleWnds();
+    for (auto hCibleWnd : hCibleWnds) {
+        Wh_Log(L"Initializing for %08X", (DWORD)(ULONG_PTR)hCibleWnd);
         RunFromWindowThread(
-            hTargetWnd,
+            hCibleWnd,
             [](PVOID param) WINAPI {
-                HWND hTargetWnd = (HWND)param;
+                HWND hCibleWnd = (HWND)param;
 
                 InitializeForCurrentThread();
 
-                if (GetTargetWindowType(hTargetWnd) ==
-                    TargetWindowType::FileExplorer) {
-                    ApplyBackgroundTranslucentEffect(hTargetWnd);
-                    TriggerWindowCompositionUpdate(hTargetWnd);
+                if (GetCibleWindowType(hCibleWnd) ==
+                    CibleWindowType::FileExplorer) {
+                    ApplyBackgroundTranslucentEffect(hCibleWnd);
+                    TriggerWindowCompositionUpdate(hCibleWnd);
                 }
             },
-            (PVOID)hTargetWnd);
+            (PVOID)hCibleWnd);
     }
 
-    if (hTargetWnds.size() > 0) {
+    if (hCibleWnds.size() > 0) {
         Wh_Log(L"Initializing - Found target windows");
         InitializeSettingsAndTap();
     }
@@ -18294,24 +18298,24 @@ void StylerWh_ModUninit() {
 
     UninitializeSettingsAndTap();
 
-    auto hTargetWnds = GetTargetWnds();
-    for (auto hTargetWnd : hTargetWnds) {
-        Wh_Log(L"Uninitializing for %08X", (DWORD)(ULONG_PTR)hTargetWnd);
+    auto hCibleWnds = GetCibleWnds();
+    for (auto hCibleWnd : hCibleWnds) {
+        Wh_Log(L"Uninitializing for %08X", (DWORD)(ULONG_PTR)hCibleWnd);
         RunFromWindowThread(
-            hTargetWnd,
+            hCibleWnd,
             [](PVOID param) WINAPI {
-                HWND hTargetWnd = (HWND)param;
+                HWND hCibleWnd = (HWND)param;
 
                 UninitializeForCurrentThread();
 
-                if (GetTargetWindowType(hTargetWnd) ==
-                    TargetWindowType::FileExplorer) {
+                if (GetCibleWindowType(hCibleWnd) ==
+                    CibleWindowType::FileExplorer) {
                     ApplyBackgroundTranslucentEffect(
-                        hTargetWnd, BackgroundTranslucentEffect::kDefault);
-                    TriggerWindowCompositionUpdate(hTargetWnd);
+                        hCibleWnd, BackgroundTranslucentEffect::kPar défaut);
+                    TriggerWindowCompositionUpdate(hCibleWnd);
                 }
             },
-            (PVOID)hTargetWnd);
+            (PVOID)hCibleWnd);
     }
 
     ClearThemePartCache();
@@ -18325,27 +18329,27 @@ void StylerWh_ModSettingsChanged() {
     LoadSettings();
     LoadThemeSettings();
 
-    auto hTargetWnds = GetTargetWnds();
-    for (auto hTargetWnd : hTargetWnds) {
-        Wh_Log(L"Reinitializing for %08X", (DWORD)(ULONG_PTR)hTargetWnd);
+    auto hCibleWnds = GetCibleWnds();
+    for (auto hCibleWnd : hCibleWnds) {
+        Wh_Log(L"Reinitializing for %08X", (DWORD)(ULONG_PTR)hCibleWnd);
         RunFromWindowThread(
-            hTargetWnd,
+            hCibleWnd,
             [](PVOID param) WINAPI {
-                HWND hTargetWnd = (HWND)param;
+                HWND hCibleWnd = (HWND)param;
 
                 UninitializeForCurrentThread();
                 InitializeForCurrentThread();
 
-                if (GetTargetWindowType(hTargetWnd) ==
-                    TargetWindowType::FileExplorer) {
-                    ApplyBackgroundTranslucentEffect(hTargetWnd);
-                    TriggerWindowCompositionUpdate(hTargetWnd);
+                if (GetCibleWindowType(hCibleWnd) ==
+                    CibleWindowType::FileExplorer) {
+                    ApplyBackgroundTranslucentEffect(hCibleWnd);
+                    TriggerWindowCompositionUpdate(hCibleWnd);
                 }
             },
-            (PVOID)hTargetWnd);
+            (PVOID)hCibleWnd);
     }
 
-    if (hTargetWnds.size() > 0) {
+    if (hCibleWnds.size() > 0) {
         Wh_Log(L"Reinitializing - Found target windows");
         InitializeSettingsAndTap();
     }
@@ -18410,16 +18414,16 @@ VOID Wh_ModUninit(VOID)
     if (g_settings.SetSystemColors)
         RevertSysColors();
 
-    for (size_t i = 0; i < g_themeCachedDefaultSysColorBrushes.size(); i++) {
+    for (size_t i = 0; i < g_themeCachedPar défautSysColorBrushes.size(); i++) {
         HBRUSH& brushCustom = g_themeCachedCustomSysColorBrushes[i];
-        HBRUSH& brushDefault = g_themeCachedDefaultSysColorBrushes[i];
+        HBRUSH& brushPar défaut = g_themeCachedPar défautSysColorBrushes[i];
         if (brushCustom) { 
             DeleteObject(brushCustom); 
             brushCustom = nullptr; 
         }
-        if (brushDefault) { 
-            DeleteObject(brushDefault); 
-            brushDefault = nullptr; 
+        if (brushPar défaut) { 
+            DeleteObject(brushPar défaut); 
+            brushPar défaut = nullptr; 
         }
     }
 
