@@ -40,8 +40,6 @@ Le Centre de notifications, le Centre de contrôle et le calendrier disposent du
   - acrylic: Acrylic (SystemBackdrop)
   - mica: Mica (SystemBackdrop)
   - micaAlt: MicaAlt (SystemBackdrop)
-
-/*
 - theme: ""
   $name: Theme
   $description: >-
@@ -88,8 +86,6 @@ Le Centre de notifications, le Centre de contrôle et le calendrier disposent du
 
     The ":=" syntax can be used to set a XAML value. For details, refer to the
     mod description.
-*/
-
 */
 // ==/WindhawkModSettings==
 
