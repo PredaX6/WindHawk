@@ -6,7 +6,7 @@
 // @author          Undisputed00x
 // @github          https://github.com/Undisputed00x
 // @include         *
-// @compilerOptions -ldwmapi -luxtheme -lcomctl32 -lgdi32 -ld2d1 -lmsimg32 -lshcore -lversion -ffp-exception-behavior=maytrap
+// @compilerOptions -ldwmapi -luxtheme -lcomctl32 -lgdi32 -ld2d1 -lmsimg32 -lshcore -lversion -lole32 -loleaut32 -lshlwapi -lruntimeobject -ffp-exception-behavior=maytrap
 // ==/WindhawkMod==
 
 // ==WindhawkModReadme==
