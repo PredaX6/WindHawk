@@ -10316,9 +10316,7 @@ void LoadThemeSettings() {
 namespace NotificationCenterStyler {
 
 // Keep the C++/WinRT namespace explicitly global inside this isolated Styler namespace.
-// Without this alias, unqualified winrt:: references can resolve as NotificationCenterStyler::winrt.
-namespace winrt = ::winrt;
-
+// Without this alias, unqualified ::winrt:: references can resolve as NotificationCenterStyler::winrt.
 struct ThemeTargetStyles {
     PCWSTR target;
     std::vector<PCWSTR> styles;
@@ -13802,12 +13800,12 @@ enum class ElementId : uint64_t { None = 0 };
 
 ElementId GetOrCreateElementId(
     InstanceHandle handle,
-    winrt::Windows::Foundation::IInspectable const& element);
+    ::winrt::Windows::Foundation::IInspectable const& element);
 ElementId FindElementId(InstanceHandle handle);
 void ForgetElementId(InstanceHandle handle);
 
 void ApplyCustomizations(ElementId elementId,
-                         winrt::Windows::UI::Xaml::FrameworkElement element,
+                         ::winrt::Windows::UI::Xaml::FrameworkElement element,
                          PCWSTR fallbackClassName);
 void CleanupCustomizations(ElementId elementId);
 void QueueDiagnosticsRelease(InstanceHandle handle);
@@ -13842,21 +13840,21 @@ thread_local bool g_reportCompositionDiagAsDisabled;
 
 
 // aliases for convenience
-namespace wf = ::winrt::Windows::Foundation;
-namespace wux = ::winrt::Windows::UI::Xaml;
+namespace wf = ::::winrt::Windows::Foundation;
+namespace wux = ::::winrt::Windows::UI::Xaml;
 
 // A weak reference for the object, or an empty one when the object doesn't
 // support weak references: cppwinrt's make_weak dereferences a null pointer for
 // such an object instead of reporting it. Throws, as make_weak does, when the
 // object supports weak references but one can't be made.
-winrt::weak_ref<wf::IInspectable> TryMakeWeak(wf::IInspectable const& object)
+::winrt::weak_ref<wf::IInspectable> TryMakeWeak(wf::IInspectable const& object)
 {
-    if (!object.try_as<winrt::impl::IWeakReferenceSource>())
+    if (!object.try_as<::winrt::impl::IWeakReferenceSource>())
     {
         return nullptr;
     }
 
-    return winrt::make_weak(object);
+    return ::winrt::make_weak(object);
 }
 
 #pragma endregion  // winrt_hpp
@@ -13884,15 +13882,15 @@ struct IXamlDiagnosticsTestHooks : IUnknown
 // reference was released would take a new reference and pin it again.
 InstanceHandle HandleFromInspectable(wf::IInspectable const& instance)
 {
-    winrt::com_ptr<::IInspectable> inspectable;
-    winrt::check_hresult(reinterpret_cast<::IUnknown*>(winrt::get_abi(instance))->QueryInterface(winrt::guid_of<wf::IInspectable>(), inspectable.put_void()));
+    ::winrt::com_ptr<::IInspectable> inspectable;
+    ::winrt::check_hresult(reinterpret_cast<::IUnknown*>(::winrt::get_abi(instance))->QueryInterface(::winrt::guid_of<wf::IInspectable>(), inspectable.put_void()));
     return reinterpret_cast<InstanceHandle>(inspectable.get());
 }
 
-class VisualTreeWatcher : public winrt::implements<VisualTreeWatcher, IVisualTreeServiceCallback2, winrt::non_agile>
+class VisualTreeWatcher : public ::winrt::implements<VisualTreeWatcher, IVisualTreeServiceCallback2, ::winrt::non_agile>
 {
 public:
-    VisualTreeWatcher(winrt::com_ptr<IUnknown> site);
+    VisualTreeWatcher(::winrt::com_ptr<IUnknown> site);
 
     VisualTreeWatcher(const VisualTreeWatcher&) = delete;
     VisualTreeWatcher& operator=(const VisualTreeWatcher&) = delete;
@@ -13913,19 +13911,19 @@ private:
     wf::IInspectable FromHandle(InstanceHandle handle)
     {
         wf::IInspectable obj;
-        winrt::check_hresult(m_XamlDiagnostics->GetIInspectableFromHandle(handle, reinterpret_cast<::IInspectable**>(winrt::put_abi(obj))));
+        ::winrt::check_hresult(m_XamlDiagnostics->GetIInspectableFromHandle(handle, reinterpret_cast<::IInspectable**>(::winrt::put_abi(obj))));
         return obj;
     }
 
-    winrt::com_ptr<IXamlDiagnostics> m_XamlDiagnostics = nullptr;
-    winrt::com_ptr<IXamlDiagnosticsTestHooks> m_XamlDiagnosticsTestHooks = nullptr;
+    ::winrt::com_ptr<IXamlDiagnostics> m_XamlDiagnostics = nullptr;
+    ::winrt::com_ptr<IXamlDiagnosticsTestHooks> m_XamlDiagnosticsTestHooks = nullptr;
 };
 
 #pragma endregion  // visualtreewatcher_hpp
 
 #pragma region visualtreewatcher_cpp
 
-VisualTreeWatcher::VisualTreeWatcher(winrt::com_ptr<IUnknown> site) :
+VisualTreeWatcher::VisualTreeWatcher(::winrt::com_ptr<IUnknown> site) :
     m_XamlDiagnostics(site.as<IXamlDiagnostics>())
 {
     Wh_Log(L"Constructing VisualTreeWatcher");
@@ -13935,7 +13933,7 @@ VisualTreeWatcher::VisualTreeWatcher(winrt::com_ptr<IUnknown> site) :
         Wh_Log(L"IXamlDiagnosticsTestHooks is unavailable, elements will be leaked: %08X", hr);
     }
 
-    // winrt::check_hresult(m_XamlDiagnostics.as<IVisualTreeService3>()->AdviseVisualTreeChange(this));
+    // ::winrt::check_hresult(m_XamlDiagnostics.as<IVisualTreeService3>()->AdviseVisualTreeChange(this));
 
     // Calling AdviseVisualTreeChange from the current thread causes the app to
     // hang in Advising::RunOnUIThread sometimes. Creating a new thread and
@@ -13984,21 +13982,21 @@ bool VisualTreeWatcher::ReleaseDiagnosticsReference(InstanceHandle handle)
         return false;
     }
 
-    winrt::weak_ref<wf::IInspectable> weakElement;
+    ::winrt::weak_ref<wf::IInspectable> weakElement;
     {
         // Not through FromHandle: a handle whose runtime object is already gone
         // fails to resolve routinely, and throwing for it would pay for an
         // originate with a stack capture every time. The strong reference has
         // to be gone again before the release below, hence the scope.
         wf::IInspectable element;
-        HRESULT hr = m_XamlDiagnostics->GetIInspectableFromHandle(handle, reinterpret_cast<::IInspectable**>(winrt::put_abi(element)));
+        HRESULT hr = m_XamlDiagnostics->GetIInspectableFromHandle(handle, reinterpret_cast<::IInspectable**>(::winrt::put_abi(element)));
         if (SUCCEEDED(hr) && element) {
             try {
                 // Not every reported object supports weak references, and then
                 // the release just proceeds unobserved.
                 weakElement = TryMakeWeak(element);
             } catch (...) {
-                Wh_Log(L"Error %08X", winrt::to_hresult());
+                Wh_Log(L"Error %08X", ::winrt::to_hresult());
             }
         }
     }
@@ -14073,7 +14071,7 @@ HRESULT VisualTreeWatcher::OnVisualTreeChange(ParentChildRelation relation, Visu
     }
     catch (...)
     {
-        Wh_Log(L"Error %08X", winrt::to_hresult());
+        Wh_Log(L"Error %08X", ::winrt::to_hresult());
     }
 
     // A tree discarded whole is never dismantled, so it reports no removals to
@@ -14097,7 +14095,7 @@ HRESULT VisualTreeWatcher::OnVisualTreeChange(ParentChildRelation relation, Visu
 }
 catch (...)
 {
-    HRESULT hr = winrt::to_hresult();
+    HRESULT hr = ::winrt::to_hresult();
     Wh_Log(L"Error %08X", hr);
 
     // Returning an error prevents (some?) further messages, always return
@@ -14116,19 +14114,19 @@ HRESULT VisualTreeWatcher::OnElementStateChanged(InstanceHandle, VisualElementSt
 #pragma region tap_hpp
 
 
-winrt::com_ptr<VisualTreeWatcher> g_visualTreeWatcher;
+::winrt::com_ptr<VisualTreeWatcher> g_visualTreeWatcher;
 
 // {C85D8CC7-5463-40E8-A432-F5916B6427E5}
 static constexpr CLSID CLSID_WindhawkTAP = { 0xc85d8cc7, 0x5463, 0x40e8, { 0xa4, 0x32, 0xf5, 0x91, 0x6b, 0x64, 0x27, 0xe5 } };
 
-class WindhawkTAP : public winrt::implements<WindhawkTAP, IObjectWithSite, winrt::non_agile>
+class WindhawkTAP : public ::winrt::implements<WindhawkTAP, IObjectWithSite, ::winrt::non_agile>
 {
 public:
     HRESULT STDMETHODCALLTYPE SetSite(IUnknown *pUnkSite) override;
     HRESULT STDMETHODCALLTYPE GetSite(REFIID riid, void **ppvSite) noexcept override;
 
 private:
-    winrt::com_ptr<IUnknown> site;
+    ::winrt::com_ptr<IUnknown> site;
 };
 
 #pragma endregion  // tap_hpp
@@ -14151,14 +14149,14 @@ HRESULT WindhawkTAP::SetSite(IUnknown *pUnkSite) try
         // Decrease refcount increased by InitializeXamlDiagnosticsEx.
         FreeLibrary(GetCurrentModuleHandle());
 
-        g_visualTreeWatcher = winrt::make_self<VisualTreeWatcher>(site);
+        g_visualTreeWatcher = ::winrt::make_self<VisualTreeWatcher>(site);
     }
 
     return S_OK;
 }
 catch (...)
 {
-    HRESULT hr = winrt::to_hresult();
+    HRESULT hr = ::winrt::to_hresult();
     Wh_Log(L"Error %08X", hr);
     return hr;
 }
@@ -14174,14 +14172,14 @@ HRESULT WindhawkTAP::GetSite(REFIID riid, void **ppvSite) noexcept
 
 
 template<class T>
-struct SimpleFactory : winrt::implements<SimpleFactory<T>, IClassFactory, winrt::non_agile>
+struct SimpleFactory : ::winrt::implements<SimpleFactory<T>, IClassFactory, ::winrt::non_agile>
 {
     HRESULT STDMETHODCALLTYPE CreateInstance(IUnknown* pUnkOuter, REFIID riid, void** ppvObject) override try
     {
         if (!pUnkOuter)
         {
             *ppvObject = nullptr;
-            return winrt::make<T>().as(riid, ppvObject);
+            return ::winrt::make<T>().as(riid, ppvObject);
         }
         else
         {
@@ -14190,7 +14188,7 @@ struct SimpleFactory : winrt::implements<SimpleFactory<T>, IClassFactory, winrt:
     }
     catch (...)
     {
-        HRESULT hr = winrt::to_hresult();
+        HRESULT hr = ::winrt::to_hresult();
         Wh_Log(L"Error %08X", hr);
         return hr;
     }
@@ -14202,49 +14200,6 @@ struct SimpleFactory : winrt::implements<SimpleFactory<T>, IClassFactory, winrt:
 };
 
 #pragma endregion  // simplefactory_hpp
-
-#pragma region module_cpp
-
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdll-attribute-on-redeclaration"
-
-__declspec(dllexport)
-_Use_decl_annotations_ STDAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, LPVOID* ppv) try
-{
-    if (rclsid == CLSID_WindhawkTAP)
-    {
-        *ppv = nullptr;
-        return winrt::make<SimpleFactory<WindhawkTAP>>().as(riid, ppv);
-    }
-    else
-    {
-        return CLASS_E_CLASSNOTAVAILABLE;
-    }
-}
-catch (...)
-{
-    HRESULT hr = winrt::to_hresult();
-    Wh_Log(L"Error %08X", hr);
-    return hr;
-}
-
-__declspec(dllexport)
-_Use_decl_annotations_ STDAPI DllCanUnloadNow()
-{
-    if (winrt::get_module_lock())
-    {
-        return S_FALSE;
-    }
-    else
-    {
-        return S_OK;
-    }
-}
-
-#pragma clang diagnostic pop
-
-#pragma endregion  // module_cpp
 
 #pragma region api_cpp
 
@@ -14310,11 +14265,11 @@ using namespace std::string_view_literals;
 
 #define WH_WINRT_WINUI2
 
-using namespace winrt::Windows::UI::Xaml;
+using namespace ::winrt::Windows::UI::Xaml;
 
-namespace muxc = winrt::Microsoft::UI::Xaml::Controls;
-namespace wge = winrt::Windows::Graphics::Effects;
-namespace wuc = winrt::Windows::UI::Composition;
+namespace muxc = ::winrt::Microsoft::UI::Xaml::Controls;
+namespace wge = ::winrt::Windows::Graphics::Effects;
+namespace wuc = ::winrt::Windows::UI::Composition;
 namespace wuxh = wux::Hosting;
 namespace awge = ABI::Windows::Graphics::Effects;
 
@@ -14337,7 +14292,7 @@ using string_setting_unique_ptr =
     std::unique_ptr<const WCHAR[], deleter_from_fn<Wh_FreeStringSetting>>;
 
 using PropertyKeyValue =
-    std::pair<DependencyProperty, winrt::Windows::Foundation::IInspectable>;
+    std::pair<DependencyProperty, ::winrt::Windows::Foundation::IInspectable>;
 
 using PropertyValuesUnresolved =
     std::vector<std::pair<std::wstring, std::wstring>>;
@@ -14389,14 +14344,14 @@ struct UnresolvedRules {
 
 struct XamlBlurBrushParams {
     float blurAmount;
-    winrt::Windows::UI::Color tint;
+    ::winrt::Windows::UI::Color tint;
     std::optional<uint8_t> tintOpacity;
     std::wstring tintThemeResourceKey;  // Empty if not from ThemeResource
     std::optional<float> tintLuminosityOpacity;
     std::optional<float> tintSaturation;
     std::optional<float> noiseOpacity;
     std::optional<float> noiseDensity;
-    std::optional<winrt::Windows::UI::Color> fallbackColor;
+    std::optional<::winrt::Windows::UI::Color> fallbackColor;
     std::wstring fallbackThemeResourceKey;  // Empty if not from ThemeResource
 };
 
@@ -14425,7 +14380,7 @@ struct DynamicStyleTemplate {
 //                         ElementPropertyCustomizationState::customValue (see
 //                         notes there).
 using PropertyOverrideValue =
-    std::variant<winrt::Windows::Foundation::IInspectable,
+    std::variant<::winrt::Windows::Foundation::IInspectable,
                  XamlBlurBrushParams,
                  DynamicStyleTemplate>;
 
@@ -14472,7 +14427,7 @@ struct ElementTreeNode {
     // A node can outlive the object it describes -- descendant nodes and
     // not-yet-cleaned-up ElementCustomizationState entries keep it alive -- so
     // this is what proves a pool hit isn't a recycled address.
-    winrt::weak_ref<DependencyObject> ref;
+    ::winrt::weak_ref<DependencyObject> ref;
     std::shared_ptr<ElementTreeNode> parent;
     uint32_t depth = 0;
     // The depth-0 node this spine hangs from, `this` for a root itself. The
@@ -14491,7 +14446,7 @@ thread_local std::unordered_map<void*, std::weak_ptr<ElementTreeNode>>
 thread_local size_t g_elementTreeNodesReapThreshold = 64;
 
 void* ElementIdentityKey(DependencyObject const& object) {
-    return winrt::get_abi(object.as<winrt::Windows::Foundation::IUnknown>());
+    return ::winrt::get_abi(object.as<::winrt::Windows::Foundation::IUnknown>());
 }
 
 // A depth-0 node is a placeholder root until proven otherwise: if its object
@@ -14561,7 +14516,7 @@ std::shared_ptr<ElementTreeNode> GetOrCreateElementTreeNode(
             g_elementTreeNodes[ElementIdentityKey(*it)] = fresh;
             node = std::move(fresh);
         }
-    } catch (winrt::hresult_error const& ex) {
+    } catch (::winrt::hresult_error const& ex) {
         Wh_Log(L"Error %08X: %s", ex.code(), ex.message().c_str());
         return nullptr;
     }
@@ -14617,7 +14572,7 @@ thread_local std::vector<ElementCustomizationRules>
     g_elementsCustomizationRules;
 
 struct ElementPropertyCustomizationState {
-    std::optional<winrt::Windows::Foundation::IInspectable> originalValue;
+    std::optional<::winrt::Windows::Foundation::IInspectable> originalValue;
     // The most recently applied value, re-pushed by the per-DP property-
     // changed callback when something external (animation, system Setter)
     // overrides it. Although PropertyOverrideValue's variant declares a
@@ -14626,7 +14581,7 @@ struct ElementPropertyCustomizationState {
     // one of those before being stored, and the source template lives
     // separately in `dynamicTemplate` below.
     std::optional<PropertyOverrideValue> customValue;
-    winrt::Windows::Foundation::IInspectable lastAppliedValue{nullptr};
+    ::winrt::Windows::Foundation::IInspectable lastAppliedValue{nullptr};
     int64_t propertyChangedToken = 0;
     // Source template for dynamic styles whose value contains `{{...}}`
     // substitutions; re-evaluated whenever a referenced variable changes, with
@@ -14651,11 +14606,11 @@ struct CapturePropertyCustomizationState {
 struct ElementCustomizationStateForVisualStateGroup {
     std::unordered_map<DependencyProperty, ElementPropertyCustomizationState>
         propertyCustomizationStates;
-    winrt::event_token visualStateGroupCurrentStateChangedToken;
+    ::winrt::event_token visualStateGroupCurrentStateChangedToken;
 };
 
 struct ElementCustomizationState {
-    winrt::weak_ref<FrameworkElement> element;
+    ::winrt::weak_ref<FrameworkElement> element;
 
     // Scores how close each capture of a style variable is to this element.
     // Only built for elements that capture or consume a variable.
@@ -14673,11 +14628,11 @@ struct ElementCustomizationState {
     // RegisterPropertyChangedCallback on UWP, so any element with capture rules
     // also subscribes to `FrameworkElement.SizeChanged` to pick up size
     // changes.
-    winrt::event_token captureSizeChangedToken;
+    ::winrt::event_token captureSizeChangedToken;
 
     // Use list to avoid reallocations on insertion, as pointers to items are
     // captured in callbacks and stored.
-    std::list<std::pair<std::optional<winrt::weak_ref<VisualStateGroup>>,
+    std::list<std::pair<std::optional<::winrt::weak_ref<VisualStateGroup>>,
                         ElementCustomizationStateForVisualStateGroup>>
         perVisualStateGroup;
 };
@@ -14691,7 +14646,7 @@ thread_local std::unordered_map<ElementId, ElementCustomizationState>
 // belongs to that destroyed predecessor and must not name the new one.
 struct ElementIdEntry {
     ElementId id = ElementId::None;
-    winrt::weak_ref<wf::IInspectable> element;
+    ::winrt::weak_ref<wf::IInspectable> element;
 };
 
 thread_local std::unordered_map<InstanceHandle, ElementIdEntry> g_elementIds;
@@ -14710,10 +14665,10 @@ ElementId GetOrCreateElementId(InstanceHandle handle,
 
     entry.id = static_cast<ElementId>(++g_lastElementId);
 
-    winrt::weak_ref<wf::IInspectable> weakElement;
+    ::winrt::weak_ref<wf::IInspectable> weakElement;
     try {
         weakElement = TryMakeWeak(element);
-    } catch (winrt::hresult_error const& ex) {
+    } catch (::winrt::hresult_error const& ex) {
         Wh_Log(L"Error %08X: %s", ex.code(), ex.message().c_str());
     }
 
@@ -14901,11 +14856,11 @@ struct TrackedImage {
     // fail to load and both report the outcome, but through unrelated types, so
     // the source is addressed by DependencyProperty and each type gets its own
     // revoker pair.
-    winrt::weak_ref<DependencyObject> target;
+    ::winrt::weak_ref<DependencyObject> target;
     DependencyProperty sourceProperty{nullptr};
     // The remote address: the entry's identity and what's downloaded, even
     // while the cached file is what's loaded.
-    winrt::Windows::Foundation::Uri uri{nullptr};
+    ::winrt::Windows::Foundation::Uri uri{nullptr};
     std::wstring url;
     // The cached copy of the image, empty when there's no cache folder.
     std::filesystem::path cachePath;
@@ -14940,9 +14895,9 @@ struct TrackedImagesForThread {
     // Entries are held by shared_ptr so that event handlers can reference them
     // via a weak_ptr and do nothing once an entry is gone.
     std::list<std::shared_ptr<TrackedImage>> images;
-    winrt::Windows::System::DispatcherQueue dispatcher{nullptr};
-    winrt::Windows::System::DispatcherQueueTimer retryTimer{nullptr};
-    winrt::Windows::System::DispatcherQueueTimer::Tick_revoker
+    ::winrt::Windows::System::DispatcherQueue dispatcher{nullptr};
+    ::winrt::Windows::System::DispatcherQueueTimer retryTimer{nullptr};
+    ::winrt::Windows::System::DispatcherQueueTimer::Tick_revoker
         retryTimerTickRevoker;
     // Tick the scheduled retry round is due at, zero if none is scheduled.
     ULONGLONG retryDueTick = 0;
@@ -14954,7 +14909,7 @@ thread_local TrackedImagesForThread g_trackedImagesForThread;
 // that a target given an already substituted source is tracked as well.
 // Outlives the entries, since the style value it describes is shared by targets
 // which come and go. Thread local like that value.
-thread_local std::unordered_map<std::wstring, winrt::Windows::Foundation::Uri>
+thread_local std::unordered_map<std::wstring, ::winrt::Windows::Foundation::Uri>
     g_imageCacheUriRemotes;
 
 // A single connectivity transition raises several network status events, and
@@ -14982,9 +14937,9 @@ std::mutex g_imageRetryMutex;
 bool g_imageRetryActive;
 // The dispatcher of each UI thread which has tracked images, used to run a
 // retry on the thread that owns the image.
-std::vector<winrt::weak_ref<winrt::Windows::System::DispatcherQueue>>
+std::vector<::winrt::weak_ref<::winrt::Windows::System::DispatcherQueue>>
     g_imageRetryDispatchers;
-winrt::event_token g_networkStatusChangedToken;
+::winrt::event_token g_networkStatusChangedToken;
 // Set while a thread is registering the handler outside the mutex, so that a
 // concurrent or re-entrant call doesn't register a second one.
 bool g_networkStatusChangedRegistering;
@@ -15045,18 +15000,18 @@ thread_local std::vector<ResourceVariableEntry> g_resourceVariables;
 // Track original resource values for restoration (per-thread since
 // Application::Current().Resources() is per-thread).
 thread_local std::unordered_map<std::wstring,
-                                winrt::Windows::Foundation::IInspectable>
+                                ::winrt::Windows::Foundation::IInspectable>
     g_originalResourceValues;
 
 // Track our merged theme dictionary for cleanup (per-thread).
 thread_local ResourceDictionary g_resourceVariablesThemeDict{nullptr};
 
 // For listening to theme color changes (per-thread).
-thread_local winrt::Windows::UI::ViewManagement::UISettings g_uiSettings{
+thread_local ::winrt::Windows::UI::ViewManagement::UISettings g_uiSettings{
     nullptr};
-thread_local winrt::event_token g_colorValuesChangedToken;
+thread_local ::winrt::event_token g_colorValuesChangedToken;
 
-winrt::Windows::Foundation::IInspectable ReadLocalValueWithWorkaround(
+::winrt::Windows::Foundation::IInspectable ReadLocalValueWithWorkaround(
     DependencyObject elementDo,
     DependencyProperty property) {
     // Workaround for AcrylicBrushes returning an incorrect background brush.
@@ -15085,7 +15040,7 @@ winrt::Windows::Foundation::IInspectable ReadLocalValueWithWorkaround(
             if (grid && grid.Name() == L"RootContent") {
                 auto value2 = elementDo.GetValue(property);
                 if (value2 &&
-                    winrt::get_class_name(value2) ==
+                    ::winrt::get_class_name(value2) ==
                         L"Windows.UI.Xaml.Controls.RowDefinitionCollection") {
                     Wh_Log(
                         L"Using GetValue workaround for "
@@ -15095,7 +15050,7 @@ winrt::Windows::Foundation::IInspectable ReadLocalValueWithWorkaround(
             }
         }
 
-        auto className = winrt::get_class_name(value);
+        auto className = ::winrt::get_class_name(value);
         if (className == L"Windows.UI.Xaml.Data.BindingExpressionBase" ||
             className == L"Windows.UI.Xaml.Data.BindingExpression") {
             // BindingExpressionBase was observed to be returned for XAML
@@ -15118,7 +15073,7 @@ winrt::Windows::Foundation::IInspectable ReadLocalValueWithWorkaround(
         if (rect && (rect.Name() == L"HorizontalTrackRect" ||
                      rect.Name() == L"HorizontalDecreaseRect")) {
             auto value2 = elementDo.GetValue(property);
-            if (value2 && winrt::get_class_name(value2) ==
+            if (value2 && ::winrt::get_class_name(value2) ==
                               L"Windows.UI.Xaml.Media.SolidColorBrush") {
                 Wh_Log(L"Using GetValue workaround for %s",
                        rect.Name().c_str());
@@ -15130,7 +15085,7 @@ winrt::Windows::Foundation::IInspectable ReadLocalValueWithWorkaround(
     Wh_Log(L"Read property value %s",
            value ? (value == DependencyProperty::UnsetValue()
                         ? L"(unset)"
-                        : winrt::get_class_name(value).c_str())
+                        : ::winrt::get_class_name(value).c_str())
                  : L"(null)");
 
     return value;
@@ -15142,13 +15097,13 @@ winrt::Windows::Foundation::IInspectable ReadLocalValueWithWorkaround(
 // Generates a tileable noise BMP in memory. Density controls the brightness
 // distribution curve via a power function (lower density = sparser bright
 // pixels). Opacity is handled downstream by the composition effect graph.
-winrt::Windows::Storage::Streams::IRandomAccessStream CreateNoiseStream(
+::winrt::Windows::Storage::Streams::IRandomAccessStream CreateNoiseStream(
     float density) {
     // Cache the last stream to avoid regenerating when density hasn't changed.
     // The cached stream is never read directly; callers get independent clones
     // via CloneStream() so they don't share a seek cursor.
     thread_local float cachedDensity = std::numeric_limits<float>::quiet_NaN();
-    thread_local winrt::Windows::Storage::Streams::InMemoryRandomAccessStream
+    thread_local ::winrt::Windows::Storage::Streams::InMemoryRandomAccessStream
         cachedStream{nullptr};
 
     if (density == cachedDensity && cachedStream) {
@@ -15202,11 +15157,11 @@ winrt::Windows::Storage::Streams::IRandomAccessStream CreateNoiseStream(
         pixels[i + 3] = 255;
     }
 
-    winrt::Windows::Storage::Streams::InMemoryRandomAccessStream stream;
-    winrt::Windows::Storage::Streams::DataWriter writer(stream);
-    writer.WriteBytes(winrt::array_view<const uint8_t>(
+    ::winrt::Windows::Storage::Streams::InMemoryRandomAccessStream stream;
+    ::winrt::Windows::Storage::Streams::DataWriter writer(stream);
+    writer.WriteBytes(::winrt::array_view<const uint8_t>(
         reinterpret_cast<const uint8_t*>(&fileHeader), sizeof(fileHeader)));
-    writer.WriteBytes(winrt::array_view<const uint8_t>(
+    writer.WriteBytes(::winrt::array_view<const uint8_t>(
         reinterpret_cast<const uint8_t*>(&infoHeader), sizeof(infoHeader)));
     writer.WriteBytes(pixels);
     writer.StoreAsync().get();
@@ -15221,8 +15176,8 @@ winrt::Windows::Storage::Streams::IRandomAccessStream CreateNoiseStream(
 // Blur background implementation, copied from TranslucentTB.
 ////////////////////////////////////////////////////////////////////////////////
 // clang-format off
-template <> inline constexpr winrt::guid winrt::impl::guid_v<winrt::impl::abi_t<winrt::Windows::Foundation::IPropertyValue>>{
-    winrt::impl::guid_v<winrt::Windows::Foundation::IPropertyValue>
+template <> inline constexpr ::winrt::guid ::winrt::impl::guid_v<::winrt::impl::abi_t<::winrt::Windows::Foundation::IPropertyValue>>{
+    ::winrt::impl::guid_v<::winrt::Windows::Foundation::IPropertyValue>
 };
 
 typedef enum MY_D2D1_GAUSSIANBLUR_OPTIMIZATION
@@ -15241,15 +15196,15 @@ class XamlBlurBrush : public Media::XamlCompositionBrushBaseT<XamlBlurBrush, Med
 public:
     XamlBlurBrush(UIElement element,
                   float blurAmount,
-                  winrt::Windows::UI::Color tint,
+                  ::winrt::Windows::UI::Color tint,
                   std::optional<uint8_t> tintOpacity,
-                  winrt::hstring tintThemeResourceKey,
+                  ::winrt::hstring tintThemeResourceKey,
                   std::optional<float> tintLuminosityOpacity,
                   std::optional<float> tintSaturation,
                   std::optional<float> noiseOpacity,
                   std::optional<float> noiseDensity,
-                  std::optional<winrt::Windows::UI::Color> fallbackColor,
-                  winrt::hstring fallbackThemeResourceKey);
+                  std::optional<::winrt::Windows::UI::Color> fallbackColor,
+                  ::winrt::hstring fallbackThemeResourceKey);
     ~XamlBlurBrush();
 
     void OnConnected();
@@ -15259,10 +15214,10 @@ public:
     // ActionCenter::FlexibleToastView::OnToastBackgroundBorderBackgroundChanged
     // in Windows.UI.ActionCenter.dll. If missing, the app crashes while trying
     // to show the first notification, which results in a crash loop.
-    winrt::Windows::UI::Color Color() const {
+    ::winrt::Windows::UI::Color Color() const {
         return m_tint;
     }
-    void Color(winrt::Windows::UI::Color const& value) {
+    void Color(::winrt::Windows::UI::Color const& value) {
         // Do nothing.
     }
 
@@ -15276,24 +15231,24 @@ private:
 
     wuc::Compositor m_compositor;
     float m_blurAmount;
-    winrt::Windows::UI::Color m_tint;
+    ::winrt::Windows::UI::Color m_tint;
     std::optional<uint8_t> m_tintOpacity;
-    winrt::hstring m_tintThemeResourceKey;
+    ::winrt::hstring m_tintThemeResourceKey;
     std::optional<float> m_tintLuminosityOpacity;
     std::optional<float> m_tintSaturation;
     std::optional<float> m_noiseOpacity;
     std::optional<float> m_noiseDensity;
-    std::optional<winrt::Windows::UI::Color> m_fallbackColor;
-    winrt::hstring m_fallbackThemeResourceKey;
+    std::optional<::winrt::Windows::UI::Color> m_fallbackColor;
+    ::winrt::hstring m_fallbackThemeResourceKey;
     Media::SolidColorBrush m_proxyBrush{nullptr};
     Media::SolidColorBrush m_fallbackProxyBrush{nullptr};
-    winrt::weak_ref<FrameworkElement> m_weakProxyElement;
-    winrt::hstring m_proxyKey;
-    winrt::hstring m_fallbackProxyKey;
-    winrt::Windows::UI::ViewManagement::UISettings m_uiSettings{nullptr};
-    winrt::event_token m_advancedEffectsEnabledChangedToken{};
-    winrt::event_token m_energySaverStatusChangedToken{};
-    winrt::Windows::System::DispatcherQueue m_dispatcher{nullptr};
+    ::winrt::weak_ref<FrameworkElement> m_weakProxyElement;
+    ::winrt::hstring m_proxyKey;
+    ::winrt::hstring m_fallbackProxyKey;
+    ::winrt::Windows::UI::ViewManagement::UISettings m_uiSettings{nullptr};
+    ::winrt::event_token m_advancedEffectsEnabledChangedToken{};
+    ::winrt::event_token m_energySaverStatusChangedToken{};
+    ::winrt::Windows::System::DispatcherQueue m_dispatcher{nullptr};
     HKEY m_powerKey{nullptr};
     HANDLE m_regNotifyEvent{nullptr};
     HANDLE m_regWaitHandle{nullptr};
@@ -15361,7 +15316,7 @@ DECLARE_INTERFACE_IID_(IGraphicsEffectD2D1Interop, IUnknown, "2FC57384-A068-44D7
 
     STDMETHOD(GetProperty)(
         UINT index,
-        _Outptr_ winrt::impl::abi_t<winrt::Windows::Foundation::IPropertyValue> ** value
+        _Outptr_ ::winrt::impl::abi_t<::winrt::Windows::Foundation::IPropertyValue> ** value
         ) PURE;
 
     STDMETHOD(GetSource)(
@@ -15382,32 +15337,32 @@ DECLARE_INTERFACE_IID_(IGraphicsEffectD2D1Interop, IUnknown, "2FC57384-A068-44D7
 } // namespace ABI
 #endif
 
-template <> inline constexpr winrt::guid winrt::impl::guid_v<ABI::Windows::Graphics::Effects::IGraphicsEffectD2D1Interop>{
+template <> inline constexpr ::winrt::guid ::winrt::impl::guid_v<ABI::Windows::Graphics::Effects::IGraphicsEffectD2D1Interop>{
     0x2FC57384, 0xA068, 0x44D7, { 0xA3, 0x31, 0x30, 0x98, 0x2F, 0xCF, 0x71, 0x77 }
 };
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // CompositeEffect.h
-struct CompositeEffect : winrt::implements<CompositeEffect, wge::IGraphicsEffect, wge::IGraphicsEffectSource, awge::IGraphicsEffectD2D1Interop>
+struct CompositeEffect : ::winrt::implements<CompositeEffect, wge::IGraphicsEffect, wge::IGraphicsEffectSource, awge::IGraphicsEffectD2D1Interop>
 {
 public:
     // IGraphicsEffectD2D1Interop
     HRESULT STDMETHODCALLTYPE GetEffectId(GUID* id) noexcept override;
     HRESULT STDMETHODCALLTYPE GetNamedPropertyMapping(LPCWSTR name, UINT* index, awge::GRAPHICS_EFFECT_PROPERTY_MAPPING* mapping) noexcept override;
     HRESULT STDMETHODCALLTYPE GetPropertyCount(UINT* count) noexcept override;
-    HRESULT STDMETHODCALLTYPE GetProperty(UINT index, winrt::impl::abi_t<winrt::Windows::Foundation::IPropertyValue>** value) noexcept override;
+    HRESULT STDMETHODCALLTYPE GetProperty(UINT index, ::winrt::impl::abi_t<::winrt::Windows::Foundation::IPropertyValue>** value) noexcept override;
     HRESULT STDMETHODCALLTYPE GetSource(UINT index, awge::IGraphicsEffectSource** source) noexcept override;
     HRESULT STDMETHODCALLTYPE GetSourceCount(UINT* count) noexcept override;
 
     // IGraphicsEffect
-    winrt::hstring Name();
-    void Name(winrt::hstring name);
+    ::winrt::hstring Name();
+    void Name(::winrt::hstring name);
 
     std::vector<wge::IGraphicsEffectSource> Sources;
     D2D1_COMPOSITE_MODE Mode = D2D1_COMPOSITE_MODE_SOURCE_OVER;
 private:
-    winrt::hstring m_name = L"CompositeEffect";
+    ::winrt::hstring m_name = L"CompositeEffect";
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -15453,7 +15408,7 @@ HRESULT CompositeEffect::GetPropertyCount(UINT* count) noexcept
     return S_OK;
 }
 
-HRESULT CompositeEffect::GetProperty(UINT index, winrt::impl::abi_t<winrt::Windows::Foundation::IPropertyValue>** value) noexcept try
+HRESULT CompositeEffect::GetProperty(UINT index, ::winrt::impl::abi_t<::winrt::Windows::Foundation::IPropertyValue>** value) noexcept try
 {
     if (value == nullptr) [[unlikely]]
     {
@@ -15463,7 +15418,7 @@ HRESULT CompositeEffect::GetProperty(UINT index, winrt::impl::abi_t<winrt::Windo
     switch (index)
     {
         case D2D1_COMPOSITE_PROP_MODE:
-            *value = wf::PropertyValue::CreateUInt32((UINT32)Mode).as<winrt::impl::abi_t<winrt::Windows::Foundation::IPropertyValue>>().detach();
+            *value = wf::PropertyValue::CreateUInt32((UINT32)Mode).as<::winrt::impl::abi_t<::winrt::Windows::Foundation::IPropertyValue>>().detach();
             break;
 
         default:
@@ -15474,7 +15429,7 @@ HRESULT CompositeEffect::GetProperty(UINT index, winrt::impl::abi_t<winrt::Windo
 }
 catch (...)
 {
-    return winrt::to_hresult();
+    return ::winrt::to_hresult();
 }
 
 HRESULT CompositeEffect::GetSource(UINT index, awge::IGraphicsEffectSource** source) noexcept try
@@ -15484,12 +15439,12 @@ HRESULT CompositeEffect::GetSource(UINT index, awge::IGraphicsEffectSource** sou
         return E_INVALIDARG;
     }
 
-    winrt::copy_to_abi(Sources.at(index), *reinterpret_cast<void**>(source));
+    ::winrt::copy_to_abi(Sources.at(index), *reinterpret_cast<void**>(source));
     return S_OK;
 }
 catch (...)
 {
-    return winrt::to_hresult();
+    return ::winrt::to_hresult();
 }
 
 HRESULT CompositeEffect::GetSourceCount(UINT* count) noexcept
@@ -15503,36 +15458,36 @@ HRESULT CompositeEffect::GetSourceCount(UINT* count) noexcept
     return S_OK;
 }
 
-winrt::hstring CompositeEffect::Name()
+::winrt::hstring CompositeEffect::Name()
 {
     return m_name;
 }
 
-void CompositeEffect::Name(winrt::hstring name)
+void CompositeEffect::Name(::winrt::hstring name)
 {
     m_name = name;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // FloodEffect.h
-struct FloodEffect : winrt::implements<FloodEffect, wge::IGraphicsEffect, wge::IGraphicsEffectSource, awge::IGraphicsEffectD2D1Interop>
+struct FloodEffect : ::winrt::implements<FloodEffect, wge::IGraphicsEffect, wge::IGraphicsEffectSource, awge::IGraphicsEffectD2D1Interop>
 {
 public:
     // IGraphicsEffectD2D1Interop
     HRESULT STDMETHODCALLTYPE GetEffectId(GUID* id) noexcept override;
     HRESULT STDMETHODCALLTYPE GetNamedPropertyMapping(LPCWSTR name, UINT* index, awge::GRAPHICS_EFFECT_PROPERTY_MAPPING* mapping) noexcept override;
     HRESULT STDMETHODCALLTYPE GetPropertyCount(UINT* count) noexcept override;
-    HRESULT STDMETHODCALLTYPE GetProperty(UINT index, winrt::impl::abi_t<winrt::Windows::Foundation::IPropertyValue>** value) noexcept override;
+    HRESULT STDMETHODCALLTYPE GetProperty(UINT index, ::winrt::impl::abi_t<::winrt::Windows::Foundation::IPropertyValue>** value) noexcept override;
     HRESULT STDMETHODCALLTYPE GetSource(UINT index, awge::IGraphicsEffectSource** source) noexcept override;
     HRESULT STDMETHODCALLTYPE GetSourceCount(UINT* count) noexcept override;
 
     // IGraphicsEffect
-    winrt::hstring Name();
-    void Name(winrt::hstring name);
+    ::winrt::hstring Name();
+    void Name(::winrt::hstring name);
 
-    winrt::Windows::UI::Color Color{};
+    ::winrt::Windows::UI::Color Color{};
 private:
-    winrt::hstring m_name = L"FloodEffect";
+    ::winrt::hstring m_name = L"FloodEffect";
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -15578,7 +15533,7 @@ HRESULT FloodEffect::GetPropertyCount(UINT* count) noexcept
     return S_OK;
 }
 
-HRESULT FloodEffect::GetProperty(UINT index, winrt::impl::abi_t<winrt::Windows::Foundation::IPropertyValue>** value) noexcept try
+HRESULT FloodEffect::GetProperty(UINT index, ::winrt::impl::abi_t<::winrt::Windows::Foundation::IPropertyValue>** value) noexcept try
 {
     if (value == nullptr) [[unlikely]]
     {
@@ -15593,7 +15548,7 @@ HRESULT FloodEffect::GetProperty(UINT index, winrt::impl::abi_t<winrt::Windows::
                 Color.G / 255.0f,
                 Color.B / 255.0f,
                 Color.A / 255.0f,
-            }).as<winrt::impl::abi_t<winrt::Windows::Foundation::IPropertyValue>>().detach();
+            }).as<::winrt::impl::abi_t<::winrt::Windows::Foundation::IPropertyValue>>().detach();
             break;
 
         default:
@@ -15604,7 +15559,7 @@ HRESULT FloodEffect::GetProperty(UINT index, winrt::impl::abi_t<winrt::Windows::
 }
 catch (...)
 {
-    return winrt::to_hresult();
+    return ::winrt::to_hresult();
 }
 
 HRESULT FloodEffect::GetSource(UINT, awge::IGraphicsEffectSource** source) noexcept
@@ -15628,38 +15583,38 @@ HRESULT FloodEffect::GetSourceCount(UINT* count) noexcept
     return S_OK;
 }
 
-winrt::hstring FloodEffect::Name()
+::winrt::hstring FloodEffect::Name()
 {
     return m_name;
 }
 
-void FloodEffect::Name(winrt::hstring name)
+void FloodEffect::Name(::winrt::hstring name)
 {
     m_name = name;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // BorderEffect.h
-struct BorderEffect : winrt::implements<BorderEffect, wge::IGraphicsEffect, wge::IGraphicsEffectSource, awge::IGraphicsEffectD2D1Interop>
+struct BorderEffect : ::winrt::implements<BorderEffect, wge::IGraphicsEffect, wge::IGraphicsEffectSource, awge::IGraphicsEffectD2D1Interop>
 {
 public:
     // IGraphicsEffectD2D1Interop
     HRESULT STDMETHODCALLTYPE GetEffectId(GUID* id) noexcept override;
     HRESULT STDMETHODCALLTYPE GetNamedPropertyMapping(LPCWSTR name, UINT* index, awge::GRAPHICS_EFFECT_PROPERTY_MAPPING* mapping) noexcept override;
     HRESULT STDMETHODCALLTYPE GetPropertyCount(UINT* count) noexcept override;
-    HRESULT STDMETHODCALLTYPE GetProperty(UINT index, winrt::impl::abi_t<winrt::Windows::Foundation::IPropertyValue>** value) noexcept override;
+    HRESULT STDMETHODCALLTYPE GetProperty(UINT index, ::winrt::impl::abi_t<::winrt::Windows::Foundation::IPropertyValue>** value) noexcept override;
     HRESULT STDMETHODCALLTYPE GetSource(UINT index, awge::IGraphicsEffectSource** source) noexcept override;
     HRESULT STDMETHODCALLTYPE GetSourceCount(UINT* count) noexcept override;
 
     // IGraphicsEffect
-    winrt::hstring Name();
-    void Name(winrt::hstring name);
+    ::winrt::hstring Name();
+    void Name(::winrt::hstring name);
 
     wge::IGraphicsEffectSource Source{nullptr};
     D2D1_BORDER_EDGE_MODE ExtendX = D2D1_BORDER_EDGE_MODE_WRAP;
     D2D1_BORDER_EDGE_MODE ExtendY = D2D1_BORDER_EDGE_MODE_WRAP;
 private:
-    winrt::hstring m_name = L"BorderEffect";
+    ::winrt::hstring m_name = L"BorderEffect";
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -15713,7 +15668,7 @@ HRESULT BorderEffect::GetPropertyCount(UINT* count) noexcept
     return S_OK;
 }
 
-HRESULT BorderEffect::GetProperty(UINT index, winrt::impl::abi_t<winrt::Windows::Foundation::IPropertyValue>** value) noexcept try
+HRESULT BorderEffect::GetProperty(UINT index, ::winrt::impl::abi_t<::winrt::Windows::Foundation::IPropertyValue>** value) noexcept try
 {
     if (!value)
     {
@@ -15723,11 +15678,11 @@ HRESULT BorderEffect::GetProperty(UINT index, winrt::impl::abi_t<winrt::Windows:
     switch (index)
     {
         case D2D1_BORDER_PROP_EDGE_MODE_X:
-            *value = wf::PropertyValue::CreateUInt32((UINT32)ExtendX).as<winrt::impl::abi_t<winrt::Windows::Foundation::IPropertyValue>>().detach();
+            *value = wf::PropertyValue::CreateUInt32((UINT32)ExtendX).as<::winrt::impl::abi_t<::winrt::Windows::Foundation::IPropertyValue>>().detach();
             break;
 
         case D2D1_BORDER_PROP_EDGE_MODE_Y:
-            *value = wf::PropertyValue::CreateUInt32((UINT32)ExtendY).as<winrt::impl::abi_t<winrt::Windows::Foundation::IPropertyValue>>().detach();
+            *value = wf::PropertyValue::CreateUInt32((UINT32)ExtendY).as<::winrt::impl::abi_t<::winrt::Windows::Foundation::IPropertyValue>>().detach();
             break;
 
         default:
@@ -15738,7 +15693,7 @@ HRESULT BorderEffect::GetProperty(UINT index, winrt::impl::abi_t<winrt::Windows:
 }
 catch (...)
 {
-    return winrt::to_hresult();
+    return ::winrt::to_hresult();
 }
 
 HRESULT BorderEffect::GetSource(UINT index, awge::IGraphicsEffectSource** source) noexcept
@@ -15750,7 +15705,7 @@ HRESULT BorderEffect::GetSource(UINT index, awge::IGraphicsEffectSource** source
 
     if (index == 0 && Source)
     {
-        winrt::copy_to_abi(Source, *reinterpret_cast<void**>(source));
+        ::winrt::copy_to_abi(Source, *reinterpret_cast<void**>(source));
         return S_OK;
     }
 
@@ -15768,32 +15723,32 @@ HRESULT BorderEffect::GetSourceCount(UINT* count) noexcept
     return S_OK;
 }
 
-winrt::hstring BorderEffect::Name()
+::winrt::hstring BorderEffect::Name()
 {
     return m_name;
 }
 
-void BorderEffect::Name(winrt::hstring name)
+void BorderEffect::Name(::winrt::hstring name)
 {
     m_name = name;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // GaussianBlurEffect.h
-struct GaussianBlurEffect : winrt::implements<GaussianBlurEffect, wge::IGraphicsEffect, wge::IGraphicsEffectSource, awge::IGraphicsEffectD2D1Interop>
+struct GaussianBlurEffect : ::winrt::implements<GaussianBlurEffect, wge::IGraphicsEffect, wge::IGraphicsEffectSource, awge::IGraphicsEffectD2D1Interop>
 {
 public:
     // IGraphicsEffectD2D1Interop
     HRESULT STDMETHODCALLTYPE GetEffectId(GUID* id) noexcept override;
     HRESULT STDMETHODCALLTYPE GetNamedPropertyMapping(LPCWSTR name, UINT* index, awge::GRAPHICS_EFFECT_PROPERTY_MAPPING* mapping) noexcept override;
     HRESULT STDMETHODCALLTYPE GetPropertyCount(UINT* count) noexcept override;
-    HRESULT STDMETHODCALLTYPE GetProperty(UINT index, winrt::impl::abi_t<winrt::Windows::Foundation::IPropertyValue>** value) noexcept override;
+    HRESULT STDMETHODCALLTYPE GetProperty(UINT index, ::winrt::impl::abi_t<::winrt::Windows::Foundation::IPropertyValue>** value) noexcept override;
     HRESULT STDMETHODCALLTYPE GetSource(UINT index, awge::IGraphicsEffectSource** source) noexcept override;
     HRESULT STDMETHODCALLTYPE GetSourceCount(UINT* count) noexcept override;
 
     // IGraphicsEffect
-    winrt::hstring Name();
-    void Name(winrt::hstring name);
+    ::winrt::hstring Name();
+    void Name(::winrt::hstring name);
 
     wge::IGraphicsEffectSource Source;
 
@@ -15801,7 +15756,7 @@ public:
     MY_D2D1_GAUSSIANBLUR_OPTIMIZATION Optimization = MY_D2D1_GAUSSIANBLUR_OPTIMIZATION_BALANCED;
     D2D1_BORDER_MODE BorderMode = D2D1_BORDER_MODE_SOFT;
 private:
-    winrt::hstring m_name = L"GaussianBlurEffect";
+    ::winrt::hstring m_name = L"GaussianBlurEffect";
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -15861,7 +15816,7 @@ HRESULT GaussianBlurEffect::GetPropertyCount(UINT* count) noexcept
     return S_OK;
 }
 
-HRESULT GaussianBlurEffect::GetProperty(UINT index, winrt::impl::abi_t<winrt::Windows::Foundation::IPropertyValue>** value) noexcept try
+HRESULT GaussianBlurEffect::GetProperty(UINT index, ::winrt::impl::abi_t<::winrt::Windows::Foundation::IPropertyValue>** value) noexcept try
 {
     if (value == nullptr) [[unlikely]]
     {
@@ -15871,15 +15826,15 @@ HRESULT GaussianBlurEffect::GetProperty(UINT index, winrt::impl::abi_t<winrt::Wi
     switch (index)
     {
         case D2D1_GAUSSIANBLUR_PROP_STANDARD_DEVIATION:
-            *value = wf::PropertyValue::CreateSingle(BlurAmount).as<winrt::impl::abi_t<winrt::Windows::Foundation::IPropertyValue>>().detach();
+            *value = wf::PropertyValue::CreateSingle(BlurAmount).as<::winrt::impl::abi_t<::winrt::Windows::Foundation::IPropertyValue>>().detach();
             break;
 
         case D2D1_GAUSSIANBLUR_PROP_OPTIMIZATION:
-            *value = wf::PropertyValue::CreateUInt32((UINT32)Optimization).as<winrt::impl::abi_t<winrt::Windows::Foundation::IPropertyValue>>().detach();
+            *value = wf::PropertyValue::CreateUInt32((UINT32)Optimization).as<::winrt::impl::abi_t<::winrt::Windows::Foundation::IPropertyValue>>().detach();
             break;
 
         case D2D1_GAUSSIANBLUR_PROP_BORDER_MODE:
-            *value = wf::PropertyValue::CreateUInt32((UINT32)BorderMode).as<winrt::impl::abi_t<winrt::Windows::Foundation::IPropertyValue>>().detach();
+            *value = wf::PropertyValue::CreateUInt32((UINT32)BorderMode).as<::winrt::impl::abi_t<::winrt::Windows::Foundation::IPropertyValue>>().detach();
             break;
 
         default:
@@ -15890,7 +15845,7 @@ HRESULT GaussianBlurEffect::GetProperty(UINT index, winrt::impl::abi_t<winrt::Wi
 }
 catch (...)
 {
-    return winrt::to_hresult();
+    return ::winrt::to_hresult();
 }
 
 HRESULT GaussianBlurEffect::GetSource(UINT index, awge::IGraphicsEffectSource** source) noexcept
@@ -15902,7 +15857,7 @@ HRESULT GaussianBlurEffect::GetSource(UINT index, awge::IGraphicsEffectSource** 
 
     if (index == 0)
     {
-        winrt::copy_to_abi(Source, *reinterpret_cast<void**>(source));
+        ::winrt::copy_to_abi(Source, *reinterpret_cast<void**>(source));
         return S_OK;
     }
     else
@@ -15922,32 +15877,32 @@ HRESULT GaussianBlurEffect::GetSourceCount(UINT* count) noexcept
     return S_OK;
 }
 
-winrt::hstring GaussianBlurEffect::Name()
+::winrt::hstring GaussianBlurEffect::Name()
 {
     return m_name;
 }
 
-void GaussianBlurEffect::Name(winrt::hstring name)
+void GaussianBlurEffect::Name(::winrt::hstring name)
 {
     m_name = name;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // ColorMatrixEffect.h
-struct ColorMatrixEffect : winrt::implements<ColorMatrixEffect, wge::IGraphicsEffect, wge::IGraphicsEffectSource, awge::IGraphicsEffectD2D1Interop>
+struct ColorMatrixEffect : ::winrt::implements<ColorMatrixEffect, wge::IGraphicsEffect, wge::IGraphicsEffectSource, awge::IGraphicsEffectD2D1Interop>
 {
 public:
     // IGraphicsEffectD2D1Interop
     HRESULT STDMETHODCALLTYPE GetEffectId(GUID* id) noexcept override;
     HRESULT STDMETHODCALLTYPE GetNamedPropertyMapping(LPCWSTR name, UINT* index, awge::GRAPHICS_EFFECT_PROPERTY_MAPPING* mapping) noexcept override;
     HRESULT STDMETHODCALLTYPE GetPropertyCount(UINT* count) noexcept override;
-    HRESULT STDMETHODCALLTYPE GetProperty(UINT index, winrt::impl::abi_t<winrt::Windows::Foundation::IPropertyValue>** value) noexcept override;
+    HRESULT STDMETHODCALLTYPE GetProperty(UINT index, ::winrt::impl::abi_t<::winrt::Windows::Foundation::IPropertyValue>** value) noexcept override;
     HRESULT STDMETHODCALLTYPE GetSource(UINT index, awge::IGraphicsEffectSource** source) noexcept override;
     HRESULT STDMETHODCALLTYPE GetSourceCount(UINT* count) noexcept override;
 
     // IGraphicsEffect
-    winrt::hstring Name();
-    void Name(winrt::hstring name);
+    ::winrt::hstring Name();
+    void Name(::winrt::hstring name);
 
     wge::IGraphicsEffectSource Source{nullptr};
 
@@ -15963,7 +15918,7 @@ public:
     uint32_t AlphaMode = D2D1_COLORMATRIX_ALPHA_MODE_PREMULTIPLIED;
     bool ClampOutput = false;
 private:
-    winrt::hstring m_name = L"ColorMatrixEffect";
+    ::winrt::hstring m_name = L"ColorMatrixEffect";
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -16025,7 +15980,7 @@ HRESULT ColorMatrixEffect::GetPropertyCount(UINT* count) noexcept
     return S_OK;
 }
 
-HRESULT ColorMatrixEffect::GetProperty(UINT index, winrt::impl::abi_t<winrt::Windows::Foundation::IPropertyValue>** value) noexcept try
+HRESULT ColorMatrixEffect::GetProperty(UINT index, ::winrt::impl::abi_t<::winrt::Windows::Foundation::IPropertyValue>** value) noexcept try
 {
     if (!value)
     {
@@ -16036,16 +15991,16 @@ HRESULT ColorMatrixEffect::GetProperty(UINT index, winrt::impl::abi_t<winrt::Win
     {
         case D2D1_COLORMATRIX_PROP_COLOR_MATRIX:
             *value = wf::PropertyValue::CreateSingleArray(
-                winrt::array_view<const float>(Matrix, Matrix + 20)
-            ).as<winrt::impl::abi_t<winrt::Windows::Foundation::IPropertyValue>>().detach();
+                ::winrt::array_view<const float>(Matrix, Matrix + 20)
+            ).as<::winrt::impl::abi_t<::winrt::Windows::Foundation::IPropertyValue>>().detach();
             break;
 
         case D2D1_COLORMATRIX_PROP_ALPHA_MODE:
-            *value = wf::PropertyValue::CreateUInt32(AlphaMode).as<winrt::impl::abi_t<winrt::Windows::Foundation::IPropertyValue>>().detach();
+            *value = wf::PropertyValue::CreateUInt32(AlphaMode).as<::winrt::impl::abi_t<::winrt::Windows::Foundation::IPropertyValue>>().detach();
             break;
 
         case D2D1_COLORMATRIX_PROP_CLAMP_OUTPUT:
-            *value = wf::PropertyValue::CreateBoolean(ClampOutput).as<winrt::impl::abi_t<winrt::Windows::Foundation::IPropertyValue>>().detach();
+            *value = wf::PropertyValue::CreateBoolean(ClampOutput).as<::winrt::impl::abi_t<::winrt::Windows::Foundation::IPropertyValue>>().detach();
             break;
 
         default:
@@ -16056,7 +16011,7 @@ HRESULT ColorMatrixEffect::GetProperty(UINT index, winrt::impl::abi_t<winrt::Win
 }
 catch (...)
 {
-    return winrt::to_hresult();
+    return ::winrt::to_hresult();
 }
 
 HRESULT ColorMatrixEffect::GetSource(UINT index, awge::IGraphicsEffectSource** source) noexcept
@@ -16068,7 +16023,7 @@ HRESULT ColorMatrixEffect::GetSource(UINT index, awge::IGraphicsEffectSource** s
 
     if (index == 0 && Source)
     {
-        winrt::copy_to_abi(Source, *reinterpret_cast<void**>(source));
+        ::winrt::copy_to_abi(Source, *reinterpret_cast<void**>(source));
         return S_OK;
     }
 
@@ -16086,12 +16041,12 @@ HRESULT ColorMatrixEffect::GetSourceCount(UINT* count) noexcept
     return S_OK;
 }
 
-winrt::hstring ColorMatrixEffect::Name()
+::winrt::hstring ColorMatrixEffect::Name()
 {
     return m_name;
 }
 
-void ColorMatrixEffect::Name(winrt::hstring name)
+void ColorMatrixEffect::Name(::winrt::hstring name)
 {
     m_name = name;
 }
@@ -16100,15 +16055,15 @@ void ColorMatrixEffect::Name(winrt::hstring name)
 // XamlBlurBrush.cpp
 XamlBlurBrush::XamlBlurBrush(UIElement element,
                              float blurAmount,
-                             winrt::Windows::UI::Color tint,
+                             ::winrt::Windows::UI::Color tint,
                              std::optional<uint8_t> tintOpacity,
-                             winrt::hstring tintThemeResourceKey,
+                             ::winrt::hstring tintThemeResourceKey,
                              std::optional<float> tintLuminosityOpacity,
                              std::optional<float> tintSaturation,
                              std::optional<float> noiseOpacity,
                              std::optional<float> noiseDensity,
-                             std::optional<winrt::Windows::UI::Color> fallbackColor,
-                             winrt::hstring fallbackThemeResourceKey) :
+                             std::optional<::winrt::Windows::UI::Color> fallbackColor,
+                             ::winrt::hstring fallbackThemeResourceKey) :
     m_compositor(wuxh::ElementCompositionPreview::GetElementVisual(element)
                      .Compositor()),
     m_blurAmount(blurAmount),
@@ -16124,7 +16079,7 @@ XamlBlurBrush::XamlBlurBrush(UIElement element,
 {
     auto fe = element.try_as<FrameworkElement>();
 
-    auto createProxy = [&](winrt::hstring const& themeResourceKey)
+    auto createProxy = [&](::winrt::hstring const& themeResourceKey)
         -> Media::SolidColorBrush
     {
         if (!fe)
@@ -16139,10 +16094,10 @@ XamlBlurBrush::XamlBlurBrush(UIElement element,
             std::wstring(themeResourceKey) + L"}\"/>";
         try
         {
-            return Markup::XamlReader::Load(winrt::hstring(xaml))
+            return Markup::XamlReader::Load(::winrt::hstring(xaml))
                 .try_as<Media::SolidColorBrush>();
         }
-        catch (winrt::hresult_error const& ex)
+        catch (::winrt::hresult_error const& ex)
         {
             Wh_Log(L"Failed to create proxy brush: %08X", ex.code());
             return nullptr;
@@ -16155,13 +16110,13 @@ XamlBlurBrush::XamlBlurBrush(UIElement element,
     {
         if (auto proxyBrush = createProxy(m_tintThemeResourceKey))
         {
-            auto proxyKey = winrt::hstring(
+            auto proxyKey = ::winrt::hstring(
                 L"__WhBlurProxy_" +
                 std::to_wstring(++s_proxyCounter));
             fe.Resources().Insert(
-                winrt::box_value(proxyKey), proxyBrush);
+                ::winrt::box_value(proxyKey), proxyBrush);
             m_proxyBrush = proxyBrush;
-            m_weakProxyElement = winrt::make_weak(fe);
+            m_weakProxyElement = ::winrt::make_weak(fe);
             m_proxyKey = proxyKey;
             Wh_Log(L"Tint proxy brush for %s inserted with key %s",
                    m_tintThemeResourceKey.c_str(),
@@ -16187,15 +16142,15 @@ XamlBlurBrush::XamlBlurBrush(UIElement element,
     {
         if (auto proxyBrush = createProxy(m_fallbackThemeResourceKey))
         {
-            auto proxyKey = winrt::hstring(
+            auto proxyKey = ::winrt::hstring(
                 L"__WhBlurFallbackProxy_" +
                 std::to_wstring(++s_proxyCounter));
             fe.Resources().Insert(
-                winrt::box_value(proxyKey), proxyBrush);
+                ::winrt::box_value(proxyKey), proxyBrush);
             m_fallbackProxyBrush = proxyBrush;
             if (!m_weakProxyElement.get())
             {
-                m_weakProxyElement = winrt::make_weak(fe);
+                m_weakProxyElement = ::winrt::make_weak(fe);
             }
             m_fallbackProxyKey = proxyKey;
             Wh_Log(L"Fallback proxy brush for %s inserted with key %s",
@@ -16221,11 +16176,11 @@ XamlBlurBrush::XamlBlurBrush(UIElement element,
     if (m_fallbackColor || !m_fallbackThemeResourceKey.empty())
     {
         m_dispatcher =
-            winrt::Windows::System::DispatcherQueue::GetForCurrentThread();
+            ::winrt::Windows::System::DispatcherQueue::GetForCurrentThread();
 
         try
         {
-            m_uiSettings = winrt::Windows::UI::ViewManagement::UISettings();
+            m_uiSettings = ::winrt::Windows::UI::ViewManagement::UISettings();
             auto dispatcher = m_dispatcher;
             m_advancedEffectsEnabledChangedToken =
                 m_uiSettings.AdvancedEffectsEnabledChanged(
@@ -16241,7 +16196,7 @@ XamlBlurBrush::XamlBlurBrush(UIElement element,
                         });
                     });
             m_energySaverStatusChangedToken =
-                winrt::Windows::System::Power::PowerManager::
+                ::winrt::Windows::System::Power::PowerManager::
                     EnergySaverStatusChanged(
                         [weakThis = get_weak(), dispatcher](auto&&, auto&&)
                         {
@@ -16255,7 +16210,7 @@ XamlBlurBrush::XamlBlurBrush(UIElement element,
                             });
                         });
         }
-        catch (winrt::hresult_error const& ex)
+        catch (::winrt::hresult_error const& ex)
         {
             Wh_Log(L"Failed to register fallback state listeners: %08X",
                    ex.code());
@@ -16371,7 +16326,7 @@ XamlBlurBrush::~XamlBlurBrush()
         }
         catch (...)
         {
-            Wh_Log(L"Error %08X", winrt::to_hresult());
+            Wh_Log(L"Error %08X", ::winrt::to_hresult());
         }
     }
 
@@ -16379,12 +16334,12 @@ XamlBlurBrush::~XamlBlurBrush()
     {
         try
         {
-            winrt::Windows::System::Power::PowerManager::
+            ::winrt::Windows::System::Power::PowerManager::
                 EnergySaverStatusChanged(m_energySaverStatusChangedToken);
         }
         catch (...)
         {
-            Wh_Log(L"Error %08X", winrt::to_hresult());
+            Wh_Log(L"Error %08X", ::winrt::to_hresult());
         }
     }
 
@@ -16394,17 +16349,17 @@ XamlBlurBrush::~XamlBlurBrush()
         {
             if (!m_proxyKey.empty())
             {
-                element.Resources().Remove(winrt::box_value(m_proxyKey));
+                element.Resources().Remove(::winrt::box_value(m_proxyKey));
             }
             if (!m_fallbackProxyKey.empty())
             {
                 element.Resources().Remove(
-                    winrt::box_value(m_fallbackProxyKey));
+                    ::winrt::box_value(m_fallbackProxyKey));
             }
         }
         catch (...)
         {
-            HRESULT hr = winrt::to_hresult();
+            HRESULT hr = ::winrt::to_hresult();
             Wh_Log(L"Error %08X", hr);
         }
     }
@@ -16437,7 +16392,7 @@ wuc::CompositionBrush XamlBlurBrush::CreateEffectBrush()
     constexpr float kLumaB = 0.0722f;
 
     // 1. Blur
-    auto blurEffect = winrt::make_self<GaussianBlurEffect>();
+    auto blurEffect = ::winrt::make_self<GaussianBlurEffect>();
     blurEffect->Source = wuc::CompositionEffectSourceParameter(L"backdrop");
     blurEffect->BlurAmount = m_blurAmount;
     blurEffect->Name(L"BlurEffect");
@@ -16450,7 +16405,7 @@ wuc::CompositionBrush XamlBlurBrush::CreateEffectBrush()
         float s = std::max(*m_tintSaturation, 0.0f);
         float invS = 1.0f - s;
 
-        auto satMatrix = winrt::make_self<ColorMatrixEffect>();
+        auto satMatrix = ::winrt::make_self<ColorMatrixEffect>();
         satMatrix->Source = topOfStack;
 
         // Standard saturation matrix: lerp between luminance and identity.
@@ -16474,7 +16429,7 @@ wuc::CompositionBrush XamlBlurBrush::CreateEffectBrush()
                         (m_tint.G / 255.0f) * kLumaG +
                         (m_tint.B / 255.0f) * kLumaB;
 
-        auto lumMatrix = winrt::make_self<ColorMatrixEffect>();
+        auto lumMatrix = ::winrt::make_self<ColorMatrixEffect>();
         lumMatrix->Source = topOfStack;
 
         auto& m = lumMatrix->Matrix;
@@ -16502,14 +16457,14 @@ wuc::CompositionBrush XamlBlurBrush::CreateEffectBrush()
         noiseBrush.Stretch(wuc::CompositionStretch::None);
 
         // Tile via border effect (wrap mode).
-        auto borderEffect = winrt::make_self<BorderEffect>();
+        auto borderEffect = ::winrt::make_self<BorderEffect>();
         borderEffect->Source =
             wuc::CompositionEffectSourceParameter(L"NoiseSource");
 
         // Scale all channels by opacity for premultiplied blending.
         float nOp = std::clamp(*m_noiseOpacity, 0.0f, 1.0f);
 
-        auto opacityEffect = winrt::make_self<ColorMatrixEffect>();
+        auto opacityEffect = ::winrt::make_self<ColorMatrixEffect>();
         opacityEffect->Source = *borderEffect;
         // Matrix: Scale all channels by opacity (for premultiplied blending).
         opacityEffect->Matrix[0] = nOp;
@@ -16519,7 +16474,7 @@ wuc::CompositionBrush XamlBlurBrush::CreateEffectBrush()
         opacityEffect->Name(L"NoiseOpacityEffect");
 
         // Composite noise over the current stack.
-        auto noiseComposite = winrt::make_self<CompositeEffect>();
+        auto noiseComposite = ::winrt::make_self<CompositeEffect>();
         noiseComposite->Mode = D2D1_COMPOSITE_MODE_SOURCE_OVER;
         noiseComposite->Sources.push_back(topOfStack);
         noiseComposite->Sources.push_back(*opacityEffect);
@@ -16528,11 +16483,11 @@ wuc::CompositionBrush XamlBlurBrush::CreateEffectBrush()
     }
 
     // 5. Tint (flood color composited over the stack).
-    auto floodEffect = winrt::make_self<FloodEffect>();
+    auto floodEffect = ::winrt::make_self<FloodEffect>();
     floodEffect->Color = m_tint;
     floodEffect->Name(L"FloodEffect");
 
-    auto compositeEffect = winrt::make_self<CompositeEffect>();
+    auto compositeEffect = ::winrt::make_self<CompositeEffect>();
     compositeEffect->Mode = D2D1_COMPOSITE_MODE_SOURCE_OVER;
     compositeEffect->Sources.push_back(topOfStack);
     compositeEffect->Sources.push_back(*floodEffect);
@@ -16635,7 +16590,7 @@ bool XamlBlurBrush::ShouldUseFallback() const
         catch (...)
         {
             Wh_Log(L"AdvancedEffectsEnabled query failed: %08X",
-                   winrt::to_hresult());
+                   ::winrt::to_hresult());
         }
     }
 
@@ -16661,12 +16616,12 @@ void XamlBlurBrush::RefreshBrush()
 // pointless is harmless, while skipping a necessary one leaves images missing.
 bool HasInternetAccess() {
     try {
-        auto profile = winrt::Windows::Networking::Connectivity::
+        auto profile = ::winrt::Windows::Networking::Connectivity::
             NetworkInformation::GetInternetConnectionProfile();
         return profile && profile.GetNetworkConnectivityLevel() ==
-                              winrt::Windows::Networking::Connectivity::
+                              ::winrt::Windows::Networking::Connectivity::
                                   NetworkConnectivityLevel::InternetAccess;
-    } catch (winrt::hresult_error const& ex) {
+    } catch (::winrt::hresult_error const& ex) {
         Wh_Log(L"Error %08X: %s", ex.code(), ex.message().c_str());
         return true;
     }
@@ -16733,7 +16688,7 @@ std::filesystem::path ImageCachePath(std::wstring_view url) {
 }
 
 // XAML loads a local image through a file URI.
-winrt::Windows::Foundation::Uri ImageCacheFileUri(
+::winrt::Windows::Foundation::Uri ImageCacheFileUri(
     const std::filesystem::path& path) {
     // Room for every character to be escaped, plus the scheme.
     std::wstring uri(path.native().size() * 3 + 16, L'\0');
@@ -16748,8 +16703,8 @@ winrt::Windows::Foundation::Uri ImageCacheFileUri(
     uri.resize(uriLength);
 
     try {
-        return winrt::Windows::Foundation::Uri(uri);
-    } catch (winrt::hresult_error const& ex) {
+        return ::winrt::Windows::Foundation::Uri(uri);
+    } catch (::winrt::hresult_error const& ex) {
         Wh_Log(L"Error %08X: %s", ex.code(), ex.message().c_str());
         return nullptr;
     }
@@ -16997,7 +16952,7 @@ void StopImageDownloads() {
 
 // The address an entry should load from: the cached file when there is one, the
 // remote address otherwise. Asks for the download the answer implies.
-winrt::Windows::Foundation::Uri ImageSourceUri(
+::winrt::Windows::Foundation::Uri ImageSourceUri(
     const std::shared_ptr<TrackedImage>& tracked) {
     if (!tracked->cachePath.empty() && !IsImageCacheRejected(tracked->url)) {
         if (auto age = FileAgeMs(tracked->cachePath)) {
@@ -17035,7 +16990,7 @@ void RestoreRejectedImageSource(
         Wh_Log(L"Loading remote image for: %s", tracked->url.c_str());
 
         bitmapImage.UriSource(tracked->uri);
-    } catch (winrt::hresult_error const& ex) {
+    } catch (::winrt::hresult_error const& ex) {
         Wh_Log(L"Error %08X: %s", ex.code(), ex.message().c_str());
     }
 }
@@ -17086,7 +17041,7 @@ void StartImageRetry(const std::shared_ptr<TrackedImage>& tracked) {
         // image's natural size, which is then scaled at render time and looks
         // poor.
         retryImage.UriSource(uri);
-    } catch (winrt::hresult_error const& ex) {
+    } catch (::winrt::hresult_error const& ex) {
         Wh_Log(L"Error %08X: %s", ex.code(), ex.message().c_str());
     }
 
@@ -17198,9 +17153,9 @@ void ScheduleImageLoadRetryOnCurrentThread(ULONGLONG delayMs, bool reschedule) {
             state.retryTimer = state.dispatcher.CreateTimer();
             state.retryTimer.IsRepeating(false);
             state.retryTimerTickRevoker = state.retryTimer.Tick(
-                winrt::auto_revoke,
-                [](winrt::Windows::System::DispatcherQueueTimer const&,
-                   winrt::Windows::Foundation::IInspectable const&) {
+                ::winrt::auto_revoke,
+                [](::winrt::Windows::System::DispatcherQueueTimer const&,
+                   ::winrt::Windows::Foundation::IInspectable const&) {
                     g_trackedImagesForThread.retryDueTick = 0;
                     RetryFailedImageLoadsOnCurrentThread();
                 });
@@ -17210,7 +17165,7 @@ void ScheduleImageLoadRetryOnCurrentThread(ULONGLONG delayMs, bool reschedule) {
         state.retryTimer.Interval(std::chrono::milliseconds{delayMs});
         state.retryTimer.Start();
         state.retryDueTick = dueTick;
-    } catch (winrt::hresult_error const& ex) {
+    } catch (::winrt::hresult_error const& ex) {
         Wh_Log(L"Error %08X: %s", ex.code(), ex.message().c_str());
     }
 }
@@ -17252,7 +17207,7 @@ void ScheduleImageLoadRetryOnAllUiThreads() {
         return;
     }
 
-    std::vector<winrt::Windows::System::DispatcherQueue> dispatchers;
+    std::vector<::winrt::Windows::System::DispatcherQueue> dispatchers;
     {
         std::lock_guard<std::mutex> lock(g_imageRetryMutex);
 
@@ -17282,7 +17237,7 @@ void ScheduleImageLoadRetryOnAllUiThreads() {
                 ScheduleImageLoadRetryOnCurrentThread(kNetworkChangeDebounceMs,
                                                       /*reschedule=*/true);
             });
-        } catch (winrt::hresult_error const& ex) {
+        } catch (::winrt::hresult_error const& ex) {
             Wh_Log(L"Error dispatching retry to UI thread %08X: %s", ex.code(),
                    ex.message().c_str());
         }
@@ -17290,7 +17245,7 @@ void ScheduleImageLoadRetryOnAllUiThreads() {
 }
 
 void OnNetworkStatusChanged(
-    winrt::Windows::Foundation::IInspectable const& sender) {
+    ::winrt::Windows::Foundation::IInspectable const& sender) {
     Wh_Log(L">");
 
     // Removing the handler doesn't wait for an invocation which is already in
@@ -17306,13 +17261,13 @@ void OnNetworkStatusChanged(
 }
 
 // Must not be called with g_imageRetryMutex held.
-winrt::event_token RegisterNetworkStatusChangedHandler() {
+::winrt::event_token RegisterNetworkStatusChangedHandler() {
     try {
-        auto token = winrt::Windows::Networking::Connectivity::
+        auto token = ::winrt::Windows::Networking::Connectivity::
             NetworkInformation::NetworkStatusChanged(OnNetworkStatusChanged);
         Wh_Log(L"Registered global network status change handler");
         return token;
-    } catch (winrt::hresult_error const& ex) {
+    } catch (::winrt::hresult_error const& ex) {
         Wh_Log(L"Error registering network status handler %08X: %s", ex.code(),
                ex.message().c_str());
         return {};
@@ -17320,19 +17275,19 @@ winrt::event_token RegisterNetworkStatusChangedHandler() {
 }
 
 // Must not be called with g_imageRetryMutex held.
-void UnregisterNetworkStatusChangedHandler(winrt::event_token token) {
+void UnregisterNetworkStatusChangedHandler(::winrt::event_token token) {
     try {
-        winrt::Windows::Networking::Connectivity::NetworkInformation::
+        ::winrt::Windows::Networking::Connectivity::NetworkInformation::
             NetworkStatusChanged(token);
         Wh_Log(L"Unregistered global network status change handler");
-    } catch (winrt::hresult_error const& ex) {
+    } catch (::winrt::hresult_error const& ex) {
         Wh_Log(L"Error unregistering network status handler %08X: %s",
                ex.code(), ex.message().c_str());
     }
 }
 
 void StopImageLoadRetries() {
-    winrt::event_token token;
+    ::winrt::event_token token;
 
     {
         std::lock_guard<std::mutex> lock(g_imageRetryMutex);
@@ -17371,7 +17326,7 @@ void StopImageLoadRetriesForCurrentThread() {
 
     g_trackedImagesForThread.dispatcher = nullptr;
 
-    winrt::event_token token;
+    ::winrt::event_token token;
 
     {
         std::lock_guard<std::mutex> lock(g_imageRetryMutex);
@@ -17403,7 +17358,7 @@ void StopImageLoadRetriesForCurrentThread() {
 void SetupImageTracking(DependencyObject const& target,
                         DependencyProperty const& sourceProperty,
                         Media::Imaging::BitmapImage const& bitmapImage,
-                        winrt::Windows::Foundation::Uri const& uri) {
+                        ::winrt::Windows::Foundation::Uri const& uri) {
     auto& images = g_trackedImagesForThread.images;
 
     std::erase_if(images,
@@ -17435,10 +17390,10 @@ void SetupImageTracking(DependencyObject const& target,
     }
 
     Wh_Log(L"Tracking %s with remote image source: %s",
-           winrt::get_class_name(target).c_str(), uri.RawUri().c_str());
+           ::winrt::get_class_name(target).c_str(), uri.RawUri().c_str());
 
     auto tracked = std::make_shared<TrackedImage>();
-    tracked->target = winrt::make_weak(target);
+    tracked->target = ::winrt::make_weak(target);
     tracked->sourceProperty = sourceProperty;
     tracked->uri = uri;
     tracked->url = std::wstring(uri.RawUri());
@@ -17487,14 +17442,14 @@ void SetupImageTracking(DependencyObject const& target,
         }
 
         tracked->usingCache = !bitmapImage.UriSource().Equals(uri);
-    } catch (winrt::hresult_error const& ex) {
+    } catch (::winrt::hresult_error const& ex) {
         Wh_Log(L"Error %08X: %s", ex.code(), ex.message().c_str());
     }
 
     std::weak_ptr<TrackedImage> trackedWeak = tracked;
 
     auto onImageFailed = [trackedWeak](
-                             winrt::Windows::Foundation::IInspectable const&,
+                             ::winrt::Windows::Foundation::IInspectable const&,
                              ExceptionRoutedEventArgs const& e) {
         auto tracked = trackedWeak.lock();
         if (!tracked) {
@@ -17532,7 +17487,7 @@ void SetupImageTracking(DependencyObject const& target,
     };
 
     auto onImageOpened = [trackedWeak](
-                             winrt::Windows::Foundation::IInspectable const&,
+                             ::winrt::Windows::Foundation::IInspectable const&,
                              RoutedEventArgs const&) {
         auto tracked = trackedWeak.lock();
         if (!tracked) {
@@ -17548,14 +17503,14 @@ void SetupImageTracking(DependencyObject const& target,
 
     if (auto brush = target.try_as<Media::ImageBrush>()) {
         tracked->brushImageFailedRevoker =
-            brush.ImageFailed(winrt::auto_revoke, onImageFailed);
+            brush.ImageFailed(::winrt::auto_revoke, onImageFailed);
         tracked->brushImageOpenedRevoker =
-            brush.ImageOpened(winrt::auto_revoke, onImageOpened);
+            brush.ImageOpened(::winrt::auto_revoke, onImageOpened);
     } else if (auto image = target.try_as<Controls::Image>()) {
         tracked->elementImageFailedRevoker =
-            image.ImageFailed(winrt::auto_revoke, onImageFailed);
+            image.ImageFailed(::winrt::auto_revoke, onImageFailed);
         tracked->elementImageOpenedRevoker =
-            image.ImageOpened(winrt::auto_revoke, onImageOpened);
+            image.ImageOpened(::winrt::auto_revoke, onImageOpened);
     }
 
     images.push_back(std::move(tracked));
@@ -17569,16 +17524,16 @@ void SetupImageTracking(DependencyObject const& target,
 
         if (!g_trackedImagesForThread.dispatcher) {
             try {
-                auto dispatcher = winrt::Windows::System::DispatcherQueue::
+                auto dispatcher = ::winrt::Windows::System::DispatcherQueue::
                     GetForCurrentThread();
                 if (dispatcher) {
                     g_trackedImagesForThread.dispatcher = dispatcher;
                     g_imageRetryDispatchers.push_back(
-                        winrt::make_weak(dispatcher));
+                        ::winrt::make_weak(dispatcher));
                     Wh_Log(
                         L"Registered UI thread dispatcher for network retry");
                 }
-            } catch (winrt::hresult_error const& ex) {
+            } catch (::winrt::hresult_error const& ex) {
                 Wh_Log(L"Error getting dispatcher for current thread %08X: %s",
                        ex.code(), ex.message().c_str());
             }
@@ -17595,7 +17550,7 @@ void SetupImageTracking(DependencyObject const& target,
         return;
     }
 
-    winrt::event_token token = RegisterNetworkStatusChangedHandler();
+    ::winrt::event_token token = RegisterNetworkStatusChangedHandler();
 
     bool stopped;
 
@@ -17622,7 +17577,7 @@ void SetupImageTracking(DependencyObject const& target,
 void TrackIfRemoteImageSource(
     DependencyObject const& target,
     DependencyProperty const& sourceProperty,
-    winrt::Windows::Foundation::IInspectable const& imageSource) {
+    ::winrt::Windows::Foundation::IInspectable const& imageSource) {
     auto bitmapImage = imageSource.try_as<Media::Imaging::BitmapImage>();
     if (!bitmapImage) {
         return;
@@ -17656,22 +17611,22 @@ void SetOrClearValue(DependencyObject elementDo,
                      DependencyProperty property,
                      const PropertyOverrideValue& overrideValue,
                      bool initialApply = false) {
-    winrt::Windows::Foundation::IInspectable value;
+    ::winrt::Windows::Foundation::IInspectable value;
     if (auto* inspectable =
-            std::get_if<winrt::Windows::Foundation::IInspectable>(
+            std::get_if<::winrt::Windows::Foundation::IInspectable>(
                 &overrideValue)) {
         value = *inspectable;
     } else if (auto* blurBrushParams =
                    std::get_if<XamlBlurBrushParams>(&overrideValue)) {
         if (auto uiElement = elementDo.try_as<UIElement>()) {
-            value = winrt::make<XamlBlurBrush>(
+            value = ::winrt::make<XamlBlurBrush>(
                 uiElement, blurBrushParams->blurAmount, blurBrushParams->tint,
                 blurBrushParams->tintOpacity,
-                winrt::hstring(blurBrushParams->tintThemeResourceKey),
+                ::winrt::hstring(blurBrushParams->tintThemeResourceKey),
                 blurBrushParams->tintLuminosityOpacity,
                 blurBrushParams->tintSaturation, blurBrushParams->noiseOpacity,
                 blurBrushParams->noiseDensity, blurBrushParams->fallbackColor,
-                winrt::hstring(blurBrushParams->fallbackThemeResourceKey));
+                ::winrt::hstring(blurBrushParams->fallbackThemeResourceKey));
         } else {
             Wh_Log(L"Can't get UIElement for blur brush");
             return;
@@ -17685,14 +17640,14 @@ void SetOrClearValue(DependencyObject elementDo,
         Wh_Log(L"Clearing property value");
         try {
             elementDo.ClearValue(property);
-        } catch (winrt::hresult_error const& ex) {
+        } catch (::winrt::hresult_error const& ex) {
             Wh_Log(L"Error %08X: %s", ex.code(), ex.message().c_str());
         }
         return;
     }
 
     Wh_Log(L"Setting property value %s",
-           value ? winrt::get_class_name(value).c_str() : L"(null)");
+           value ? ::winrt::get_class_name(value).c_str() : L"(null)");
 
     // Track a remote image source for retry on network reconnection. A style
     // can declare one as the ImageBrush a property is set to (e.g. Background),
@@ -17728,7 +17683,7 @@ void SetOrClearValue(DependencyObject elementDo,
             auto valueInt = value.try_as<int>();
             if (valueInt && *valueInt >= std::numeric_limits<uint16_t>::min() &&
                 *valueInt <= std::numeric_limits<uint16_t>::max()) {
-                value = winrt::box_value(winrt::Windows::UI::Text::FontWeight{
+                value = ::winrt::box_value(::winrt::Windows::UI::Text::FontWeight{
                     static_cast<uint16_t>(*valueInt)});
             }
         }
@@ -17770,7 +17725,7 @@ void SetOrClearValue(DependencyObject elementDo,
         }
 
         elementDo.SetValue(property, value);
-    } catch (winrt::hresult_error const& ex) {
+    } catch (::winrt::hresult_error const& ex) {
         Wh_Log(L"Error %08X: %s", ex.code(), ex.message().c_str());
     }
 }
@@ -17855,8 +17810,8 @@ std::optional<PropertyOverrideValue> ParseNonXamlPropertyOverrideValue(
     bool pendingFallbackColorThemeResource = false;
     std::wstring tintThemeResourceKey;
     std::wstring fallbackThemeResourceKey;
-    winrt::Windows::UI::Color tint{};
-    std::optional<winrt::Windows::UI::Color> fallbackColor;
+    ::winrt::Windows::UI::Color tint{};
+    std::optional<::winrt::Windows::UI::Color> fallbackColor;
     float tintOpacity = std::numeric_limits<float>::quiet_NaN();
     float tintLuminosityOpacity = std::numeric_limits<float>::quiet_NaN();
     float tintSaturation = std::numeric_limits<float>::quiet_NaN();
@@ -17980,7 +17935,7 @@ std::optional<PropertyOverrideValue> ParseNonXamlPropertyOverrideValue(
             uint8_t r = LOBYTE(HIWORD(valNum));
             uint8_t g = HIBYTE(LOWORD(valNum));
             uint8_t b = LOBYTE(LOWORD(valNum));
-            fallbackColor = winrt::Windows::UI::Color{a, r, g, b};
+            fallbackColor = ::winrt::Windows::UI::Color{a, r, g, b};
             continue;
         }
 
@@ -18139,7 +18094,7 @@ Style GetStyleFromXamlSettersWithFallbackType(
     const std::wstring_view xamlStyleSetters) {
     try {
         return GetStyleFromXamlSetters(type, xamlStyleSetters);
-    } catch (winrt::hresult_error const& ex) {
+    } catch (::winrt::hresult_error const& ex) {
         constexpr HRESULT kStowedException = 0x802B000A;
         if (ex.code() != kStowedException || fallbackType.empty() ||
             fallbackType == type) {
@@ -18259,7 +18214,7 @@ const ResolvedRules& GetResolvedPropertyOverrides(
         Wh_Log(L"%.*s: %zu override styles, %zu captures",
                static_cast<int>(type.length()), type.data(),
                resolved.propertyOverrides.size(), resolved.captures.size());
-    } catch (winrt::hresult_error const& ex) {
+    } catch (::winrt::hresult_error const& ex) {
         Wh_Log(L"Error %08X: %s", ex.code(), ex.message().c_str());
     } catch (std::exception const& ex) {
         Wh_Log(L"Error: %S", ex.what());
@@ -18313,7 +18268,7 @@ std::optional<PropertyOverrideValue> ResolveExpandedSinglePropertyValue(
             GetStyleFromXamlSettersWithFallbackType(type, fallbackType, xaml);
         const auto setter = style.Setters().GetAt(0).as<Setter>();
         return PropertyOverrideValue{setter.Value()};
-    } catch (winrt::hresult_error const& ex) {
+    } catch (::winrt::hresult_error const& ex) {
         Wh_Log(L"Error %08X: %s", ex.code(), ex.message().c_str());
     } catch (std::exception const& ex) {
         Wh_Log(L"Error: %S", ex.what());
@@ -18361,7 +18316,7 @@ const PropertyValues& GetResolvedPropertyValues(
 
         Wh_Log(L"%.*s: %zu matcher styles", static_cast<int>(type.length()),
                type.data(), propertyValues.size());
-    } catch (winrt::hresult_error const& ex) {
+    } catch (::winrt::hresult_error const& ex) {
         Wh_Log(L"Error %08X: %s", ex.code(), ex.message().c_str());
     } catch (std::exception const& ex) {
         Wh_Log(L"Error: %S", ex.what());
@@ -18435,9 +18390,9 @@ using UnboxedPropertyValue = std::variant<std::wstring,
 // IPropertyValue::Type(). Returns std::nullopt for non-primitive (opaque)
 // values such as brushes or thicknesses.
 std::optional<UnboxedPropertyValue> TryUnboxPropertyValue(
-    winrt::Windows::Foundation::IInspectable const& value) {
-    using winrt::Windows::Foundation::IPropertyValue;
-    using winrt::Windows::Foundation::PropertyType;
+    ::winrt::Windows::Foundation::IInspectable const& value) {
+    using ::winrt::Windows::Foundation::IPropertyValue;
+    using ::winrt::Windows::Foundation::PropertyType;
 
     auto pv = value.try_as<IPropertyValue>();
     if (!pv) {
@@ -18526,7 +18481,7 @@ bool TestElementMatcher(FrameworkElement element,
                         VisualStateGroup* visualStateGroup,
                         PCWSTR fallbackClassName) {
     if (!matcher.type.empty() &&
-        matcher.type != winrt::get_class_name(element) &&
+        matcher.type != ::winrt::get_class_name(element) &&
         (!fallbackClassName || matcher.type != fallbackClassName)) {
         return false;
     }
@@ -18554,7 +18509,7 @@ bool TestElementMatcher(FrameworkElement element,
     for (const auto& propertyValue : GetResolvedPropertyValues(
              matcher.type,
              fallbackClassName ? fallbackClassName
-                               : winrt::name_of<FrameworkElement>(),
+                               : ::winrt::name_of<FrameworkElement>(),
              &matcher.propertyValues)) {
         const auto value =
             ReadLocalValueWithWorkaround(elementDo, propertyValue.first);
@@ -18569,7 +18524,7 @@ bool TestElementMatcher(FrameworkElement element,
         auto valueUnboxed = TryUnboxPropertyValue(value);
         if (!expectedUnboxed || !valueUnboxed) {
             Wh_Log(L"Unsupported property class: %s",
-                   winrt::get_class_name(value).c_str());
+                   ::winrt::get_class_name(value).c_str());
             return false;
         }
 
@@ -18679,7 +18634,7 @@ ElementResolvedRules FindElementPropertyOverrides(FrameworkElement element,
         const auto& resolvedRules = GetResolvedPropertyOverrides(
             override.elementMatcher.type,
             fallbackClassName ? fallbackClassName
-                              : winrt::name_of<FrameworkElement>(),
+                              : ::winrt::name_of<FrameworkElement>(),
             &override.propertyOverrides);
 
         result.hasDynamicValues |= resolvedRules.hasDynamicValues;
@@ -19439,12 +19394,12 @@ StyleVariableValue ReadCapturedStyleVariableValue(FrameworkElement element,
     StyleVariableValue out;
 
     auto elementDo = element.as<DependencyObject>();
-    winrt::Windows::Foundation::IInspectable value{nullptr};
+    ::winrt::Windows::Foundation::IInspectable value{nullptr};
     // Get effective value so layout-driven properties like ActualWidth (which
     // never have a local value) still capture.
     try {
         value = elementDo.GetValue(property);
-    } catch (winrt::hresult_error const& ex) {
+    } catch (::winrt::hresult_error const& ex) {
         Wh_Log(L"Error %08X: %s", ex.code(), ex.message().c_str());
     }
     if (!value || value == DependencyProperty::UnsetValue()) {
@@ -19464,8 +19419,8 @@ StyleVariableValue ReadCapturedStyleVariableValue(FrameworkElement element,
         // not flagged substitutable, so bare `{{Var}}` skips the consuming
         // style with a clear log message rather than emitting `className` into
         // the XAML.
-        out.stringForm = std::wstring(winrt::get_class_name(value));
-    } catch (winrt::hresult_error const& ex) {
+        out.stringForm = std::wstring(::winrt::get_class_name(value));
+    } catch (::winrt::hresult_error const& ex) {
         Wh_Log(L"Error %08X: %s", ex.code(), ex.message().c_str());
         out.stringForm = L"";
     }
@@ -19591,11 +19546,11 @@ std::optional<PropertyOverrideValue> ResolveDynamicStyleValue(
         return std::nullopt;
     }
 
-    auto typeName = winrt::get_class_name(element);
+    auto typeName = ::winrt::get_class_name(element);
     auto resolved = ResolveExpandedSinglePropertyValue(
         std::wstring_view(typeName),
         fallbackClassName ? std::wstring_view(fallbackClassName)
-                          : winrt::name_of<FrameworkElement>(),
+                          : ::winrt::name_of<FrameworkElement>(),
         tmpl.propertyName, *expanded, tmpl.isXamlValue);
     if (!resolved) {
         Wh_Log(
@@ -19855,7 +19810,7 @@ void SetUpCapturesForElement(StyleVariableState* state,
     }
 
     auto elementDo = element.as<DependencyObject>();
-    winrt::weak_ref<FrameworkElement> elementWeakRef = element;
+    ::winrt::weak_ref<FrameworkElement> elementWeakRef = element;
 
     // Names seeded below, propagated once the whole batch is in place.
     std::vector<std::wstring> seededVarNames;
@@ -19879,7 +19834,7 @@ void SetUpCapturesForElement(StyleVariableState* state,
             Wh_Log(
                 L"Capture for property already registered on %s; "
                 L"dropping duplicate variable '%s' (kept: '%s')",
-                winrt::get_class_name(element).c_str(), capture.varName.c_str(),
+                ::winrt::get_class_name(element).c_str(), capture.varName.c_str(),
                 it->second.varName.c_str());
             continue;
         }
@@ -19895,7 +19850,7 @@ void SetUpCapturesForElement(StyleVariableState* state,
         Wh_Log(
             L"Seeding capture variable '%s' from %s with value '%s' "
             L"(%zu other capture(s))",
-            capture.varName.c_str(), winrt::get_class_name(element).c_str(),
+            capture.varName.c_str(), ::winrt::get_class_name(element).c_str(),
             value.stringForm.c_str(), capturesForVar.size());
         capturesForVar.push_back({elementId, std::move(value)});
         AddStyleVariableElementRef(state, elementId);
@@ -19930,14 +19885,14 @@ void SetUpCapturesForElement(StyleVariableState* state,
         elementState->captureSizeChangedToken = element.SizeChanged(
             [state, elementId, elementWeakRef,
              sizeChangedCaptures = std::move(sizeChangedCaptures)](
-                winrt::Windows::Foundation::IInspectable const& sender,
+                ::winrt::Windows::Foundation::IInspectable const& sender,
                 SizeChangedEventArgs const& e) {
                 auto element = elementWeakRef.get();
                 if (!element) {
                     return;
                 }
                 Wh_Log(L"SizeChanged on %s: %.3fx%.3f",
-                       winrt::get_class_name(element).c_str(),
+                       ::winrt::get_class_name(element).c_str(),
                        e.NewSize().Width, e.NewSize().Height);
                 for (const auto& [property, varName] : sizeChangedCaptures) {
                     auto value =
@@ -19972,7 +19927,7 @@ void RestoreCapturesForElement(FrameworkElement element,
         try {
             element.UnregisterPropertyChangedCallback(
                 property, captureState.propertyChangedToken);
-        } catch (winrt::hresult_error const& ex) {
+        } catch (::winrt::hresult_error const& ex) {
             Wh_Log(L"Error %08X: %s", ex.code(), ex.message().c_str());
         }
     }
@@ -19980,7 +19935,7 @@ void RestoreCapturesForElement(FrameworkElement element,
     if (elementState.captureSizeChangedToken) {
         try {
             element.SizeChanged(elementState.captureSizeChangedToken);
-        } catch (winrt::hresult_error const& ex) {
+        } catch (::winrt::hresult_error const& ex) {
             Wh_Log(L"Error %08X: %s", ex.code(), ex.message().c_str());
         }
     }
@@ -20076,7 +20031,7 @@ void ApplyCustomizationsForVisualStateGroup(
                     }
 
                     Wh_Log(L"Re-applying style for %s",
-                           winrt::get_class_name(element).c_str());
+                           ::winrt::get_class_name(element).c_str());
 
                     g_elementPropertyModifying = true;
                     SetOrClearValue(element, property,
@@ -20088,7 +20043,7 @@ void ApplyCustomizationsForVisualStateGroup(
     }
 
     if (visualStateGroup) {
-        winrt::weak_ref<FrameworkElement> elementWeakRef = element;
+        ::winrt::weak_ref<FrameworkElement> elementWeakRef = element;
         std::wstring fallbackClassNameStr =
             fallbackClassName ? fallbackClassName : L"";
         elementCustomizationStateForVisualStateGroup
@@ -20097,7 +20052,7 @@ void ApplyCustomizationsForVisualStateGroup(
                 [state, elementWeakRef, propertyOverrides, elementId,
                  fallbackClassNameStr,
                  elementCustomizationStateForVisualStateGroup](
-                    winrt::Windows::Foundation::IInspectable const& sender,
+                    ::winrt::Windows::Foundation::IInspectable const& sender,
                     VisualStateChangedEventArgs const& e) {
                     auto element = elementWeakRef.get();
                     if (!element) {
@@ -20105,7 +20060,7 @@ void ApplyCustomizationsForVisualStateGroup(
                     }
 
                     Wh_Log(L"Re-applying all styles for %s",
-                           winrt::get_class_name(element).c_str());
+                           ::winrt::get_class_name(element).c_str());
 
                     g_elementPropertyModifying = true;
 
@@ -20222,7 +20177,7 @@ void RestoreCustomizationsForVisualStateGroup(
     StyleVariableState* state,
     ElementId elementId,
     FrameworkElement element,
-    std::optional<winrt::weak_ref<VisualStateGroup>>
+    std::optional<::winrt::weak_ref<VisualStateGroup>>
         visualStateGroupOptionalWeakPtr,
     const ElementCustomizationStateForVisualStateGroup&
         elementCustomizationStateForVisualStateGroup) {
@@ -20233,7 +20188,7 @@ void RestoreCustomizationsForVisualStateGroup(
             try {
                 element.UnregisterPropertyChangedCallback(
                     property, propState.propertyChangedToken);
-            } catch (winrt::hresult_error const& ex) {
+            } catch (::winrt::hresult_error const& ex) {
                 Wh_Log(L"Error %08X: %s", ex.code(), ex.message().c_str());
             }
 
@@ -20272,7 +20227,7 @@ void RestoreCustomizationsForVisualStateGroup(
             visualStateGroupIter.CurrentStateChanged(
                 elementCustomizationStateForVisualStateGroup
                     .visualStateGroupCurrentStateChangedToken);
-        } catch (winrt::hresult_error const& ex) {
+        } catch (::winrt::hresult_error const& ex) {
             Wh_Log(L"Error %08X: %s", ex.code(), ex.message().c_str());
         }
     }
@@ -20291,7 +20246,7 @@ thread_local std::unordered_set<ElementId> g_recycledElements;
 // Re-matching there sets dependency properties from inside the pass, which
 // dirties layout and schedules another one, and layout never settles: XAML
 // gives up after enough passes and fails the process with a layout cycle.
-thread_local std::unordered_map<ElementId, winrt::weak_ref<wf::IInspectable>>
+thread_local std::unordered_map<ElementId, ::winrt::weak_ref<wf::IInspectable>>
     g_elementMatchedItems;
 
 struct VirtualizingRepeaterState {
@@ -20317,7 +20272,7 @@ ElementId ElementIdFromElement(FrameworkElement const& element) {
         }
 
         return it->second.id;
-    } catch (winrt::hresult_error const& ex) {
+    } catch (::winrt::hresult_error const& ex) {
         Wh_Log(L"Error %08X: %s", ex.code(), ex.message().c_str());
         return ElementId::None;
     }
@@ -20335,10 +20290,10 @@ void ReapplyCustomizationsForSubtree(FrameworkElement element) {
         if (auto elementId = ElementIdFromElement(element);
             elementId != ElementId::None) {
             CleanupCustomizations(elementId);
-            auto className = winrt::get_class_name(element);
+            auto className = ::winrt::get_class_name(element);
             ApplyCustomizations(elementId, element, className.c_str());
         }
-    } catch (winrt::hresult_error const& ex) {
+    } catch (::winrt::hresult_error const& ex) {
         Wh_Log(L"Error %08X: %s", ex.code(), ex.message().c_str());
     }
 
@@ -20353,7 +20308,7 @@ void ReapplyCustomizationsForSubtree(FrameworkElement element) {
                 children.push_back(std::move(child));
             }
         }
-    } catch (winrt::hresult_error const& ex) {
+    } catch (::winrt::hresult_error const& ex) {
         Wh_Log(L"Error %08X: %s", ex.code(), ex.message().c_str());
         return;
     }
@@ -20367,7 +20322,7 @@ void ReapplyCustomizationsForSubtree(FrameworkElement element) {
 // there is no such item or it supports no weak reference. Weak so that a
 // destroyed item can't be mistaken for a successor at the same address, which
 // would leave an element wearing the styles matched for its predecessor.
-winrt::weak_ref<wf::IInspectable> RepeaterItemAt(
+::winrt::weak_ref<wf::IInspectable> RepeaterItemAt(
     muxc::ItemsRepeater const& repeater,
     int index) {
     try {
@@ -20377,7 +20332,7 @@ winrt::weak_ref<wf::IInspectable> RepeaterItemAt(
         }
 
         return TryMakeWeak(itemsSourceView.GetAt(index));
-    } catch (winrt::hresult_error const& ex) {
+    } catch (::winrt::hresult_error const& ex) {
         Wh_Log(L"Error %08X: %s", ex.code(), ex.message().c_str());
         return nullptr;
     }
@@ -20394,12 +20349,12 @@ void HandleVirtualizingRepeater(ElementId elementId, FrameworkElement element) {
         return;
     }
 
-    Wh_Log(L"Tracking recycling of %s", winrt::get_class_name(element).c_str());
+    Wh_Log(L"Tracking recycling of %s", ::winrt::get_class_name(element).c_str());
 
     auto& state = g_virtualizingRepeaters[elementId];
 
     state.elementClearingRevoker = repeater.ElementClearing(
-        winrt::auto_revoke,
+        ::winrt::auto_revoke,
         [](muxc::ItemsRepeater const&,
            muxc::ItemsRepeaterElementClearingEventArgs const& args) {
             auto element = args.Element().try_as<FrameworkElement>();
@@ -20422,7 +20377,7 @@ void HandleVirtualizingRepeater(ElementId elementId, FrameworkElement element) {
         });
 
     state.elementPreparedRevoker = repeater.ElementPrepared(
-        winrt::auto_revoke,
+        ::winrt::auto_revoke,
         [](muxc::ItemsRepeater const& sender,
            muxc::ItemsRepeaterElementPreparedEventArgs const& args) {
             auto element = args.Element().try_as<FrameworkElement>();
@@ -20483,7 +20438,7 @@ void ApplyCustomizations(ElementId elementId,
     auto* state = GetStyleVariableState();
     if (!state) {
         Wh_Log(L"No XamlRoot for %s, skipping",
-               winrt::get_class_name(element).c_str());
+               ::winrt::get_class_name(element).c_str());
         return;
     }
 
@@ -20492,7 +20447,7 @@ void ApplyCustomizations(ElementId elementId,
         return;
     }
 
-    Wh_Log(L"Applying styles to %s", winrt::get_class_name(element).c_str());
+    Wh_Log(L"Applying styles to %s", ::winrt::get_class_name(element).c_str());
 
     auto& elementCustomizationState = g_elementsCustomizationState[elementId];
 
@@ -20527,7 +20482,7 @@ void ApplyCustomizations(ElementId elementId,
 
     for (auto& [visualStateGroup, overridesForVisualStateGroup] :
          resolved.overridesPerVSG) {
-        std::optional<winrt::weak_ref<VisualStateGroup>>
+        std::optional<::winrt::weak_ref<VisualStateGroup>>
             visualStateGroupOptionalWeakPtr;
         if (visualStateGroup) {
             visualStateGroupOptionalWeakPtr = visualStateGroup;
@@ -20561,9 +20516,9 @@ void ApplyCustomizations(ElementId elementId,
 thread_local std::vector<InstanceHandle> g_pendingDiagnosticsRelease;
 thread_local ULONGLONG g_lastDiagnosticsReleaseQueueTick;
 thread_local bool g_diagnosticsReleaseDrainQueued;
-thread_local winrt::Windows::System::DispatcherQueueTimer
+thread_local ::winrt::Windows::System::DispatcherQueueTimer
     g_diagnosticsReleaseDrainTimer{nullptr};
-thread_local winrt::Windows::System::DispatcherQueueTimer::Tick_revoker
+thread_local ::winrt::Windows::System::DispatcherQueueTimer::Tick_revoker
     g_diagnosticsReleaseDrainTimerTickRevoker;
 
 // Long enough to sit out a tree being built.
@@ -20677,7 +20632,7 @@ void FlushDiagnosticsReleasesIfQuiet() {
     try {
         if (!g_diagnosticsReleaseDrainTimer) {
             auto dispatcherQueue =
-                winrt::Windows::System::DispatcherQueue::GetForCurrentThread();
+                ::winrt::Windows::System::DispatcherQueue::GetForCurrentThread();
             if (!dispatcherQueue) {
                 // Releasing from here is the one thing that isn't safe, so the
                 // elements stay held instead.
@@ -20691,16 +20646,16 @@ void FlushDiagnosticsReleasesIfQuiet() {
                 std::chrono::milliseconds{kDiagnosticsReleaseDrainDelay});
             g_diagnosticsReleaseDrainTimerTickRevoker =
                 g_diagnosticsReleaseDrainTimer.Tick(
-                    winrt::auto_revoke,
-                    [](winrt::Windows::System::DispatcherQueueTimer const&,
-                       winrt::Windows::Foundation::IInspectable const&) {
+                    ::winrt::auto_revoke,
+                    [](::winrt::Windows::System::DispatcherQueueTimer const&,
+                       ::winrt::Windows::Foundation::IInspectable const&) {
                         DrainDiagnosticsReleases();
                     });
         }
 
         g_diagnosticsReleaseDrainTimer.Start();
         g_diagnosticsReleaseDrainQueued = true;
-    } catch (winrt::hresult_error const& ex) {
+    } catch (::winrt::hresult_error const& ex) {
         Wh_Log(L"Error %08X: %s", ex.code(), ex.message().c_str());
     }
 }
@@ -20711,7 +20666,7 @@ void StopDiagnosticsReleases() {
     if (g_diagnosticsReleaseDrainTimer) {
         try {
             g_diagnosticsReleaseDrainTimer.Stop();
-        } catch (winrt::hresult_error const& ex) {
+        } catch (::winrt::hresult_error const& ex) {
             Wh_Log(L"Error %08X: %s", ex.code(), ex.message().c_str());
         }
     }
@@ -21230,7 +21185,7 @@ void AddElementCustomizationRules(std::wstring_view target,
     for (const auto& singleTarget : targets) {
         try {
             AddElementCustomizationRulesForSingleTarget(singleTarget, styles);
-        } catch (winrt::hresult_error const& ex) {
+        } catch (::winrt::hresult_error const& ex) {
             Wh_Log(L"Error %08X for target %.*s", ex.code(),
                    static_cast<int>(singleTarget.length()),
                    singleTarget.data());
@@ -21342,7 +21297,7 @@ std::optional<ResourceVariableEntry> ParseResourceVariable(
     return ResourceVariableEntry{std::move(key), std::move(value), theme, type};
 }
 
-winrt::Windows::Foundation::IInspectable ParseXamlValue(
+::winrt::Windows::Foundation::IInspectable ParseXamlValue(
     std::wstring_view xamlValue) {
     std::wstring xaml;
     xaml += L"        <Setter Property=\"Tag\">\n";
@@ -21360,7 +21315,7 @@ bool ProcessResourceVariable(ResourceDictionary resources,
                              ResourceDictionary darkDict,
                              ResourceDictionary lightDict,
                              const ResourceVariableEntry& entry) {
-    auto boxedKey = winrt::box_value(entry.key);
+    auto boxedKey = ::winrt::box_value(entry.key);
 
     if (entry.theme != ResourceVariableTheme::None) {
         ResourceDictionary& targetDict =
@@ -21376,17 +21331,17 @@ bool ProcessResourceVariable(ResourceDictionary resources,
             return false;
         }
 
-        winrt::Windows::Foundation::IInspectable value;
+        ::winrt::Windows::Foundation::IInspectable value;
         switch (entry.type) {
             case ResourceVariableType::String:
-                value = winrt::box_value(entry.value);
+                value = ::winrt::box_value(entry.value);
                 break;
             case ResourceVariableType::Xaml:
                 value =
                     entry.value.empty() ? nullptr : ParseXamlValue(entry.value);
                 break;
             case ResourceVariableType::ThemeResourceReference:
-                value = resources.Lookup(winrt::box_value(entry.value));
+                value = resources.Lookup(::winrt::box_value(entry.value));
                 break;
         }
 
@@ -21411,10 +21366,10 @@ bool ProcessResourceVariable(ResourceDictionary resources,
         return false;
     }
 
-    winrt::Windows::Foundation::IInspectable value;
+    ::winrt::Windows::Foundation::IInspectable value;
     switch (entry.type) {
         case ResourceVariableType::String: {
-            auto resourceClassName = winrt::get_class_name(existingResource);
+            auto resourceClassName = ::winrt::get_class_name(existingResource);
 
             // Unwrap IReference<T> to get inner type name.
             if (resourceClassName.starts_with(
@@ -21423,13 +21378,13 @@ bool ProcessResourceVariable(ResourceDictionary resources,
                 size_t prefixSize =
                     sizeof("Windows.Foundation.IReference`1<") - 1;
                 resourceClassName =
-                    winrt::hstring(resourceClassName.data() + prefixSize,
+                    ::winrt::hstring(resourceClassName.data() + prefixSize,
                                    resourceClassName.size() - prefixSize - 1);
             }
 
             value = Markup::XamlBindingHelper::ConvertValue(
                 Interop::TypeName{resourceClassName},
-                winrt::box_value(entry.value));
+                ::winrt::box_value(entry.value));
             break;
         }
 
@@ -21438,7 +21393,7 @@ bool ProcessResourceVariable(ResourceDictionary resources,
             break;
 
         case ResourceVariableType::ThemeResourceReference:
-            value = resources.Lookup(winrt::box_value(entry.value));
+            value = resources.Lookup(::winrt::box_value(entry.value));
             break;
     }
 
@@ -21457,10 +21412,10 @@ void RefreshThemeResourceEntries() {
     auto resources = Application::Current().Resources();
 
     auto darkDict = g_resourceVariablesThemeDict.ThemeDictionaries()
-                        .TryLookup(winrt::box_value(L"Dark"))
+                        .TryLookup(::winrt::box_value(L"Dark"))
                         .try_as<ResourceDictionary>();
     auto lightDict = g_resourceVariablesThemeDict.ThemeDictionaries()
-                         .TryLookup(winrt::box_value(L"Light"))
+                         .TryLookup(::winrt::box_value(L"Light"))
                          .try_as<ResourceDictionary>();
 
     for (const auto& entry : g_resourceVariables) {
@@ -21469,8 +21424,8 @@ void RefreshThemeResourceEntries() {
         }
 
         try {
-            auto boxedKey = winrt::box_value(entry.key);
-            auto value = resources.Lookup(winrt::box_value(entry.value));
+            auto boxedKey = ::winrt::box_value(entry.key);
+            auto value = resources.Lookup(::winrt::box_value(entry.value));
 
             if (entry.theme == ResourceVariableTheme::Dark && darkDict) {
                 darkDict.Insert(boxedKey, value);
@@ -21480,7 +21435,7 @@ void RefreshThemeResourceEntries() {
             } else {
                 resources.Insert(boxedKey, value);
             }
-        } catch (winrt::hresult_error const& ex) {
+        } catch (::winrt::hresult_error const& ex) {
             Wh_Log(L"Error refreshing '%s': %08X", entry.key.c_str(),
                    ex.code());
         }
@@ -21544,7 +21499,7 @@ void MergeResourceVariables() {
                     hasThemeResourceReferences = true;
                 }
             }
-        } catch (winrt::hresult_error const& ex) {
+        } catch (::winrt::hresult_error const& ex) {
             Wh_Log(L"Error %08X: %s", ex.code(), ex.message().c_str());
         } catch (std::exception const& ex) {
             Wh_Log(L"Error: %S", ex.what());
@@ -21553,18 +21508,18 @@ void MergeResourceVariables() {
 
     if (hasThemeResources) {
         g_resourceVariablesThemeDict.ThemeDictionaries().Insert(
-            winrt::box_value(L"Dark"), darkDict);
+            ::winrt::box_value(L"Dark"), darkDict);
         g_resourceVariablesThemeDict.ThemeDictionaries().Insert(
-            winrt::box_value(L"Light"), lightDict);
+            ::winrt::box_value(L"Light"), lightDict);
 
         resources.MergedDictionaries().Append(g_resourceVariablesThemeDict);
     }
 
     // Register for color changes to refresh theme resource references.
     if (hasThemeResourceReferences) {
-        g_uiSettings = winrt::Windows::UI::ViewManagement::UISettings();
+        g_uiSettings = ::winrt::Windows::UI::ViewManagement::UISettings();
         auto dispatcherQueue =
-            winrt::Windows::System::DispatcherQueue::GetForCurrentThread();
+            ::winrt::Windows::System::DispatcherQueue::GetForCurrentThread();
         g_colorValuesChangedToken =
             g_uiSettings.ColorValuesChanged([dispatcherQueue](auto&&, auto&&) {
                 dispatcherQueue.TryEnqueue(RefreshThemeResourceEntries);
@@ -21623,7 +21578,7 @@ void ProcessAllStylesFromSettings() {
                 }
 
                 AddElementCustomizationRules(themeTargetStyle.target, styles);
-            } catch (winrt::hresult_error const& ex) {
+            } catch (::winrt::hresult_error const& ex) {
                 Wh_Log(L"Error %08X", ex.code());
             } catch (std::exception const& ex) {
                 Wh_Log(L"Error: %S", ex.what());
@@ -21636,7 +21591,7 @@ void ProcessAllStylesFromSettings() {
             if (!ProcessSingleTargetStylesFromSettings(i, styleConstants)) {
                 break;
             }
-        } catch (winrt::hresult_error const& ex) {
+        } catch (::winrt::hresult_error const& ex) {
             Wh_Log(L"Error %08X: %s", ex.code(), ex.message().c_str());
         } catch (std::exception const& ex) {
             Wh_Log(L"Error: %S", ex.what());
@@ -21661,9 +21616,9 @@ void UninitializeResourceVariables() {
     auto resources = Application::Current().Resources();
     for (const auto& [key, originalValue] : g_originalResourceValues) {
         try {
-            resources.Insert(winrt::box_value(key), originalValue);
+            resources.Insert(::winrt::box_value(key), originalValue);
         } catch (...) {
-            HRESULT hr = winrt::to_hresult();
+            HRESULT hr = ::winrt::to_hresult();
             Wh_Log(L"Error %08X", hr);
         }
     }
@@ -21686,7 +21641,7 @@ void UninitializeForCurrentThread() {
     if (auto& timer = g_trackedImagesForThread.retryTimer) {
         try {
             timer.Stop();
-        } catch (winrt::hresult_error const& ex) {
+        } catch (::winrt::hresult_error const& ex) {
             Wh_Log(L"Error %08X: %s", ex.code(), ex.message().c_str());
         }
     }
