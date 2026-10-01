@@ -2,7 +2,7 @@
 // @id              winted
 // @name            WinTed
 // @description     Windows 11 25H2 : Translucent Explorer 11 + Windows 11 Notification Center Styler.
-// @version         1.5.3
+// @version         1.6.0
 // @author          Teddy
 // @github          https://github.com/PredaX6
 // @include         explorer.exe
@@ -25,21 +25,23 @@
   - Mica (SystemBackdrop)
   - MicaAlt (SystemBackdrop)
 
-Le Centre de notifications, le Centre de contrôle et le calendrier disposent du moteur complet de thèmes, styles XAML, variables de ressources et styles personnalisés de Notification Center Styler.
+Aucun autre thème ou réglage utilisateur n'est conservé.
 */
 // ==/WindhawkModReadme==
 
 // ==WindhawkModSettings==
 /*
 - transparencyType: default
-  $name: Type de transparence Explorer
-  $description: Type de transparence utilisé par l'Explorateur Windows.
+  $name: Type de transparence
+  $description: Choisissez le rendu de transparence de l'Explorateur.
   $options:
   - default: Par défaut
   - blur: Blur (AccentBlurBehind)
   - acrylic: Acrylic (SystemBackdrop)
   - mica: Mica (SystemBackdrop)
   - micaAlt: MicaAlt (SystemBackdrop)
+
+
 - theme: ""
   $name: Theme
   $description: >-
@@ -88,19 +90,6 @@ Le Centre de notifications, le Centre de contrôle et le calendrier disposent du
     mod description.
 */
 // ==/WindhawkModSettings==
-
-#include <winrt/Windows.UI.Xaml.h>
-#include <winrt/Windows.UI.Xaml.h>
-#include <winrt/Windows.System.h>
-#include <winrt/Windows.UI.Composition.h>
-#include <winrt/Windows.UI.Text.h>
-#include <winrt/Windows.UI.Xaml.Controls.h>
-#include <winrt/Windows.UI.Xaml.Hosting.h>
-#include <winrt/Windows.UI.Xaml.Markup.h>
-#include <winrt/Windows.UI.Xaml.Media.Imaging.h>
-#include <winrt/Windows.UI.Xaml.Media.h>
-#include <winrt/Windows.UI.Xaml.Shapes.h>
-#include <winrt/Windows.UI.Xaml.h>
 
 #include <xamlom.h>
 
@@ -782,6 +771,7 @@ using namespace std::string_view_literals;
 #include <winrt/Windows.System.Power.h>
 #include <winrt/Windows.UI.ViewManagement.h>
 
+using namespace winrt::Microsoft::UI::Xaml;
 
 namespace muxc = winrt::Microsoft::UI::Xaml::Controls;
 namespace wge = winrt::Windows::Graphics::Effects;
@@ -10267,202 +10257,61 @@ void LoadThemeSettings() {
         theme ? theme->explorerFrameContainerHeight : 0;
 }
 
-namespace WinTedExplorer {
-using namespace ::winrt::Microsoft::UI::Xaml;
-
-BOOL Wh_ModInit() {
-    Wh_Log(L">");
-
-    LoadSettings();
-    LoadThemeSettings();
-
-    WindhawkUtils::SetFunctionHook(CreateWindowExW, CreateWindowExW_Hook,
-                                   &CreateWindowExW_Original);
-
-    WindhawkUtils::SetFunctionHook(DwmSetWindowAttribute,
-                                   DwmSetWindowAttribute_Hook,
-                                   &DwmSetWindowAttribute_Original);
-
-    WindhawkUtils::SetFunctionHook(DwmExtendFrameIntoClientArea,
-                                   DwmExtendFrameIntoClientArea_Hook,
-                                   &DwmExtendFrameIntoClientArea_Original);
-
-    InitTextAlphaLuts();
-
-    WindhawkUtils::SetFunctionHook(BeginPaint, BeginPaint_Hook,
-                                   &BeginPaint_Original);
-
-    WindhawkUtils::SetFunctionHook(EndPaint, EndPaint_Hook, &EndPaint_Original);
-
-    WindhawkUtils::SetFunctionHook(CreateCompatibleDC, CreateCompatibleDC_Hook,
-                                   &CreateCompatibleDC_Original);
-
-    WindhawkUtils::SetFunctionHook(DeleteDC, DeleteDC_Hook, &DeleteDC_Original);
-
-    WindhawkUtils::SetFunctionHook(ExtTextOutW, ExtTextOutW_Hook,
-                                   &ExtTextOutW_Original);
-
-    WindhawkUtils::SetFunctionHook(FillRect, FillRect_Hook, &FillRect_Original);
-
-    WindhawkUtils::SetFunctionHook(PatBlt, PatBlt_Hook, &PatBlt_Original);
-
-    WindhawkUtils::SetFunctionHook(Polyline, Polyline_Hook, &Polyline_Original);
-
-    WindhawkUtils::SetFunctionHook(DrawThemeBackground,
-                                   DrawThemeBackground_Hook,
-                                   &DrawThemeBackground_Original);
-
-    WindhawkUtils::SetFunctionHook(DrawThemeBackgroundEx,
-                                   DrawThemeBackgroundEx_Hook,
-                                   &DrawThemeBackgroundEx_Original);
-
-    HMODULE uxthemeModule = GetModuleHandle(L"uxtheme.dll");
-    if (uxthemeModule) {
-        g_pGetThemeClass = (GetThemeClass_t)GetProcAddress(
-            uxthemeModule, MAKEINTRESOURCEA(74));
-
-        auto pDrawTextWithGlow = (DrawTextWithGlow_t)GetProcAddress(
-            uxthemeModule, MAKEINTRESOURCEA(126));
-        if (pDrawTextWithGlow) {
-            WindhawkUtils::SetFunctionHook(pDrawTextWithGlow,
-                                           DrawTextWithGlow_Hook,
-                                           &DrawTextWithGlow_Original);
-        }
-    }
-
-    HMODULE user32Module =
-        LoadLibraryEx(L"user32.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
-    if (user32Module) {
-        auto pCreateWindowInBand = (CreateWindowInBand_t)GetProcAddress(
-            user32Module, "CreateWindowInBand");
-        if (pCreateWindowInBand) {
-            WindhawkUtils::SetFunctionHook(pCreateWindowInBand,
-                                           CreateWindowInBand_Hook,
-                                           &CreateWindowInBand_Original);
-        }
-
-        auto pCreateWindowInBandEx = (CreateWindowInBandEx_t)GetProcAddress(
-            user32Module, "CreateWindowInBandEx");
-        if (pCreateWindowInBandEx) {
-            WindhawkUtils::SetFunctionHook(pCreateWindowInBandEx,
-                                           CreateWindowInBandEx_Hook,
-                                           &CreateWindowInBandEx_Original);
-        }
-    }
-
-    HMODULE kernelBaseModule = GetModuleHandle(L"kernelbase.dll");
-    auto pKernelBaseLoadLibraryExW = (decltype(&LoadLibraryExW))GetProcAddress(
-        kernelBaseModule, "LoadLibraryExW");
-    WindhawkUtils::SetFunctionHook(pKernelBaseLoadLibraryExW,
-                                   LoadLibraryExW_Hook,
-                                   &LoadLibraryExW_Original);
-
-    // Hook immediately if DLL is already loaded.
-    HookInitializeXamlDiagnosticsExIfNeeded();
-
-    HookWindowsUIFileExplorerSymbols();
-
-    return TRUE;
-}
-
-void Wh_ModAfterInit() {
-    Wh_Log(L">");
-
-    auto hTargetWnds = GetTargetWnds();
-    for (auto hTargetWnd : hTargetWnds) {
-        Wh_Log(L"Initializing for %08X", (DWORD)(ULONG_PTR)hTargetWnd);
-        RunFromWindowThread(
-            hTargetWnd,
-            [](PVOID param) WINAPI {
-                HWND hTargetWnd = (HWND)param;
-
-                InitializeForCurrentThread();
-
-                if (GetTargetWindowType(hTargetWnd) ==
-                    TargetWindowType::FileExplorer) {
-                    ApplyBackgroundTranslucentEffect(hTargetWnd);
-                    TriggerWindowCompositionUpdate(hTargetWnd);
-                }
-            },
-            (PVOID)hTargetWnd);
-    }
-
-    if (hTargetWnds.size() > 0) {
-        Wh_Log(L"Initializing - Found target windows");
-        InitializeSettingsAndTap();
-    }
-}
-
-void Wh_ModUninit() {
-    Wh_Log(L">");
-
-    StopImageDownloads();
-
-    // Before the UI threads are uninitialized, so that a retry can't be
-    // scheduled on a thread which is being uninitialized.
-    StopImageLoadRetries();
-
-    UninitializeSettingsAndTap();
-
-    auto hTargetWnds = GetTargetWnds();
-    for (auto hTargetWnd : hTargetWnds) {
-        Wh_Log(L"Uninitializing for %08X", (DWORD)(ULONG_PTR)hTargetWnd);
-        RunFromWindowThread(
-            hTargetWnd,
-            [](PVOID param) WINAPI {
-                HWND hTargetWnd = (HWND)param;
-
-                UninitializeForCurrentThread();
-
-                if (GetTargetWindowType(hTargetWnd) ==
-                    TargetWindowType::FileExplorer) {
-                    ApplyBackgroundTranslucentEffect(
-                        hTargetWnd, BackgroundTranslucentEffect::kDefault);
-                    TriggerWindowCompositionUpdate(hTargetWnd);
-                }
-            },
-            (PVOID)hTargetWnd);
-    }
-
-    ClearThemePartCache();
-}
-
-void Wh_ModSettingsChanged() {
-    Wh_Log(L">");
-
-    UninitializeSettingsAndTap();
-
-    LoadSettings();
-    LoadThemeSettings();
-
-    auto hTargetWnds = GetTargetWnds();
-    for (auto hTargetWnd : hTargetWnds) {
-        Wh_Log(L"Reinitializing for %08X", (DWORD)(ULONG_PTR)hTargetWnd);
-        RunFromWindowThread(
-            hTargetWnd,
-            [](PVOID param) WINAPI {
-                HWND hTargetWnd = (HWND)param;
-
-                UninitializeForCurrentThread();
-                InitializeForCurrentThread();
-
-                if (GetTargetWindowType(hTargetWnd) ==
-                    TargetWindowType::FileExplorer) {
-                    ApplyBackgroundTranslucentEffect(hTargetWnd);
-                    TriggerWindowCompositionUpdate(hTargetWnd);
-                }
-            },
-            (PVOID)hTargetWnd);
-    }
-
-    if (hTargetWnds.size() > 0) {
-        Wh_Log(L"Reinitializing - Found target windows");
-        InitializeSettingsAndTap();
-    }
-}
-
-} // namespace WinTedExplorer
-
+// ============================================================================
+// Windows 11 Notification Center Styler 1.7 (integrated)
+// ============================================================================
+#undef GetCurrentTime
+#include <xamlom.h>
+#include <atomic>
+#include <vector>
+#include <winrt/Windows.UI.Xaml.h>
+#include <Unknwn.h>
+#include <winrt/base.h>
+#include <ocidl.h>
+#include <combaseapi.h>
+#include <algorithm>
+#include <charconv>
+#include <chrono>
+#include <cmath>
+#include <condition_variable>
+#include <filesystem>
+#include <limits>
+#include <list>
+#include <memory>
+#include <mutex>
+#include <optional>
+#include <random>
+#include <sstream>
+#include <string>
+#include <string_view>
+#include <type_traits>
+#include <unordered_map>
+#include <unordered_set>
+#include <variant>
+#include <initguid.h>
+#include <commctrl.h>
+#include <d2d1_1.h>
+#include <roapi.h>
+#include <shlwapi.h>
+#include <windows.graphics.effects.h>
+#include <winstring.h>
+#include <winrt/Windows.Foundation.Collections.h>
+#include <winrt/Windows.Foundation.h>
+#include <winrt/Windows.Graphics.Effects.h>
+#include <winrt/Windows.Networking.Connectivity.h>
+#include <winrt/Windows.Storage.Streams.h>
+#include <winrt/Windows.System.Power.h>
+#include <winrt/Windows.System.h>
+#include <winrt/Windows.UI.Composition.h>
+#include <winrt/Windows.UI.Text.h>
+#include <winrt/Windows.UI.ViewManagement.h>
+#include <winrt/Windows.UI.Xaml.Controls.h>
+#include <winrt/Windows.UI.Xaml.Hosting.h>
+#include <winrt/Windows.UI.Xaml.Markup.h>
+#include <winrt/Windows.UI.Xaml.Media.Imaging.h>
+#include <winrt/Windows.UI.Xaml.Media.h>
+#include <winrt/Windows.UI.Xaml.Shapes.h>
+#include <winrt/Microsoft.UI.Xaml.Controls.h>
 
 namespace NotificationCenterStyler {
 
@@ -10470,7 +10319,9 @@ namespace NotificationCenterStyler {
 
 
 
-#undef GetCurrentTime
+
+
+
 
 
 struct ThemeTargetStyles {
@@ -13995,6 +13846,8 @@ thread_local bool g_reportCompositionDiagAsDisabled;
 #pragma region winrt_hpp
 
 
+
+
 // forward declare namespaces we alias
 namespace winrt {
     namespace Windows {
@@ -14024,6 +13877,7 @@ winrt::weak_ref<wf::IInspectable> TryMakeWeak(wf::IInspectable const& object)
 #pragma endregion  // winrt_hpp
 
 #pragma region visualtreewatcher_hpp
+
 
 
 // XamlDiagnostics implements this interface too, and xamlom.h does not declare
@@ -14278,6 +14132,7 @@ HRESULT VisualTreeWatcher::OnElementStateChanged(InstanceHandle, VisualElementSt
 #pragma region tap_hpp
 
 
+
 winrt::com_ptr<VisualTreeWatcher> g_visualTreeWatcher;
 
 // {C85D8CC7-5463-40E8-A432-F5916B6427E5}
@@ -14335,6 +14190,7 @@ HRESULT WindhawkTAP::GetSite(REFIID riid, void **ppvSite) noexcept
 #pragma region simplefactory_hpp
 
 
+
 template<class T>
 struct SimpleFactory : winrt::implements<SimpleFactory<T>, IClassFactory, winrt::non_agile>
 {
@@ -14366,6 +14222,7 @@ struct SimpleFactory : winrt::implements<SimpleFactory<T>, IClassFactory, winrt:
 #pragma endregion  // simplefactory_hpp
 
 #pragma region module_cpp
+
 
 
 #pragma clang diagnostic push
@@ -14465,7 +14322,52 @@ HRESULT InjectWindhawkTAP() noexcept
 ////////////////////////////////////////////////////////////////////////////////
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 using namespace std::string_view_literals;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -14473,7 +14375,7 @@ using namespace std::string_view_literals;
 
 using namespace winrt::Windows::UI::Xaml;
 
-namespace muxc = winrt::Microsoft::UI::Xaml::Controls;
+namespace muxc = winrt::Windows::UI::Xaml::Controls;
 namespace wge = winrt::Windows::Graphics::Effects;
 namespace wuc = winrt::Windows::UI::Composition;
 namespace wuxh = wux::Hosting;
@@ -22521,62 +22423,227 @@ void SettingsChanged() {
     }
 }
 
-
 } // namespace NotificationCenterStyler
 
-BOOL Wh_ModInit() {
+
+BOOL WinTedExplorer_ModInit() {
     Wh_Log(L">");
-    BOOL result = WinTedExplorer::Wh_ModInit();
-    WCHAR moduleFilePath[MAX_PATH];
-    if (GetModuleFileName(nullptr, moduleFilePath, ARRAYSIZE(moduleFilePath))) {
-        PCWSTR moduleFileName = wcsrchr(moduleFilePath, L'\\');
-        moduleFileName = moduleFileName ? moduleFileName + 1 : moduleFilePath;
-        if (_wcsicmp(moduleFileName, L"ShellExperienceHost.exe") == 0 ||
-            _wcsicmp(moduleFileName, L"ShellHost.exe") == 0) {
-            if (!NotificationCenterStyler::Initialize()) {
-                Wh_Log(L"Notification Center Styler initialization failed");
-                result = FALSE;
-            }
+
+    LoadSettings();
+    LoadThemeSettings();
+
+    WindhawkUtils::SetFunctionHook(CreateWindowExW, CreateWindowExW_Hook,
+                                   &CreateWindowExW_Original);
+
+    WindhawkUtils::SetFunctionHook(DwmSetWindowAttribute,
+                                   DwmSetWindowAttribute_Hook,
+                                   &DwmSetWindowAttribute_Original);
+
+    WindhawkUtils::SetFunctionHook(DwmExtendFrameIntoClientArea,
+                                   DwmExtendFrameIntoClientArea_Hook,
+                                   &DwmExtendFrameIntoClientArea_Original);
+
+    InitTextAlphaLuts();
+
+    WindhawkUtils::SetFunctionHook(BeginPaint, BeginPaint_Hook,
+                                   &BeginPaint_Original);
+
+    WindhawkUtils::SetFunctionHook(EndPaint, EndPaint_Hook, &EndPaint_Original);
+
+    WindhawkUtils::SetFunctionHook(CreateCompatibleDC, CreateCompatibleDC_Hook,
+                                   &CreateCompatibleDC_Original);
+
+    WindhawkUtils::SetFunctionHook(DeleteDC, DeleteDC_Hook, &DeleteDC_Original);
+
+    WindhawkUtils::SetFunctionHook(ExtTextOutW, ExtTextOutW_Hook,
+                                   &ExtTextOutW_Original);
+
+    WindhawkUtils::SetFunctionHook(FillRect, FillRect_Hook, &FillRect_Original);
+
+    WindhawkUtils::SetFunctionHook(PatBlt, PatBlt_Hook, &PatBlt_Original);
+
+    WindhawkUtils::SetFunctionHook(Polyline, Polyline_Hook, &Polyline_Original);
+
+    WindhawkUtils::SetFunctionHook(DrawThemeBackground,
+                                   DrawThemeBackground_Hook,
+                                   &DrawThemeBackground_Original);
+
+    WindhawkUtils::SetFunctionHook(DrawThemeBackgroundEx,
+                                   DrawThemeBackgroundEx_Hook,
+                                   &DrawThemeBackgroundEx_Original);
+
+    HMODULE uxthemeModule = GetModuleHandle(L"uxtheme.dll");
+    if (uxthemeModule) {
+        g_pGetThemeClass = (GetThemeClass_t)GetProcAddress(
+            uxthemeModule, MAKEINTRESOURCEA(74));
+
+        auto pDrawTextWithGlow = (DrawTextWithGlow_t)GetProcAddress(
+            uxthemeModule, MAKEINTRESOURCEA(126));
+        if (pDrawTextWithGlow) {
+            WindhawkUtils::SetFunctionHook(pDrawTextWithGlow,
+                                           DrawTextWithGlow_Hook,
+                                           &DrawTextWithGlow_Original);
         }
     }
-    return result;
+
+    HMODULE user32Module =
+        LoadLibraryEx(L"user32.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
+    if (user32Module) {
+        auto pCreateWindowInBand = (CreateWindowInBand_t)GetProcAddress(
+            user32Module, "CreateWindowInBand");
+        if (pCreateWindowInBand) {
+            WindhawkUtils::SetFunctionHook(pCreateWindowInBand,
+                                           CreateWindowInBand_Hook,
+                                           &CreateWindowInBand_Original);
+        }
+
+        auto pCreateWindowInBandEx = (CreateWindowInBandEx_t)GetProcAddress(
+            user32Module, "CreateWindowInBandEx");
+        if (pCreateWindowInBandEx) {
+            WindhawkUtils::SetFunctionHook(pCreateWindowInBandEx,
+                                           CreateWindowInBandEx_Hook,
+                                           &CreateWindowInBandEx_Original);
+        }
+    }
+
+    HMODULE kernelBaseModule = GetModuleHandle(L"kernelbase.dll");
+    auto pKernelBaseLoadLibraryExW = (decltype(&LoadLibraryExW))GetProcAddress(
+        kernelBaseModule, "LoadLibraryExW");
+    WindhawkUtils::SetFunctionHook(pKernelBaseLoadLibraryExW,
+                                   LoadLibraryExW_Hook,
+                                   &LoadLibraryExW_Original);
+
+    // Hook immediately if DLL is already loaded.
+    HookInitializeXamlDiagnosticsExIfNeeded();
+
+    HookWindowsUIFileExplorerSymbols();
+
+    return TRUE;
 }
 
+void WinTedExplorer_ModAfterInit() {
+    Wh_Log(L">");
+
+    auto hTargetWnds = GetTargetWnds();
+    for (auto hTargetWnd : hTargetWnds) {
+        Wh_Log(L"Initializing for %08X", (DWORD)(ULONG_PTR)hTargetWnd);
+        RunFromWindowThread(
+            hTargetWnd,
+            [](PVOID param) WINAPI {
+                HWND hTargetWnd = (HWND)param;
+
+                InitializeForCurrentThread();
+
+                if (GetTargetWindowType(hTargetWnd) ==
+                    TargetWindowType::FileExplorer) {
+                    ApplyBackgroundTranslucentEffect(hTargetWnd);
+                    TriggerWindowCompositionUpdate(hTargetWnd);
+                }
+            },
+            (PVOID)hTargetWnd);
+    }
+
+    if (hTargetWnds.size() > 0) {
+        Wh_Log(L"Initializing - Found target windows");
+        InitializeSettingsAndTap();
+    }
+}
+
+void WinTedExplorer_ModUninit() {
+    Wh_Log(L">");
+
+    StopImageDownloads();
+
+    // Before the UI threads are uninitialized, so that a retry can't be
+    // scheduled on a thread which is being uninitialized.
+    StopImageLoadRetries();
+
+    UninitializeSettingsAndTap();
+
+    auto hTargetWnds = GetTargetWnds();
+    for (auto hTargetWnd : hTargetWnds) {
+        Wh_Log(L"Uninitializing for %08X", (DWORD)(ULONG_PTR)hTargetWnd);
+        RunFromWindowThread(
+            hTargetWnd,
+            [](PVOID param) WINAPI {
+                HWND hTargetWnd = (HWND)param;
+
+                UninitializeForCurrentThread();
+
+                if (GetTargetWindowType(hTargetWnd) ==
+                    TargetWindowType::FileExplorer) {
+                    ApplyBackgroundTranslucentEffect(
+                        hTargetWnd, BackgroundTranslucentEffect::kDefault);
+                    TriggerWindowCompositionUpdate(hTargetWnd);
+                }
+            },
+            (PVOID)hTargetWnd);
+    }
+
+    ClearThemePartCache();
+}
+
+void WinTedExplorer_ModSettingsChanged() {
+    Wh_Log(L">");
+
+    UninitializeSettingsAndTap();
+
+    LoadSettings();
+    LoadThemeSettings();
+
+    auto hTargetWnds = GetTargetWnds();
+    for (auto hTargetWnd : hTargetWnds) {
+        Wh_Log(L"Reinitializing for %08X", (DWORD)(ULONG_PTR)hTargetWnd);
+        RunFromWindowThread(
+            hTargetWnd,
+            [](PVOID param) WINAPI {
+                HWND hTargetWnd = (HWND)param;
+
+                UninitializeForCurrentThread();
+                InitializeForCurrentThread();
+
+                if (GetTargetWindowType(hTargetWnd) ==
+                    TargetWindowType::FileExplorer) {
+                    ApplyBackgroundTranslucentEffect(hTargetWnd);
+                    TriggerWindowCompositionUpdate(hTargetWnd);
+                }
+            },
+            (PVOID)hTargetWnd);
+    }
+
+    if (hTargetWnds.size() > 0) {
+        Wh_Log(L"Reinitializing - Found target windows");
+        InitializeSettingsAndTap();
+    }
+}
+
+
+namespace WinTed {
+bool IsShellStylerProcess() {
+    WCHAR moduleFilePath[MAX_PATH];
+    DWORD length = GetModuleFileName(nullptr, moduleFilePath, ARRAYSIZE(moduleFilePath));
+    if (!length || length >= ARRAYSIZE(moduleFilePath)) return false;
+    PCWSTR moduleFileName = wcsrchr(moduleFilePath, L'\\');
+    moduleFileName = moduleFileName ? moduleFileName + 1 : moduleFilePath;
+    return _wcsicmp(moduleFileName, L"ShellExperienceHost.exe") == 0 ||
+           _wcsicmp(moduleFileName, L"ShellHost.exe") == 0;
+}
+}
+
+BOOL Wh_ModInit() {
+    return WinTed::IsShellStylerProcess()
+        ? NotificationCenterStyler::Initialize()
+        : WinTedExplorer_ModInit();
+}
 void Wh_ModAfterInit() {
-    WinTedExplorer::Wh_ModAfterInit();
-    WCHAR moduleFilePath[MAX_PATH];
-    if (GetModuleFileName(nullptr, moduleFilePath, ARRAYSIZE(moduleFilePath))) {
-        PCWSTR moduleFileName = wcsrchr(moduleFilePath, L'\\');
-        moduleFileName = moduleFileName ? moduleFileName + 1 : moduleFilePath;
-        if (_wcsicmp(moduleFileName, L"ShellExperienceHost.exe") == 0 ||
-            _wcsicmp(moduleFileName, L"ShellHost.exe") == 0) {
-            NotificationCenterStyler::AfterInit();
-        }
-    }
+    if (WinTed::IsShellStylerProcess()) NotificationCenterStyler::AfterInit();
+    else WinTedExplorer_ModAfterInit();
 }
-
 void Wh_ModUninit() {
-    WCHAR moduleFilePath[MAX_PATH];
-    if (GetModuleFileName(nullptr, moduleFilePath, ARRAYSIZE(moduleFilePath))) {
-        PCWSTR moduleFileName = wcsrchr(moduleFilePath, L'\\');
-        moduleFileName = moduleFileName ? moduleFileName + 1 : moduleFilePath;
-        if (_wcsicmp(moduleFileName, L"ShellExperienceHost.exe") == 0 ||
-            _wcsicmp(moduleFileName, L"ShellHost.exe") == 0) {
-            NotificationCenterStyler::Uninit();
-        }
-    }
-    WinTedExplorer::Wh_ModUninit();
+    if (WinTed::IsShellStylerProcess()) NotificationCenterStyler::Uninit();
+    else WinTedExplorer_ModUninit();
 }
-
 void Wh_ModSettingsChanged() {
-    WinTedExplorer::Wh_ModSettingsChanged();
-    WCHAR moduleFilePath[MAX_PATH];
-    if (GetModuleFileName(nullptr, moduleFilePath, ARRAYSIZE(moduleFilePath))) {
-        PCWSTR moduleFileName = wcsrchr(moduleFilePath, L'\\');
-        moduleFileName = moduleFileName ? moduleFileName + 1 : moduleFilePath;
-        if (_wcsicmp(moduleFileName, L"ShellExperienceHost.exe") == 0 ||
-            _wcsicmp(moduleFileName, L"ShellHost.exe") == 0) {
-            NotificationCenterStyler::SettingsChanged();
-        }
-    }
+    if (WinTed::IsShellStylerProcess()) NotificationCenterStyler::SettingsChanged();
+    else WinTedExplorer_ModSettingsChanged();
 }
