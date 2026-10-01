@@ -10315,6 +10315,38 @@ void LoadThemeSettings() {
 // ============================================================================
 namespace NotificationCenterStyler {
 
+// Keep the C++/WinRT namespaces explicitly global inside this isolated Styler namespace.
+namespace wf = ::winrt::Windows::Foundation;
+namespace wux = ::winrt::Windows::UI::Xaml;
+namespace Media = ::winrt::Windows::UI::Xaml::Media;
+namespace Markup = ::winrt::Windows::UI::Xaml::Markup;
+namespace Controls = ::winrt::Windows::UI::Xaml::Controls;
+namespace Primitives = ::winrt::Windows::UI::Xaml::Controls::Primitives;
+
+// The Explorer part of WinTed uses the WinUI 2/MUX projection globally.
+// These declarations force unqualified XAML names in the integrated Styler
+// to resolve to the Windows.UI.Xaml projection instead of MUX.
+using ::winrt::Windows::UI::Xaml::Application;
+using ::winrt::Windows::UI::Xaml::Brush;
+using ::winrt::Windows::UI::Xaml::Color;
+using ::winrt::Windows::UI::Xaml::CornerRadius;
+using ::winrt::Windows::UI::Xaml::DataTemplate;
+using ::winrt::Windows::UI::Xaml::DependencyObject;
+using ::winrt::Windows::UI::Xaml::DependencyProperty;
+using ::winrt::Windows::UI::Xaml::FrameworkElement;
+using ::winrt::Windows::UI::Xaml::GridLength;
+using ::winrt::Windows::UI::Xaml::HorizontalAlignment;
+using ::winrt::Windows::UI::Xaml::ResourceDictionary;
+using ::winrt::Windows::UI::Xaml::Style;
+using ::winrt::Windows::UI::Xaml::Thickness;
+using ::winrt::Windows::UI::Xaml::UIElement;
+using ::winrt::Windows::UI::Xaml::VerticalAlignment;
+using ::winrt::Windows::UI::Xaml::Visibility;
+using ::winrt::Windows::UI::Xaml::VisualState;
+using ::winrt::Windows::UI::Xaml::VisualStateChangedEventArgs;
+using ::winrt::Windows::UI::Xaml::VisualStateGroup;
+using ::winrt::Windows::UI::Xaml::Window;
+
 // Keep the C++/WinRT namespace explicitly global inside this isolated Styler namespace.
 // Without this alias, unqualified ::winrt:: references can resolve as NotificationCenterStyler::winrt.
 struct ThemeTargetStyles {
@@ -13840,8 +13872,8 @@ thread_local bool g_reportCompositionDiagAsDisabled;
 
 
 // aliases for convenience
-namespace wf = ::::winrt::Windows::Foundation;
-namespace wux = ::::winrt::Windows::UI::Xaml;
+namespace wf = ::winrt::Windows::Foundation;
+namespace wux = ::winrt::Windows::UI::Xaml;
 
 // A weak reference for the object, or an empty one when the object doesn't
 // support weak references: cppwinrt's make_weak dereferences a null pointer for
