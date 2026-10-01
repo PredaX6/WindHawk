@@ -97,6 +97,9 @@ Le Centre de notifications, le Centre de contrôle et le calendrier disposent du
 
 #undef GetCurrentTime
 
+#define WH_WINRT_WINUI2
+
+
 #include <winrt/Windows.UI.Xaml.h>
 #include <winrt/Microsoft.UI.Xaml.h>
 
@@ -10318,17 +10321,11 @@ namespace NotificationCenterStyler {
 // Alias the global C++/WinRT projection so all upstream `winrt::...`
 // references remain global even though the Styler implementation is isolated
 // in this namespace.
-namespace winrt = ::winrt;
-
-// Windows.UI.Xaml is used explicitly where required; unqualified XAML types
-// continue to resolve to the Microsoft.UI.Xaml (MUX) projection used by the
-// upstream Notification Center Styler.
+// Keep the upstream WinRT projection in the global ::winrt namespace.
+// The Notification Center Styler itself is isolated only at the C++ symbol
+// level; its WinRT headers must never be included from inside this namespace.
 namespace wf = ::winrt::Windows::Foundation;
-namespace wux = ::winrt::Windows::UI::Xaml;
-namespace Media = ::winrt::Windows::UI::Xaml::Media;
-namespace Markup = ::winrt::Windows::UI::Xaml::Markup;
-namespace Controls = ::winrt::Windows::UI::Xaml::Controls;
-namespace Primitives = ::winrt::Windows::UI::Xaml::Controls::Primitives;
+namespace wux = ::winrt::Microsoft::UI::Xaml;
 
 struct ThemeTargetStyles {
     PCWSTR target;
@@ -14276,9 +14273,8 @@ using namespace std::string_view_literals;
 
 
 
-#define WH_WINRT_WINUI2
 
-using namespace ::winrt::Windows::UI::Xaml;
+using namespace ::winrt::Microsoft::UI::Xaml;
 
 namespace muxc = ::winrt::Microsoft::UI::Xaml::Controls;
 namespace wge = ::winrt::Windows::Graphics::Effects;
