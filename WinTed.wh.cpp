@@ -2,7 +2,7 @@
 // @id              winted
 // @name            WinTed
 // @description     Windows 11 25H2 : thème Translucent Explorer 11 avec transparence DWM.
-// @version         1.5.9
+// @version         1.5.10
 // @author          Teddy
 // @github          https://github.com/PredaX6
 // @include         explorer.exe
@@ -9355,10 +9355,10 @@ bool PaintScrollBarPart(HDC hdc,
         case SBP_UPPERTRACKHORZ:
         case SBP_LOWERTRACKVERT:
         case SBP_UPPERTRACKVERT:
-            // Paint transparent black. The GDI alpha path recognizes this
-            // theme DC as belonging to the Explorer window and therefore
-            // leaves the DWM backdrop visible underneath the scrollbar track.
-            FillRect(hdc, pRect, (HBRUSH)GetStockObject(BLACK_BRUSH));
+        case SBP_GRIPPERHORZ:
+        case SBP_GRIPPERVERT:
+            // These parts are background/track elements. Do not paint them;
+            // the Explorer/DWM backdrop must remain visible underneath.
             return true;
     }
 
