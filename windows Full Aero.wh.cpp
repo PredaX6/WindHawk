@@ -171,7 +171,7 @@ La personnalisation complète de l'Explorateur de fichiers Windows 11 est intég
        ❗ Add process rules for the excluded process instead of using Windhawk's process exclusion when the "New system colors" global setting is enabled.
 
 
-// ===== Stylisation intégrée de l'Explorateur de fichiers Windows 11 =====
+# ===== Stylisation intégrée de l'Explorateur de fichiers Windows 11 =====
 - theme: ""
   $name: Thème
   $description: >-
