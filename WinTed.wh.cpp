@@ -2,7 +2,7 @@
 // @id winted
 // @name WinTed
 // @description Windows 11 25H2 : fenêtres Explorer translucides avec Blur (AccentBlurBehind) à 50 %.
-// @version 1.2.1
+// @version 1.3.0
 // @author Teddy
 // @github https://github.com/PredaX6
 // @include explorer.exe
@@ -15,8 +15,10 @@
 
 constexpr DWORD WCA_ACCENT_POLICY = 19;
 constexpr int ACCENT_ENABLE_BLURBEHIND = 3;
+
+// Windows 11 25H2.
 constexpr DWORD DWMWA_SYSTEMBACKDROP_TYPE_VALUE = 38;
-constexpr int DWMSBT_AUTO_VALUE = 0;
+constexpr int DWMSBT_TRANSIENTWINDOW_VALUE = 3;
 
 struct ACCENT_POLICY {
     int AccentState;
@@ -40,9 +42,11 @@ static void ApplyWinTed(HWND hWnd) {
     if (!hWnd || !IsWindow(hWnd) || !g_SetWindowCompositionAttribute)
         return;
 
+    // Étend le rendu DWM jusque sous la barre de titre et les bordures.
     const MARGINS margins = {-1, -1, -1, -1};
     DwmExtendFrameIntoClientArea(hWnd, &margins);
 
+    // Blur DWM sur toute la fenêtre.
     HRGN blurRegion = CreateRectRgn(0, 0, -1, -1);
 
     DWM_BLURBEHIND blur = {};
@@ -55,13 +59,15 @@ static void ApplyWinTed(HWND hWnd) {
     if (blurRegion)
         DeleteObject(blurRegion);
 
-    const int backdrop = DWMSBT_AUTO_VALUE;
+    // Backdrop translucide Windows 11 appliqué également au frame non-client.
+    const int backdrop = DWMSBT_TRANSIENTWINDOW_VALUE;
     DwmSetWindowAttribute(
         hWnd,
         DWMWA_SYSTEMBACKDROP_TYPE_VALUE,
         &backdrop,
         sizeof(backdrop));
 
+    // AccentBlurBehind avec une opacité de fond d'environ 50 %.
     ACCENT_POLICY accent = {};
     accent.AccentState = ACCENT_ENABLE_BLURBEHIND;
     accent.AccentFlags = 0;
