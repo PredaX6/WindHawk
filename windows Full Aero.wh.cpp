@@ -80,7 +80,6 @@ This is caused by default by the AccentBlur API.❕
 
 * ✨The mod works best on the default dark theme.✨
 
-*/
 ## Explorateur de fichiers Windows 11
 
 La personnalisation complète de l'Explorateur de fichiers Windows 11 est intégrée directement à ce mode. Il n'est plus nécessaire d'installer séparément Windows 11 File Explorer Styler.
@@ -170,12 +169,9 @@ La personnalisation complète de l'Explorateur de fichiers Windows 11 est intég
   $description: >-
       Add rules to each specified process or processes from specific subdirectories
        ❗ Add process rules for the excluded process instead of using Windhawk's process exclusion when the "New system colors" global setting is enabled.
-*/
 
 
 // ===== Stylisation intégrée de l'Explorateur de fichiers Windows 11 =====
-
-/*
 - theme: ""
   $name: Thème
   $description: >-
@@ -263,6 +259,10 @@ La personnalisation complète de l'Explorateur de fichiers Windows 11 est intég
 // ==/WindhawkModSettings==
 
 #include <windhawk_utils.h>
+
+// Avoid a WinBase.h macro collision with the C++/WinRT headers.
+#undef GetCurrentTime
+
 #include <windowsx.h>
 #include <dwmapi.h>
 #include <vssym32.h>
@@ -6815,10 +6815,9 @@ VOID LoadSettings()
 }
 
 
-namespace FileExplorerStyler {
-
-
 #undef GetCurrentTime
+
+namespace FileExplorerStyler {
 
 
 struct ThemeTargetStyles {
@@ -8139,19 +8138,10 @@ HMODULE GetCurrentModuleHandle() {
 #pragma region winrt_hpp
 
 
-// forward declare namespaces we alias
-namespace winrt {
-    namespace Windows {
-        namespace Foundation {}
-    }
-    namespace Microsoft {
-        namespace UI::Xaml {}
-    }
-}
-
-// alias some long namespaces for convenience
-namespace wf = winrt::Windows::Foundation;
-namespace mux = winrt::Microsoft::UI::Xaml;
+// Alias some long namespaces for convenience. The WinRT headers are
+// included at global scope, so explicitly refer to the global winrt namespace.
+namespace wf = ::winrt::Windows::Foundation;
+namespace mux = ::winrt::Microsoft::UI::Xaml;
 
 // A weak reference for the object, or an empty one when the object is null or
 // doesn't support weak references: cppwinrt's make_weak dereferences a null
