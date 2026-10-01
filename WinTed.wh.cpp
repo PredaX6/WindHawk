@@ -2,7 +2,7 @@
 // @id              winted
 // @name            WinTed
 // @description     Windows 11 25H2 : thème Translucent Explorer 11 avec transparence DWM.
-// @version         1.5.0
+// @version         1.5.2
 // @author          Teddy
 // @github          https://github.com/PredaX6
 // @include         explorer.exe
@@ -9630,10 +9630,23 @@ void ApplyBackgroundTranslucentEffect(
             break;
     }
 
-    DwmSetWindowAttribute_Original(hWnd, DWMWA_SYSTEMBACKDROP_TYPE,
-                                   &backdropType, sizeof(backdropType));
+    // Use exactly one backdrop mechanism at a time. The Blur mode is
+    // implemented by AccentBlurBehind, while the other modes use the native
+    // Windows 11 SystemBackdrop materials.
+    if (effect == BackgroundTranslucentEffect::kBlur) {
+        int noneBackdrop = DWMSBT_NONE;
+        DwmSetWindowAttribute_Original(
+            hWnd, DWMWA_SYSTEMBACKDROP_TYPE, &noneBackdrop,
+            sizeof(noneBackdrop));
 
-    SetAccentBlurBehind(hWnd, effect == BackgroundTranslucentEffect::kBlur);
+        SetAccentBlurBehind(hWnd, true);
+    } else {
+        SetAccentBlurBehind(hWnd, false);
+
+        DwmSetWindowAttribute_Original(
+            hWnd, DWMWA_SYSTEMBACKDROP_TYPE, &backdropType,
+            sizeof(backdropType));
+    }
 }
 
 void TriggerWindowCompositionUpdate(HWND hWnd) {
