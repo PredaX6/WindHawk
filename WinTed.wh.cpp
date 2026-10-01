@@ -8108,6 +8108,9 @@ const Theme* GetSelectedTheme() {
 }
 
 void AddNotificationCenterTransparencyRules() {
+    // These are the same transparent XAML layers used by the known
+    // TranslucentShell-style configurations. Keeping the layers transparent
+    // lets the DWM material applied to the host window remain visible.
     static const std::pair<PCWSTR, PCWSTR> styles[] = {
         {L"Grid#NotificationCenterGrid", L"Background=Transparent"},
         {L"Grid#CalendarCenterGrid", L"Background=Transparent"},
@@ -8124,6 +8127,12 @@ void AddNotificationCenterTransparencyRules() {
         {L"ContentPresenter#PageContent > Grid > Border",
          L"Background=Transparent"},
         {L"ScrollViewer#ListContent", L"Background=Transparent"},
+        {L"Grid > ScrollViewer#ListContent", L"Background=Transparent"},
+        {L"Grid#FocusGrid", L"Background=Transparent"},
+        {L"Grid#NotificationCenterTopBanner", L"Background=Transparent"},
+        {L"Grid#DoNotDisturbSubtext", L"Background=Transparent"},
+        {L"QuickActions.ControlCenter.AccessibleWindow#PageWindow > ContentPresenter > Grid#FullScreenPageRoot",
+         L"Background=Transparent"},
     };
 
     for (const auto& style : styles) {
@@ -9726,14 +9735,18 @@ void OnWindowCreated(HWND hWnd, PCSTR funcName) {
         Wh_Log(L"Initializing - Created window %08X via %S",
                (DWORD)(ULONG_PTR)hWnd, funcName);
 
+        InitializeForCurrentThread();
+        InitializeSettingsAndTap();
+
+        // Apply the material after XAML initialization. ShellExperienceHost /
+        // ShellHost can otherwise overwrite the DWM backdrop while constructing
+        // the visual tree.
         if (windowType == TargetWindowType::FileExplorer ||
             windowType == TargetWindowType::NotificationCenter ||
             windowType == TargetWindowType::ControlCenter) {
             ApplyBackgroundTranslucentEffect(hWnd);
+            TriggerWindowCompositionUpdate(hWnd);
         }
-
-        InitializeForCurrentThread();
-        InitializeSettingsAndTap();
     }
 }
 
