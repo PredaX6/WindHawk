@@ -550,7 +550,7 @@ VOID ApplyExcelWorksheetTransparencyToChildren(HWND hExcelWindow)
 BOOL CALLBACK RestoreExcelWindowsProc(HWND hWnd, LPARAM)
 {
     RestoreExcelWorksheetTransparency(hWnd);
-    EnumChildWindows(hWnd, RestoreExcelWorksheetProc, 0);
+    EnumChildWindows(hWnd, EnumExcelWorksheetProc, 0);
     return TRUE;
 }
 
