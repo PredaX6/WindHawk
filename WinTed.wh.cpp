@@ -2,7 +2,7 @@
 // @id winted
 // @name WinTed
 // @description Windows 11 25H2 : Explorer translucide avec Blur (AccentBlurBehind) à 50 %, y compris la barre de commandes.
-// @version 1.4.0
+// @version 1.4.1
 // @author Teddy
 // @github https://github.com/PredaX6
 // @include explorer.exe
@@ -143,17 +143,17 @@ static void MakeExplorerCommandBarTransparent(
             return;
 
         auto transparent =
-            muxm::SolidColorBrush(winrt::Windows::UI::Color{0, 0, 0, 0});
+            muxm::SolidColorBrush(
+                winrt::Windows::UI::Color{0, 0, 0, 0});
 
-        if (auto panel = element.try_as<muxc::Panel>()) {
+        if (auto panel = element.try_as<muxc::Panel>())
             panel.Background(transparent);
-        }
 
-        if (auto control = element.try_as<muxc::Control>()) {
+        if (auto control = element.try_as<muxc::Control>())
             control.Background(transparent);
-        }
     } catch (...) {
-        Wh_Log(L"WinTed: XAML transparency error %08X", winrt::to_hresult());
+        Wh_Log(L"WinTed: XAML transparency error %08X",
+               winrt::to_hresult());
     }
 }
 
@@ -165,17 +165,42 @@ class VisualTreeWatcher :
 public:
     explicit VisualTreeWatcher(winrt::com_ptr<IUnknown> site)
         : diagnostics_(site.as<IXamlDiagnostics>()) {
-        HRESULT hr =
-            diagnostics_.as<IVisualTreeService3>()->AdviseVisualTreeChange(this);
+        HRESULT hr = E_FAIL;
 
-        if (FAILED(hr)) {
-            Wh_Log(L"WinTed: AdviseVisualTreeChange failed: %08X", hr);
+        HANDLE thread = CreateThread(
+            nullptr, 0,
+            [](LPVOID parameter) WINAPI -> DWORD {
+                auto watcher =
+                    reinterpret_cast<VisualTreeWatcher*>(parameter);
+
+                HRESULT result =
+                    watcher->diagnostics_.as<IVisualTreeService3>()
+                        ->AdviseVisualTreeChange(watcher);
+
+                if (FAILED(result)) {
+                    Wh_Log(
+                        L"WinTed: AdviseVisualTreeChange failed: %08X",
+                        result);
+                }
+
+                watcher->Release();
+                return 0;
+            },
+            this, 0, nullptr);
+
+        if (thread) {
+            AddRef();
+            CloseHandle(thread);
+        } else {
+            hr = HRESULT_FROM_WIN32(GetLastError());
+            Wh_Log(L"WinTed: XAML watcher thread failed: %08X", hr);
         }
     }
 
     ~VisualTreeWatcher() {
         if (diagnostics_) {
-            diagnostics_.as<IVisualTreeService3>()->UnadviseVisualTreeChange(this);
+            diagnostics_.as<IVisualTreeService3>()
+                ->UnadviseVisualTreeChange(this);
         }
     }
 
@@ -189,15 +214,17 @@ private:
 
         try {
             winrt::Windows::Foundation::IInspectable object;
+
             HRESULT hr = diagnostics_->GetIInspectableFromHandle(
                 element.Handle,
-                reinterpret_cast<::IInspectable**>(winrt::put_abi(object)));
+                reinterpret_cast<::IInspectable**>(
+                    winrt::put_abi(object)));
 
-            if (SUCCEEDED(hr) && object) {
+            if (SUCCEEDED(hr) && object)
                 MakeExplorerCommandBarTransparent(object);
-            }
         } catch (...) {
-            Wh_Log(L"WinTed: XAML callback error %08X", winrt::to_hresult());
+            Wh_Log(L"WinTed: XAML callback error %08X",
+                   winrt::to_hresult());
         }
 
         return S_OK;
@@ -220,19 +247,21 @@ static constexpr CLSID CLSID_WindTedTAP =
      {0x91, 0x52, 0x5d, 0x31, 0x73, 0x4a, 0x8e, 0x20}};
 
 class WindTedTAP :
-    public winrt::implements<WindTedTAP, IObjectWithSite, winrt::non_agile> {
+    public winrt::implements<
+        WindTedTAP, IObjectWithSite, winrt::non_agile> {
 public:
     HRESULT STDMETHODCALLTYPE SetSite(IUnknown* site) override {
         g_visualTreeWatcher = nullptr;
+        site_.copy_from(site);
 
-        if (site) {
+        if (site_) {
             try {
                 g_visualTreeWatcher =
-                    winrt::make_self<VisualTreeWatcher>(
-                        winrt::com_ptr<IUnknown>(site));
+                    winrt::make_self<VisualTreeWatcher>(site_);
             } catch (...) {
-                Wh_Log(L"WinTed: TAP initialization failed %08X",
-                       winrt::to_hresult());
+                Wh_Log(
+                    L"WinTed: TAP initialization failed %08X",
+                    winrt::to_hresult());
                 return winrt::to_hresult();
             }
         }
@@ -252,7 +281,8 @@ private:
 
 template <class T>
 struct SimpleFactory :
-    winrt::implements<SimpleFactory<T>, IClassFactory, winrt::non_agile> {
+    winrt::implements<
+        SimpleFactory<T>, IClassFactory, winrt::non_agile> {
     HRESULT STDMETHODCALLTYPE CreateInstance(
         IUnknown* outer,
         REFIID riid,
@@ -277,7 +307,8 @@ HRESULT WINAPI DllGetClassObject(
     if (rclsid != CLSID_WindTedTAP)
         return CLASS_E_CLASSNOTAVAILABLE;
 
-    return winrt::make<SimpleFactory<WindTedTAP>>().as(riid, ppv);
+    return winrt::make<
+        SimpleFactory<WindTedTAP>>().as(riid, ppv);
 }
 
 extern "C" __declspec(dllexport)
@@ -294,17 +325,23 @@ using InitializeXamlDiagnosticsEx_t =
         CLSID,
         PCWSTR);
 
-static bool g_injectingTAP = false;
-static InitializeXamlDiagnosticsEx_t g_InitializeXamlDiagnosticsEx = nullptr;
+static InitializeXamlDiagnosticsEx_t
+    g_InitializeXamlDiagnosticsEx = nullptr;
 
 static HRESULT InjectWindTedTAP() {
-    HMODULE module = GetModuleHandleW(nullptr);
-    if (!module)
+    HMODULE module = nullptr;
+
+    if (!GetModuleHandleExW(
+            GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
+                GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+            reinterpret_cast<LPCWSTR>(&InjectWindTedTAP),
+            &module)) {
         return HRESULT_FROM_WIN32(GetLastError());
+    }
 
     WCHAR location[MAX_PATH];
     DWORD length = GetModuleFileNameW(
-        GetCurrentProcess(), location, ARRAYSIZE(location));
+        module, location, ARRAYSIZE(location));
 
     if (!length || length >= ARRAYSIZE(location))
         return HRESULT_FROM_WIN32(GetLastError());
@@ -314,17 +351,13 @@ static HRESULT InjectWindTedTAP() {
     if (!wux)
         return HRESULT_FROM_WIN32(GetLastError());
 
-    if (!g_InitializeXamlDiagnosticsEx) {
-        g_InitializeXamlDiagnosticsEx =
-            reinterpret_cast<InitializeXamlDiagnosticsEx_t>(
-                GetProcAddress(
-                    wux, "InitializeXamlDiagnosticsEx"));
-    }
+    g_InitializeXamlDiagnosticsEx =
+        reinterpret_cast<InitializeXamlDiagnosticsEx_t>(
+            GetProcAddress(
+                wux, "InitializeXamlDiagnosticsEx"));
 
     if (!g_InitializeXamlDiagnosticsEx)
         return E_NOINTERFACE;
-
-    g_injectingTAP = true;
 
     HRESULT hr = E_FAIL;
 
@@ -347,16 +380,7 @@ static HRESULT InjectWindTedTAP() {
             break;
     }
 
-    g_injectingTAP = false;
     return hr;
-}
-
-static bool IsExplorerWindow(HWND hWnd) {
-    WCHAR className[64];
-    if (!GetClassNameW(hWnd, className, ARRAYSIZE(className)))
-        return false;
-
-    return _wcsicmp(className, L"CabinetWClass") == 0;
 }
 
 BOOL Wh_ModInit() {
@@ -374,15 +398,14 @@ BOOL Wh_ModInit() {
 
     EnumWindows(EnumWindowsProc, 0);
 
-    // Inject the tiny XAML watcher used only for the Explorer command bar.
     HRESULT hr = InjectWindTedTAP();
-    if (FAILED(hr))
-        Wh_Log(L"WinTed: XAML diagnostics injection failed: %08X", hr);
+    if (FAILED(hr)) {
+        Wh_Log(
+            L"WinTed: XAML diagnostics injection failed: %08X",
+            hr);
+    }
 
-    return Wh_SetFunctionHook(
-        reinterpret_cast<void*>(CreateWindowExW),
-        reinterpret_cast<void*>(CreateWindowExW),
-        nullptr);
+    return TRUE;
 }
 
 void Wh_ModUninit() {
