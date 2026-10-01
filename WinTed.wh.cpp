@@ -2,7 +2,7 @@
 // @id winted
 // @name WinTed
 // @description Windows 11 25H2 : Explorer translucide avec Blur (AccentBlurBehind) à 50 %, y compris la barre de commandes.
-// @version 1.4.1
+// @version 1.4.2
 // @author Teddy
 // @github https://github.com/PredaX6
 // @include explorer.exe
@@ -15,6 +15,13 @@
 #include <xamlom.h>
 
 #include <Unknwn.h>
+
+// Windows defines GetCurrentTime() as a macro, which conflicts with
+// the WinRT/XAML GetCurrentTime(int64_t*) interface method.
+#ifdef GetCurrentTime
+#undef GetCurrentTime
+#endif
+
 #include <winrt/base.h>
 #include <winrt/Microsoft.UI.Xaml.h>
 #include <winrt/Microsoft.UI.Xaml.Controls.h>
