@@ -1,8 +1,8 @@
 // ==WindhawkMod==
 // @id              winted
 // @name            WinTed
-// @description     Windows 11 25H2 : thème Translucent Explorer 11 avec transparence DWM.
-// @version         1.5.3
+// @description     Windows 11 25H2 : Translucent Explorer 11 + transparence du Centre de notification.
+// @version         1.5.4
 // @author          Teddy
 // @github          https://github.com/PredaX6
 // @include         explorer.exe
@@ -24,6 +24,8 @@
   - Acrylic (SystemBackdrop)
   - Mica (SystemBackdrop)
   - MicaAlt (SystemBackdrop)
+
+- Centre de notification : même choix de transparence, réglable séparément.
 
 Aucun autre thème ou réglage utilisateur n'est conservé.
 */
