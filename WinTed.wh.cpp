@@ -2,7 +2,7 @@
 // @id              winted
 // @name            WinTed
 // @description     Windows 11 25H2 : thème Translucent Explorer 11 avec transparence DWM.
-// @version         1.5.3
+// @version         1.5.4
 // @author          Teddy
 // @github          https://github.com/PredaX6
 // @include         explorer.exe
@@ -98,6 +98,18 @@ const Theme g_themeTranslucent_Explorer11 = {{
     ThemeTargetStyles{L"Grid#DetailsViewControlRootGrid", {
         L"Background=Transparent"}},
     ThemeTargetStyles{L"StackPanel#DetailsViewThumbnail > Grid", {
+        L"Background=Transparent"}},
+    // Make the WinUI scrollbar track transparent so the DWM/XAML backdrop
+    // remains visible behind it. The thumb itself keeps the native appearance.
+    ThemeTargetStyles{L"ScrollBar", {
+        L"Background=Transparent"}},
+    ThemeTargetStyles{L"ScrollBar > Grid", {
+        L"Background=Transparent"}},
+    ThemeTargetStyles{L"ScrollBar > Border", {
+        L"Background=Transparent"}},
+    ThemeTargetStyles{L"ScrollBar#VerticalScrollBar", {
+        L"Background=Transparent"}},
+    ThemeTargetStyles{L"ScrollBar#HorizontalScrollBar", {
         L"Background=Transparent"}},
 }, {}, {}, /*explorerFrameContainerHeight=*/0, BackgroundTranslucentEffect::kAcrylic};
 
