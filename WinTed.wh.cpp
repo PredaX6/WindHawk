@@ -2,15 +2,27 @@
 // @id winted
 // @name WinTed
 // @description Windows 11 25H2 : thème Translucent Explorer 11 avec choix du type de transparence.
-// @version 1.4.0
+// @version 1.4.1
 // @author Teddy
 // @github https://github.com/PredaX6
 // @include explorer.exe
 // @architecture x86-64
 // @compilerOptions -ldwmapi -lgdi32
-// @options
-// {"type":"select","name":"transparencyType","default":0,"options":[{"value":0,"label":"Par défaut"},{"value":1,"label":"Blur (AccentBlurBehind)"},{"value":2,"label":"Acrylic (SystemBackdrop)"},{"value":3,"label":"Mica (SystemBackdrop)"},{"value":4,"label":"MicaAlt (SystemBackdrop)"}]}
 // ==/WindhawkMod==
+
+// ==WindhawkModSettings==
+/*
+- transparencyType: default
+  $name: Type de transparence
+  $description: Choisissez le rendu de transparence de l'Explorateur.
+  $options:
+    - default: Par défaut
+    - blur: Blur (AccentBlurBehind)
+    - acrylic: Acrylic (SystemBackdrop)
+    - mica: Mica (SystemBackdrop)
+    - micaAlt: MicaAlt (SystemBackdrop)
+*/
+// ==/WindhawkModSettings==
 
 #include <windows.h>
 #include <dwmapi.h>
@@ -48,7 +60,42 @@ using SetWindowCompositionAttribute_t =
     BOOL(WINAPI*)(HWND, WINDOWCOMPOSITIONATTRIBDATA*);
 
 static SetWindowCompositionAttribute_t g_SetWindowCompositionAttribute = nullptr;
-static int g_TransparencyType = 0;
+static wchar_t g_TransparencyType[32] = L"default";
+
+static void ApplyAccentBlur(HWND hWnd) {
+    HRGN blurRegion = CreateRectRgn(0, 0, -1, -1);
+
+    DWM_BLURBEHIND blur = {};
+    blur.dwFlags = DWM_BB_ENABLE | DWM_BB_BLURREGION;
+    blur.fEnable = TRUE;
+    blur.hRgnBlur = blurRegion;
+
+    DwmEnableBlurBehindWindow(hWnd, &blur);
+
+    if (blurRegion)
+        DeleteObject(blurRegion);
+
+    ACCENT_POLICY accent = {};
+    accent.AccentState = ACCENT_ENABLE_BLURBEHIND;
+    accent.AccentFlags = 0;
+    accent.GradientColor = 0x80000000;
+    accent.AnimationId = 0;
+
+    WINDOWCOMPOSITIONATTRIBDATA data = {};
+    data.Attrib = WCA_ACCENT_POLICY;
+    data.pvData = &accent;
+    data.cbData = sizeof(accent);
+
+    g_SetWindowCompositionAttribute(hWnd, &data);
+}
+
+static void SetSystemBackdrop(HWND hWnd, int backdrop) {
+    DwmSetWindowAttribute(
+        hWnd,
+        DWMWA_SYSTEMBACKDROP_TYPE_VALUE,
+        &backdrop,
+        sizeof(backdrop));
+}
 
 static void ApplyWinTed(HWND hWnd) {
     if (!hWnd || !IsWindow(hWnd) || !g_SetWindowCompositionAttribute)
@@ -58,124 +105,28 @@ static void ApplyWinTed(HWND hWnd) {
     const MARGINS margins = {-1, -1, -1, -1};
     DwmExtendFrameIntoClientArea(hWnd, &margins);
 
-    // Nettoie d'abord les deux mécanismes de transparence.
-    DWM_BLURBEHIND blur = {};
-    blur.dwFlags = DWM_BB_ENABLE;
-    blur.fEnable = FALSE;
-    DwmEnableBlurBehindWindow(hWnd, &blur);
+    // Nettoie d'abord les effets précédents.
+    DWM_BLURBEHIND disableBlur = {};
+    disableBlur.dwFlags = DWM_BB_ENABLE;
+    disableBlur.fEnable = FALSE;
+    DwmEnableBlurBehindWindow(hWnd, &disableBlur);
 
     const int noBackdrop = 1;
-    DwmSetWindowAttribute(
-        hWnd,
-        DWMWA_SYSTEMBACKDROP_TYPE_VALUE,
-        &noBackdrop,
-        sizeof(noBackdrop));
+    SetSystemBackdrop(hWnd, noBackdrop);
 
-    // Type sélectionné dans les réglages Windhawk.
-    switch (g_TransparencyType) {
-    case 1: {
-        // Blur (AccentBlurBehind)
-        HRGN blurRegion = CreateRectRgn(0, 0, -1, -1);
-
-        DWM_BLURBEHIND blurBehind = {};
-        blurBehind.dwFlags = DWM_BB_ENABLE | DWM_BB_BLURREGION;
-        blurBehind.fEnable = TRUE;
-        blurBehind.hRgnBlur = blurRegion;
-
-        DwmEnableBlurBehindWindow(hWnd, &blurBehind);
-
-        if (blurRegion)
-            DeleteObject(blurRegion);
-
-        ACCENT_POLICY accent = {};
-        accent.AccentState = ACCENT_ENABLE_BLURBEHIND;
-        accent.AccentFlags = 0;
-        accent.GradientColor = 0x80000000;
-        accent.AnimationId = 0;
-
-        WINDOWCOMPOSITIONATTRIBDATA data = {};
-        data.Attrib = WCA_ACCENT_POLICY;
-        data.pvData = &accent;
-        data.cbData = sizeof(accent);
-
-        g_SetWindowCompositionAttribute(hWnd, &data);
-        break;
-    }
-
-    case 2:
-        // Acrylic (SystemBackdrop)
-        {
-            const int backdrop = DWMSBT_ACRYLIC_VALUE;
-            DwmSetWindowAttribute(
-                hWnd,
-                DWMWA_SYSTEMBACKDROP_TYPE_VALUE,
-                &backdrop,
-                sizeof(backdrop));
-        }
-        break;
-
-    case 3:
-        // Mica (SystemBackdrop)
-        {
-            const int backdrop = DWMSBT_MICA_VALUE;
-            DwmSetWindowAttribute(
-                hWnd,
-                DWMWA_SYSTEMBACKDROP_TYPE_VALUE,
-                &backdrop,
-                sizeof(backdrop));
-        }
-        break;
-
-    case 4:
-        // MicaAlt (SystemBackdrop)
-        {
-            const int backdrop = DWMSBT_MICAALT_VALUE;
-            DwmSetWindowAttribute(
-                hWnd,
-                DWMWA_SYSTEMBACKDROP_TYPE_VALUE,
-                &backdrop,
-                sizeof(backdrop));
-        }
-        break;
-
-    case 0:
-    default:
-        // Par défaut = comportement Translucent Explorer 11 actuel :
-        // Blur DWM + Acrylic/SystemBackdrop + AccentBlurBehind à 50 %.
-        {
-            HRGN blurRegion = CreateRectRgn(0, 0, -1, -1);
-
-            DWM_BLURBEHIND blurBehind = {};
-            blurBehind.dwFlags = DWM_BB_ENABLE | DWM_BB_BLURREGION;
-            blurBehind.fEnable = TRUE;
-            blurBehind.hRgnBlur = blurRegion;
-
-            DwmEnableBlurBehindWindow(hWnd, &blurBehind);
-
-            if (blurRegion)
-                DeleteObject(blurRegion);
-
-            const int backdrop = DWMSBT_ACRYLIC_VALUE;
-            DwmSetWindowAttribute(
-                hWnd,
-                DWMWA_SYSTEMBACKDROP_TYPE_VALUE,
-                &backdrop,
-                sizeof(backdrop));
-
-            ACCENT_POLICY accent = {};
-            accent.AccentState = ACCENT_ENABLE_BLURBEHIND;
-            accent.AccentFlags = 0;
-            accent.GradientColor = 0x80000000;
-            accent.AnimationId = 0;
-
-            WINDOWCOMPOSITIONATTRIBDATA data = {};
-            data.Attrib = WCA_ACCENT_POLICY;
-            data.pvData = &accent;
-            data.cbData = sizeof(accent);
-
-            g_SetWindowCompositionAttribute(hWnd, &data);
-        }
-        break;
+    if (wcscmp(g_TransparencyType, L"blur") == 0) {
+        ApplyAccentBlur(hWnd);
+    } else if (wcscmp(g_TransparencyType, L"acrylic") == 0) {
+        SetSystemBackdrop(hWnd, DWMSBT_ACRYLIC_VALUE);
+    } else if (wcscmp(g_TransparencyType, L"mica") == 0) {
+        SetSystemBackdrop(hWnd, DWMSBT_MICA_VALUE);
+    } else if (wcscmp(g_TransparencyType, L"micaAlt") == 0) {
+        SetSystemBackdrop(hWnd, DWMSBT_MICAALT_VALUE);
+    } else {
+        // Par défaut = rendu Translucent Explorer 11 fonctionnel :
+        // Blur + SystemBackdrop + AccentBlurBehind à 50 %.
+        ApplyAccentBlur(hWnd);
+        SetSystemBackdrop(hWnd, DWMSBT_ACRYLIC_VALUE);
     }
 
     SetWindowPos(
@@ -234,7 +185,12 @@ BOOL Wh_ModInit() {
     if (!g_SetWindowCompositionAttribute)
         return FALSE;
 
-    g_TransparencyType = Wh_GetIntSetting(L"transparencyType");
+    if (!Wh_GetStringSetting(
+            L"transparencyType",
+            g_TransparencyType,
+            ARRAYSIZE(g_TransparencyType))) {
+        wcscpy_s(g_TransparencyType, L"default");
+    }
 
     EnumWindows(EnumWindowsProc, 0);
 
