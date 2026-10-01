@@ -9668,41 +9668,7 @@ private:
                                                       BOOLEAN timerOrWaitFired);
 };
 
-////////////////////////////////////////////////////////////////////////////////ides any process exclusion as these colors are applied system-wide using 
-the [SetSysColor](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setsyscolors) API.
-Intercepting and changing the system colors in a proper way is quite difficult, more details
-in another software project that faced the same problem: https://github.com/namazso/SecureUxTheme/issues/9#issuecomment-611897882 ❗
-
-* ⚠️Set a process rule in the mod's settings with custom theme rendering disabled, in order to reset (if possible) the custom system colors to default for the target process.⚠️
-
-* ❗The Windows custom theme rendering also fixes invisible text by restoring alpha and modifying text colors.
-Extending effects to the entire window can result in text being barely readable or even invisible in some cases. 
-Enabling HDR, 10bit color depth output, having a black color, or a white background behind the window can cause this. 
-This is because most GDI rendering operations ignore or do not preserve alpha values.❗
-
-* ⚠️Prerequisited windows settings to enable the background effects⚠️
-    - Transparency effects enabled
-    - Energy saver disabled
-#
-* ⚠️The background effects do not affect most modern windows (UWP/WinUI), 
-apps with different front-end rendering (e.g Qt, Electron, Chromium etc.. programs) and native windows with hardcoded colors.⚠️
-
-* ⚠️If parts of the Windows UI colors remain modified after disabling the modification, this is happening when new system colors are applied in a selected Windows custom theme.
-Changing the theme to the default and vice versa fixes the problem. As a last resort, you can delete the registry key HKEY_CURRENT_USER\Control Panel\Colors and reboot.⚠️
-
-* ⚠️ARM64 system is only partially supported.⚠️
-
-* ❕The blur effect may show a bleeding effect at the edges of a window when maximized or snapped to the edge of the screen. 
-This is caused by default by the AccentBlur API.❕
-
-* ✨The mod works best on the default dark theme.✨
-
-## Explorateur de fichiers Windows 11
-
-La personnalisation complète de l'Explorateur de fichiers Windows 11 est intégrée directement à ce mode. Il n'est plus nécessaire d'installer séparément Windows 11 File Explorer Styler.
-
-*/
-
+////////////////////////////////////////////////////////////////////////////////
 // ==/WindhawkModReadme==
 
 // ==WindhawkModSettings==
