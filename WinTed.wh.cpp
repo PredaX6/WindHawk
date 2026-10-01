@@ -1,11 +1,13 @@
 // ==WindhawkMod==
 // @id              winted
 // @name            WinTed
-// @description     Windows 11 25H2 : thème Translucent Explorer 11 avec transparence DWM.
+// @description     Windows 11 25H2 : Translucent Explorer 11 + Windows 11 Notification Center Styler.
 // @version         1.5.3
 // @author          Teddy
 // @github          https://github.com/PredaX6
 // @include         explorer.exe
+// @include         ShellExperienceHost.exe
+// @include         ShellHost.exe
 // @architecture    x86-64
 // @compilerOptions -lcomctl32 -ld2d1 -ldwmapi -lgdi32 -lmsimg32 -lole32 -loleaut32 -lruntimeobject -lshlwapi -luxtheme
 // ==/WindhawkMod==
@@ -23,25 +25,77 @@
   - Mica (SystemBackdrop)
   - MicaAlt (SystemBackdrop)
 
-Aucun autre thème ou réglage utilisateur n'est conservé.
+Le Centre de notifications, le Centre de contrôle et le calendrier utilisent le moteur complet de styles XAML, thèmes, variables de ressources et styles personnalisés du Notification Center Styler.
 */
 // ==/WindhawkModReadme==
 
 // ==WindhawkModSettings==
 /*
 - transparencyType: default
-  $name: Type de transparence
-  $description: Choisissez le rendu de transparence de l'Explorateur.
+  $name: Type de transparence Explorer
+  $description: Type de transparence utilisé par l'Explorateur Windows.
   $options:
   - default: Par défaut
   - blur: Blur (AccentBlurBehind)
   - acrylic: Acrylic (SystemBackdrop)
   - mica: Mica (SystemBackdrop)
   - micaAlt: MicaAlt (SystemBackdrop)
+
+
+/*
+- theme: ""
+  $name: Theme
+  $description: >-
+    Themes are collections of styles. For details about the themes below, or for
+    information about submitting your own theme, refer to the relevant section
+    in the mod details.
+  $options:
+  - "": None
+  - TranslucentShell: TranslucentShell
+  - Matter: Matter
+  - Unified: Unified
+  - 10JumpLists: 10JumpLists
+  - WindowGlass: WindowGlass
+  - WindowGlass_variant_alternative: WindowGlass (Alternative)
+  - Oversimplified&Accentuated: Oversimplified&Accentuated
+  - TintedGlass: TintedGlass
+  - Fluid: Fluid
+  - LiquidGlass: LiquidGlass
+  - BetterControl11: BetterControl11
+  - LayerMicaUI: LayerMicaUI
+  - Borderless: Borderless
+  - Densy: Densy
+  - FrostyGlass: FrostyGlass
+  - OS26 Tahoe Glass: OS26 Tahoe Glass
+- styleConstants: [""]
+  $name: Style constants
+  $description: >-
+    Some themes support style constants for customization, such as colors. Refer
+    to the theme page for available constants. For technical details, refer to
+    the mod description.
+- controlStyles:
+  - - target: ""
+      $name: Target
+    - styles: [""]
+      $name: Styles
+  $name: Control styles
+- themeResourceVariables: [""]
+  $name: Resource variables
+  $description: >-
+    Use "Key=Value" to override an existing resource with a new value.
+
+    Use "Key@Dark=Value" or "Key@Light=Value" to define theme-aware resources
+    that can be referenced with {ThemeResource Key} in styles.
+
+    The ":=" syntax can be used to set a XAML value. For details, refer to the
+    mod description.
+*/
+
 */
 // ==/WindhawkModSettings==
 
 #include <xamlom.h>
+#include <winrt/Windows.UI.Xaml.h>
 
 #include <atomic>
 #include <optional>
@@ -10207,6 +10261,14 @@ void LoadThemeSettings() {
         theme ? theme->explorerFrameContainerHeight : 0;
 }
 
+
+// -----------------------------------------------------------------------------
+// Integrated Windows 11 Notification Center Styler 1.7
+// -----------------------------------------------------------------------------
+namespace NotificationCenterStyler {
+
+} // namespace NotificationCenterStyler
+
 BOOL Wh_ModInit() {
     Wh_Log(L">");
 
@@ -10299,11 +10361,32 @@ BOOL Wh_ModInit() {
 
     HookWindowsUIFileExplorerSymbols();
 
+WCHAR moduleFilePath[MAX_PATH];
+    if (GetModuleFileName(nullptr, moduleFilePath, ARRAYSIZE(moduleFilePath))) {
+        PCWSTR moduleFileName = wcsrchr(moduleFilePath, L'\\');
+        moduleFileName = moduleFileName ? moduleFileName + 1 : moduleFilePath;
+        if (_wcsicmp(moduleFileName, L"ShellExperienceHost.exe") == 0 ||
+            _wcsicmp(moduleFileName, L"ShellHost.exe") == 0) {
+            if (!NotificationCenterStyler::Initialize()) {
+                Wh_Log(L"Notification Center Styler initialization failed");
+            }
+        }
+    }
     return TRUE;
 }
 
 void Wh_ModAfterInit() {
     Wh_Log(L">");
+
+WCHAR moduleFilePath[MAX_PATH];
+    if (GetModuleFileName(nullptr, moduleFilePath, ARRAYSIZE(moduleFilePath))) {
+        PCWSTR moduleFileName = wcsrchr(moduleFilePath, L'\\');
+        moduleFileName = moduleFileName ? moduleFileName + 1 : moduleFilePath;
+        if (_wcsicmp(moduleFileName, L"ShellExperienceHost.exe") == 0 ||
+            _wcsicmp(moduleFileName, L"ShellHost.exe") == 0) {
+            NotificationCenterStyler::AfterInit();
+        }
+    }
 
     auto hTargetWnds = GetTargetWnds();
     for (auto hTargetWnd : hTargetWnds) {
@@ -10332,6 +10415,16 @@ void Wh_ModAfterInit() {
 
 void Wh_ModUninit() {
     Wh_Log(L">");
+
+WCHAR moduleFilePath[MAX_PATH];
+    if (GetModuleFileName(nullptr, moduleFilePath, ARRAYSIZE(moduleFilePath))) {
+        PCWSTR moduleFileName = wcsrchr(moduleFilePath, L'\\');
+        moduleFileName = moduleFileName ? moduleFileName + 1 : moduleFilePath;
+        if (_wcsicmp(moduleFileName, L"ShellExperienceHost.exe") == 0 ||
+            _wcsicmp(moduleFileName, L"ShellHost.exe") == 0) {
+            NotificationCenterStyler::Uninit();
+        }
+    }
 
     StopImageDownloads();
 
@@ -10366,6 +10459,16 @@ void Wh_ModUninit() {
 
 void Wh_ModSettingsChanged() {
     Wh_Log(L">");
+
+WCHAR moduleFilePath[MAX_PATH];
+    if (GetModuleFileName(nullptr, moduleFilePath, ARRAYSIZE(moduleFilePath))) {
+        PCWSTR moduleFileName = wcsrchr(moduleFilePath, L'\\');
+        moduleFileName = moduleFileName ? moduleFileName + 1 : moduleFilePath;
+        if (_wcsicmp(moduleFileName, L"ShellExperienceHost.exe") == 0 ||
+            _wcsicmp(moduleFileName, L"ShellHost.exe") == 0) {
+            NotificationCenterStyler::SettingsChanged();
+        }
+    }
 
     UninitializeSettingsAndTap();
 
