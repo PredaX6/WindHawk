@@ -2,7 +2,7 @@
 // @id              winted
 // @name            WinTed
 // @description     Windows 11 25H2 : Translucent Explorer 11 + transparence du Centre de notification.
-// @version         1.5.4
+// @version         1.5.5
 // @author          Teddy
 // @github          https://github.com/PredaX6
 // @include         explorer.exe
@@ -56,6 +56,7 @@ Aucun autre thème ou réglage utilisateur n'est conservé.
 // ==/WindhawkModSettings==
 
 #include <xamlom.h>
+#include <winrt/Windows.UI.Xaml.h>
 
 #include <atomic>
 #include <optional>
@@ -63,7 +64,6 @@ Aucun autre thème ou réglage utilisateur n'est conservé.
 
 #undef GetCurrentTime
 
-#include <winrt/Microsoft.UI.Xaml.h>
 
 struct ThemeTargetStyles {
     PCWSTR target;
@@ -220,7 +220,6 @@ winrt::weak_ref<wf::IInspectable> TryMakeWeak(wf::IInspectable const& object)
 
 #pragma region visualtreewatcher_hpp
 
-#include <winrt/Microsoft.UI.Xaml.h>
 
 // XamlDiagnostics implements this interface too, and xamlom.h does not declare
 // it. UnregisterInstance closes the runtime object cached for a handle, the
@@ -731,7 +730,6 @@ using namespace std::string_view_literals;
 #include <winrt/Microsoft.UI.Xaml.Markup.h>
 #include <winrt/Microsoft.UI.Xaml.Media.Imaging.h>
 #include <winrt/Microsoft.UI.Xaml.Media.h>
-#include <winrt/Microsoft.UI.Xaml.h>
 #include <winrt/Windows.Foundation.Collections.h>
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Graphics.Effects.h>
@@ -745,7 +743,7 @@ using namespace winrt::Microsoft::UI::Xaml;
 namespace muxc = winrt::Microsoft::UI::Xaml::Controls;
 namespace wge = winrt::Windows::Graphics::Effects;
 namespace muc = winrt::Microsoft::UI::Composition;
-namespace muxh = mux::Hosting;
+namespace muxh = winrt::Windows::UI::Xaml::Hosting;
 namespace awge = ABI::Windows::Graphics::Effects;
 
 // https://stackoverflow.com/a/51274008
@@ -8124,67 +8122,92 @@ const Theme* GetSelectedTheme() {
 void ApplyNotificationTransparencyStyles() {
     const auto effect = GetEffectiveNotificationTransparencyEffect();
 
-    // The Notification Center is styled through its XAML visual tree, like the
-    // standalone Windows 11 Notification Center Styler. DWM SystemBackdrop
-    // does not reliably materialize behind these XAML surfaces, so applying
-    // Explorer's DWM material here makes the five choices appear identical.
-    if (effect == BackgroundTranslucentEffect::kDefault) {
+    // The Notification Center Styler works on the XAML surfaces themselves.
+    // Apply the selected material only to the main surfaces and explicitly
+    // clear the intermediate containers. Applying a brush to every nested
+    // container creates the large opaque white/gray layer behind notifications.
+    PCWSTR effectBrush = nullptr;
+
+    switch (effect) {
+        case BackgroundTranslucentEffect::kDefault:
+            return;
+
+        case BackgroundTranslucentEffect::kBlur:
+            effectBrush =
+                L"<WindhawkBlur BlurAmount=\"25\" TintColor=\"#25323232\"/>";
+            break;
+
+        case BackgroundTranslucentEffect::kAcrylic:
+            effectBrush =
+                L"<AcrylicBrush BackgroundSource=\"Backdrop\" "
+                L"TintColor=\"#121212\" TintOpacity=\"0.30\" "
+                L"TintLuminosityOpacity=\"0.80\"/>";
+            break;
+
+        case BackgroundTranslucentEffect::kMica:
+            // The Styler engine cannot create a native Mica brush. Use a
+            // neutral low-opacity acrylic equivalent rather than a white
+            // ThemeResource fallback.
+            effectBrush =
+                L"<AcrylicBrush BackgroundSource=\"Backdrop\" "
+                L"TintColor=\"#121212\" TintOpacity=\"0.12\" "
+                L"TintLuminosityOpacity=\"0.80\"/>";
+            break;
+
+        case BackgroundTranslucentEffect::kMicaAlt:
+            effectBrush =
+                L"<AcrylicBrush BackgroundSource=\"Backdrop\" "
+                L"TintColor=\"#1C1C1C\" TintOpacity=\"0.18\" "
+                L"TintLuminosityOpacity=\"0.80\"/>";
+            break;
+
+        case BackgroundTranslucentEffect::kNone:
+            break;
+    }
+
+    if (!effectBrush) {
         return;
     }
 
-    const std::vector<PCWSTR> targets = {
+    const std::wstring effectStyle =
+        L"Background:=" + std::wstring(effectBrush);
+    const std::vector<std::wstring> clearStyles = {
+        L"Background=Transparent",
+        L"BorderBrush=Transparent",
+    };
+
+    // Main material surfaces.
+    const PCWSTR materialTargets[] = {
         L"Grid#NotificationCenterGrid",
         L"Grid#CalendarCenterGrid",
         L"Grid#ControlCenterRegion",
         L"Windows.UI.Xaml.Controls.Grid#MediaTransportControlsRegion",
+    };
+
+    for (PCWSTR target : materialTargets) {
+        AddElementCustomizationRules(
+            target, std::vector<std::wstring>{effectStyle});
+    }
+
+    // Intermediate containers must stay clear so they don't add another
+    // white/gray layer over the selected material.
+    const PCWSTR clearTargets[] = {
         L"Grid#MediaTransportControlsRoot",
         L"ContentPresenter#PageContent",
         L"ContentPresenter#PageContent > Grid > Border",
         L"QuickActions.ControlCenter.AccessibleWindow#PageWindow > ContentPresenter > Grid#FullScreenPageRoot",
         L"QuickActions.ControlCenter.AccessibleWindow#PageWindow > ContentPresenter > Grid#FullScreenPageRoot > ContentPresenter#PageHeader",
         L"ScrollViewer#ListContent",
-        L"ActionCenter.FlexibleToastView#FlexibleNormalToastView",
-        L"Border#ToastBackgroundBorder2",
         L"ScrollViewer#CalendarControlScrollViewer",
         L"Border#CalendarHeaderMinimizedOverlay",
         L"ActionCenter.FocusSessionControl#FocusSessionControl > Grid#FocusGrid",
     };
 
-    // These are the same XAML mechanisms used by the standalone Notification
-    // Center Styler: WindhawkBlur for custom blur and AcrylicBrush for acrylic.
-    // Native Mica/MicaAlt cannot currently be supplied as a XAML brush by the
-    // Styler engine, so use the closest system-accented acrylic variants rather
-    // than silently falling back to an opaque/default background.
-    PCWSTR brush = nullptr;
-    switch (effect) {
-        case BackgroundTranslucentEffect::kBlur:
-            brush = L"<WindhawkBlur BlurAmount=\"25\" TintColor=\"#25323232\"/>";
-            break;
-        case BackgroundTranslucentEffect::kAcrylic:
-            brush = L"<AcrylicBrush BackgroundSource=\"Backdrop\" TintColor=\"{ThemeResource SystemChromeMediumColor}\" TintOpacity=\"0.3\" TintLuminosityOpacity=\"0.8\" FallbackColor=\"{ThemeResource SystemChromeMediumColor}\"/>";
-            break;
-        case BackgroundTranslucentEffect::kMica:
-            brush = L"<AcrylicBrush BackgroundSource=\"Backdrop\" TintColor=\"{ThemeResource SystemChromeMediumColor}\" TintOpacity=\"0.1\" TintLuminosityOpacity=\"0.8\" FallbackColor=\"{ThemeResource SystemChromeMediumColor}\"/>";
-            break;
-        case BackgroundTranslucentEffect::kMicaAlt:
-            brush = L"<AcrylicBrush BackgroundSource=\"Backdrop\" TintColor=\"{ThemeResource SystemChromeHighColor}\" TintOpacity=\"0.16\" TintLuminosityOpacity=\"0.8\" FallbackColor=\"{ThemeResource SystemChromeHighColor}\"/>";
-            break;
-        default:
-            break;
-    }
-
-    if (!brush) {
-        return;
-    }
-
-    const std::wstring backgroundStyle = L"Background:=" + std::wstring(brush);
-    std::vector<std::wstring> styles{backgroundStyle};
-
-    for (PCWSTR target : targets) {
-        AddElementCustomizationRules(target, styles);
+    for (PCWSTR target : clearTargets) {
+        AddElementCustomizationRules(
+            target, std::vector<std::wstring>(clearStyles));
     }
 }
-
 void ProcessAllStylesFromSettings() {
     ApplyNotificationTransparencyStyles();
 
