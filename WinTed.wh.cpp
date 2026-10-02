@@ -56,13 +56,14 @@ Aucun autre thème ou réglage utilisateur n'est conservé.
 // ==/WindhawkModSettings==
 
 #include <xamlom.h>
-#include <winrt/Windows.UI.Xaml.h>
 
 #include <atomic>
 #include <optional>
 #include <vector>
 
 #undef GetCurrentTime
+
+#include <winrt/Microsoft.UI.Xaml.h>
 
 
 struct ThemeTargetStyles {
@@ -738,12 +739,12 @@ using namespace std::string_view_literals;
 #include <winrt/Windows.System.Power.h>
 #include <winrt/Windows.UI.ViewManagement.h>
 
-using namespace winrt::Windows::UI::Xaml;
+using namespace winrt::Microsoft::UI::Xaml;
 
 namespace muxc = winrt::Microsoft::UI::Xaml::Controls;
 namespace wge = winrt::Windows::Graphics::Effects;
 namespace muc = winrt::Microsoft::UI::Composition;
-namespace muxh = winrt::Windows::UI::Xaml::Hosting;
+namespace muxh = winrt::Microsoft::UI::Xaml::Hosting;
 namespace awge = ABI::Windows::Graphics::Effects;
 
 // https://stackoverflow.com/a/51274008
@@ -7971,7 +7972,7 @@ bool ProcessResourceVariable(ResourceDictionary resources,
             }
 
             value = Markup::XamlBindingHelper::ConvertValue(
-                winrt::Windows::UI::Xaml::Interop::TypeName{resourceClassName},
+                winrt::Microsoft::UI::Xaml::Interop::TypeName{resourceClassName},
                 winrt::box_value(entry.value));
             break;
         }
