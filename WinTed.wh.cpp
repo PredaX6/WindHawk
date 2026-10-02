@@ -9640,11 +9640,9 @@ void ApplyBackgroundTranslucentEffect(
     // implemented by AccentBlurBehind, while the other modes use the native
     // Windows 11 SystemBackdrop materials.
     if (effect == BackgroundTranslucentEffect::kBlur) {
-        int noneBackdrop = DWMSBT_NONE;
-        DwmSetWindowAttribute_Original(
-            hWnd, DWMWA_SYSTEMBACKDROP_TYPE, &noneBackdrop,
-            sizeof(noneBackdrop));
-
+        // Apply AccentBlurBehind first. Do not force DWMSBT_NONE here:
+        // changing the DWM backdrop to NONE creates a brief transparent frame
+        // during open/close/minimize before AccentBlurBehind is ready.
         SetAccentBlurBehind(hWnd, true);
     } else {
         SetAccentBlurBehind(hWnd, false);
