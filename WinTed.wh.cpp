@@ -40,6 +40,7 @@ Aucun autre thème ou réglage utilisateur n'est conservé.
   $options:
   - default: Défaut Acrylic (SystemBackdrop)
   - blur: Blur (AccentBlurBehind)
+  - acrylic: Acrylic (SystemBackdrop)
   - mica: Mica (SystemBackdrop)
   - micaAlt: MicaAlt (SystemBackdrop)
 
@@ -49,6 +50,7 @@ Aucun autre thème ou réglage utilisateur n'est conservé.
   $options:
   - default: Défaut Acrylic (SystemBackdrop)
   - blur: Blur (AccentBlurBehind)
+  - acrylic: Acrylic (SystemBackdrop)
   - mica: Mica (SystemBackdrop)
   - micaAlt: MicaAlt (SystemBackdrop)
 
