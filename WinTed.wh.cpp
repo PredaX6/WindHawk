@@ -10640,9 +10640,11 @@ void Wh_ModAfterInit() {
                 InitializeForCurrentThread();
 
                 if (GetTargetWindowType(hTargetWnd) ==
-                        TargetWindowType::FileExplorer ||
-                    GetTargetWindowType(hTargetWnd) ==
-                        TargetWindowType::NotificationCenter) {
+                        TargetWindowType::FileExplorer) {
+                    ApplyBackgroundTranslucentEffect(hTargetWnd);
+                    TriggerWindowCompositionUpdate(hTargetWnd);
+                } else if (GetTargetWindowType(hTargetWnd) ==
+                           TargetWindowType::NotificationCenter) {
                     ApplyNotificationWindowTransparency(hTargetWnd);
                     TriggerWindowCompositionUpdate(hTargetWnd);
                 }
