@@ -8125,15 +8125,13 @@ const Theme* GetSelectedTheme() {
 }
 
 void ApplyNotificationTransparencyStyles() {
-    // The material itself is provided by the same DWM mechanism as Explorer.
-    // Keep the XAML surfaces transparent so they don't cover it with an
-    // additional opaque white/gray layer.
-    const std::vector<std::wstring> clearStyles = {
-        L"Background=Transparent",
-        L"BorderBrush=Transparent",
-    };
+    // Use the same XAML styling path as Windows 11 Notification Center Styler.
+    // This is important: the material is applied to the actual XAML surface,
+    // not to the whole flyout window. This avoids the oversized DWM backdrop
+    // that was previously visible behind the notifications.
+    const auto effect = GetEffectiveNotificationTransparencyEffect();
 
-    const PCWSTR clearTargets[] = {
+    const PCWSTR targets[] = {
         L"Grid#NotificationCenterGrid",
         L"Grid#CalendarCenterGrid",
         L"Grid#ControlCenterRegion",
@@ -8149,9 +8147,51 @@ void ApplyNotificationTransparencyStyles() {
         L"ActionCenter.FocusSessionControl#FocusSessionControl > Grid#FocusGrid",
     };
 
-    for (PCWSTR target : clearTargets) {
-        AddElementCustomizationRules(
-            target, std::vector<std::wstring>(clearStyles));
+    std::wstring background;
+    switch (effect) {
+        case BackgroundTranslucentEffect::kDefault:
+            // Clear the XAML surface so Windows can show its own default
+            // backdrop behind it.
+            background = L"Background=Transparent";
+            break;
+
+        case BackgroundTranslucentEffect::kBlur:
+            // Same WindhawkBlur mechanism exposed by the official Styler.
+            background =
+                L"Background:=<WindhawkBlur BlurAmount=\"30\" "
+                L"TintColor=\"#80000000\" />";
+            break;
+
+        case BackgroundTranslucentEffect::kAcrylic:
+            // Same AcrylicBrush XAML mechanism used by the official Styler.
+            background =
+                L"Background:=<AcrylicBrush TintColor=\"#121212\" "
+                L"TintOpacity=\"0.3\" />";
+            break;
+
+        case BackgroundTranslucentEffect::kMica:
+        case BackgroundTranslucentEffect::kMicaAlt:
+            // Mica itself is supplied at window level below. The XAML layer
+            // must remain transparent so it doesn't cover the DWM material.
+            background = L"Background=Transparent";
+            break;
+
+        case BackgroundTranslucentEffect::kNone:
+            background = L"Background=Transparent";
+            break;
+    }
+
+    const std::vector<std::wstring> styles = {background};
+
+    for (PCWSTR target : targets) {
+        try {
+            AddElementCustomizationRules(target, styles);
+        } catch (winrt::hresult_error const& ex) {
+            Wh_Log(L"Notification transparency target failed %08X: %s",
+                   ex.code(), ex.message().c_str());
+        } catch (std::exception const& ex) {
+            Wh_Log(L"Notification transparency target failed: %S", ex.what());
+        }
     }
 }
 
@@ -9697,6 +9737,20 @@ void ApplyBackgroundTranslucentEffect(
         windowType == TargetWindowType::NotificationCenter
             ? GetEffectiveNotificationTransparencyEffect()
             : GetEffectiveBackgroundTranslucentEffect());
+
+    // Notification Center uses the Styler's XAML material for Default/Blur/
+    // Acrylic. Only Mica/MicaAlt need a native window backdrop here.
+    if (windowType == TargetWindowType::NotificationCenter &&
+        effect != BackgroundTranslucentEffect::kDefault &&
+        effect != BackgroundTranslucentEffect::kMica &&
+        effect != BackgroundTranslucentEffect::kMicaAlt) {
+        SetAccentBlurBehind(hWnd, false);
+        int noneBackdrop = DWMSBT_NONE;
+        DwmSetWindowAttribute_Original(
+            hWnd, DWMWA_SYSTEMBACKDROP_TYPE, &noneBackdrop,
+            sizeof(noneBackdrop));
+        return;
+    }
 
     bool entireWindowEffect =
         effect != BackgroundTranslucentEffect::kDefault &&
