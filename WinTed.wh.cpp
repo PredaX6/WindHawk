@@ -738,7 +738,7 @@ using namespace std::string_view_literals;
 #include <winrt/Windows.System.Power.h>
 #include <winrt/Windows.UI.ViewManagement.h>
 
-using namespace winrt::Microsoft::UI::Xaml;
+using namespace winrt::Windows::UI::Xaml;
 
 namespace muxc = winrt::Microsoft::UI::Xaml::Controls;
 namespace wge = winrt::Windows::Graphics::Effects;
