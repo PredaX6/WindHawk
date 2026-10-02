@@ -148,6 +148,7 @@ BackgroundTranslucentEffect g_themeBackgroundTranslucentEffect;
 int g_themeExplorerFrameContainerHeight;
 
 BackgroundTranslucentEffect GetEffectiveNotificationTransparencyEffect();
+void RestartExplorerOnActivationIfNeeded();
 
 std::atomic<bool> g_initialized{false};
 thread_local bool g_initializedForThread;
