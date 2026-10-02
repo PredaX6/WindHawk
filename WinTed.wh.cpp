@@ -10,6 +10,10 @@
 // @compilerOptions -lcomctl32 -ld2d1 -ldwmapi -lgdi32 -lmsimg32 -lole32 -loleaut32 -lruntimeobject -lshlwapi -luxtheme
 // ==/WindhawkMod==
 
+// Mica and MicaAlt use the native DWM system backdrop. Windows does not expose
+// an independent alpha value for these materials, so their native translucency
+// is kept unchanged rather than replacing Mica with another material.
+
 // ==WindhawkModReadme==
 /*
 # WinTed
@@ -17,9 +21,8 @@
 - Thème fixe : **Translucent Explorer 11**
 - Application réelle du thème via le moteur XAML/WinUI de Translucent Windows.
 - Transparence DWM configurable :
-  - Par défaut
+  - Défaut Acrylic (SystemBackdrop)
   - Blur (AccentBlurBehind)
-  - Acrylic (SystemBackdrop)
   - Mica (SystemBackdrop)
   - MicaAlt (SystemBackdrop)
 
@@ -35,9 +38,8 @@ Aucun autre thème ou réglage utilisateur n'est conservé.
   $name: Type de transparence
   $description: Choisissez le rendu de transparence de l'Explorateur.
   $options:
-  - default: Par défaut
+  - default: Défaut Acrylic (SystemBackdrop)
   - blur: Blur (AccentBlurBehind)
-  - acrylic: Acrylic (SystemBackdrop)
   - mica: Mica (SystemBackdrop)
   - micaAlt: MicaAlt (SystemBackdrop)
 
@@ -45,9 +47,8 @@ Aucun autre thème ou réglage utilisateur n'est conservé.
   $name: Type de transparence du Centre de notification
   $description: Choisissez le rendu de transparence du Centre de notification.
   $options:
-  - default: Par défaut
+  - default: Défaut Acrylic (SystemBackdrop)
   - blur: Blur (AccentBlurBehind)
-  - acrylic: Acrylic (SystemBackdrop)
   - mica: Mica (SystemBackdrop)
   - micaAlt: MicaAlt (SystemBackdrop)
 
@@ -10512,6 +10513,7 @@ void LoadSettings() {
         g_settings.backgroundTranslucentEffect =
             BackgroundTranslucentEffect::kBlur;
     } else if (wcscmp(transparencyType, L"acrylic") == 0) {
+        // Backward compatibility with the removed Acrylic option.
         g_settings.backgroundTranslucentEffect =
             BackgroundTranslucentEffect::kAcrylic;
     } else if (wcscmp(transparencyType, L"mica") == 0) {
@@ -10538,6 +10540,7 @@ void LoadSettings() {
         g_settings.notificationTransparencyEffect =
             BackgroundTranslucentEffect::kBlur;
     } else if (wcscmp(notificationTransparencyType, L"acrylic") == 0) {
+        // Backward compatibility with the removed Acrylic option.
         g_settings.notificationTransparencyEffect =
             BackgroundTranslucentEffect::kAcrylic;
     } else if (wcscmp(notificationTransparencyType, L"mica") == 0) {
