@@ -1,18 +1,14 @@
 // ==WindhawkMod==
 // @id              winted
 // @name            WinTed
-// @description     Windows 11 25H2 : Translucent Explorer 11 + transparence du Centre de notification.
-// @version         1.5.6
+// @description     Windows 11 25H2 : Translucent Explorer 11 avec 4 styles de transparence.
+// @version         1.6.0
 // @author          Teddy
 // @github          https://github.com/PredaX6
 // @include         *
 // @architecture    x86-64
 // @compilerOptions -lcomctl32 -ld2d1 -ldwmapi -lgdi32 -lmsimg32 -lole32 -loleaut32 -lruntimeobject -lshlwapi -luxtheme
 // ==/WindhawkMod==
-
-// Mica and MicaAlt use the native DWM system backdrop. Windows does not expose
-// an independent alpha value for these materials, so their native translucency
-// is kept unchanged rather than replacing Mica with another material.
 
 // ==WindhawkModReadme==
 /*
@@ -26,7 +22,8 @@
   - Mica (SystemBackdrop)
   - MicaAlt (SystemBackdrop)
 
-- Centre de notification : même choix de transparence, réglable séparément.
+- Hook du focus conservé pour supprimer la différence visuelle entre fenêtres actives et inactives.
+- Option pour relancer automatiquement Explorer à l'activation du mod et après chaque changement de paramètres.
 
 Aucun autre thème ou réglage utilisateur n'est conservé.
 */
@@ -40,17 +37,6 @@ Aucun autre thème ou réglage utilisateur n'est conservé.
   $options:
   - default: Défaut Acrylic (SystemBackdrop)
   - blur: Blur (AccentBlurBehind)
-  - acrylic: Acrylic (SystemBackdrop)
-  - mica: Mica (SystemBackdrop)
-  - micaAlt: MicaAlt (SystemBackdrop)
-
-- notificationTransparencyType: default
-  $name: Type de transparence du Centre de notification
-  $description: Choisissez le rendu de transparence du Centre de notification.
-  $options:
-  - default: Défaut Acrylic (SystemBackdrop)
-  - blur: Blur (AccentBlurBehind)
-  - acrylic: Acrylic (SystemBackdrop)
   - mica: Mica (SystemBackdrop)
   - micaAlt: MicaAlt (SystemBackdrop)
 
@@ -69,7 +55,6 @@ Aucun autre thème ou réglage utilisateur n'est conservé.
 #undef GetCurrentTime
 
 #include <winrt/Microsoft.UI.Xaml.h>
-
 
 struct ThemeTargetStyles {
     PCWSTR target;
@@ -135,23 +120,18 @@ enum class XamlDiagnosticsHandling {
 struct {
     std::optional<BackgroundTranslucentEffect> backgroundTranslucentEffect =
         BackgroundTranslucentEffect::kBlur;
+    bool restartExplorerOnSettingsChange = false;
     BackgroundTranslucentEffectRegion backgroundTranslucentEffectRegion =
         BackgroundTranslucentEffectRegion::kEntireWindow;
     int explorerFrameContainerHeight = 0;
     XamlDiagnosticsHandling xamlDiagnosticsHandling =
         XamlDiagnosticsHandling::kBlock;
-    std::optional<BackgroundTranslucentEffect> notificationTransparencyEffect =
-        BackgroundTranslucentEffect::kAcrylic;
-    bool restartExplorerOnSettingsChange = false;
 } g_settings;
 
 BackgroundTranslucentEffect g_themeBackgroundTranslucentEffect;
 int g_themeExplorerFrameContainerHeight;
 
-BackgroundTranslucentEffect GetEffectiveNotificationTransparencyEffect();
-void RestartExplorerOnActivationIfNeeded();
-
-std::atomic<bool> g_initialized{false};
+std::atomic<bool> g_initialized;
 thread_local bool g_initializedForThread;
 
 // An InstanceHandle is the address of an interface on the element, so it names
@@ -227,6 +207,7 @@ winrt::weak_ref<wf::IInspectable> TryMakeWeak(wf::IInspectable const& object)
 
 #pragma region visualtreewatcher_hpp
 
+#include <winrt/Microsoft.UI.Xaml.h>
 
 // XamlDiagnostics implements this interface too, and xamlom.h does not declare
 // it. UnregisterInstance closes the runtime object cached for a handle, the
@@ -737,6 +718,7 @@ using namespace std::string_view_literals;
 #include <winrt/Microsoft.UI.Xaml.Markup.h>
 #include <winrt/Microsoft.UI.Xaml.Media.Imaging.h>
 #include <winrt/Microsoft.UI.Xaml.Media.h>
+#include <winrt/Microsoft.UI.Xaml.h>
 #include <winrt/Windows.Foundation.Collections.h>
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Graphics.Effects.h>
@@ -750,7 +732,7 @@ using namespace winrt::Microsoft::UI::Xaml;
 namespace muxc = winrt::Microsoft::UI::Xaml::Controls;
 namespace wge = winrt::Windows::Graphics::Effects;
 namespace muc = winrt::Microsoft::UI::Composition;
-namespace muxh = winrt::Microsoft::UI::Xaml::Hosting;
+namespace muxh = mux::Hosting;
 namespace awge = ABI::Windows::Graphics::Effects;
 
 // https://stackoverflow.com/a/51274008
@@ -3999,7 +3981,8 @@ void SetupImageTracking(DependencyObject const& target,
 
     bool stopped;
 
-    {        std::lock_guard<std::mutex> lock(g_imageRetryMutex);
+    {
+        std::lock_guard<std::mutex> lock(g_imageRetryMutex);
 
         g_networkStatusChangedRegistering = false;
 
@@ -7998,7 +7981,8 @@ bool ProcessResourceVariable(ResourceDictionary resources,
 
 void RefreshThemeResourceEntries() {
     if (g_resourceVariables.empty()) {
-        return;    }
+        return;
+    }
 
     Wh_Log(L"Refreshing theme resource entries");
 
@@ -8124,53 +8108,7 @@ const Theme* GetSelectedTheme() {
     return &g_themeTranslucent_Explorer11;
 }
 
-void ApplyNotificationWindowTransparency(HWND hWnd);
-
-
-void ApplyNotificationTransparencyStyles() {
-    // Use the same XAML styling path as Windows 11 Notification Center Styler.
-    // This is important: the material is applied to the actual XAML surface,
-    // not to the whole flyout window. This avoids the oversized DWM backdrop
-    // that was previously visible behind the notifications.
-    const auto effect = GetEffectiveNotificationTransparencyEffect();
-
-    const PCWSTR targets[] = {
-        L"Grid#NotificationCenterGrid",
-        L"Grid#CalendarCenterGrid",
-        L"Grid#ControlCenterRegion",
-        L"Windows.UI.Xaml.Controls.Grid#L1Grid > Border",
-        L"Windows.UI.Xaml.Controls.Grid#MediaTransportControlsRegion",
-        L"Grid#MediaTransportControlsRoot",
-        L"ContentPresenter#PageContent",
-        L"ContentPresenter#PageContent > Grid > Border",
-        L"QuickActions.ControlCenter.AccessibleWindow#PageWindow > ContentPresenter > Grid#FullScreenPageRoot",
-        L"QuickActions.ControlCenter.AccessibleWindow#PageWindow > ContentPresenter > Grid#FullScreenPageRoot > ContentPresenter#PageHeader",
-        L"ScrollViewer#ListContent",
-        L"ScrollViewer#CalendarControlScrollViewer",
-        L"Border#CalendarHeaderMinimizedOverlay",
-        L"ActionCenter.FocusSessionControl#FocusSessionControl > Grid#FocusGrid",
-    };
-
-    // The material is applied to the flyout window itself. Keep all
-    // XAML surfaces transparent so they don't cover the DWM material.
-    std::wstring background = L"Background=Transparent";
-    const std::vector<std::wstring> styles = {background};
-
-    for (PCWSTR target : targets) {
-        try {
-            AddElementCustomizationRules(target, styles);
-        } catch (winrt::hresult_error const& ex) {
-            Wh_Log(L"Notification transparency target failed %08X: %s",
-                   ex.code(), ex.message().c_str());
-        } catch (std::exception const& ex) {
-            Wh_Log(L"Notification transparency target failed: %S", ex.what());
-        }
-    }
-}
-
 void ProcessAllStylesFromSettings() {
-    ApplyNotificationTransparencyStyles();
-
     const Theme* theme = GetSelectedTheme();
 
     StyleConstants styleConstants = LoadStyleConstants(
@@ -8348,7 +8286,6 @@ enum class TargetWindowType {
     None,
     FileExplorer,
     XamlExplorerHost,
-    NotificationCenter,
 };
 
 TargetWindowType GetTargetWindowType(HWND hWnd) {
@@ -8366,31 +8303,6 @@ TargetWindowType GetTargetWindowType(HWND hWnd) {
         return TargetWindowType::XamlExplorerHost;
     }
 
-    // Windows 11 24H2+: Notification Center / Quick Settings / Calendar.
-    if (_wcsicmp(className, L"ControlCenterWindow") == 0 ||
-        _wcsicmp(className, L"QuickActionsWindow") == 0) {
-        return TargetWindowType::NotificationCenter;
-    }
-
-    // Windows 11 versions where the shell flyouts are hosted by
-    // ShellExperienceHost.exe. CoreWindow is generic, so require a matching
-    // flyout title to avoid touching unrelated shell surfaces.
-    if (_wcsicmp(className, L"Windows.UI.Core.CoreWindow") == 0) {
-        WCHAR title[128];
-        GetWindowTextW(hWnd, title, ARRAYSIZE(title));
-        if (_wcsicmp(title, L"Notification Center") == 0 ||
-            _wcsicmp(title, L"Notification Centre") == 0 ||
-            _wcsicmp(title, L"Action Center") == 0 ||
-            _wcsicmp(title, L"Action Centre") == 0 ||
-            _wcsicmp(title, L"Control Center") == 0 ||
-            _wcsicmp(title, L"Control Centre") == 0 ||
-            _wcsicmp(title, L"Centre de notifications") == 0 ||
-            _wcsicmp(title, L"Centre de notification") == 0 ||
-            _wcsicmp(title, L"Centre de contrôle") == 0) {
-            return TargetWindowType::NotificationCenter;
-        }
-    }
-
     return TargetWindowType::None;
 }
 
@@ -8402,15 +8314,6 @@ BackgroundTranslucentEffect GetEffectiveBackgroundTranslucentEffect() {
     return g_settings.backgroundTranslucentEffect.value_or(
         g_themeBackgroundTranslucentEffect);
 }
-
-BackgroundTranslucentEffect GetEffectiveNotificationTransparencyEffect() {
-    return g_settings.notificationTransparencyEffect.value_or(
-        BackgroundTranslucentEffect::kAcrylic);
-}
-
-// Forward declaration: Blur mode for the Notification Center uses the
-// same AccentBlurBehind mechanism as the Explorer.
-void SetAccentBlurBehind(HWND hWnd, bool enable);
 
 using DwmSetWindowAttribute_t = decltype(&DwmSetWindowAttribute);
 DwmSetWindowAttribute_t DwmSetWindowAttribute_Original;
@@ -8428,45 +8331,7 @@ HRESULT WINAPI DwmSetWindowAttribute_Hook(HWND hWnd,
         return original();
     }
 
-    TargetWindowType windowType = GetTargetWindowType(hWnd);
-    if (windowType == TargetWindowType::NotificationCenter &&
-        dwAttribute == DWMWA_SYSTEMBACKDROP_TYPE) {
-        const auto effect = GetEffectiveNotificationTransparencyEffect();
-        int backdropType = DWMSBT_AUTO;
-
-        switch (effect) {
-            case BackgroundTranslucentEffect::kDefault:
-                backdropType = DWMSBT_AUTO;
-                SetAccentBlurBehind(hWnd, false);
-                break;
-            case BackgroundTranslucentEffect::kBlur:
-                backdropType = DWMSBT_NONE;
-                SetAccentBlurBehind(hWnd, true);
-                break;
-            case BackgroundTranslucentEffect::kAcrylic:
-                backdropType = DWMSBT_TRANSIENTWINDOW;
-                SetAccentBlurBehind(hWnd, false);
-                break;
-            case BackgroundTranslucentEffect::kMica:
-                backdropType = DWMSBT_MAINWINDOW;
-                SetAccentBlurBehind(hWnd, false);
-                break;
-            case BackgroundTranslucentEffect::kMicaAlt:
-                backdropType = DWMSBT_TABBEDWINDOW;
-                SetAccentBlurBehind(hWnd, false);
-                break;
-            case BackgroundTranslucentEffect::kNone:
-                backdropType = DWMSBT_NONE;
-                SetAccentBlurBehind(hWnd, false);
-                break;
-        }
-
-        return DwmSetWindowAttribute_Original(
-            hWnd, DWMWA_SYSTEMBACKDROP_TYPE, &backdropType,
-            sizeof(backdropType));
-    }
-
-    if (windowType != TargetWindowType::FileExplorer) {
+    if (GetTargetWindowType(hWnd) != TargetWindowType::FileExplorer) {
         return original();
     }
 
@@ -8477,17 +8342,9 @@ HRESULT WINAPI DwmSetWindowAttribute_Hook(HWND hWnd,
     switch (backgroundTranslucentEffect) {
         case BackgroundTranslucentEffect::kDefault:
             return original();
-        case BackgroundTranslucentEffect::kBlur: {
-            // Do not let ShellExperienceHost replace AccentBlurBehind with
-            // DWMSBT_AUTO. That would make the Blur option indistinguishable
-            // from the Windows default material.
-            backdropType = DWMSBT_NONE;
-            HRESULT hr = DwmSetWindowAttribute_Original(
-                hWnd, DWMWA_SYSTEMBACKDROP_TYPE, &backdropType,
-                sizeof(backdropType));
-            SetAccentBlurBehind(hWnd, true);
-            return hr;
-        }
+        case BackgroundTranslucentEffect::kBlur:
+            backdropType = DWMSBT_AUTO;
+            break;
         case BackgroundTranslucentEffect::kAcrylic:
             backdropType = DWMSBT_TRANSIENTWINDOW;
             break;
@@ -8504,7 +8361,6 @@ HRESULT WINAPI DwmSetWindowAttribute_Hook(HWND hWnd,
 
     Wh_Log(L">");
 
-    SetAccentBlurBehind(hWnd, false);
     return DwmSetWindowAttribute_Original(hWnd, DWMWA_SYSTEMBACKDROP_TYPE,
                                           &backdropType, sizeof(backdropType));
 }
@@ -8517,12 +8373,7 @@ HRESULT WINAPI DwmExtendFrameIntoClientArea_Hook(HWND hWnd,
         return DwmExtendFrameIntoClientArea_Original(hWnd, pMarInset);
     };
 
-    TargetWindowType windowType = GetTargetWindowType(hWnd);
-    if (windowType == TargetWindowType::NotificationCenter) {
-        return original();
-    }
-
-    if (windowType != TargetWindowType::FileExplorer) {
+    if (GetTargetWindowType(hWnd) != TargetWindowType::FileExplorer) {
         return original();
     }
 
@@ -9730,75 +9581,14 @@ void SetAccentBlurBehind(HWND hWnd, bool enable) {
     pSetWindowCompositionAttribute(hWnd, &data);
 }
 
-void ApplyNotificationWindowTransparency(HWND hWnd) {
-    if (!hWnd ||
-        GetTargetWindowType(hWnd) != TargetWindowType::NotificationCenter) {
-        return;
-    }
-
-    const auto effect = GetEffectiveNotificationTransparencyEffect();
-    int backdropType = DWMSBT_AUTO;
-
-    switch (effect) {
-        case BackgroundTranslucentEffect::kDefault:
-            backdropType = DWMSBT_AUTO;
-            SetAccentBlurBehind(hWnd, false);
-            break;
-        case BackgroundTranslucentEffect::kBlur:
-            backdropType = DWMSBT_NONE;
-            SetAccentBlurBehind(hWnd, true);
-            break;
-        case BackgroundTranslucentEffect::kAcrylic:
-            backdropType = DWMSBT_TRANSIENTWINDOW;
-            SetAccentBlurBehind(hWnd, false);
-            break;
-        case BackgroundTranslucentEffect::kMica:
-            backdropType = DWMSBT_MAINWINDOW;
-            SetAccentBlurBehind(hWnd, false);
-            break;
-        case BackgroundTranslucentEffect::kMicaAlt:
-            backdropType = DWMSBT_TABBEDWINDOW;
-            SetAccentBlurBehind(hWnd, false);
-            break;
-        case BackgroundTranslucentEffect::kNone:
-            backdropType = DWMSBT_NONE;
-            SetAccentBlurBehind(hWnd, false);
-            break;
-    }
-
-    Wh_Log(L"Applying Notification Center window material %d to %08X",
-           static_cast<int>(effect), (DWORD)(ULONG_PTR)hWnd);
-
-    DwmSetWindowAttribute_Original(
-        hWnd, DWMWA_SYSTEMBACKDROP_TYPE, &backdropType, sizeof(backdropType));
-}
-
 void ApplyBackgroundTranslucentEffect(
     HWND hWnd,
     std::optional<BackgroundTranslucentEffect> effectToApply = std::nullopt) {
     constexpr WCHAR kBackgroundTranslucentEffectAppliedKey[] =
         L"windhawk_background_effect-" WH_MOD_ID;
 
-    const TargetWindowType windowType = GetTargetWindowType(hWnd);
-
-    auto effect = effectToApply.value_or(
-        windowType == TargetWindowType::NotificationCenter
-            ? GetEffectiveNotificationTransparencyEffect()
-            : GetEffectiveBackgroundTranslucentEffect());
-
-    // Notification Center uses the Styler's XAML material for Default/Blur/
-    // Acrylic. Only Mica/MicaAlt need a native window backdrop here.
-    if (windowType == TargetWindowType::NotificationCenter &&
-        effect != BackgroundTranslucentEffect::kDefault &&
-        effect != BackgroundTranslucentEffect::kMica &&
-        effect != BackgroundTranslucentEffect::kMicaAlt) {
-        SetAccentBlurBehind(hWnd, false);
-        int noneBackdrop = DWMSBT_NONE;
-        DwmSetWindowAttribute_Original(
-            hWnd, DWMWA_SYSTEMBACKDROP_TYPE, &noneBackdrop,
-            sizeof(noneBackdrop));
-        return;
-    }
+    auto effect =
+        effectToApply.value_or(GetEffectiveBackgroundTranslucentEffect());
 
     bool entireWindowEffect =
         effect != BackgroundTranslucentEffect::kDefault &&
@@ -9879,102 +9669,19 @@ void TriggerWindowCompositionUpdate(HWND hWnd) {
                  RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
 }
 
-// ControlCenterWindow is created before its XAML visual tree is fully
-// initialized. Delay the XAML initialization until the window's UI thread
-// has returned to its message loop.
-using RunFromWindowThreadProc_t = void(WINAPI*)(PVOID parameter);
-
-bool RunFromWindowThreadViaPostMessage(HWND hWnd,
-                                       RunFromWindowThreadProc_t proc,
-                                       PVOID procParam) {
-    static const UINT registeredMsg =
-        RegisterWindowMessage(L"Windhawk_RunFromWindowThreadViaPostMessage_" WH_MOD_ID);
-
-    struct Param {
-        RunFromWindowThreadProc_t proc;
-        PVOID procParam;
-        HHOOK hook;
-    };
-
-    DWORD threadId = GetWindowThreadProcessId(hWnd, nullptr);
-    if (!threadId) {
-        return false;
-    }
-
-    HHOOK hook = SetWindowsHookEx(
-        WH_GETMESSAGE,
-        [](int nCode, WPARAM wParam, LPARAM lParam) -> LRESULT {
-            if (nCode == HC_ACTION && wParam == PM_REMOVE) {
-                MSG* msg = reinterpret_cast<MSG*>(lParam);
-                if (msg->message == registeredMsg) {
-                    auto* param = reinterpret_cast<Param*>(msg->lParam);
-                    if (param) {
-                        param->proc(param->procParam);
-                        UnhookWindowsHookEx(param->hook);
-                        delete param;
-                        msg->lParam = 0;
-                    }
-                }
-            }
-            return CallNextHookEx(nullptr, nCode, wParam, lParam);
-        },
-        nullptr, threadId);
-
-    if (!hook) {
-        return false;
-    }
-
-    auto* param = new (std::nothrow) Param{proc, procParam, hook};
-    if (!param) {
-        UnhookWindowsHookEx(hook);
-        return false;
-    }
-
-    if (!PostMessage(hWnd, registeredMsg, 0, reinterpret_cast<LPARAM>(param))) {
-        UnhookWindowsHookEx(hook);
-        delete param;
-        return false;
-    }
-
-    return true;
-}
-
 void OnWindowCreated(HWND hWnd, PCSTR funcName) {
     TargetWindowType windowType = GetTargetWindowType(hWnd);
-    if (windowType == TargetWindowType::None) {
-        return;
-    }
+    if (windowType != TargetWindowType::None) {
+        Wh_Log(L"Initializing - Created window %08X via %S",
+               (DWORD)(ULONG_PTR)hWnd, funcName);
 
-    Wh_Log(L"Initializing - Created window %08X via %S",
-           (DWORD)(ULONG_PTR)hWnd, funcName);
-
-    if (windowType == TargetWindowType::NotificationCenter) {
-        if (!RunFromWindowThreadViaPostMessage(
-                hWnd,
-                [](PVOID param) WINAPI {
-                    HWND notificationWnd = (HWND)param;
-
-                    Wh_Log(L"Delayed Notification Center initialization for %08X",
-                           (DWORD)(ULONG_PTR)notificationWnd);
-
-                    InitializeForCurrentThread();
-                    InitializeSettingsAndTap();
-
-                    ApplyNotificationWindowTransparency(notificationWnd);
-                    TriggerWindowCompositionUpdate(notificationWnd);
-                },
-                (PVOID)hWnd)) {
-            Wh_Log(L"Failed to schedule delayed Notification Center initialization");
+        if (windowType == TargetWindowType::FileExplorer) {
+            ApplyBackgroundTranslucentEffect(hWnd);
         }
-        return;
-    }
 
-    if (windowType == TargetWindowType::FileExplorer) {
-        ApplyBackgroundTranslucentEffect(hWnd);
+        InitializeForCurrentThread();
+        InitializeSettingsAndTap();
     }
-
-    InitializeForCurrentThread();
-    InitializeSettingsAndTap();
 }
 
 using CreateWindowExW_t = decltype(&CreateWindowExW);
@@ -10202,6 +9909,8 @@ HMODULE WINAPI LoadLibraryExW_Hook(LPCWSTR lpLibFileName,
 
     return module;
 }
+
+using RunFromWindowThreadProc_t = void(WINAPI*)(PVOID parameter);
 
 bool RunFromWindowThread(HWND hWnd,
                          RunFromWindowThreadProc_t proc,
@@ -10464,13 +10173,9 @@ void StopStatsTimer() {
 bool IsWinTedShellProcess() {
     WCHAR path[MAX_PATH];
     DWORD length = GetModuleFileNameW(nullptr, path, ARRAYSIZE(path));
-    if (length == 0 || length >= ARRAYSIZE(path)) {
-        return false;
-    }
-
+    if (length == 0 || length >= ARRAYSIZE(path)) return false;
     PCWSTR fileName = wcsrchr(path, L'\\');
     fileName = fileName ? fileName + 1 : path;
-
     return _wcsicmp(fileName, L"explorer.exe") == 0 ||
            _wcsicmp(fileName, L"ShellExperienceHost.exe") == 0 ||
            _wcsicmp(fileName, L"ShellHost.exe") == 0;
@@ -10479,33 +10184,49 @@ bool IsWinTedShellProcess() {
 using DefWindowProcW_t = decltype(&DefWindowProcW);
 DefWindowProcW_t DefWindowProcW_Original;
 
-LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd,
-                                   UINT uMsg,
-                                   WPARAM wParam,
-                                   LPARAM lParam) {
-    // WM_NCACTIVATE is the standard Win32/DWM notification used to repaint
-    // the non-client area when a window becomes inactive. Returning TRUE for
-    // deactivation prevents DefWindowProc from switching the title bar and
-    // border to their inactive appearance, while the window remains fully
-    // focusable and functional.
-    //
-    // Minimized windows are left to the system as recommended by the Win32
-    // documentation.
-    if (uMsg == WM_NCACTIVATE && !wParam && !IsIconic(hWnd)) {
-        return TRUE;
-    }
-
+LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+    if (uMsg == WM_NCACTIVATE && !wParam && !IsIconic(hWnd)) return TRUE;
     return DefWindowProcW_Original(hWnd, uMsg, wParam, lParam);
 }
 
+bool IsCurrentProcessExplorer() {
+    WCHAR path[MAX_PATH];
+    DWORD length = GetModuleFileNameW(nullptr, path, ARRAYSIZE(path));
+    if (length == 0 || length >= ARRAYSIZE(path)) return false;
+    PCWSTR fileName = wcsrchr(path, L'\\');
+    fileName = fileName ? fileName + 1 : path;
+    return _wcsicmp(fileName, L"explorer.exe") == 0;
+}
+
+bool RestartExplorerAfterSettingsChange() {
+    std::wstring command =
+        LR"(cmd.exe /c "timeout /t 1 /nobreak >nul & taskkill /f /im explorer.exe >nul 2>&1 & start "" explorer.exe")";
+    STARTUPINFOW si = {};
+    si.cb = sizeof(si);
+    PROCESS_INFORMATION pi = {};
+    if (!CreateProcessW(nullptr, command.data(), nullptr, nullptr, FALSE,
+                        CREATE_NO_WINDOW, nullptr, nullptr, &si, &pi)) return false;
+    CloseHandle(pi.hThread);
+    CloseHandle(pi.hProcess);
+    return true;
+}
+
+void RestartExplorerOnActivationIfNeeded() {
+    if (!g_settings.restartExplorerOnSettingsChange || !IsCurrentProcessExplorer()) return;
+    if (Wh_GetIntValue(L"restartExplorerActivationPending", 0) != 0) {
+        Wh_SetIntValue(L"restartExplorerActivationPending", 0);
+        return;
+    }
+    Wh_SetIntValue(L"restartExplorerActivationPending", 1);
+    if (!RestartExplorerAfterSettingsChange())
+        Wh_SetIntValue(L"restartExplorerActivationPending", 0);
+}
 
 void LoadSettings() {
     g_settings.restartExplorerOnSettingsChange =
         Wh_GetIntSetting(L"restartExplorerOnSettingsChange") != 0;
 
     PCWSTR transparencyType = Wh_GetStringSetting(L"transparencyType");
-    PCWSTR notificationTransparencyType =
-        Wh_GetStringSetting(L"notificationTransparencyType");
 
     if (!transparencyType || !*transparencyType ||
         wcscmp(transparencyType, L"default") == 0) {
@@ -10515,7 +10236,6 @@ void LoadSettings() {
         g_settings.backgroundTranslucentEffect =
             BackgroundTranslucentEffect::kBlur;
     } else if (wcscmp(transparencyType, L"acrylic") == 0) {
-        // Backward compatibility with the removed Acrylic option.
         g_settings.backgroundTranslucentEffect =
             BackgroundTranslucentEffect::kAcrylic;
     } else if (wcscmp(transparencyType, L"mica") == 0) {
@@ -10531,33 +10251,6 @@ void LoadSettings() {
 
     if (transparencyType) {
         Wh_FreeStringSetting(transparencyType);
-    }
-
-    if (!notificationTransparencyType ||
-        !*notificationTransparencyType ||
-        wcscmp(notificationTransparencyType, L"default") == 0) {
-        g_settings.notificationTransparencyEffect =
-            BackgroundTranslucentEffect::kAcrylic;
-    } else if (wcscmp(notificationTransparencyType, L"blur") == 0) {
-        g_settings.notificationTransparencyEffect =
-            BackgroundTranslucentEffect::kBlur;
-    } else if (wcscmp(notificationTransparencyType, L"acrylic") == 0) {
-        // Backward compatibility with the removed Acrylic option.
-        g_settings.notificationTransparencyEffect =
-            BackgroundTranslucentEffect::kAcrylic;
-    } else if (wcscmp(notificationTransparencyType, L"mica") == 0) {
-        g_settings.notificationTransparencyEffect =
-            BackgroundTranslucentEffect::kMica;
-    } else if (wcscmp(notificationTransparencyType, L"micaAlt") == 0) {
-        g_settings.notificationTransparencyEffect =
-            BackgroundTranslucentEffect::kMicaAlt;
-    } else {
-        g_settings.notificationTransparencyEffect =
-            BackgroundTranslucentEffect::kAcrylic;
-    }
-
-    if (notificationTransparencyType) {
-        Wh_FreeStringSetting(notificationTransparencyType);
     }
 
     g_settings.backgroundTranslucentEffectRegion =
@@ -10578,15 +10271,10 @@ void LoadThemeSettings() {
 BOOL Wh_ModInit() {
     Wh_Log(L">");
 
-    // The focus-neutral title-bar behavior is intentionally applied to every
-    // process targeted by the mod. Explorer/Shell processes continue through
-    // the normal WinTed initialization below.
     WindhawkUtils::SetFunctionHook(DefWindowProcW, DefWindowProcW_Hook,
                                    &DefWindowProcW_Original);
 
-    if (!IsWinTedShellProcess()) {
-        return TRUE;
-    }
+    if (!IsWinTedShellProcess()) return TRUE;
 
     LoadSettings();
     LoadThemeSettings();
@@ -10694,12 +10382,8 @@ void Wh_ModAfterInit() {
                 InitializeForCurrentThread();
 
                 if (GetTargetWindowType(hTargetWnd) ==
-                        TargetWindowType::FileExplorer) {
+                    TargetWindowType::FileExplorer) {
                     ApplyBackgroundTranslucentEffect(hTargetWnd);
-                    TriggerWindowCompositionUpdate(hTargetWnd);
-                } else if (GetTargetWindowType(hTargetWnd) ==
-                           TargetWindowType::NotificationCenter) {
-                    ApplyNotificationWindowTransparency(hTargetWnd);
                     TriggerWindowCompositionUpdate(hTargetWnd);
                 }
             },
@@ -10711,9 +10395,6 @@ void Wh_ModAfterInit() {
         InitializeSettingsAndTap();
     }
 
-    // Also restart Explorer when the mod is activated/loaded, when requested.
-    // The one-shot marker prevents the freshly restarted Explorer from
-    // immediately restarting itself again.
     RestartExplorerOnActivationIfNeeded();
 }
 
@@ -10739,9 +10420,7 @@ void Wh_ModUninit() {
                 UninitializeForCurrentThread();
 
                 if (GetTargetWindowType(hTargetWnd) ==
-                        TargetWindowType::FileExplorer ||
-                    GetTargetWindowType(hTargetWnd) ==
-                        TargetWindowType::NotificationCenter) {
+                    TargetWindowType::FileExplorer) {
                     ApplyBackgroundTranslucentEffect(
                         hTargetWnd, BackgroundTranslucentEffect::kDefault);
                     TriggerWindowCompositionUpdate(hTargetWnd);
@@ -10751,62 +10430,6 @@ void Wh_ModUninit() {
     }
 
     ClearThemePartCache();
-}
-
-bool IsCurrentProcessExplorer() {
-    WCHAR path[MAX_PATH];
-    DWORD length = GetModuleFileNameW(nullptr, path, ARRAYSIZE(path));
-    if (length == 0 || length >= ARRAYSIZE(path)) {
-        return false;
-    }
-
-    PCWSTR fileName = wcsrchr(path, L'\\');
-    fileName = fileName ? fileName + 1 : path;
-    return _wcsicmp(fileName, L"explorer.exe") == 0;
-}
-
-bool RestartExplorerAfterSettingsChange() {
-    // Run the restart from a separate process so Explorer can safely terminate
-    // itself without killing the code responsible for launching the new shell.
-    std::wstring command =
-        LR"(cmd.exe /c "timeout /t 1 /nobreak >nul & taskkill /f /im explorer.exe >nul 2>&1 & start "" explorer.exe")";
-
-    STARTUPINFOW si = {};
-    si.cb = sizeof(si);
-    PROCESS_INFORMATION pi = {};
-
-    if (!CreateProcessW(
-            nullptr, command.data(), nullptr, nullptr, FALSE,
-            CREATE_NO_WINDOW, nullptr, nullptr, &si, &pi)) {
-        return false;
-    }
-
-    CloseHandle(pi.hThread);
-    CloseHandle(pi.hProcess);
-    return true;
-}
-
-void RestartExplorerOnActivationIfNeeded() {
-    if (!g_settings.restartExplorerOnSettingsChange ||
-        !IsCurrentProcessExplorer()) {
-        return;
-    }
-
-    // Wh_ModAfterInit is called again in the newly started Explorer process.
-    // Use a persistent one-shot marker so enabling this option doesn't create
-    // an infinite Explorer restart loop.
-    if (Wh_GetIntValue(L"restartExplorerActivationPending", 0) != 0) {
-        Wh_SetIntValue(L"restartExplorerActivationPending", 0);
-        Wh_Log(L"Explorer restart marker consumed");
-        return;
-    }
-
-    Wh_Log(L"Restarting Explorer because the restart-on-change option is enabled");
-    Wh_SetIntValue(L"restartExplorerActivationPending", 1);
-    if (!RestartExplorerAfterSettingsChange()) {
-        Wh_SetIntValue(L"restartExplorerActivationPending", 0);
-        Wh_Log(L"Failed to restart Explorer");
-    }
 }
 
 void Wh_ModSettingsChanged() {
@@ -10829,9 +10452,7 @@ void Wh_ModSettingsChanged() {
                 InitializeForCurrentThread();
 
                 if (GetTargetWindowType(hTargetWnd) ==
-                        TargetWindowType::FileExplorer ||
-                    GetTargetWindowType(hTargetWnd) ==
-                        TargetWindowType::NotificationCenter) {
+                    TargetWindowType::FileExplorer) {
                     ApplyBackgroundTranslucentEffect(hTargetWnd);
                     TriggerWindowCompositionUpdate(hTargetWnd);
                 }
@@ -10846,11 +10467,8 @@ void Wh_ModSettingsChanged() {
 
     if (g_settings.restartExplorerOnSettingsChange &&
         IsCurrentProcessExplorer()) {
-        Wh_Log(L"Restarting Explorer because the setting is enabled");
         Wh_SetIntValue(L"restartExplorerActivationPending", 1);
-        if (!RestartExplorerAfterSettingsChange()) {
+        if (!RestartExplorerAfterSettingsChange())
             Wh_SetIntValue(L"restartExplorerActivationPending", 0);
-            Wh_Log(L"Failed to restart Explorer");
-        }
     }
 }
