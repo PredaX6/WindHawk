@@ -2,7 +2,7 @@
 // @id              winted
 // @name            WinTed
 // @description     Windows 11 25H2 : Translucent Explorer 11 + transparence du Centre de notification.
-// @version         1.5.5
+// @version         1.5.6
 // @author          Teddy
 // @github          https://github.com/PredaX6
 // @include         explorer.exe
@@ -52,6 +52,10 @@ Aucun autre thème ou réglage utilisateur n'est conservé.
   - acrylic: Acrylic (SystemBackdrop)
   - mica: Mica (SystemBackdrop)
   - micaAlt: MicaAlt (SystemBackdrop)
+
+- restartExplorerOnSettingsChange: false
+  $name: Relancer l'Explorateur Windows à chaque changement
+  $description: Relance automatiquement l'Explorateur Windows après chaque changement et sauvegarde des paramètres du mod.
 */
 // ==/WindhawkModSettings==
 
@@ -137,6 +141,7 @@ struct {
         XamlDiagnosticsHandling::kBlock;
     std::optional<BackgroundTranslucentEffect> notificationTransparencyEffect =
         BackgroundTranslucentEffect::kAcrylic;
+    bool restartExplorerOnSettingsChange = false;
 } g_settings;
 
 BackgroundTranslucentEffect g_themeBackgroundTranslucentEffect;
@@ -10275,6 +10280,9 @@ void StopStatsTimer() {
 }
 
 void LoadSettings() {
+    g_settings.restartExplorerOnSettingsChange =
+        Wh_GetIntSetting(L"restartExplorerOnSettingsChange") != 0;
+
     PCWSTR transparencyType = Wh_GetStringSetting(L"transparencyType");
     PCWSTR notificationTransparencyType =
         Wh_GetStringSetting(L"notificationTransparencyType");
@@ -10506,6 +10514,44 @@ void Wh_ModUninit() {
     ClearThemePartCache();
 }
 
+bool IsCurrentProcessExplorer() {
+    WCHAR path[MAX_PATH];
+    DWORD length = GetModuleFileNameW(nullptr, path, ARRAYSIZE(path));
+    if (length == 0 || length >= ARRAYSIZE(path)) {
+        return false;
+    }
+
+    PCWSTR fileName = wcsrchr(path, L'\\');
+    fileName = fileName ? fileName + 1 : path;
+    return _wcsicmp(fileName, L"explorer.exe") == 0;
+}
+
+void RestartExplorerAfterSettingsChange() {
+    // Run the restart from a separate process so Explorer can safely terminate
+    // itself without killing the code responsible for launching the new shell.
+    WCHAR systemDir[MAX_PATH];
+    UINT length = GetSystemDirectoryW(systemDir, ARRAYSIZE(systemDir));
+    if (length == 0 || length >= ARRAYSIZE(systemDir)) {
+        return;
+    }
+
+    std::wstring command =
+        L"cmd.exe /c "timeout /t 1 /nobreak >nul & "
+        L"taskkill /f /im explorer.exe >nul 2>&1 & "
+        L"start \\\"\\\" explorer.exe"";
+
+    STARTUPINFOW si = {};
+    si.cb = sizeof(si);
+    PROCESS_INFORMATION pi = {};
+
+    if (CreateProcessW(
+            nullptr, command.data(), nullptr, nullptr, FALSE,
+            CREATE_NO_WINDOW, nullptr, nullptr, &si, &pi)) {
+        CloseHandle(pi.hThread);
+        CloseHandle(pi.hProcess);
+    }
+}
+
 void Wh_ModSettingsChanged() {
     Wh_Log(L">");
 
@@ -10539,5 +10585,11 @@ void Wh_ModSettingsChanged() {
     if (hTargetWnds.size() > 0) {
         Wh_Log(L"Reinitializing - Found target windows");
         InitializeSettingsAndTap();
+    }
+
+    if (g_settings.restartExplorerOnSettingsChange &&
+        IsCurrentProcessExplorer()) {
+        Wh_Log(L"Restarting Explorer because the setting is enabled");
+        RestartExplorerAfterSettingsChange();
     }
 }
