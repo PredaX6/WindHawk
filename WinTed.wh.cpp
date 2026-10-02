@@ -9640,6 +9640,11 @@ void ApplyBackgroundTranslucentEffect(
     // implemented by AccentBlurBehind, while the other modes use the native
     // Windows 11 SystemBackdrop materials.
     if (effect == BackgroundTranslucentEffect::kBlur) {
+        BOOL disableDwmTransitions = TRUE;
+        DwmSetWindowAttribute_Original(
+            hWnd, DWMWA_TRANSITIONS_FORCEDISABLED,
+            &disableDwmTransitions, sizeof(disableDwmTransitions));
+
         int noneBackdrop = DWMSBT_NONE;
         DwmSetWindowAttribute_Original(
             hWnd, DWMWA_SYSTEMBACKDROP_TYPE, &noneBackdrop,
@@ -9647,6 +9652,11 @@ void ApplyBackgroundTranslucentEffect(
 
         SetAccentBlurBehind(hWnd, true);
     } else {
+        BOOL disableDwmTransitions = FALSE;
+        DwmSetWindowAttribute_Original(
+            hWnd, DWMWA_TRANSITIONS_FORCEDISABLED,
+            &disableDwmTransitions, sizeof(disableDwmTransitions));
+
         SetAccentBlurBehind(hWnd, false);
 
         DwmSetWindowAttribute_Original(
