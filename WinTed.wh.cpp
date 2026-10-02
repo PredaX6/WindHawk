@@ -7972,7 +7972,7 @@ bool ProcessResourceVariable(ResourceDictionary resources,
             }
 
             value = Markup::XamlBindingHelper::ConvertValue(
-                winrt::Microsoft::UI::Xaml::Interop::TypeName{resourceClassName},
+                winrt::Windows::UI::Xaml::Interop::TypeName{resourceClassName},
                 winrt::box_value(entry.value));
             break;
         }
