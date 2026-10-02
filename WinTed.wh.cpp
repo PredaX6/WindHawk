@@ -9589,15 +9589,9 @@ void SetAccentBlurBehind(HWND hWnd, bool enable) {
 
     pSetWindowCompositionAttribute(hWnd, &data);
 
-    // Enable the blur region only after the Accent policy is installed.
-    HRGN hRgn = CreateRectRgn(0, 0, -1, -1);
-    DWM_BLURBEHIND blurBehind = {
-        .dwFlags = DWM_BB_ENABLE | DWM_BB_BLURREGION,
-        .fEnable = TRUE,
-        .hRgnBlur = hRgn,
-    };
-    DwmEnableBlurBehindWindow(hWnd, &blurBehind);
-    DeleteObject(hRgn);
+    // Do not call DwmEnableBlurBehindWindow here. Its DWM state change
+    // causes the visible transparent frame during open/close/restore.
+    // AccentBlurBehind itself provides the blur effect.
 }
 
 void ApplyBackgroundTranslucentEffect(
