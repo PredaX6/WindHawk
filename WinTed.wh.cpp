@@ -8123,48 +8123,8 @@ const Theme* GetSelectedTheme() {
     return &g_themeTranslucent_Explorer11;
 }
 
-void ApplyNotificationWindowTransparency(HWND hWnd) {
-    if (!hWnd ||
-        GetTargetWindowType(hWnd) != TargetWindowType::NotificationCenter) {
-        return;
-    }
+void ApplyNotificationWindowTransparency(HWND hWnd);
 
-    const auto effect = GetEffectiveNotificationTransparencyEffect();
-    int backdropType = DWMSBT_AUTO;
-
-    switch (effect) {
-        case BackgroundTranslucentEffect::kDefault:
-            backdropType = DWMSBT_AUTO;
-            SetAccentBlurBehind(hWnd, false);
-            break;
-        case BackgroundTranslucentEffect::kBlur:
-            backdropType = DWMSBT_NONE;
-            SetAccentBlurBehind(hWnd, true);
-            break;
-        case BackgroundTranslucentEffect::kAcrylic:
-            backdropType = DWMSBT_TRANSIENTWINDOW;
-            SetAccentBlurBehind(hWnd, false);
-            break;
-        case BackgroundTranslucentEffect::kMica:
-            backdropType = DWMSBT_MAINWINDOW;
-            SetAccentBlurBehind(hWnd, false);
-            break;
-        case BackgroundTranslucentEffect::kMicaAlt:
-            backdropType = DWMSBT_TABBEDWINDOW;
-            SetAccentBlurBehind(hWnd, false);
-            break;
-        case BackgroundTranslucentEffect::kNone:
-            backdropType = DWMSBT_NONE;
-            SetAccentBlurBehind(hWnd, false);
-            break;
-    }
-
-    Wh_Log(L"Applying Notification Center window material %d to %08X",
-           static_cast<int>(effect), (DWORD)(ULONG_PTR)hWnd);
-
-    DwmSetWindowAttribute_Original(
-        hWnd, DWMWA_SYSTEMBACKDROP_TYPE, &backdropType, sizeof(backdropType));
-}
 
 void ApplyNotificationTransparencyStyles() {
     // Use the same XAML styling path as Windows 11 Notification Center Styler.
@@ -9767,6 +9727,49 @@ void SetAccentBlurBehind(HWND hWnd, bool enable) {
     };
 
     pSetWindowCompositionAttribute(hWnd, &data);
+}
+
+void ApplyNotificationWindowTransparency(HWND hWnd) {
+    if (!hWnd ||
+        GetTargetWindowType(hWnd) != TargetWindowType::NotificationCenter) {
+        return;
+    }
+
+    const auto effect = GetEffectiveNotificationTransparencyEffect();
+    int backdropType = DWMSBT_AUTO;
+
+    switch (effect) {
+        case BackgroundTranslucentEffect::kDefault:
+            backdropType = DWMSBT_AUTO;
+            SetAccentBlurBehind(hWnd, false);
+            break;
+        case BackgroundTranslucentEffect::kBlur:
+            backdropType = DWMSBT_NONE;
+            SetAccentBlurBehind(hWnd, true);
+            break;
+        case BackgroundTranslucentEffect::kAcrylic:
+            backdropType = DWMSBT_TRANSIENTWINDOW;
+            SetAccentBlurBehind(hWnd, false);
+            break;
+        case BackgroundTranslucentEffect::kMica:
+            backdropType = DWMSBT_MAINWINDOW;
+            SetAccentBlurBehind(hWnd, false);
+            break;
+        case BackgroundTranslucentEffect::kMicaAlt:
+            backdropType = DWMSBT_TABBEDWINDOW;
+            SetAccentBlurBehind(hWnd, false);
+            break;
+        case BackgroundTranslucentEffect::kNone:
+            backdropType = DWMSBT_NONE;
+            SetAccentBlurBehind(hWnd, false);
+            break;
+    }
+
+    Wh_Log(L"Applying Notification Center window material %d to %08X",
+           static_cast<int>(effect), (DWORD)(ULONG_PTR)hWnd);
+
+    DwmSetWindowAttribute_Original(
+        hWnd, DWMWA_SYSTEMBACKDROP_TYPE, &backdropType, sizeof(backdropType));
 }
 
 void ApplyBackgroundTranslucentEffect(
