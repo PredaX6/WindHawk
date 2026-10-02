@@ -9833,6 +9833,8 @@ void TriggerWindowCompositionUpdate(HWND hWnd) {
 // ControlCenterWindow is created before its XAML visual tree is fully
 // initialized. Delay the XAML initialization until the window's UI thread
 // has returned to its message loop.
+using RunFromWindowThreadProc_t = void(WINAPI*)(PVOID parameter);
+
 bool RunFromWindowThreadDelayed(HWND hWnd,
                                 RunFromWindowThreadProc_t proc,
                                 PVOID procParam);
@@ -10100,8 +10102,6 @@ HMODULE WINAPI LoadLibraryExW_Hook(LPCWSTR lpLibFileName,
 
     return module;
 }
-
-using RunFromWindowThreadProc_t = void(WINAPI*)(PVOID parameter);
 
 bool RunFromWindowThreadDelayed(HWND hWnd,
                                 RunFromWindowThreadProc_t proc,
