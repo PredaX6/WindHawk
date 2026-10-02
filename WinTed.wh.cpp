@@ -9518,6 +9518,28 @@ HRESULT WINAPI DrawThemeBackgroundEx_Hook(HTHEME hTheme,
 
 // Based on the Translucent Windows mod.
 void SetAccentBlurBehind(HWND hWnd, bool enable) {
+    // Without blur behind, the extended frame is drawn over the accent blur.
+    HRGN hRgn = enable ? CreateRectRgn(0, 0, -1, -1) : nullptr;
+    DWM_BLURBEHIND blurBehind = {
+        .dwFlags = DWM_BB_ENABLE | (enable ? DWM_BB_BLURREGION : 0u),
+        .fEnable = enable,
+        .hRgnBlur = hRgn,
+    };
+    DwmEnableBlurBehindWindow(hWnd, &blurBehind);
+    if (hRgn) {
+        DeleteObject(hRgn);
+    }
+
+    if (!enable) {
+        // Restore the accent policy set by WinUI when the window is created
+        // (ACCENT_ENABLE_HOSTBACKDROP).
+        BOOL useHostBackdropBrush = TRUE;
+        DwmSetWindowAttribute_Original(hWnd, DWMWA_USE_HOSTBACKDROPBRUSH,
+                                       &useHostBackdropBrush,
+                                       sizeof(useHostBackdropBrush));
+        return;
+    }
+
     constexpr int ACCENT_ENABLE_ACRYLICBLURBEHIND = 4;
 
     struct ACCENT_POLICY {
@@ -9540,41 +9562,10 @@ void SetAccentBlurBehind(HWND hWnd, bool enable) {
     static auto pSetWindowCompositionAttribute =
         (SetWindowCompositionAttribute_t)GetProcAddress(
             GetModuleHandle(L"user32.dll"), "SetWindowCompositionAttribute");
-
-    if (!enable) {
-        // Restore the accent policy set by WinUI when the window is created
-        // (ACCENT_ENABLE_HOSTBACKDROP).
-        BOOL useHostBackdropBrush = TRUE;
-        DwmSetWindowAttribute_Original(hWnd, DWMWA_USE_HOSTBACKDROPBRUSH,
-                                       &useHostBackdropBrush,
-                                       sizeof(useHostBackdropBrush));
-        if (pSetWindowCompositionAttribute) {
-            ACCENT_POLICY accentPolicy = {};
-            accentPolicy.AccentState = 0;
-            WINDOWCOMPOSITIONATTRIBDATA data = {
-                .Attrib = WCA_ACCENT_POLICY,
-                .pvData = &accentPolicy,
-                .cbData = sizeof(accentPolicy),
-            };
-            pSetWindowCompositionAttribute(hWnd, &data);
-        }
-
-        HRGN hRgn = nullptr;
-        DWM_BLURBEHIND blurBehind = {
-            .dwFlags = DWM_BB_ENABLE,
-            .fEnable = FALSE,
-            .hRgnBlur = hRgn,
-        };
-        DwmEnableBlurBehindWindow(hWnd, &blurBehind);
-        return;
-    }
-
     if (!pSetWindowCompositionAttribute) {
         return;
     }
 
-    // Set the Accent blur first, so the window does not pass through a
-    // transparent intermediate DWM state while the blur is being enabled.
     ACCENT_POLICY accentPolicy = {
         .AccentState = ACCENT_ENABLE_ACRYLICBLURBEHIND,
         // AABBGGRR.
@@ -9588,10 +9579,6 @@ void SetAccentBlurBehind(HWND hWnd, bool enable) {
     };
 
     pSetWindowCompositionAttribute(hWnd, &data);
-
-    // Do not call DwmEnableBlurBehindWindow here. Its DWM state change
-    // causes the visible transparent frame during open/close/restore.
-    // AccentBlurBehind itself provides the blur effect.
 }
 
 void ApplyBackgroundTranslucentEffect(
@@ -9653,9 +9640,11 @@ void ApplyBackgroundTranslucentEffect(
     // implemented by AccentBlurBehind, while the other modes use the native
     // Windows 11 SystemBackdrop materials.
     if (effect == BackgroundTranslucentEffect::kBlur) {
-        // Apply AccentBlurBehind first. Do not force DWMSBT_NONE here:
-        // changing the DWM backdrop to NONE creates a brief transparent frame
-        // during open/close/minimize before AccentBlurBehind is ready.
+        int noneBackdrop = DWMSBT_NONE;
+        DwmSetWindowAttribute_Original(
+            hWnd, DWMWA_SYSTEMBACKDROP_TYPE, &noneBackdrop,
+            sizeof(noneBackdrop));
+
         SetAccentBlurBehind(hWnd, true);
     } else {
         SetAccentBlurBehind(hWnd, false);
