@@ -9652,7 +9652,8 @@ void ApplyBackgroundTranslucentEffect(
 
         SetAccentBlurBehind(hWnd, true);
     } else {
-        BOOL disableDwmTransitions = FALSE;
+        BOOL disableDwmTransitions =
+            effect == BackgroundTranslucentEffect::kAcrylic ? TRUE : FALSE;
         DwmSetWindowAttribute_Original(
             hWnd, DWMWA_TRANSITIONS_FORCEDISABLED,
             &disableDwmTransitions, sizeof(disableDwmTransitions));
