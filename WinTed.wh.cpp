@@ -3997,8 +3997,7 @@ void SetupImageTracking(DependencyObject const& target,
 
     bool stopped;
 
-    {
-        std::lock_guard<std::mutex> lock(g_imageRetryMutex);
+    {        std::lock_guard<std::mutex> lock(g_imageRetryMutex);
 
         g_networkStatusChangedRegistering = false;
 
@@ -7997,8 +7996,7 @@ bool ProcessResourceVariable(ResourceDictionary resources,
 
 void RefreshThemeResourceEntries() {
     if (g_resourceVariables.empty()) {
-        return;
-    }
+        return;    }
 
     Wh_Log(L"Refreshing theme resource entries");
 
@@ -10530,6 +10528,11 @@ void Wh_ModAfterInit() {
         Wh_Log(L"Initializing - Found target windows");
         InitializeSettingsAndTap();
     }
+
+    // Also restart Explorer when the mod is activated/loaded, when requested.
+    // The one-shot marker prevents the freshly restarted Explorer from
+    // immediately restarting itself again.
+    RestartExplorerOnActivationIfNeeded();
 }
 
 void Wh_ModUninit() {
@@ -10580,7 +10583,7 @@ bool IsCurrentProcessExplorer() {
     return _wcsicmp(fileName, L"explorer.exe") == 0;
 }
 
-void RestartExplorerAfterSettingsChange() {
+bool RestartExplorerAfterSettingsChange() {
     // Run the restart from a separate process so Explorer can safely terminate
     // itself without killing the code responsible for launching the new shell.
     std::wstring command =
@@ -10590,11 +10593,37 @@ void RestartExplorerAfterSettingsChange() {
     si.cb = sizeof(si);
     PROCESS_INFORMATION pi = {};
 
-    if (CreateProcessW(
+    if (!CreateProcessW(
             nullptr, command.data(), nullptr, nullptr, FALSE,
             CREATE_NO_WINDOW, nullptr, nullptr, &si, &pi)) {
-        CloseHandle(pi.hThread);
-        CloseHandle(pi.hProcess);
+        return false;
+    }
+
+    CloseHandle(pi.hThread);
+    CloseHandle(pi.hProcess);
+    return true;
+}
+
+void RestartExplorerOnActivationIfNeeded() {
+    if (!g_settings.restartExplorerOnSettingsChange ||
+        !IsCurrentProcessExplorer()) {
+        return;
+    }
+
+    // Wh_ModAfterInit is called again in the newly started Explorer process.
+    // Use a persistent one-shot marker so enabling this option doesn't create
+    // an infinite Explorer restart loop.
+    if (Wh_GetIntValue(L"restartExplorerActivationPending", 0) != 0) {
+        Wh_SetIntValue(L"restartExplorerActivationPending", 0);
+        Wh_Log(L"Explorer restart marker consumed");
+        return;
+    }
+
+    Wh_Log(L"Restarting Explorer because the restart-on-change option is enabled");
+    Wh_SetIntValue(L"restartExplorerActivationPending", 1);
+    if (!RestartExplorerAfterSettingsChange()) {
+        Wh_SetIntValue(L"restartExplorerActivationPending", 0);
+        Wh_Log(L"Failed to restart Explorer");
     }
 }
 
@@ -10636,6 +10665,10 @@ void Wh_ModSettingsChanged() {
     if (g_settings.restartExplorerOnSettingsChange &&
         IsCurrentProcessExplorer()) {
         Wh_Log(L"Restarting Explorer because the setting is enabled");
-        RestartExplorerAfterSettingsChange();
+        Wh_SetIntValue(L"restartExplorerActivationPending", 1);
+        if (!RestartExplorerAfterSettingsChange()) {
+            Wh_SetIntValue(L"restartExplorerActivationPending", 0);
+            Wh_Log(L"Failed to restart Explorer");
+        }
     }
 }
