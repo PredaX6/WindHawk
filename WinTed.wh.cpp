@@ -9830,20 +9830,49 @@ void TriggerWindowCompositionUpdate(HWND hWnd) {
                  RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
 }
 
+// ControlCenterWindow is created before its XAML visual tree is fully
+// initialized. Delay the XAML initialization until the window's UI thread
+// has returned to its message loop.
+bool RunFromWindowThreadDelayed(HWND hWnd,
+                                RunFromWindowThreadProc_t proc,
+                                PVOID procParam);
+
 void OnWindowCreated(HWND hWnd, PCSTR funcName) {
     TargetWindowType windowType = GetTargetWindowType(hWnd);
-    if (windowType != TargetWindowType::None) {
-        Wh_Log(L"Initializing - Created window %08X via %S",
-               (DWORD)(ULONG_PTR)hWnd, funcName);
-
-        if (windowType == TargetWindowType::FileExplorer ||
-            windowType == TargetWindowType::NotificationCenter) {
-            ApplyBackgroundTranslucentEffect(hWnd);
-        }
-
-        InitializeForCurrentThread();
-        InitializeSettingsAndTap();
+    if (windowType == TargetWindowType::None) {
+        return;
     }
+
+    Wh_Log(L"Initializing - Created window %08X via %S",
+           (DWORD)(ULONG_PTR)hWnd, funcName);
+
+    if (windowType == TargetWindowType::NotificationCenter) {
+        if (!RunFromWindowThreadDelayed(
+                hWnd,
+                [](PVOID param) WINAPI {
+                    HWND notificationWnd = (HWND)param;
+
+                    Wh_Log(L"Delayed Notification Center initialization for %08X",
+                           (DWORD)(ULONG_PTR)notificationWnd);
+
+                    InitializeForCurrentThread();
+                    InitializeSettingsAndTap();
+
+                    ApplyBackgroundTranslucentEffect(notificationWnd);
+                    TriggerWindowCompositionUpdate(notificationWnd);
+                },
+                (PVOID)hWnd)) {
+            Wh_Log(L"Failed to schedule delayed Notification Center initialization");
+        }
+        return;
+    }
+
+    if (windowType == TargetWindowType::FileExplorer) {
+        ApplyBackgroundTranslucentEffect(hWnd);
+    }
+
+    InitializeForCurrentThread();
+    InitializeSettingsAndTap();
 }
 
 using CreateWindowExW_t = decltype(&CreateWindowExW);
@@ -10073,6 +10102,63 @@ HMODULE WINAPI LoadLibraryExW_Hook(LPCWSTR lpLibFileName,
 }
 
 using RunFromWindowThreadProc_t = void(WINAPI*)(PVOID parameter);
+
+bool RunFromWindowThreadDelayed(HWND hWnd,
+                                RunFromWindowThreadProc_t proc,
+                                PVOID procParam) {
+    if (!hWnd || !proc) {
+        return false;
+    }
+
+    struct DelayedCall {
+        RunFromWindowThreadProc_t proc;
+        PVOID param;
+        HWND hWnd;
+        UINT_PTR timerId;
+    };
+
+    auto* call = new (std::nothrow) DelayedCall{proc, procParam, hWnd, 0};
+    if (!call) {
+        return false;
+    }
+
+    static std::atomic<UINT_PTR> nextTimerId{0x5A00};
+    call->timerId = nextTimerId.fetch_add(1);
+
+    WCHAR propertyName[64];
+    _snwprintf_s(propertyName, _TRUNCATE,
+                 L"WinTedDelayedCall_%p", (void*)call->timerId);
+
+    if (!SetPropW(hWnd, propertyName, call)) {
+        delete call;
+        return false;
+    }
+
+    if (!SetTimer(
+            hWnd, call->timerId, 1,
+            [](HWND timerWnd, UINT, UINT_PTR timerId, DWORD) WINAPI {
+                WCHAR propertyName[64];
+                _snwprintf_s(propertyName, _TRUNCATE,
+                             L"WinTedDelayedCall_%p", (void*)timerId);
+
+                HANDLE value = GetPropW(timerWnd, propertyName);
+                RemovePropW(timerWnd, propertyName);
+                KillTimer(timerWnd, timerId);
+
+                auto* call =
+                    reinterpret_cast<DelayedCall*>(value);
+                if (call) {
+                    call->proc(call->param);
+                    delete call;
+                }
+            })) {
+        RemovePropW(hWnd, propertyName);
+        delete call;
+        return false;
+    }
+
+    return true;
+}
 
 bool RunFromWindowThread(HWND hWnd,
                          RunFromWindowThreadProc_t proc,
