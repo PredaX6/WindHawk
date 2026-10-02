@@ -10529,16 +10529,8 @@ bool IsCurrentProcessExplorer() {
 void RestartExplorerAfterSettingsChange() {
     // Run the restart from a separate process so Explorer can safely terminate
     // itself without killing the code responsible for launching the new shell.
-    WCHAR systemDir[MAX_PATH];
-    UINT length = GetSystemDirectoryW(systemDir, ARRAYSIZE(systemDir));
-    if (length == 0 || length >= ARRAYSIZE(systemDir)) {
-        return;
-    }
-
     std::wstring command =
-        L"cmd.exe /c "timeout /t 1 /nobreak >nul & "
-        L"taskkill /f /im explorer.exe >nul 2>&1 & "
-        L"start \\\"\\\" explorer.exe"";
+        LR"(cmd.exe /c "timeout /t 1 /nobreak >nul & taskkill /f /im explorer.exe >nul 2>&1 & start "" explorer.exe")";
 
     STARTUPINFOW si = {};
     si.cb = sizeof(si);
