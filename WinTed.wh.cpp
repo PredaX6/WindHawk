@@ -8123,6 +8123,49 @@ const Theme* GetSelectedTheme() {
     return &g_themeTranslucent_Explorer11;
 }
 
+void ApplyNotificationWindowTransparency(HWND hWnd) {
+    if (!hWnd ||
+        GetTargetWindowType(hWnd) != TargetWindowType::NotificationCenter) {
+        return;
+    }
+
+    const auto effect = GetEffectiveNotificationTransparencyEffect();
+    int backdropType = DWMSBT_AUTO;
+
+    switch (effect) {
+        case BackgroundTranslucentEffect::kDefault:
+            backdropType = DWMSBT_AUTO;
+            SetAccentBlurBehind(hWnd, false);
+            break;
+        case BackgroundTranslucentEffect::kBlur:
+            backdropType = DWMSBT_NONE;
+            SetAccentBlurBehind(hWnd, true);
+            break;
+        case BackgroundTranslucentEffect::kAcrylic:
+            backdropType = DWMSBT_TRANSIENTWINDOW;
+            SetAccentBlurBehind(hWnd, false);
+            break;
+        case BackgroundTranslucentEffect::kMica:
+            backdropType = DWMSBT_MAINWINDOW;
+            SetAccentBlurBehind(hWnd, false);
+            break;
+        case BackgroundTranslucentEffect::kMicaAlt:
+            backdropType = DWMSBT_TABBEDWINDOW;
+            SetAccentBlurBehind(hWnd, false);
+            break;
+        case BackgroundTranslucentEffect::kNone:
+            backdropType = DWMSBT_NONE;
+            SetAccentBlurBehind(hWnd, false);
+            break;
+    }
+
+    Wh_Log(L"Applying Notification Center window material %d to %08X",
+           static_cast<int>(effect), (DWORD)(ULONG_PTR)hWnd);
+
+    DwmSetWindowAttribute_Original(
+        hWnd, DWMWA_SYSTEMBACKDROP_TYPE, &backdropType, sizeof(backdropType));
+}
+
 void ApplyNotificationTransparencyStyles() {
     // Use the same XAML styling path as Windows 11 Notification Center Styler.
     // This is important: the material is applied to the actual XAML surface,
@@ -8134,6 +8177,7 @@ void ApplyNotificationTransparencyStyles() {
         L"Grid#NotificationCenterGrid",
         L"Grid#CalendarCenterGrid",
         L"Grid#ControlCenterRegion",
+        L"Windows.UI.Xaml.Controls.Grid#L1Grid > Border",
         L"Windows.UI.Xaml.Controls.Grid#MediaTransportControlsRegion",
         L"Grid#MediaTransportControlsRoot",
         L"ContentPresenter#PageContent",
@@ -8146,40 +8190,9 @@ void ApplyNotificationTransparencyStyles() {
         L"ActionCenter.FocusSessionControl#FocusSessionControl > Grid#FocusGrid",
     };
 
-    std::wstring background;
-    switch (effect) {
-        case BackgroundTranslucentEffect::kDefault:
-            // Clear the XAML surface so Windows can show its own default
-            // backdrop behind it.
-            background = L"Background=Transparent";
-            break;
-
-        case BackgroundTranslucentEffect::kBlur:
-            // Same WindhawkBlur mechanism exposed by the official Styler.
-            background =
-                L"Background:=<WindhawkBlur BlurAmount=\"30\" "
-                L"TintColor=\"#80000000\" />";
-            break;
-
-        case BackgroundTranslucentEffect::kAcrylic:
-            // Same AcrylicBrush XAML mechanism used by the official Styler.
-            background =
-                L"Background:=<AcrylicBrush TintColor=\"#121212\" "
-                L"TintOpacity=\"0.3\" />";
-            break;
-
-        case BackgroundTranslucentEffect::kMica:
-        case BackgroundTranslucentEffect::kMicaAlt:
-            // Mica itself is supplied at window level below. The XAML layer
-            // must remain transparent so it doesn't cover the DWM material.
-            background = L"Background=Transparent";
-            break;
-
-        case BackgroundTranslucentEffect::kNone:
-            background = L"Background=Transparent";
-            break;
-    }
-
+    // The material is applied to the flyout window itself. Keep all
+    // XAML surfaces transparent so they don't cover the DWM material.
+    std::wstring background = L"Background=Transparent";
     const std::vector<std::wstring> styles = {background};
 
     for (PCWSTR target : targets) {
@@ -8455,9 +8468,41 @@ HRESULT WINAPI DwmSetWindowAttribute_Hook(HWND hWnd,
     }
 
     TargetWindowType windowType = GetTargetWindowType(hWnd);
-    if (windowType == TargetWindowType::NotificationCenter) {
-        // Notification Center materials are applied by the XAML styler below.
-        return original();
+    if (windowType == TargetWindowType::NotificationCenter &&
+        dwAttribute == DWMWA_SYSTEMBACKDROP_TYPE) {
+        const auto effect = GetEffectiveNotificationTransparencyEffect();
+        int backdropType = DWMSBT_AUTO;
+
+        switch (effect) {
+            case BackgroundTranslucentEffect::kDefault:
+                backdropType = DWMSBT_AUTO;
+                SetAccentBlurBehind(hWnd, false);
+                break;
+            case BackgroundTranslucentEffect::kBlur:
+                backdropType = DWMSBT_NONE;
+                SetAccentBlurBehind(hWnd, true);
+                break;
+            case BackgroundTranslucentEffect::kAcrylic:
+                backdropType = DWMSBT_TRANSIENTWINDOW;
+                SetAccentBlurBehind(hWnd, false);
+                break;
+            case BackgroundTranslucentEffect::kMica:
+                backdropType = DWMSBT_MAINWINDOW;
+                SetAccentBlurBehind(hWnd, false);
+                break;
+            case BackgroundTranslucentEffect::kMicaAlt:
+                backdropType = DWMSBT_TABBEDWINDOW;
+                SetAccentBlurBehind(hWnd, false);
+                break;
+            case BackgroundTranslucentEffect::kNone:
+                backdropType = DWMSBT_NONE;
+                SetAccentBlurBehind(hWnd, false);
+                break;
+        }
+
+        return DwmSetWindowAttribute_Original(
+            hWnd, DWMWA_SYSTEMBACKDROP_TYPE, &backdropType,
+            sizeof(backdropType));
     }
 
     if (windowType != TargetWindowType::FileExplorer) {
@@ -9835,9 +9880,60 @@ void TriggerWindowCompositionUpdate(HWND hWnd) {
 // has returned to its message loop.
 using RunFromWindowThreadProc_t = void(WINAPI*)(PVOID parameter);
 
-bool RunFromWindowThreadDelayed(HWND hWnd,
-                                RunFromWindowThreadProc_t proc,
-                                PVOID procParam);
+bool RunFromWindowThreadViaPostMessage(HWND hWnd,
+                                       RunFromWindowThreadProc_t proc,
+                                       PVOID procParam) {
+    static const UINT registeredMsg =
+        RegisterWindowMessage(L"Windhawk_RunFromWindowThreadViaPostMessage_" WH_MOD_ID);
+
+    struct Param {
+        RunFromWindowThreadProc_t proc;
+        PVOID procParam;
+        HHOOK hook;
+    };
+
+    DWORD threadId = GetWindowThreadProcessId(hWnd, nullptr);
+    if (!threadId) {
+        return false;
+    }
+
+    HHOOK hook = SetWindowsHookEx(
+        WH_GETMESSAGE,
+        [](int nCode, WPARAM wParam, LPARAM lParam) -> LRESULT {
+            if (nCode == HC_ACTION && wParam == PM_REMOVE) {
+                MSG* msg = reinterpret_cast<MSG*>(lParam);
+                if (msg->message == registeredMsg) {
+                    auto* param = reinterpret_cast<Param*>(msg->lParam);
+                    if (param) {
+                        param->proc(param->procParam);
+                        UnhookWindowsHookEx(param->hook);
+                        delete param;
+                        msg->lParam = 0;
+                    }
+                }
+            }
+            return CallNextHookEx(nullptr, nCode, wParam, lParam);
+        },
+        nullptr, threadId);
+
+    if (!hook) {
+        return false;
+    }
+
+    auto* param = new (std::nothrow) Param{proc, procParam, hook};
+    if (!param) {
+        UnhookWindowsHookEx(hook);
+        return false;
+    }
+
+    if (!PostMessage(hWnd, registeredMsg, 0, reinterpret_cast<LPARAM>(param))) {
+        UnhookWindowsHookEx(hook);
+        delete param;
+        return false;
+    }
+
+    return true;
+}
 
 void OnWindowCreated(HWND hWnd, PCSTR funcName) {
     TargetWindowType windowType = GetTargetWindowType(hWnd);
@@ -9849,7 +9945,7 @@ void OnWindowCreated(HWND hWnd, PCSTR funcName) {
            (DWORD)(ULONG_PTR)hWnd, funcName);
 
     if (windowType == TargetWindowType::NotificationCenter) {
-        if (!RunFromWindowThreadDelayed(
+        if (!RunFromWindowThreadViaPostMessage(
                 hWnd,
                 [](PVOID param) WINAPI {
                     HWND notificationWnd = (HWND)param;
@@ -9860,7 +9956,7 @@ void OnWindowCreated(HWND hWnd, PCSTR funcName) {
                     InitializeForCurrentThread();
                     InitializeSettingsAndTap();
 
-                    ApplyBackgroundTranslucentEffect(notificationWnd);
+                    ApplyNotificationWindowTransparency(notificationWnd);
                     TriggerWindowCompositionUpdate(notificationWnd);
                 },
                 (PVOID)hWnd)) {
@@ -10101,63 +10197,6 @@ HMODULE WINAPI LoadLibraryExW_Hook(LPCWSTR lpLibFileName,
     }
 
     return module;
-}
-
-bool RunFromWindowThreadDelayed(HWND hWnd,
-                                RunFromWindowThreadProc_t proc,
-                                PVOID procParam) {
-    if (!hWnd || !proc) {
-        return false;
-    }
-
-    struct DelayedCall {
-        RunFromWindowThreadProc_t proc;
-        PVOID param;
-        HWND hWnd;
-        UINT_PTR timerId;
-    };
-
-    auto* call = new (std::nothrow) DelayedCall{proc, procParam, hWnd, 0};
-    if (!call) {
-        return false;
-    }
-
-    static std::atomic<UINT_PTR> nextTimerId{0x5A00};
-    call->timerId = nextTimerId.fetch_add(1);
-
-    WCHAR propertyName[64];
-    _snwprintf_s(propertyName, _TRUNCATE,
-                 L"WinTedDelayedCall_%p", (void*)call->timerId);
-
-    if (!SetPropW(hWnd, propertyName, call)) {
-        delete call;
-        return false;
-    }
-
-    if (!SetTimer(
-            hWnd, call->timerId, 1,
-            [](HWND timerWnd, UINT, UINT_PTR timerId, DWORD) WINAPI {
-                WCHAR propertyName[64];
-                _snwprintf_s(propertyName, _TRUNCATE,
-                             L"WinTedDelayedCall_%p", (void*)timerId);
-
-                HANDLE value = GetPropW(timerWnd, propertyName);
-                RemovePropW(timerWnd, propertyName);
-                KillTimer(timerWnd, timerId);
-
-                auto* call =
-                    reinterpret_cast<DelayedCall*>(value);
-                if (call) {
-                    call->proc(call->param);
-                    delete call;
-                }
-            })) {
-        RemovePropW(hWnd, propertyName);
-        delete call;
-        return false;
-    }
-
-    return true;
 }
 
 bool RunFromWindowThread(HWND hWnd,
@@ -10604,7 +10643,7 @@ void Wh_ModAfterInit() {
                         TargetWindowType::FileExplorer ||
                     GetTargetWindowType(hTargetWnd) ==
                         TargetWindowType::NotificationCenter) {
-                    ApplyBackgroundTranslucentEffect(hTargetWnd);
+                    ApplyNotificationWindowTransparency(hTargetWnd);
                     TriggerWindowCompositionUpdate(hTargetWnd);
                 }
             },
