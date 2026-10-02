@@ -10458,6 +10458,44 @@ void StopStatsTimer() {
     }
 }
 
+bool IsWinTedShellProcess() {
+    WCHAR path[MAX_PATH];
+    DWORD length = GetModuleFileNameW(nullptr, path, ARRAYSIZE(path));
+    if (length == 0 || length >= ARRAYSIZE(path)) {
+        return false;
+    }
+
+    PCWSTR fileName = wcsrchr(path, L'\\');
+    fileName = fileName ? fileName + 1 : path;
+
+    return _wcsicmp(fileName, L"explorer.exe") == 0 ||
+           _wcsicmp(fileName, L"ShellExperienceHost.exe") == 0 ||
+           _wcsicmp(fileName, L"ShellHost.exe") == 0;
+}
+
+using DefWindowProcW_t = decltype(&DefWindowProcW);
+DefWindowProcW_t DefWindowProcW_Original;
+
+LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd,
+                                   UINT uMsg,
+                                   WPARAM wParam,
+                                   LPARAM lParam) {
+    // WM_NCACTIVATE is the standard Win32/DWM notification used to repaint
+    // the non-client area when a window becomes inactive. Returning TRUE for
+    // deactivation prevents DefWindowProc from switching the title bar and
+    // border to their inactive appearance, while the window remains fully
+    // focusable and functional.
+    //
+    // Minimized windows are left to the system as recommended by the Win32
+    // documentation.
+    if (uMsg == WM_NCACTIVATE && !wParam && !IsIconic(hWnd)) {
+        return TRUE;
+    }
+
+    return DefWindowProcW_Original(hWnd, uMsg, wParam, lParam);
+}
+
+
 void LoadSettings() {
     g_settings.restartExplorerOnSettingsChange =
         Wh_GetIntSetting(L"restartExplorerOnSettingsChange") != 0;
@@ -10708,43 +10746,6 @@ void Wh_ModUninit() {
     }
 
     ClearThemePartCache();
-}
-
-bool IsWinTedShellProcess() {
-    WCHAR path[MAX_PATH];
-    DWORD length = GetModuleFileNameW(nullptr, path, ARRAYSIZE(path));
-    if (length == 0 || length >= ARRAYSIZE(path)) {
-        return false;
-    }
-
-    PCWSTR fileName = wcsrchr(path, L'\\');
-    fileName = fileName ? fileName + 1 : path;
-
-    return _wcsicmp(fileName, L"explorer.exe") == 0 ||
-           _wcsicmp(fileName, L"ShellExperienceHost.exe") == 0 ||
-           _wcsicmp(fileName, L"ShellHost.exe") == 0;
-}
-
-using DefWindowProcW_t = decltype(&DefWindowProcW);
-DefWindowProcW_t DefWindowProcW_Original;
-
-LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd,
-                                   UINT uMsg,
-                                   WPARAM wParam,
-                                   LPARAM lParam) {
-    // WM_NCACTIVATE is the standard Win32/DWM notification used to repaint
-    // the non-client area when a window becomes inactive. Returning TRUE for
-    // deactivation prevents DefWindowProc from switching the title bar and
-    // border to their inactive appearance, while the window remains fully
-    // focusable and functional.
-    //
-    // Minimized windows are left to the system as recommended by the Win32
-    // documentation.
-    if (uMsg == WM_NCACTIVATE && !wParam && !IsIconic(hWnd)) {
-        return TRUE;
-    }
-
-    return DefWindowProcW_Original(hWnd, uMsg, wParam, lParam);
 }
 
 bool IsCurrentProcessExplorer() {
