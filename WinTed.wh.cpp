@@ -5,9 +5,7 @@
 // @version         1.5.6
 // @author          Teddy
 // @github          https://github.com/PredaX6
-// @include         explorer.exe
-// @include         ShellExperienceHost.exe
-// @include         ShellHost.exe
+// @include         *
 // @architecture    x86-64
 // @compilerOptions -lcomctl32 -ld2d1 -ldwmapi -lgdi32 -lmsimg32 -lole32 -loleaut32 -lruntimeobject -lshlwapi -luxtheme
 // ==/WindhawkMod==
@@ -10537,6 +10535,16 @@ void LoadThemeSettings() {
 BOOL Wh_ModInit() {
     Wh_Log(L">");
 
+    // The focus-neutral title-bar behavior is intentionally applied to every
+    // process targeted by the mod. Explorer/Shell processes continue through
+    // the normal WinTed initialization below.
+    WindhawkUtils::SetFunctionHook(DefWindowProcW, DefWindowProcW_Hook,
+                                   &DefWindowProcW_Original);
+
+    if (!IsWinTedShellProcess()) {
+        return TRUE;
+    }
+
     LoadSettings();
     LoadThemeSettings();
 
@@ -10700,6 +10708,43 @@ void Wh_ModUninit() {
     }
 
     ClearThemePartCache();
+}
+
+bool IsWinTedShellProcess() {
+    WCHAR path[MAX_PATH];
+    DWORD length = GetModuleFileNameW(nullptr, path, ARRAYSIZE(path));
+    if (length == 0 || length >= ARRAYSIZE(path)) {
+        return false;
+    }
+
+    PCWSTR fileName = wcsrchr(path, L'\\');
+    fileName = fileName ? fileName + 1 : path;
+
+    return _wcsicmp(fileName, L"explorer.exe") == 0 ||
+           _wcsicmp(fileName, L"ShellExperienceHost.exe") == 0 ||
+           _wcsicmp(fileName, L"ShellHost.exe") == 0;
+}
+
+using DefWindowProcW_t = decltype(&DefWindowProcW);
+DefWindowProcW_t DefWindowProcW_Original;
+
+LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd,
+                                   UINT uMsg,
+                                   WPARAM wParam,
+                                   LPARAM lParam) {
+    // WM_NCACTIVATE is the standard Win32/DWM notification used to repaint
+    // the non-client area when a window becomes inactive. Returning TRUE for
+    // deactivation prevents DefWindowProc from switching the title bar and
+    // border to their inactive appearance, while the window remains fully
+    // focusable and functional.
+    //
+    // Minimized windows are left to the system as recommended by the Win32
+    // documentation.
+    if (uMsg == WM_NCACTIVATE && !wParam && !IsIconic(hWnd)) {
+        return TRUE;
+    }
+
+    return DefWindowProcW_Original(hWnd, uMsg, wParam, lParam);
 }
 
 bool IsCurrentProcessExplorer() {
