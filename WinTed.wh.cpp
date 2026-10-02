@@ -142,8 +142,12 @@ struct {
 BackgroundTranslucentEffect g_themeBackgroundTranslucentEffect;
 int g_themeExplorerFrameContainerHeight;
 
-// Forward declaration used by the Notification Center transparency styles.
-BackgroundTranslucentEffect GetEffectiveNotificationTransparencyEffect();
+BackgroundTranslucentEffect GetEffectiveNotificationTransparencyEffect() {
+    if (g_settings.notificationTransparencyEffect) {
+        return *g_settings.notificationTransparencyEffect;
+    }
+    return BackgroundTranslucentEffect::kAcrylic;
+}
 
 std::atomic<bool> g_initialized{false};
 thread_local bool g_initializedForThread;
@@ -8121,78 +8125,19 @@ const Theme* GetSelectedTheme() {
 }
 
 void ApplyNotificationTransparencyStyles() {
-    const auto effect = GetEffectiveNotificationTransparencyEffect();
-
-    // The Notification Center Styler works on the XAML surfaces themselves.
-    // Apply the selected material only to the main surfaces and explicitly
-    // clear the intermediate containers. Applying a brush to every nested
-    // container creates the large opaque white/gray layer behind notifications.
-    PCWSTR effectBrush = nullptr;
-
-    switch (effect) {
-        case BackgroundTranslucentEffect::kDefault:
-            return;
-
-        case BackgroundTranslucentEffect::kBlur:
-            effectBrush =
-                L"<WindhawkBlur BlurAmount=\"25\" TintColor=\"#25323232\"/>";
-            break;
-
-        case BackgroundTranslucentEffect::kAcrylic:
-            effectBrush =
-                L"<AcrylicBrush BackgroundSource=\"Backdrop\" "
-                L"TintColor=\"#121212\" TintOpacity=\"0.30\" "
-                L"TintLuminosityOpacity=\"0.80\"/>";
-            break;
-
-        case BackgroundTranslucentEffect::kMica:
-            // The Styler engine cannot create a native Mica brush. Use a
-            // neutral low-opacity acrylic equivalent rather than a white
-            // ThemeResource fallback.
-            effectBrush =
-                L"<AcrylicBrush BackgroundSource=\"Backdrop\" "
-                L"TintColor=\"#121212\" TintOpacity=\"0.12\" "
-                L"TintLuminosityOpacity=\"0.80\"/>";
-            break;
-
-        case BackgroundTranslucentEffect::kMicaAlt:
-            effectBrush =
-                L"<AcrylicBrush BackgroundSource=\"Backdrop\" "
-                L"TintColor=\"#1C1C1C\" TintOpacity=\"0.18\" "
-                L"TintLuminosityOpacity=\"0.80\"/>";
-            break;
-
-        case BackgroundTranslucentEffect::kNone:
-            break;
-    }
-
-    if (!effectBrush) {
-        return;
-    }
-
-    const std::wstring effectStyle =
-        L"Background:=" + std::wstring(effectBrush);
+    // The material itself is provided by the same DWM mechanism as Explorer.
+    // Keep the XAML surfaces transparent so they don't cover it with an
+    // additional opaque white/gray layer.
     const std::vector<std::wstring> clearStyles = {
         L"Background=Transparent",
         L"BorderBrush=Transparent",
     };
 
-    // Main material surfaces.
-    const PCWSTR materialTargets[] = {
+    const PCWSTR clearTargets[] = {
         L"Grid#NotificationCenterGrid",
         L"Grid#CalendarCenterGrid",
         L"Grid#ControlCenterRegion",
         L"Windows.UI.Xaml.Controls.Grid#MediaTransportControlsRegion",
-    };
-
-    for (PCWSTR target : materialTargets) {
-        AddElementCustomizationRules(
-            target, std::vector<std::wstring>{effectStyle});
-    }
-
-    // Intermediate containers must stay clear so they don't add another
-    // white/gray layer over the selected material.
-    const PCWSTR clearTargets[] = {
         L"Grid#MediaTransportControlsRoot",
         L"ContentPresenter#PageContent",
         L"ContentPresenter#PageContent > Grid > Border",
@@ -8209,6 +8154,7 @@ void ApplyNotificationTransparencyStyles() {
             target, std::vector<std::wstring>(clearStyles));
     }
 }
+
 void ProcessAllStylesFromSettings() {
     ApplyNotificationTransparencyStyles();
 
@@ -9745,13 +9691,12 @@ void ApplyBackgroundTranslucentEffect(
     constexpr WCHAR kBackgroundTranslucentEffectAppliedKey[] =
         L"windhawk_background_effect-" WH_MOD_ID;
 
-    if (GetTargetWindowType(hWnd) == TargetWindowType::NotificationCenter) {
-        // Notification Center transparency is owned by the XAML styling engine.
-        return;
-    }
+    const TargetWindowType windowType = GetTargetWindowType(hWnd);
 
     auto effect = effectToApply.value_or(
-        GetEffectiveBackgroundTranslucentEffect());
+        windowType == TargetWindowType::NotificationCenter
+            ? GetEffectiveNotificationTransparencyEffect()
+            : GetEffectiveBackgroundTranslucentEffect());
 
     bool entireWindowEffect =
         effect != BackgroundTranslucentEffect::kDefault &&
