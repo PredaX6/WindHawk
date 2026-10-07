@@ -40,7 +40,6 @@ Aucun autre thème ou réglage utilisateur n'est conservé.
   - blur: Blur (AccentBlurBehind)
   - mica: Mica (SystemBackdrop)
   - micaAlt: MicaAlt (SystemBackdrop)
-  - blueNativeTest: Blue native test (SystemBackdrop)
 
 - restartExplorerOnSettingsChange: false
   $name: Relancer l'Explorateur Windows à chaque changement
@@ -69,7 +68,6 @@ enum class BackgroundTranslucentEffect {
     kAcrylic,
     kMica,
     kMicaAlt,
-    kBlueNativeTest,
     kNone,
 };
 
@@ -8357,12 +8355,6 @@ HRESULT WINAPI DwmSetWindowAttribute_Hook(HWND hWnd,
         case BackgroundTranslucentEffect::kMicaAlt:
             backdropType = DWMSBT_TABBEDWINDOW;
             break;
-        case BackgroundTranslucentEffect::kBlueNativeTest:
-            // Experimental: use the native Windows SystemBackdrop material
-            // that provides a visible translucent/acrylic-like surface.
-            // This deliberately does not call AccentBlurBehind.
-            backdropType = DWMSBT_TRANSIENTWINDOW;
-            break;
         case BackgroundTranslucentEffect::kNone:
             backdropType = DWMSBT_NONE;
             break;
@@ -9649,7 +9641,7 @@ void ApplyBackgroundTranslucentEffect(
     // implemented by AccentBlurBehind, while the other modes use the native
     // Windows 11 SystemBackdrop materials.
     if (effect == BackgroundTranslucentEffect::kBlur) {
-        BOOL disableDwmTransitions = TRUE;
+        BOOL disableDwmTransitions = FALSE;
         DwmSetWindowAttribute_Original(
             hWnd, DWMWA_TRANSITIONS_FORCEDISABLED,
             &disableDwmTransitions, sizeof(disableDwmTransitions));
@@ -9662,8 +9654,7 @@ void ApplyBackgroundTranslucentEffect(
         SetAccentBlurBehind(hWnd, true);
     } else {
         BOOL disableDwmTransitions =
-            (effect == BackgroundTranslucentEffect::kAcrylic ||
-             effect == BackgroundTranslucentEffect::kBlueNativeTest) ? TRUE : FALSE;
+            (effect == BackgroundTranslucentEffect::kAcrylic) ? TRUE : FALSE;
         DwmSetWindowAttribute_Original(
             hWnd, DWMWA_TRANSITIONS_FORCEDISABLED,
             &disableDwmTransitions, sizeof(disableDwmTransitions));
@@ -10265,9 +10256,6 @@ void LoadSettings() {
     } else if (wcscmp(transparencyType, L"micaAlt") == 0) {
         g_settings.backgroundTranslucentEffect =
             BackgroundTranslucentEffect::kMicaAlt;
-    } else if (wcscmp(transparencyType, L"blueNativeTest") == 0) {
-        g_settings.backgroundTranslucentEffect =
-            BackgroundTranslucentEffect::kBlueNativeTest;
     } else {
         g_settings.backgroundTranslucentEffect =
             BackgroundTranslucentEffect::kAcrylic;
