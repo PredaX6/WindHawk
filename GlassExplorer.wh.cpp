@@ -1,5 +1,5 @@
 // ==WindhawkMod==
-// @id              glass_explorer
+// @id              glass-explorer
 // @name            GlassExplorer
 // @description     Windows 11 25H2 : Translucent Explorer 11 avec 4 styles de transparence.
 // @version         1.6.1
