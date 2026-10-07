@@ -8358,9 +8358,10 @@ HRESULT WINAPI DwmSetWindowAttribute_Hook(HWND hWnd,
             backdropType = DWMSBT_TABBEDWINDOW;
             break;
         case BackgroundTranslucentEffect::kBlueNativeTest:
-            // Experimental: use only the native Windows SystemBackdrop path.
+            // Experimental: use the native Windows SystemBackdrop material
+            // that provides a visible translucent/acrylic-like surface.
             // This deliberately does not call AccentBlurBehind.
-            backdropType = DWMSBT_AUTO;
+            backdropType = DWMSBT_TRANSIENTWINDOW;
             break;
         case BackgroundTranslucentEffect::kNone:
             backdropType = DWMSBT_NONE;
