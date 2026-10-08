@@ -5077,6 +5077,13 @@ ElementResolvedRules FindElementPropertyOverrides(FrameworkElement element,
 
         result.hasDynamicValues |= resolvedRules.hasDynamicValues;
 
+        // A matched rule can legally resolve to no property overrides and no
+        // captures. Avoid creating an empty VSG map entry in that case.
+        if (resolvedRules.propertyOverrides.empty() &&
+            resolvedRules.captures.empty()) {
+            continue;
+        }
+
         auto& propertyOverridesForVSG =
             result.overridesPerVSG[visualStateGroup];
         for (const auto& [property, valuesPerVisualState] :
