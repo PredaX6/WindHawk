@@ -7005,13 +7005,21 @@ bool SameRepeaterItem(RepeaterItem const& a, RepeaterItem const& b) {
 // Treat a cleared element as removed and a prepared one as newly added.
 void HandleVirtualizingRepeater(ElementId elementId, FrameworkElement element) {
     auto repeater = element.try_as<muxc::ItemsRepeater>();
-    if (!repeater || g_virtualizingRepeaters.contains(elementId)) {
+    if (!repeater) {
+        return;
+    }
+
+    // Avoid a contains() lookup followed by operator[]: try_emplace performs
+    // the membership test and state lookup in one hash-table operation.
+    auto [stateIt, inserted] =
+        g_virtualizingRepeaters.try_emplace(elementId);
+    if (!inserted) {
         return;
     }
 
     Wh_Log(L"Tracking recycling of %s", winrt::get_class_name(element).c_str());
 
-    auto& state = g_virtualizingRepeaters[elementId];
+    auto& state = stateIt->second;
 
     state.elementClearingRevoker = repeater.ElementClearing(
         winrt::auto_revoke,
