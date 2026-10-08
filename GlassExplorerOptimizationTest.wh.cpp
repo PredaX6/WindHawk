@@ -4667,6 +4667,7 @@ const PropertyValues& GetResolvedPropertyValues(
             std::get<PropertyValuesUnresolved>(*propertyValuesMaybeUnresolved);
         if (!propertyValuesStr.empty()) {
             std::wstring xaml;
+            propertyValues.reserve(propertyValuesStr.size());
 
             for (const auto& [property, value] : propertyValuesStr) {
                 xaml += L"        <Setter Property=\"";
