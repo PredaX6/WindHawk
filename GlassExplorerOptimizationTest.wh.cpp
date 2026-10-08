@@ -4050,9 +4050,6 @@ winrt::Windows::Foundation::IInspectable SetOrClearValue(
         return value;
     }
 
-    Wh_Log(L"Setting property value %s",
-           value ? winrt::get_class_name(value).c_str() : L"(null)");
-
     // Track a remote image source for retry on network reconnection. A style
     // can declare one as the ImageBrush a property is set to (e.g. Background),
     // as the ImageSource of an ImageBrush it targets, or as the Source of an
@@ -6374,13 +6371,9 @@ void SetStyleVariableIfChangedAndPropagate(StyleVariableState* state,
     if (it->value.stringForm == value.stringForm &&
         SameNumericValue(it->value.numeric, value.numeric) &&
         it->value.substitutable == value.substitutable) {
-        Wh_Log(L"Style variable '%s' unchanged at '%s'", varName.c_str(),
-               value.stringForm.c_str());
         return;
     }
 
-    Wh_Log(L"Style variable '%s' changed: '%s' -> '%s'", varName.c_str(),
-           it->value.stringForm.c_str(), value.stringForm.c_str());
     it->value = std::move(value);
     PropagateStyleVariableChange(state, varName, owner);
 }
@@ -6500,9 +6493,6 @@ void SetUpCapturesForElement(StyleVariableState* state,
                 if (!element) {
                     return;
                 }
-                Wh_Log(L"SizeChanged on %s: %.3fx%.3f",
-                       winrt::get_class_name(element).c_str(),
-                       e.NewSize().Width, e.NewSize().Height);
                 for (const auto& [property, varName] : sizeChangedCaptures) {
                     auto value =
                         ReadCapturedStyleVariableValue(element, property);
@@ -6626,9 +6616,6 @@ void ApplyCustomizationsForVisualStateGroup(
                     AdoptExternalValueAsOriginal(element, property,
                                                  &propertyCustomizationState);
 
-                    Wh_Log(L"Re-applying style for %s",
-                           winrt::get_class_name(element).c_str());
-
                     g_elementPropertyModifying = true;
                     propertyCustomizationState.lastAppliedValue =
                         SetOrClearValue(
@@ -6654,9 +6641,6 @@ void ApplyCustomizationsForVisualStateGroup(
                     if (!element) {
                         return;
                     }
-
-                    Wh_Log(L"Re-applying all styles for %s",
-                           winrt::get_class_name(element).c_str());
 
                     g_elementPropertyModifying = true;
 
@@ -6898,6 +6882,7 @@ void ReapplyCustomizationsForSubtree(FrameworkElement element) {
     std::vector<FrameworkElement> children;
     try {
         int count = Media::VisualTreeHelper::GetChildrenCount(element);
+        children.reserve(count);
         for (int i = 0; i < count; i++) {
             if (auto child = Media::VisualTreeHelper::GetChild(element, i)
                                  .try_as<FrameworkElement>()) {
@@ -6964,8 +6949,6 @@ void HandleVirtualizingRepeater(ElementId elementId, FrameworkElement element) {
         return;
     }
 
-    Wh_Log(L"Tracking recycling of %s", winrt::get_class_name(element).c_str());
-
     auto& state = g_virtualizingRepeaters[elementId];
 
     state.elementClearingRevoker = repeater.ElementClearing(
@@ -6981,8 +6964,6 @@ void HandleVirtualizingRepeater(ElementId elementId, FrameworkElement element) {
             if (elementId == ElementId::None) {
                 return;
             }
-
-            Wh_Log(L"Element cleared: %llu", static_cast<uint64_t>(elementId));
 
             // Nothing is restored here. Whether the styles still apply depends
             // on the item the element is handed back for, which only the
@@ -7036,13 +7017,9 @@ void HandleVirtualizingRepeater(ElementId elementId, FrameworkElement element) {
                 auto it = g_elementMatchedItems.find(elementId);
                 if (it != g_elementMatchedItems.end() &&
                     SameRepeaterItem(it->second, *item)) {
-                    Wh_Log(L"Element reused for the same item: %llu",
-                           static_cast<uint64_t>(elementId));
                     return;
                 }
             }
-
-            Wh_Log(L"Element reused: %llu", static_cast<uint64_t>(elementId));
 
             ReapplyCustomizationsForSubtree(element);
 
@@ -7081,8 +7058,6 @@ void ApplyCustomizations(ElementId elementId,
         return;
     }
 
-    Wh_Log(L"Applying styles to %s", winrt::get_class_name(element).c_str());
-
     auto& elementCustomizationState = g_elementsCustomizationState[elementId];
 
     for (const auto& [visualStateGroupOptionalWeakPtrIter, stateIter] :
@@ -7094,6 +7069,11 @@ void ApplyCustomizations(ElementId elementId,
 
     elementCustomizationState.element = element;
     elementCustomizationState.perVisualStateGroup.clear();
+
+    // The vector is rebuilt below; reserve exactly the number of VSG entries
+    // produced by this pass to avoid incremental reallocations.
+    elementCustomizationState.perVisualStateGroup.reserve(
+        resolved.overridesPerVSG.size());
 
     // Elements that neither capture nor consume a variable pay nothing. The
     // rest get their spine now that the element has been matched; if it isn't
@@ -10065,8 +10045,6 @@ XamlIslandViewAdapter_get_DesiredSizeInPhysicalPixels_t
 HRESULT WINAPI
 XamlIslandViewAdapter_get_DesiredSizeInPhysicalPixels_Hook(void* pThis,
                                                            SIZE* size) {
-    Wh_Log(L">");
-
     HRESULT ret =
         XamlIslandViewAdapter_get_DesiredSizeInPhysicalPixels_Original(pThis,
                                                                        size);
@@ -10077,9 +10055,7 @@ XamlIslandViewAdapter_get_DesiredSizeInPhysicalPixels_Hook(void* pThis,
     }
 
     if (SUCCEEDED(ret) && explorerFrameContainerHeight) {
-        int originalCy = size->cy;
         size->cy = MulDiv(size->cy, explorerFrameContainerHeight, 136);
-        Wh_Log(L"%d -> %d", originalCy, size->cy);
     }
 
     return ret;
