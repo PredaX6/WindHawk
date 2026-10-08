@@ -4960,6 +4960,20 @@ ElementResolvedRules FindElementPropertyOverrides(FrameworkElement element,
     std::unordered_set<DependencyProperty> propertiesAdded;
     std::unordered_set<std::wstring> capturesAdded;
 
+    // Cache the immediate parent lazily. Rules without a parent selector do
+    // not pay for the lookup, while direct-parent fast paths reuse it.
+    FrameworkElement cachedDirectParent{nullptr};
+    bool directParentCached = false;
+    auto getDirectParent = [&]() -> FrameworkElement {
+        if (!directParentCached) {
+            cachedDirectParent =
+                Media::VisualTreeHelper::GetParent(element)
+                    .try_as<FrameworkElement>();
+            directParentCached = true;
+        }
+        return cachedDirectParent;
+    };
+
     for (auto it = g_elementsCustomizationRules.rbegin();
          it != g_elementsCustomizationRules.rend(); ++it) {
         auto& override = *it;
@@ -4990,9 +5004,7 @@ ElementResolvedRules FindElementPropertyOverrides(FrameworkElement element,
         // wildcard/root chains still use the full matcher below.
         } else if (parentMatchers.size() == 1 &&
                    parentMatchers[0].kind == ElementMatcher::Kind::Element) {
-            auto parent =
-                Media::VisualTreeHelper::GetParent(element)
-                    .try_as<FrameworkElement>();
+            auto parent = getDirectParent();
             if (!parent ||
                 !TestElementMatcher(parent, parentMatchers[0],
                                      &visualStateGroup, nullptr)) {
