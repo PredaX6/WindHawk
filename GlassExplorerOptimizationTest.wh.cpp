@@ -375,9 +375,7 @@ HRESULT VisualTreeWatcher::OnVisualTreeChange(ParentChildRelation relation, Visu
             auto frameworkElement = inspectable.try_as<mux::FrameworkElement>();
             if (frameworkElement)
             {
-                if (elementId == ElementId::None)
-                {
-                else
+                if (elementId != ElementId::None)
                 {
                     ApplyCustomizations(elementId, frameworkElement, element.Type);
                 }
