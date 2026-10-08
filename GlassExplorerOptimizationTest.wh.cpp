@@ -4912,12 +4912,19 @@ bool TestElementMatcher(FrameworkElement element,
         }
     }
 
-    // Resolve once, then avoid the DependencyObject conversion when the
-    // resolved matcher contains no property filters. This also covers both
-    // unresolved-empty and already-resolved-empty matchers.
-    const auto& propertyValues =
-        GetResolvedPropertyValues(matcher.type, &matcher.propertyValues);
-    if (!propertyValues.empty()) {
+    // Skip resolving property values entirely when this matcher has no
+    // property filters. Empty matchers are common in parent chains, so avoid
+    // the resolver call (and its associated variant handling/logging).
+    const bool hasPropertyValues = std::visit(
+        [](const auto& values) { return !values.empty(); },
+        matcher.propertyValues);
+    if (hasPropertyValues) {
+        const auto& propertyValues =
+            GetResolvedPropertyValues(matcher.type, &matcher.propertyValues);
+        if (propertyValues.empty()) {
+            return true;
+        }
+
         auto elementDo = element.as<DependencyObject>();
 
         for (const auto& propertyValue : propertyValues) {
