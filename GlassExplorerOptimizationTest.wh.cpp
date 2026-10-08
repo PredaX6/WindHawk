@@ -4864,14 +4864,23 @@ std::optional<double> UnboxedPropertyValueAsNumeric(
 bool TestElementMatcher(FrameworkElement element,
                         ElementMatcher& matcher,
                         VisualStateGroup* visualStateGroup,
-                        PCWSTR fallbackClassName) {
+                        PCWSTR fallbackClassName,
+                        PCWSTR cachedClassName = nullptr,
+                        PCWSTR cachedElementName = nullptr) {
+    const auto className = cachedClassName
+                               ? std::wstring_view(cachedClassName)
+                               : std::wstring_view(winrt::get_class_name(element));
+    const auto elementName = cachedElementName
+                                  ? std::wstring_view(cachedElementName)
+                                  : std::wstring_view(element.Name());
+
     if (!matcher.type.empty() &&
-        matcher.type != winrt::get_class_name(element) &&
+        matcher.type != className &&
         (!fallbackClassName || matcher.type != fallbackClassName)) {
         return false;
     }
 
-    if (!matcher.name.empty() && matcher.name != element.Name()) {
+    if (!matcher.name.empty() && matcher.name != elementName) {
         return false;
     }
 
@@ -4936,6 +4945,11 @@ struct ElementResolvedRules {
 ElementResolvedRules FindElementPropertyOverrides(FrameworkElement element,
                                                   PCWSTR fallbackClassName) {
     ElementResolvedRules result;
+    // These values are queried repeatedly while the same element is tested
+    // against multiple rules and parent matchers. Cache them for this apply
+    // pass instead of asking the XAML object for them on every matcher test.
+    const auto elementClassName = winrt::get_class_name(element);
+    const auto elementName = element.Name();
     std::unordered_set<DependencyProperty> propertiesAdded;
     std::unordered_set<std::wstring> capturesAdded;
 
@@ -4946,7 +4960,8 @@ ElementResolvedRules FindElementPropertyOverrides(FrameworkElement element,
         VisualStateGroup visualStateGroup = nullptr;
 
         if (!TestElementMatcher(element, override.elementMatcher,
-                                &visualStateGroup, fallbackClassName)) {
+                                &visualStateGroup, fallbackClassName,
+                                elementClassName.c_str(), elementName.c_str())) {
             continue;
         }
 
