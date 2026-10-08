@@ -5014,9 +5014,7 @@ ElementResolvedRules FindElementPropertyOverrides(FrameworkElement element,
                    parentMatchers[0].kind == ElementMatcher::Kind::Element &&
                    parentMatchers[1].kind == ElementMatcher::Kind::Element) {
             // Fast path for a two-level direct parent chain.
-            auto parent =
-                Media::VisualTreeHelper::GetParent(element)
-                    .try_as<FrameworkElement>();
+            auto parent = getDirectParent();
             if (!parent ||
                 !TestElementMatcher(parent, parentMatchers[0],
                                      &visualStateGroup, nullptr)) {
