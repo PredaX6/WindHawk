@@ -4864,21 +4864,38 @@ bool TestElementMatcher(FrameworkElement element,
                         PCWSTR fallbackClassName,
                         PCWSTR cachedClassName = nullptr,
                         PCWSTR cachedElementName = nullptr) {
-    const auto className = cachedClassName
-                               ? std::wstring_view(cachedClassName)
-                               : std::wstring_view(winrt::get_class_name(element));
-    const auto elementName = cachedElementName
-                                  ? std::wstring_view(cachedElementName)
-                                  : std::wstring_view(element.Name());
+    // Avoid querying XAML metadata for matchers that don't constrain the
+    // corresponding field. Parent matchers can run many times for one target.
+    std::wstring_view className;
+    std::wstring_view elementName;
+    winrt::hstring classNameStorage;
+    winrt::hstring elementNameStorage;
 
-    if (!matcher.type.empty() &&
-        matcher.type != className &&
-        (!fallbackClassName || matcher.type != fallbackClassName)) {
-        return false;
+    if (!matcher.type.empty()) {
+        if (cachedClassName) {
+            className = cachedClassName;
+        } else {
+            classNameStorage = winrt::get_class_name(element);
+            className = classNameStorage;
+        }
+
+        if (matcher.type != className &&
+            (!fallbackClassName || matcher.type != fallbackClassName)) {
+            return false;
+        }
     }
 
-    if (!matcher.name.empty() && matcher.name != elementName) {
-        return false;
+    if (!matcher.name.empty()) {
+        if (cachedElementName) {
+            elementName = cachedElementName;
+        } else {
+            elementNameStorage = element.Name();
+            elementName = elementNameStorage;
+        }
+
+        if (matcher.name != elementName) {
+            return false;
+        }
     }
 
     if (matcher.oneBasedIndex) {
