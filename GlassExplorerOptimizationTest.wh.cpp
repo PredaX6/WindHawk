@@ -356,28 +356,10 @@ bool VisualTreeWatcher::ReleaseDiagnosticsReference(InstanceHandle handle)
 
 HRESULT VisualTreeWatcher::OnVisualTreeChange(ParentChildRelation relation, VisualElement element, VisualMutationType mutationType) try
 {
-    Wh_Log(L"========================================");
-
-    switch (mutationType)
-    {
-    case Add:
-        Wh_Log(L"Mutation type: Add %llu", element.Handle);
-        break;
-
-    case Remove:
-        Wh_Log(L"Mutation type: Remove %llu", element.Handle);
-        break;
-
-    default:
-        Wh_Log(L"Mutation type: %d %llu", static_cast<int>(mutationType), element.Handle);
-        break;
-    }
-
-    Wh_Log(L"Element type: %s", element.Type);
-
+    // This callback can fire very frequently while Explorer builds or updates
+    // its visual tree. Avoid verbose per-mutation logging on the hot path.
     if (!g_initializedForThread)
     {
-        Wh_Log(L"Not initialized for thread %u", GetCurrentThreadId());
         return S_OK;
     }
 
@@ -393,11 +375,8 @@ HRESULT VisualTreeWatcher::OnVisualTreeChange(ParentChildRelation relation, Visu
             auto frameworkElement = inspectable.try_as<mux::FrameworkElement>();
             if (frameworkElement)
             {
-                Wh_Log(L"FrameworkElement name: %s", frameworkElement.Name().c_str());
                 if (elementId == ElementId::None)
                 {
-                    Wh_Log(L"Skipping element which can't be given an id");
-                }
                 else
                 {
                     ApplyCustomizations(elementId, frameworkElement, element.Type);
@@ -405,7 +384,7 @@ HRESULT VisualTreeWatcher::OnVisualTreeChange(ParentChildRelation relation, Visu
             }
             else
             {
-                Wh_Log(L"Skipping non-FrameworkElement");
+                // Non-FrameworkElement instances don't need customization.
             }
         }
         else if (mutationType == Remove)
