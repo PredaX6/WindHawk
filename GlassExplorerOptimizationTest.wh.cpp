@@ -6469,6 +6469,7 @@ void SetUpCapturesForElement(StyleVariableState* state,
     // we only subscribe once and only when needed.
     std::vector<std::pair<DependencyProperty, std::wstring>>
         sizeChangedCaptures;
+    sizeChangedCaptures.reserve(captures.size());
 
     for (const auto& capture : captures) {
         const auto [it, inserted] =
