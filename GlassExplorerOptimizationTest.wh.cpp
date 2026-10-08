@@ -4993,6 +4993,11 @@ ElementResolvedRules FindElementPropertyOverrides(FrameworkElement element,
     std::unordered_set<DependencyProperty> propertiesAdded;
     std::unordered_set<std::wstring> capturesAdded;
 
+    // Captures are collected from matching rules and cannot exceed the number
+    // of rules. Reserve once to avoid repeated vector growth in capture-heavy
+    // configurations.
+    result.captures.reserve(g_elementsCustomizationRules.size());
+
     // The rule list bounds the number of unique properties and captures that
     // can be inserted. Reserve once to avoid repeated hash-table rehashes when
     // an element matches many rules.
