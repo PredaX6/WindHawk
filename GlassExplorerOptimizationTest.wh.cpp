@@ -4894,18 +4894,15 @@ bool TestElementMatcher(FrameworkElement element,
         }
     }
 
-    // Most matchers have no property-value filter. Avoid the
-    // DependencyObject conversion and property-resolution path entirely in
-    // that common case.
-    if (std::holds_alternative<PropertyValuesUnresolved>(
-            matcher.propertyValues) &&
-        std::get<PropertyValuesUnresolved>(matcher.propertyValues).empty()) {
-        // No property filters to evaluate.
-    } else {
+    // Resolve once, then avoid the DependencyObject conversion when the
+    // resolved matcher contains no property filters. This also covers both
+    // unresolved-empty and already-resolved-empty matchers.
+    const auto& propertyValues =
+        GetResolvedPropertyValues(matcher.type, &matcher.propertyValues);
+    if (!propertyValues.empty()) {
         auto elementDo = element.as<DependencyObject>();
 
-        for (const auto& propertyValue :
-             GetResolvedPropertyValues(matcher.type, &matcher.propertyValues)) {
+        for (const auto& propertyValue : propertyValues) {
             const auto value =
                 ReadLocalValueWithWorkaround(elementDo, propertyValue.first);
         if (!value) {
