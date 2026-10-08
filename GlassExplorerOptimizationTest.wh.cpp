@@ -1487,12 +1487,8 @@ winrt::Windows::Foundation::IInspectable ReadLocalValueWithWorkaround(
 #endif
     }
 
-    Wh_Log(L"Read property value %s",
-           value ? (value == DependencyProperty::UnsetValue()
-                        ? L"(unset)"
-                        : winrt::get_class_name(value).c_str())
-                 : L"(null)");
-
+    // Avoid per-property logging here: matcher evaluation can call this
+    // frequently while the visual tree is being built or updated.
     return value;
 }
 
