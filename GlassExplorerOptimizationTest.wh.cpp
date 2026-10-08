@@ -4996,9 +4996,30 @@ ElementResolvedRules FindElementPropertyOverrides(FrameworkElement element,
                                      &visualStateGroup, nullptr)) {
                 continue;
             }
+        } else if (parentMatchers.size() == 2 &&
+                   parentMatchers[0].kind == ElementMatcher::Kind::Element &&
+                   parentMatchers[1].kind == ElementMatcher::Kind::Element) {
+            // Fast path for a two-level direct parent chain.
+            auto parent =
+                Media::VisualTreeHelper::GetParent(element)
+                    .try_as<FrameworkElement>();
+            if (!parent ||
+                !TestElementMatcher(parent, parentMatchers[0],
+                                     &visualStateGroup, nullptr)) {
+                continue;
+            }
+
+            auto grandParent =
+                Media::VisualTreeHelper::GetParent(parent)
+                    .try_as<FrameworkElement>();
+            if (!grandParent ||
+                !TestElementMatcher(grandParent, parentMatchers[1],
+                                     &visualStateGroup, nullptr)) {
+                continue;
+            }
         } else {
-        auto matchParents = [&](auto& self, FrameworkElement iter,
-                                size_t mi) -> bool {
+            auto matchParents = [&](auto& self, FrameworkElement iter,
+                                    size_t mi) -> bool {
             if (mi >= parentMatchers.size()) {
                 return true;
             }
@@ -5049,12 +5070,9 @@ ElementResolvedRules FindElementPropertyOverrides(FrameworkElement element,
             return self(self, parent, mi + 1);
         };
 
-        if (parentMatchers.size() != 1 ||
-            parentMatchers[0].kind != ElementMatcher::Kind::Element) {
             if (!matchParents(matchParents, element, 0)) {
                 continue;
             }
-        }
         }
 
         const auto& resolvedRules = GetResolvedPropertyOverrides(
