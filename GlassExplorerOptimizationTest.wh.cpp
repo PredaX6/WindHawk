@@ -4972,6 +4972,21 @@ ElementResolvedRules FindElementPropertyOverrides(FrameworkElement element,
         // for the wildcard's next matcher leads to a failure further up the
         // chain, retry with a farther ancestor.
         auto& parentMatchers = override.parentElementMatchers;
+
+        // The overwhelmingly common parent selector is a single direct
+        // ancestor. Handle it without creating the recursive matcher lambda;
+        // wildcard/root chains still use the full matcher below.
+        if (parentMatchers.size() == 1 &&
+            parentMatchers[0].kind == ElementMatcher::Kind::Element) {
+            auto parent =
+                Media::VisualTreeHelper::GetParent(element)
+                    .try_as<FrameworkElement>();
+            if (!parent ||
+                !TestElementMatcher(parent, parentMatchers[0],
+                                     &visualStateGroup, nullptr)) {
+                continue;
+            }
+        } else {
         auto matchParents = [&](auto& self, FrameworkElement iter,
                                 size_t mi) -> bool {
             if (mi >= parentMatchers.size()) {
@@ -5024,8 +5039,12 @@ ElementResolvedRules FindElementPropertyOverrides(FrameworkElement element,
             return self(self, parent, mi + 1);
         };
 
-        if (!matchParents(matchParents, element, 0)) {
-            continue;
+        if (parentMatchers.size() != 1 ||
+            parentMatchers[0].kind != ElementMatcher::Kind::Element) {
+            if (!matchParents(matchParents, element, 0)) {
+                continue;
+            }
+        }
         }
 
         const auto& resolvedRules = GetResolvedPropertyOverrides(
