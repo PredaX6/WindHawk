@@ -5017,55 +5017,55 @@ ElementResolvedRules FindElementPropertyOverrides(FrameworkElement element,
         } else {
             auto matchParents = [&](auto& self, FrameworkElement iter,
                                     size_t mi) -> bool {
-            if (mi >= parentMatchers.size()) {
-                return true;
-            }
-
-            auto& matcher = parentMatchers[mi];
-
-            if (matcher.kind == ElementMatcher::Kind::Root) {
-                if (Media::VisualTreeHelper::GetParent(iter)) {
-                    return false;
+                if (mi >= parentMatchers.size()) {
+                    return true;
                 }
 
-                return self(self, iter, mi + 1);
-            }
+                auto& matcher = parentMatchers[mi];
 
-            if (matcher.kind == ElementMatcher::Kind::Wildcard) {
-                // '*' is always followed by an Element matcher (validated at
-                // parse time). Walk up parents and try recursing for each
-                // ancestor that matches the next matcher.
-                auto& nextMatcher = parentMatchers[mi + 1];
-                auto cur = iter;
-                while (true) {
-                    auto parent = Media::VisualTreeHelper::GetParent(cur)
-                                      .try_as<FrameworkElement>();
-                    if (!parent) {
+                if (matcher.kind == ElementMatcher::Kind::Root) {
+                    if (Media::VisualTreeHelper::GetParent(iter)) {
                         return false;
                     }
 
-                    cur = parent;
-                    if (TestElementMatcher(cur, nextMatcher, &visualStateGroup,
-                                           nullptr) &&
-                        self(self, cur, mi + 2)) {
-                        return true;
+                    return self(self, iter, mi + 1);
+                }
+
+                if (matcher.kind == ElementMatcher::Kind::Wildcard) {
+                    // '*' is always followed by an Element matcher (validated
+                    // at parse time). Walk up parents and try recursing for
+                    // each ancestor that matches the next matcher.
+                    auto& nextMatcher = parentMatchers[mi + 1];
+                    auto cur = iter;
+                    while (true) {
+                        auto parent = Media::VisualTreeHelper::GetParent(cur)
+                                          .try_as<FrameworkElement>();
+                        if (!parent) {
+                            return false;
+                        }
+
+                        cur = parent;
+                        if (TestElementMatcher(
+                                cur, nextMatcher, &visualStateGroup, nullptr) &&
+                            self(self, cur, mi + 2)) {
+                            return true;
+                        }
                     }
                 }
-            }
 
-            auto parent = Media::VisualTreeHelper::GetParent(iter)
-                              .try_as<FrameworkElement>();
-            if (!parent) {
-                return false;
-            }
+                auto parent = Media::VisualTreeHelper::GetParent(iter)
+                                  .try_as<FrameworkElement>();
+                if (!parent) {
+                    return false;
+                }
 
-            if (!TestElementMatcher(parent, matcher, &visualStateGroup,
-                                    nullptr)) {
-                return false;
-            }
+                if (!TestElementMatcher(parent, matcher, &visualStateGroup,
+                                         nullptr)) {
+                    return false;
+                }
 
-            return self(self, parent, mi + 1);
-        };
+                return self(self, parent, mi + 1);
+            };
 
             if (!matchParents(matchParents, element, 0)) {
                 continue;
