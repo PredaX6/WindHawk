@@ -5088,15 +5088,16 @@ ElementResolvedRules FindElementPropertyOverrides(FrameworkElement element,
             continue;
         }
 
-        auto& propertyOverridesForVSG =
-            result.overridesPerVSG[visualStateGroup];
         for (const auto& [property, valuesPerVisualState] :
              resolvedRules.propertyOverrides) {
-            bool propertyInserted = propertiesAdded.insert(property).second;
-            if (!propertyInserted) {
+            if (!propertiesAdded.insert(property).second) {
                 continue;
             }
 
+            // Only create the VSG/property maps after confirming that this
+            // rule contributes a property which was not already resolved.
+            auto& propertyOverridesForVSG =
+                result.overridesPerVSG[visualStateGroup];
             auto& propertyOverrides = propertyOverridesForVSG[property];
             for (const auto& [visualState, value] : valuesPerVisualState) {
                 propertyOverrides.insert({visualState, value});
