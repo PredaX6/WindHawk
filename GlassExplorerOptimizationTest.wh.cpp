@@ -4898,6 +4898,15 @@ bool TestElementMatcher(FrameworkElement element,
         }
     }
 
+    // A completely unconstrained matcher matches every FrameworkElement.
+    // This is a common case for wildcard/parent rules, so return before any
+    // property or visual-state processing.
+    if (!matcher.oneBasedIndex &&
+        matcher.propertyValues.index() == 0 &&
+        !matcher.visualStateGroupName) {
+        return true;
+    }
+
     if (matcher.oneBasedIndex) {
         auto parent = Media::VisualTreeHelper::GetParent(element);
         if (!parent) {
