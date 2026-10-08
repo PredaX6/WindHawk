@@ -4978,11 +4978,16 @@ ElementResolvedRules FindElementPropertyOverrides(FrameworkElement element,
         // chain, retry with a farther ancestor.
         auto& parentMatchers = override.parentElementMatchers;
 
+        // Most rules do not have a parent selector at all. Skip the
+        // parent-matching machinery entirely for that common case.
+        if (parentMatchers.empty()) {
+            // The element matcher already matched; there is no parent
+            // constraint to evaluate.
         // The overwhelmingly common parent selector is a single direct
         // ancestor. Handle it without creating the recursive matcher lambda;
         // wildcard/root chains still use the full matcher below.
-        if (parentMatchers.size() == 1 &&
-            parentMatchers[0].kind == ElementMatcher::Kind::Element) {
+        } else if (parentMatchers.size() == 1 &&
+                   parentMatchers[0].kind == ElementMatcher::Kind::Element) {
             auto parent =
                 Media::VisualTreeHelper::GetParent(element)
                     .try_as<FrameworkElement>();
