@@ -371,18 +371,17 @@ HRESULT VisualTreeWatcher::OnVisualTreeChange(ParentChildRelation relation, Visu
         if (mutationType == Add)
         {
             const auto inspectable = FromHandle(element.Handle);
-            auto elementId = GetOrCreateElementId(element.Handle, inspectable);
             auto frameworkElement = inspectable.try_as<mux::FrameworkElement>();
             if (frameworkElement)
             {
+                // Only FrameworkElement instances can match the mod's XAML
+                // customization rules. Avoid creating element-id bookkeeping
+                // for unrelated XAML objects on this hot path.
+                auto elementId = GetOrCreateElementId(element.Handle, inspectable);
                 if (elementId != ElementId::None)
                 {
                     ApplyCustomizations(elementId, frameworkElement, element.Type);
                 }
-            }
-            else
-            {
-                // Non-FrameworkElement instances don't need customization.
             }
         }
         else if (mutationType == Remove)
