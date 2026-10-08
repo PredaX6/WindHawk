@@ -4894,12 +4894,20 @@ bool TestElementMatcher(FrameworkElement element,
         }
     }
 
-    auto elementDo = element.as<DependencyObject>();
+    // Most matchers have no property-value filter. Avoid the
+    // DependencyObject conversion and property-resolution path entirely in
+    // that common case.
+    if (std::holds_alternative<PropertyValuesUnresolved>(
+            matcher.propertyValues) &&
+        std::get<PropertyValuesUnresolved>(matcher.propertyValues).empty()) {
+        // No property filters to evaluate.
+    } else {
+        auto elementDo = element.as<DependencyObject>();
 
-    for (const auto& propertyValue :
-         GetResolvedPropertyValues(matcher.type, &matcher.propertyValues)) {
-        const auto value =
-            ReadLocalValueWithWorkaround(elementDo, propertyValue.first);
+        for (const auto& propertyValue :
+             GetResolvedPropertyValues(matcher.type, &matcher.propertyValues)) {
+            const auto value =
+                ReadLocalValueWithWorkaround(elementDo, propertyValue.first);
         if (!value) {
             Wh_Log(L"Null property value");
             return false;
@@ -4915,8 +4923,9 @@ bool TestElementMatcher(FrameworkElement element,
             return false;
         }
 
-        if (*expectedUnboxed != *valueUnboxed) {
-            return false;
+            if (*expectedUnboxed != *valueUnboxed) {
+                return false;
+            }
         }
     }
 
