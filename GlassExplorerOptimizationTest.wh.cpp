@@ -4947,6 +4947,10 @@ struct ElementResolvedRules {
 ElementResolvedRules FindElementPropertyOverrides(FrameworkElement element,
                                                   PCWSTR fallbackClassName) {
     ElementResolvedRules result;
+    if (g_elementsCustomizationRules.empty()) {
+        return result;
+    }
+
     // These values are queried repeatedly while the same element is tested
     // against multiple rules and parent matchers. Cache them for this apply
     // pass instead of asking the XAML object for them on every matcher test.
