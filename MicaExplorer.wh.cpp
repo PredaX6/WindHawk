@@ -366,20 +366,6 @@ Windows](https://windhawk.net/mods/translucent-windows) mod.
   - blurSoft: Clair Blur
   - micaAccent: Mica accentué
   - micaAltAccent: Mica Alt accentué
-- backgroundTranslucentEffect: ""
-  $name: Effet de transparence de l’arrière-plan
-  $description: >-
-    Choisissez l’un des quatre effets de Translucent Windows. Les effets
-    SystemBackdrop nécessitent Windows 11 version 22H2 (build 22621) ou
-    une version ultérieure.
-  $options:
-  - "": Valeur par défaut du thème sélectionné
-  - default: Valeur par défaut de Windows
-  - acrylicblur: Flou (AccentBlurBehind)
-  - acrylicsystem: Acrylique (SystemBackdrop)
-  - mica: Mica (SystemBackdrop)
-  - mica_tabbed: Mica Alt (SystemBackdrop)
-  - none: Aucun
 - backgroundTranslucentEffectRegion: ""
   $name: Zone d’application de la transparence
   $description: >-
