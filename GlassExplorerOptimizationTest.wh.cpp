@@ -7172,13 +7172,6 @@ bool IsExplorerThemeTargetElement(
 void ApplyCustomizations(ElementId elementId,
                          FrameworkElement element,
                          PCWSTR fallbackClassName) {
-    // Merge resource dictionary on first element add. Merging it earlier on
-    // window creation doesn't work, perhaps merged dictionaries are reset
-    // during initialization.
-    if (!g_resourceVariablesThemeDict) {
-        MergeResourceVariables();
-    }
-
     // Before the early return below: a repeater rarely has styles of its own,
     // but its item elements do.
     HandleVirtualizingRepeater(elementId, element);
@@ -7190,6 +7183,14 @@ void ApplyCustomizations(ElementId elementId,
     if (!IsExplorerThemeTargetElement(element, fallbackClassName))
     {
         return;
+    }
+
+    // Merge resource dictionary on the first actual styling target. Merging
+    // it earlier on window creation doesn't work, perhaps merged dictionaries
+    // are reset during initialization. Deferring it also avoids loading theme
+    // resources for repeaters and unrelated elements that need no styling.
+    if (!g_resourceVariablesThemeDict) {
+        MergeResourceVariables();
     }
 
     auto* state = GetStyleVariableState();
