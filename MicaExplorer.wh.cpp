@@ -9590,7 +9590,8 @@ HRESULT WINAPI DwmSetWindowAttribute_Hook(HWND hWnd,
             backdropType = DWMSBT_TRANSIENTWINDOW;
             break;
         case BackgroundTranslucentEffect::kAcrylicDark:
-            backdropType = DWMSBT_NONE;
+            // Keep the system acrylic material and apply a darker tint below.
+            backdropType = DWMSBT_TRANSIENTWINDOW;
             break;
         case BackgroundTranslucentEffect::kMica:
             backdropType = DWMSBT_MAINWINDOW;
@@ -10871,7 +10872,8 @@ void ApplyBackgroundTranslucentEffect(
             backdropType = DWMSBT_TRANSIENTWINDOW;
             break;
         case BackgroundTranslucentEffect::kAcrylicDark:
-            backdropType = DWMSBT_NONE;
+            // Keep the system acrylic material and apply a darker tint below.
+            backdropType = DWMSBT_TRANSIENTWINDOW;
             break;
         case BackgroundTranslucentEffect::kMica:
             backdropType = DWMSBT_MAINWINDOW;
@@ -10889,6 +10891,8 @@ void ApplyBackgroundTranslucentEffect(
 
     const bool acrylicDark =
         effect == BackgroundTranslucentEffect::kAcrylicDark;
+    // Blur uses the legacy blur path; dark acrylic keeps the DWM acrylic
+    // backdrop (DWMSBT_TRANSIENTWINDOW) and applies a darker tint.
     SetAccentBlurBehind(hWnd,
                         effect == BackgroundTranslucentEffect::kBlur ||
                             acrylicDark,
