@@ -4189,6 +4189,9 @@ std::wstring EscapeXmlAttribute(std::wstring_view data) {
 
 // https://stackoverflow.com/a/54364173
 std::wstring_view TrimStringView(std::wstring_view s) {
+    if (s.empty()) {
+        return s;
+    }
     s.remove_prefix(std::min(s.find_first_not_of(L" \t\r\v\n"), s.size()));
     s.remove_suffix(
         std::min(s.size() - s.find_last_not_of(L" \t\r\v\n") - 1, s.size()));
@@ -7824,8 +7827,8 @@ std::wstring AdjustTypeName(std::wstring_view type) {
         return L"Microsoft.UI.Xaml.Controls." + std::wstring{type};
     }
 
-    static const std::vector<std::pair<std::wstring_view, std::wstring_view>>
-        adjustments = {
+    static constexpr std::pair<std::wstring_view, std::wstring_view>
+        adjustments[] = {
             {L"muxc:", L"Microsoft.UI.Xaml.Controls."},
     };
 
