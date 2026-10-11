@@ -3621,14 +3621,14 @@ void ScheduleImageLoadRetryOnAllUiThreads() {
 
     std::vector<winrt::Microsoft::UI::Dispatching::DispatcherQueue> dispatchers;
     {
-        // The registry size is an upper bound on live dispatchers to collect.
-        dispatchers.reserve(g_imageRetryDispatchers.size());
         std::lock_guard<std::mutex> lock(g_imageRetryMutex);
 
         if (!g_imageRetryActive) {
             return;
         }
 
+        // Read the registry size under its lock; it bounds live dispatchers.
+        dispatchers.reserve(g_imageRetryDispatchers.size());
         for (auto& weakDispatcher : g_imageRetryDispatchers) {
             if (auto dispatcher = weakDispatcher.get()) {
                 dispatchers.push_back(dispatcher);
