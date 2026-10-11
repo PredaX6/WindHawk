@@ -4201,6 +4201,10 @@ std::vector<std::wstring_view> SplitStringView(std::wstring_view s,
     size_t pos_start = 0, pos_end, delim_len = delimiter.length();
     std::wstring_view token;
     std::vector<std::wstring_view> res;
+    // Bound the number of non-overlapping tokens to avoid vector growth.
+    if (delim_len > 0) {
+        res.reserve(s.size() / delim_len + 1);
+    }
 
     while ((pos_end = s.find(delimiter, pos_start)) !=
            std::wstring_view::npos) {
@@ -6184,6 +6188,9 @@ std::optional<PropertyOverrideValue> ResolveDynamicStyleValue(
             : nullptr;
 
     std::vector<StyleVariableDependency> newDeps;
+    // Reuse the previous dependency count as a starting capacity; expansion
+    // can still grow normally when the expression now references more names.
+    newDeps.reserve(propertyCustomizationState->variableDependencies.size());
     StyleVariableLookupContext context{state, consumerNode, &newDeps};
     std::optional<std::wstring> expanded;
     bool skipped = false;
@@ -7490,6 +7497,8 @@ void CleanupCustomizations(ElementId elementId) {
     // just-unregistered capture callbacks can't re-seed a variable
     // mid-teardown.
     std::vector<std::wstring> removedVarNames;
+    removedVarNames.reserve(
+        elementCustomizationState.captureCustomizationStates.size());
     if (state) {
         for (const auto& [property, captureState] :
              elementCustomizationState.captureCustomizationStates) {
@@ -7835,6 +7844,8 @@ std::wstring AdjustTypeName(std::wstring_view type) {
 // which are part of a `[Property=Value]` clause.
 std::vector<std::wstring_view> SplitTargetString(std::wstring_view target) {
     std::vector<std::wstring_view> result;
+    // Every top-level comma creates at most one additional target token.
+    result.reserve(std::count(target.begin(), target.end(), L',') + 1);
 
     size_t partBegin = 0;
     bool inProperty = false;
@@ -8228,6 +8239,9 @@ std::vector<ResourceVariableEntry> ProcessResourceVariablesFromSettings(
     const StyleConstants& styleConstants,
     const std::vector<PCWSTR>& themeResourceVariables) {
     std::vector<ResourceVariableEntry> resourceVariables;
+    // The configured theme entries are a known lower bound; custom settings
+    // can still append more entries without changing behavior.
+    resourceVariables.reserve(themeResourceVariables.size());
 
     for (const auto& themeResourceVariable : themeResourceVariables) {
         Wh_Log(L"Processing theme resource variable %s", themeResourceVariable);
