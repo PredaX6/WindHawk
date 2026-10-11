@@ -286,13 +286,15 @@ LRESULT CALLBACK ExplorerWindowSubclassProc(HWND hwnd,
                                              LPARAM lParam,
                                              UINT_PTR subclassId,
                                              DWORD_PTR) {
-    const LRESULT result = DefSubclassProc(hwnd, message, wParam, lParam);
-
+    // Set the material before the default show/position processing begins,
+    // so DWM has the best chance of using it for the opening animation.
     if ((message == WM_SHOWWINDOW && wParam) ||
         (message == WM_WINDOWPOSCHANGED && lParam &&
          (reinterpret_cast<const WINDOWPOS*>(lParam)->flags & SWP_SHOWWINDOW))) {
         ApplyMaterial(hwnd);
     }
+
+    const LRESULT result = DefSubclassProc(hwnd, message, wParam, lParam);
 
     if (message == WM_NCDESTROY) {
         RemoveWindowSubclass(hwnd, ExplorerWindowSubclassProc, subclassId);
