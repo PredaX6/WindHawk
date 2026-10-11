@@ -9833,7 +9833,7 @@ void SetAccentBlurBehind(HWND hWnd, bool enable) {
         return;
     }
 
-    constexpr int ACCENT_ENABLE_ACRYLICBLURBEHIND = 4;
+    constexpr int ACCENT_ENABLE_BLURBEHIND = 3;
 
     struct ACCENT_POLICY {
         int AccentState;
@@ -9860,7 +9860,7 @@ void SetAccentBlurBehind(HWND hWnd, bool enable) {
     }
 
     ACCENT_POLICY accentPolicy = {
-        .AccentState = ACCENT_ENABLE_ACRYLICBLURBEHIND,
+        .AccentState = ACCENT_ENABLE_BLURBEHIND,
         // AABBGGRR.
         .GradientColor = 0x3A232323,
     };
