@@ -2,7 +2,7 @@
 // @id              mica-explorer
 // @name            Mica Explorer
 // @description     Apply six Blur and Mica styles to Windows 11 File Explorer.
-// @version         1.2.4
+// @version         1.2.5
 // @author          TeddySlexique
 // @github          https://github.com/PredaX6/WindHawk
 // @include         explorer.exe
