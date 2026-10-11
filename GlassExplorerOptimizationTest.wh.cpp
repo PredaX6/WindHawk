@@ -4165,6 +4165,11 @@ std::wstring EscapeXmlAttribute(std::wstring_view data) {
         return {};
     }
 
+    // Most style values contain no XML attribute metacharacters.
+    if (data.find_first_of(L"&\"<>") == std::wstring_view::npos) {
+        return std::wstring(data);
+    }
+
     std::wstring buffer;
     buffer.reserve(data.size());
     for (const auto c : data) {
@@ -4207,7 +4212,8 @@ std::wstring_view TrimStringView(std::wstring_view s) {
 // https://stackoverflow.com/a/46931770
 std::vector<std::wstring_view> SplitStringView(std::wstring_view s,
                                                std::wstring_view delimiter) {
-    if (delimiter.empty()) {
+    if (delimiter.empty() ||
+        s.find(delimiter) == std::wstring_view::npos) {
         return {s};
     }
 
@@ -7590,7 +7596,3055 @@ std::wstring ApplyStyleConstants(std::wstring_view style,
     if (style.empty()) {
         return {};
     }
-    if (styleConstants.empty()) {
+    if (styleConstants.empty() ||
+        style.find('
+    result.reserve(style.size());
+
+    size_t lastPos = 0;
+    size_t findPos;
+
+    while ((findPos = style.find('$', lastPos)) != style.npos) {
+        result.append(style, lastPos, findPos - lastPos);
+
+        const StyleConstant* constant = nullptr;
+        for (const auto& s : styleConstants) {
+            if (s.first == style.substr(findPos + 1, s.first.size())) {
+                constant = &s;
+                break;
+            }
+        }
+
+        if (constant) {
+            result += constant->second;
+            lastPos = findPos + 1 + constant->first.size();
+        } else {
+            result += '$';
+            lastPos = findPos + 1;
+        }
+    }
+
+    // Care for the rest after last occurrence.
+    result += style.substr(lastPos);
+
+    return result;
+}
+
+std::optional<StyleConstant> ParseStyleConstant(
+    std::wstring_view constant,
+    const StyleConstants& styleConstants) {
+    // Skip if commented.
+    if (constant.starts_with(L"//")) {
+        return std::nullopt;
+    }
+
+    auto eqPos = constant.find(L'=');
+    if (eqPos == constant.npos) {
+        Wh_Log(L"Skipping entry with no '=': %.*s",
+               static_cast<int>(constant.length()), constant.data());
+        return std::nullopt;
+    }
+
+    auto key = TrimStringView(constant.substr(0, eqPos));
+    auto valueRaw = TrimStringView(constant.substr(eqPos + 1));
+    auto value = ApplyStyleConstants(valueRaw, styleConstants);
+
+    return StyleConstant{std::wstring(key), std::move(value)};
+}
+
+StyleConstants LoadStyleConstants(
+    const std::vector<PCWSTR>& themeStyleConstants) {
+    StyleConstants result;
+
+    auto addToResult = [&result](StyleConstant sc) {
+        // Keep sorted by name length to replace long names first. Reverse the
+        // order to allow overriding definitions with the same name.
+        auto insertIndex = std::lower_bound(
+            result.begin(), result.end(), sc,
+            [](const StyleConstant& a, const StyleConstant& b) {
+                return a.first.size() > b.first.size();
+            });
+
+        result.insert(insertIndex, std::move(sc));
+    };
+
+    for (const auto themeStyleConstant : themeStyleConstants) {
+        if (auto parsed = ParseStyleConstant(themeStyleConstant, result)) {
+            addToResult(std::move(*parsed));
+        }
+    }
+
+    for (int i = 0;; i++) {
+        string_setting_unique_ptr constantSetting(
+            Wh_GetStringSetting(L"styleConstants[%d]", i));
+        if (!*constantSetting.get()) {
+            break;
+        }
+
+        if (auto parsed = ParseStyleConstant(constantSetting.get(), result)) {
+            addToResult(std::move(*parsed));
+        }
+    }
+
+    return result;
+}
+
+ElementMatcher ElementMatcherFromString(std::wstring_view str) {
+    ElementMatcher result;
+    PropertyValuesUnresolved propertyValuesUnresolved;
+
+    auto trimmed = TrimStringView(str);
+    if (trimmed == L"*") {
+        result.kind = ElementMatcher::Kind::Wildcard;
+        return result;
+    }
+    if (trimmed == L":root") {
+        result.kind = ElementMatcher::Kind::Root;
+        return result;
+    }
+
+    auto i = str.find_first_of(L"#@[");
+    result.type = TrimStringView(str.substr(0, i));
+    if (result.type.empty()) {
+        throw std::runtime_error("Bad target syntax, empty type");
+    }
+
+    while (i != str.npos) {
+        auto iNext = str.find_first_of(L"#@[", i + 1);
+        auto nextPart =
+            str.substr(i + 1, iNext == str.npos ? str.npos : iNext - (i + 1));
+
+        switch (str[i]) {
+            case L'#':
+                if (!result.name.empty()) {
+                    throw std::runtime_error(
+                        "Bad target syntax, more than one name");
+                }
+
+                result.name = TrimStringView(nextPart);
+                if (result.name.empty()) {
+                    throw std::runtime_error("Bad target syntax, empty name");
+                }
+                break;
+
+            case L'@':
+                if (result.visualStateGroupName) {
+                    throw std::runtime_error(
+                        "Bad target syntax, more than one visual state group");
+                }
+
+                result.visualStateGroupName = TrimStringView(nextPart);
+                break;
+
+            case L'[': {
+                auto rule = TrimStringView(nextPart);
+                if (rule.length() == 0 || rule.back() != L']') {
+                    throw std::runtime_error("Bad target syntax, missing ']'");
+                }
+
+                rule = TrimStringView(rule.substr(0, rule.length() - 1));
+                if (rule.length() == 0) {
+                    throw std::runtime_error(
+                        "Bad target syntax, empty property");
+                }
+
+                if (rule.find_first_not_of(L"0123456789") == rule.npos) {
+                    result.oneBasedIndex = std::stoi(std::wstring(rule));
+                    break;
+                }
+
+                auto ruleEqPos = rule.find(L'=');
+                if (ruleEqPos == rule.npos) {
+                    throw std::runtime_error(
+                        "Bad target syntax, missing '=' in property");
+                }
+
+                auto ruleKey = TrimStringView(rule.substr(0, ruleEqPos));
+                auto ruleVal = TrimStringView(rule.substr(ruleEqPos + 1));
+
+                if (ruleKey.length() == 0) {
+                    throw std::runtime_error(
+                        "Bad target syntax, empty property name");
+                }
+
+                propertyValuesUnresolved.push_back(
+                    {std::wstring(ruleKey), std::wstring(ruleVal)});
+                break;
+            }
+
+            default:
+                throw std::runtime_error("Bad target syntax");
+        }
+
+        i = iNext;
+    }
+
+    result.propertyValues = std::move(propertyValuesUnresolved);
+
+    return result;
+}
+
+// Parses a single `controlStyles[*].styles[*]` entry into either a ValueRule
+// (`Property[@VisualState][:]=value`) or a CaptureRule (`Property=>VarName`).
+// Throws std::runtime_error on malformed input or disallowed combinations such
+// as `:=>` or `@VisualState=>`.
+std::variant<ValueRule, CaptureRule> ParseRule(std::wstring_view str) {
+    auto eqPos = str.find(L'=');
+    if (eqPos == str.npos) {
+        throw std::runtime_error("Bad style syntax, '=' is missing");
+    }
+
+    auto name = str.substr(0, eqPos);
+    auto value = str.substr(eqPos + 1);
+
+    if (!value.empty() && value.front() == L'>') {
+        // Capture rule: `Property=>VarName`. The right-hand side (after the
+        // leading `>` marker) is the name of a mod-global style variable into
+        // which the property's current value is captured.
+        value = value.substr(1);
+
+        if (!name.empty() && name.back() == L':') {
+            throw std::runtime_error(
+                "Bad style syntax, ':=>' is not valid (':=' XAML value "
+                "cannot be combined with '=>' capture)");
+        }
+
+        if (name.find(L'@') != name.npos) {
+            throw std::runtime_error(
+                "Bad style syntax, '@VisualState' not allowed on a capture "
+                "rule");
+        }
+
+        auto trimmedPropertyName = TrimStringView(name);
+        if (trimmedPropertyName.empty()) {
+            throw std::runtime_error("Bad style syntax, empty name");
+        }
+
+        auto trimmedVarName = TrimStringView(value);
+        if (trimmedVarName.empty()) {
+            throw std::runtime_error(
+                "Bad style syntax, empty capture variable name");
+        }
+        if (!IsValidStyleVariableIdentifier(trimmedVarName)) {
+            throw std::runtime_error(
+                "Bad style syntax, invalid capture variable name");
+        }
+
+        return CaptureRule{std::wstring(trimmedPropertyName),
+                           std::wstring(trimmedVarName)};
+    }
+
+    ValueRule result;
+    result.value = TrimStringView(value);
+
+    if (!name.empty() && name.back() == L':') {
+        result.isXamlValue = true;
+        name = name.substr(0, name.size() - 1);
+    }
+
+    auto atPos = name.find(L'@');
+    if (atPos != name.npos) {
+        result.visualState = TrimStringView(name.substr(atPos + 1));
+        name = name.substr(0, atPos);
+    }
+
+    result.propertyName = TrimStringView(name);
+    if (result.propertyName.empty()) {
+        throw std::runtime_error("Bad style syntax, empty name");
+    }
+
+    return result;
+}
+
+std::wstring AdjustTypeName(std::wstring_view type) {
+    if (type.find_first_of(L".:") == type.npos) {
+        if (type == L"Rectangle") {
+            return L"Microsoft.UI.Xaml.Shapes.Rectangle";
+        }
+
+        constexpr std::wstring_view prefix = L"Microsoft.UI.Xaml.Controls.";
+        std::wstring result;
+        result.reserve(prefix.size() + type.size());
+        result += prefix;
+        result += type;
+        return result;
+    }
+
+    // Most fully qualified names do not use the muxc: shorthand.
+    if (!type.starts_with(L"muxc:")) {
+        return std::wstring(type);
+    }
+
+    static constexpr std::pair<std::wstring_view, std::wstring_view>
+        adjustments[] = {
+            {L"muxc:", L"Microsoft.UI.Xaml.Controls."},
+    };
+
+    for (const auto& adjustment : adjustments) {
+        if (type.starts_with(adjustment.first)) {
+            std::wstring result;
+            result.reserve(adjustment.second.size() +
+                           type.size() - adjustment.first.size());
+            result += adjustment.second;
+            result += type.substr(adjustment.first.size());
+            return result;
+        }
+    }
+
+    return std::wstring{type};
+}
+
+// Splits a target string on the commas which separate targets, ignoring commas
+// which are part of a `[Property=Value]` clause.
+std::vector<std::wstring_view> SplitTargetString(std::wstring_view target) {
+    if (target.find(L',') == std::wstring_view::npos) {
+        return {target};
+    }
+
+    std::vector<std::wstring_view> result;
+    // Every top-level comma creates at most one additional target token.
+    result.reserve(std::count(target.begin(), target.end(), L',') + 1);
+
+    size_t partBegin = 0;
+    bool inProperty = false;
+    for (size_t i = 0; i < target.size(); i++) {
+        switch (target[i]) {
+            case L'[':
+                inProperty = true;
+                break;
+
+            case L']':
+                inProperty = false;
+                break;
+
+            case L',':
+                if (!inProperty) {
+                    result.push_back(target.substr(partBegin, i - partBegin));
+                    partBegin = i + 1;
+                }
+                break;
+        }
+    }
+
+    result.push_back(target.substr(partBegin));
+
+    return result;
+}
+
+void AddElementCustomizationRulesForSingleTarget(
+    std::wstring_view target,
+    const std::vector<std::wstring>& styles) {
+    ElementCustomizationRules elementCustomizationRules;
+
+    auto targetParts = SplitStringView(target, L" > ");
+    // A target part can add at most one parent matcher.
+    elementCustomizationRules.parentElementMatchers.reserve(targetParts.size());
+
+    bool first = true;
+    bool hasVisualStateGroup = false;
+    for (auto i = targetParts.rbegin(); i != targetParts.rend(); ++i) {
+        const auto& targetPart = *i;
+        const bool isLeftmost = (i + 1 == targetParts.rend());
+
+        auto matcher = ElementMatcherFromString(targetPart);
+
+        const auto& prevParents =
+            elementCustomizationRules.parentElementMatchers;
+        const bool prevIsWildcard =
+            !prevParents.empty() &&
+            prevParents.back().kind == ElementMatcher::Kind::Wildcard;
+
+        switch (matcher.kind) {
+            case ElementMatcher::Kind::Element:
+                matcher.type = AdjustTypeName(matcher.type);
+                break;
+
+            case ElementMatcher::Kind::Wildcard:
+                if (first) {
+                    throw std::runtime_error(
+                        "Bad target syntax, '*' can't be the matched element");
+                }
+                if (isLeftmost) {
+                    throw std::runtime_error(
+                        "Bad target syntax, '*' can't be the leftmost target "
+                        "part");
+                }
+                if (prevIsWildcard) {
+                    throw std::runtime_error(
+                        "Bad target syntax, '*' can't be adjacent to another "
+                        "'*'");
+                }
+                break;
+
+            case ElementMatcher::Kind::Root:
+                if (first) {
+                    throw std::runtime_error(
+                        "Bad target syntax, ':root' can't be the matched "
+                        "element");
+                }
+                if (!isLeftmost) {
+                    throw std::runtime_error(
+                        "Bad target syntax, ':root' must be the leftmost "
+                        "target part");
+                }
+                if (prevIsWildcard) {
+                    throw std::runtime_error(
+                        "Bad target syntax, ':root' must be followed by a "
+                        "non-wildcard target part");
+                }
+                break;
+        }
+
+        if (matcher.visualStateGroupName) {
+            if (hasVisualStateGroup) {
+                throw std::runtime_error(
+                    "Element type can't have more than one visual state group");
+            }
+
+            hasVisualStateGroup = true;
+        }
+
+        if (first) {
+            UnresolvedRules unresolvedRules;
+            for (const auto& style : styles) {
+                auto parsed = ParseRule(style);
+                if (auto* valueRule = std::get_if<ValueRule>(&parsed)) {
+                    unresolvedRules.valueRules.push_back(std::move(*valueRule));
+                } else {
+                    unresolvedRules.captureRules.push_back(
+                        std::move(std::get<CaptureRule>(parsed)));
+                }
+            }
+
+            elementCustomizationRules.elementMatcher = std::move(matcher);
+            elementCustomizationRules.propertyOverrides =
+                std::move(unresolvedRules);
+        } else {
+            elementCustomizationRules.parentElementMatchers.push_back(
+                std::move(matcher));
+        }
+
+        first = false;
+    }
+
+    g_elementsCustomizationRules.push_back(
+        std::move(elementCustomizationRules));
+}
+
+void AddElementCustomizationRules(std::wstring_view target,
+                                  const std::vector<std::wstring>& styles) {
+    if (styles.empty() || target.empty()) {
+        return;
+    }
+
+    auto targets = SplitTargetString(target);
+
+    for (const auto& singleTarget : targets) {
+        try {
+            AddElementCustomizationRulesForSingleTarget(singleTarget, styles);
+        } catch (winrt::hresult_error const& ex) {
+            Wh_Log(L"Error %08X for target %.*s", ex.code(),
+                   static_cast<int>(singleTarget.length()),
+                   singleTarget.data());
+        } catch (std::exception const& ex) {
+            Wh_Log(L"Error for target %.*s: %S",
+                   static_cast<int>(singleTarget.length()), singleTarget.data(),
+                   ex.what());
+        }
+    }
+}
+
+bool ProcessSingleTargetStylesFromSettings(
+    int index,
+    const StyleConstants& styleConstants) {
+    string_setting_unique_ptr targetStringSetting(
+        Wh_GetStringSetting(L"controlStyles[%d].target", index));
+    if (!*targetStringSetting.get()) {
+        return false;
+    }
+
+    // Skip if commented.
+    if (targetStringSetting[0] == L'/' && targetStringSetting[1] == L'/') {
+        return true;
+    }
+
+    Wh_Log(L"Processing styles for %s", targetStringSetting.get());
+
+    std::vector<std::wstring> styles;
+
+    for (int styleIndex = 0;; styleIndex++) {
+        string_setting_unique_ptr styleSetting(Wh_GetStringSetting(
+            L"controlStyles[%d].styles[%d]", index, styleIndex));
+        if (!*styleSetting.get()) {
+            break;
+        }
+
+        // Skip if commented.
+        if (styleSetting[0] == L'/' && styleSetting[1] == L'/') {
+            continue;
+        }
+
+        styles.push_back(
+            ApplyStyleConstants(styleSetting.get(), styleConstants));
+    }
+
+    if (!styles.empty()) {
+        AddElementCustomizationRules(targetStringSetting.get(), styles);
+    }
+
+    return true;
+}
+
+std::optional<ResourceVariableEntry> ParseResourceVariable(
+    std::wstring_view entry,
+    const StyleConstants& styleConstants) {
+    // Skip if commented.
+    if (entry.starts_with(L"//")) {
+        return std::nullopt;
+    }
+
+    // Find the first '=' to split key and value.
+    auto eqPos = entry.find(L'=');
+    if (eqPos == entry.npos) {
+        Wh_Log(L"Skipping entry with no '=': %.*s",
+               static_cast<int>(entry.length()), entry.data());
+        return std::nullopt;
+    }
+
+    auto keyPart = TrimStringView(entry.substr(0, eqPos));
+    auto valueRaw = TrimStringView(entry.substr(eqPos + 1));
+    auto value = ApplyStyleConstants(valueRaw, styleConstants);
+
+    constexpr std::wstring_view kThemeResourcePrefix = L"{ThemeResource ";
+
+    ResourceVariableType type = ResourceVariableType::String;
+    if (keyPart.size() > 0 && keyPart.back() == L':') {
+        type = ResourceVariableType::Xaml;
+        keyPart = keyPart.substr(0, keyPart.size() - 1);
+        keyPart = TrimStringView(keyPart);
+    } else if (value.starts_with(kThemeResourcePrefix) &&
+               value.ends_with(L"}")) {
+        type = ResourceVariableType::ThemeResourceReference;
+        value = TrimStringView(
+            value.substr(kThemeResourcePrefix.size(),
+                         value.size() - kThemeResourcePrefix.size() - 1));
+    }
+
+    ResourceVariableTheme theme = ResourceVariableTheme::None;
+    std::wstring key;
+
+    // Check for @theme suffix in key part.
+    auto atPos = keyPart.find(L'@');
+    if (atPos != keyPart.npos) {
+        key = TrimStringView(keyPart.substr(0, atPos));
+        auto themePart = TrimStringView(keyPart.substr(atPos + 1));
+        if (themePart == L"Dark") {
+            theme = ResourceVariableTheme::Dark;
+        } else if (themePart == L"Light") {
+            theme = ResourceVariableTheme::Light;
+        } else {
+            Wh_Log(L"Unknown theme '%.*s', expected 'Dark' or 'Light'",
+                   static_cast<int>(themePart.size()), themePart.data());
+            return std::nullopt;
+        }
+    } else {
+        key = std::wstring(keyPart);
+    }
+
+    return ResourceVariableEntry{std::move(key), std::move(value), theme, type};
+}
+
+winrt::Windows::Foundation::IInspectable ParseXamlValue(
+    std::wstring_view xamlValue) {
+    constexpr std::wstring_view prefix = L"        <Setter Property=\"Tag\">\n";
+    constexpr std::wstring_view middle = L"            <Setter.Value>\n";
+    constexpr std::wstring_view suffix = L"\n            </Setter.Value>\n        </Setter>\n";
+    std::wstring xaml;
+    xaml.reserve(prefix.size() + middle.size() + xamlValue.size() + suffix.size());
+    xaml += prefix;
+    xaml += middle;
+    xaml += xamlValue;
+    xaml += suffix;
+
+    auto style = GetStyleFromXamlSetters(L"FrameworkElement", xaml);
+    return style.Setters().GetAt(0).as<Setter>().Value();
+}
+
+bool ProcessResourceVariable(ResourceDictionary resources,
+                             ResourceDictionary darkDict,
+                             ResourceDictionary lightDict,
+                             const ResourceVariableEntry& entry) {
+    auto boxedKey = winrt::box_value(entry.key);
+
+    if (entry.theme != ResourceVariableTheme::None) {
+        ResourceDictionary& targetDict =
+            entry.theme == ResourceVariableTheme::Dark ? darkDict : lightDict;
+
+        if (targetDict.HasKey(boxedKey)) {
+            Wh_Log(
+                L"Resource variable key '%s' already exists in theme '%s', "
+                L"skipping",
+                entry.key.c_str(),
+                entry.theme == ResourceVariableTheme::Dark ? L"Dark"
+                                                           : L"Light");
+            return false;
+        }
+
+        winrt::Windows::Foundation::IInspectable value;
+        switch (entry.type) {
+            case ResourceVariableType::String:
+                value = winrt::box_value(entry.value);
+                break;
+            case ResourceVariableType::Xaml:
+                value =
+                    entry.value.empty() ? nullptr : ParseXamlValue(entry.value);
+                break;
+            case ResourceVariableType::ThemeResourceReference:
+                value = resources.Lookup(winrt::box_value(entry.value));
+                break;
+        }
+
+        targetDict.Insert(boxedKey, value);
+
+        return true;
+    }
+
+    // key= - convert using existing resource type.
+    auto existingResource = resources.TryLookup(boxedKey);
+    if (!existingResource) {
+        Wh_Log(L"Resource variable key '%s' not found, skipping",
+               entry.key.c_str());
+        return false;
+    }
+
+    auto [it, inserted] =
+        g_originalResourceValues.try_emplace(entry.key, existingResource);
+    if (!inserted) {
+        Wh_Log(L"Resource variable key '%s' already modified, skipping",
+               entry.key.c_str());
+        return false;
+    }
+
+    winrt::Windows::Foundation::IInspectable value;
+    switch (entry.type) {
+        case ResourceVariableType::String: {
+            auto resourceClassName = winrt::get_class_name(existingResource);
+
+            // Unwrap IReference<T> to get inner type name.
+            if (resourceClassName.starts_with(
+                    L"Windows.Foundation.IReference`1<") &&
+                resourceClassName.ends_with(L'>')) {
+                size_t prefixSize =
+                    sizeof("Windows.Foundation.IReference`1<") - 1;
+                resourceClassName =
+                    winrt::hstring(resourceClassName.data() + prefixSize,
+                                   resourceClassName.size() - prefixSize - 1);
+            }
+
+            value = Markup::XamlBindingHelper::ConvertValue(
+                winrt::Windows::UI::Xaml::Interop::TypeName{resourceClassName},
+                winrt::box_value(entry.value));
+            break;
+        }
+
+        case ResourceVariableType::Xaml:
+            value = entry.value.empty() ? nullptr : ParseXamlValue(entry.value);
+            break;
+
+        case ResourceVariableType::ThemeResourceReference:
+            value = resources.Lookup(winrt::box_value(entry.value));
+            break;
+    }
+
+    resources.Insert(boxedKey, value);
+
+    return true;
+}
+
+void RefreshThemeResourceEntries() {
+    if (g_resourceVariables.empty()) {
+        return;
+    }
+
+    Wh_Log(L"Refreshing theme resource entries");
+
+    auto resources = Application::Current().Resources();
+
+    auto darkDict = g_resourceVariablesThemeDict.ThemeDictionaries()
+                        .TryLookup(winrt::box_value(L"Dark"))
+                        .try_as<ResourceDictionary>();
+    auto lightDict = g_resourceVariablesThemeDict.ThemeDictionaries()
+                         .TryLookup(winrt::box_value(L"Light"))
+                         .try_as<ResourceDictionary>();
+
+    for (const auto& entry : g_resourceVariables) {
+        if (entry.type != ResourceVariableType::ThemeResourceReference) {
+            continue;
+        }
+
+        try {
+            auto boxedKey = winrt::box_value(entry.key);
+            auto value = resources.Lookup(winrt::box_value(entry.value));
+
+            if (entry.theme == ResourceVariableTheme::Dark && darkDict) {
+                darkDict.Insert(boxedKey, value);
+            } else if (entry.theme == ResourceVariableTheme::Light &&
+                       lightDict) {
+                lightDict.Insert(boxedKey, value);
+            } else {
+                resources.Insert(boxedKey, value);
+            }
+        } catch (winrt::hresult_error const& ex) {
+            Wh_Log(L"Error refreshing '%s': %08X", entry.key.c_str(),
+                   ex.code());
+        }
+    }
+}
+
+std::vector<ResourceVariableEntry> ProcessResourceVariablesFromSettings(
+    const StyleConstants& styleConstants,
+    const std::vector<PCWSTR>& themeResourceVariables) {
+    std::vector<ResourceVariableEntry> resourceVariables;
+    // The configured theme entries are a known lower bound; custom settings
+    // can still append more entries without changing behavior.
+    resourceVariables.reserve(themeResourceVariables.size());
+
+    for (const auto& themeResourceVariable : themeResourceVariables) {
+        Wh_Log(L"Processing theme resource variable %s", themeResourceVariable);
+
+        auto parsed =
+            ParseResourceVariable(themeResourceVariable, styleConstants);
+        if (parsed) {
+            resourceVariables.push_back(std::move(*parsed));
+        }
+    }
+
+    for (int i = 0;; i++) {
+        string_setting_unique_ptr setting(
+            Wh_GetStringSetting(L"themeResourceVariables[%d]", i));
+        if (!*setting.get()) {
+            break;
+        }
+
+        Wh_Log(L"Processing resource variable %s", setting.get());
+
+        auto parsed = ParseResourceVariable(setting.get(), styleConstants);
+        if (parsed) {
+            resourceVariables.push_back(std::move(*parsed));
+        }
+    }
+
+    return resourceVariables;
+}
+
+void MergeResourceVariables() {
+    auto resources = Application::Current().Resources();
+
+    // Create theme dictionaries for @Dark/@Light resources.
+    g_resourceVariablesThemeDict = ResourceDictionary();
+    ResourceDictionary darkDict;
+    ResourceDictionary lightDict;
+    bool hasThemeResources = false;
+    bool hasThemeResourceReferences = false;
+
+    for (auto it = g_resourceVariables.rbegin();
+         it != g_resourceVariables.rend(); ++it) {
+        Wh_Log(L"Processing resource variable %s", it->key.c_str());
+
+        try {
+            if (ProcessResourceVariable(resources, darkDict, lightDict, *it)) {
+                if (it->theme != ResourceVariableTheme::None) {
+                    hasThemeResources = true;
+                }
+
+                if (it->type == ResourceVariableType::ThemeResourceReference) {
+                    hasThemeResourceReferences = true;
+                }
+            }
+        } catch (winrt::hresult_error const& ex) {
+            Wh_Log(L"Error %08X: %s", ex.code(), ex.message().c_str());
+        } catch (std::exception const& ex) {
+            Wh_Log(L"Error: %S", ex.what());
+        }
+    }
+
+    if (hasThemeResources) {
+        g_resourceVariablesThemeDict.ThemeDictionaries().Insert(
+            winrt::box_value(L"Dark"), darkDict);
+        g_resourceVariablesThemeDict.ThemeDictionaries().Insert(
+            winrt::box_value(L"Light"), lightDict);
+
+        resources.MergedDictionaries().Append(g_resourceVariablesThemeDict);
+    }
+
+    // Register for color changes to refresh theme resource references.
+    if (hasThemeResourceReferences) {
+        g_uiSettings = winrt::Windows::UI::ViewManagement::UISettings();
+        auto dispatcherQueue = winrt::Microsoft::UI::Dispatching::
+            DispatcherQueue::GetForCurrentThread();
+        g_colorValuesChangedToken =
+            g_uiSettings.ColorValuesChanged([dispatcherQueue](auto&&, auto&&) {
+                dispatcherQueue.TryEnqueue(RefreshThemeResourceEntries);
+            });
+    }
+}
+
+const Theme* GetSelectedTheme() {
+    return &g_themeTranslucent_Explorer11;
+}
+
+void ProcessAllStylesFromSettings() {
+    const Theme* theme = GetSelectedTheme();
+    const std::vector<PCWSTR> emptySettings;
+
+    // Bind to the selected theme's vectors instead of copying them through a
+    // conditional expression. The empty vector preserves the null-theme path.
+    const auto& themeStyleConstants =
+        theme ? theme->styleConstants : emptySettings;
+    StyleConstants styleConstants = LoadStyleConstants(themeStyleConstants);
+
+    if (theme) {
+        for (const auto& themeTargetStyle : theme->targetStyles) {
+            try {
+                std::vector<std::wstring> styles;
+                styles.reserve(themeTargetStyle.styles.size());
+                for (const auto& s : themeTargetStyle.styles) {
+                    styles.push_back(ApplyStyleConstants(s, styleConstants));
+                }
+
+                AddElementCustomizationRules(themeTargetStyle.target, styles);
+            } catch (winrt::hresult_error const& ex) {
+                Wh_Log(L"Error %08X", ex.code());
+            } catch (std::exception const& ex) {
+                Wh_Log(L"Error: %S", ex.what());
+            }
+        }
+    }
+
+    for (int i = 0;; i++) {
+        try {
+            if (!ProcessSingleTargetStylesFromSettings(i, styleConstants)) {
+                break;
+            }
+        } catch (winrt::hresult_error const& ex) {
+            Wh_Log(L"Error %08X: %s", ex.code(), ex.message().c_str());
+        } catch (std::exception const& ex) {
+            Wh_Log(L"Error: %S", ex.what());
+        }
+    }
+
+    const auto& themeResourceVariables =
+        theme ? theme->themeResourceVariables : emptySettings;
+    g_resourceVariables = ProcessResourceVariablesFromSettings(
+        styleConstants, themeResourceVariables);
+}
+
+void UninitializeResourceVariables() {
+    // Unregister color change handler.
+    if (g_colorValuesChangedToken) {
+        g_uiSettings.ColorValuesChanged(g_colorValuesChangedToken);
+        g_colorValuesChangedToken = {};
+    }
+    g_uiSettings = nullptr;
+    g_resourceVariables.clear();
+
+    if (g_originalResourceValues.empty() && !g_resourceVariablesThemeDict) {
+        return;
+    }
+
+    // Restore original resource values.
+    auto resources = Application::Current().Resources();
+    for (const auto& [key, originalValue] : g_originalResourceValues) {
+        try {
+            resources.Insert(winrt::box_value(key), originalValue);
+        } catch (...) {
+            HRESULT hr = winrt::to_hresult();
+            Wh_Log(L"Error %08X", hr);
+        }
+    }
+    g_originalResourceValues.clear();
+
+    // Remove our merged theme dictionary.
+    if (g_resourceVariablesThemeDict) {
+        auto merged = resources.MergedDictionaries();
+        uint32_t index;
+        if (merged.IndexOf(g_resourceVariablesThemeDict, index)) {
+            merged.RemoveAt(index);
+        }
+        g_resourceVariablesThemeDict = nullptr;
+    }
+}
+
+void UninitializeForCurrentThread() {
+    // Clear tracked images for this thread (revokers will automatically
+    // unregister).
+    if (auto& timer = g_trackedImagesForThread.retryTimer) {
+        try {
+            timer.Stop();
+        } catch (winrt::hresult_error const& ex) {
+            Wh_Log(L"Error %08X: %s", ex.code(), ex.message().c_str());
+        }
+    }
+    g_trackedImagesForThread.retryTimerTickRevoker.revoke();
+    g_trackedImagesForThread.retryTimer = nullptr;
+    g_trackedImagesForThread.retryDueTick = 0;
+    g_trackedImagesForThread.images.clear();
+    g_imageCacheUriRemotes.clear();
+    StopImageLoadRetriesForCurrentThread();
+
+    // Before the teardown below, so that no recycling callback can fire into
+    // half-cleared state, and no pending release can consult state which is
+    // being cleared.
+    StopDiagnosticsReleases();
+    g_virtualizingRepeaters.clear();
+    g_recycledElements.clear();
+    g_elementMatchedItems.clear();
+
+    // Detached from the global before being walked: restoring a value runs
+    // arbitrary XAML work, and whatever it re-enters looks its elements up in
+    // g_elementsCustomizationState. Walking a map nothing else can reach keeps
+    // a re-entrant insert or erase from invalidating this loop, and leaving the
+    // global empty makes those lookups miss, which is what teardown wants.
+    auto elementsCustomizationState = std::move(g_elementsCustomizationState);
+    g_elementsCustomizationState.clear();
+
+    for (const auto& [elementId, elementCustomizationState] :
+         elementsCustomizationState) {
+        auto element = elementCustomizationState.element.get();
+        auto* state = GetStyleVariableState();
+
+        RestoreCapturesForElement(element, elementCustomizationState);
+
+        for (const auto& [visualStateGroupOptionalWeakPtrIter, stateIter] :
+             elementCustomizationState.perVisualStateGroup) {
+            RestoreCustomizationsForVisualStateGroup(
+                state, elementId, element, visualStateGroupOptionalWeakPtrIter,
+                stateIter);
+        }
+    }
+
+    // Before g_elementTreeNodes, since the states hold the last strong refs to
+    // the spine nodes.
+    elementsCustomizationState.clear();
+    g_elementTreeNodes.clear();
+    g_elementTreeNodesReapThreshold = 64;
+    g_pendingStyleVariablePropagations.clear();
+    g_styleVariableState = {};
+
+    // After everything keyed by an id. g_lastElementId keeps counting, since an
+    // id must never name two elements.
+    g_elementIds.clear();
+    g_elementIdsReapThreshold = 64;
+
+    g_elementsCustomizationRules.clear();
+
+    UninitializeResourceVariables();
+
+    g_initializedForThread = false;
+}
+
+void UninitializeSettingsAndTap() {
+    if (auto watcher = ExchangeVisualTreeWatcher(nullptr)) {
+        watcher->UnadviseVisualTreeChange();
+    }
+
+    g_initialized = false;
+}
+
+void InitializeForCurrentThread() {
+    if (g_initializedForThread) {
+        return;
+    }
+
+    ProcessAllStylesFromSettings();
+
+    g_initializedForThread = true;
+}
+
+void InitializeSettingsAndTap() {
+    if (g_initialized.exchange(true)) {
+        return;
+    }
+
+    HRESULT hr = InjectWindhawkTAP();
+    if (FAILED(hr)) {
+        Wh_Log(L"Error %08X", hr);
+    }
+}
+
+enum class TargetWindowType {
+    None,
+    FileExplorer,
+    XamlExplorerHost,
+};
+
+TargetWindowType GetTargetWindowType(HWND hWnd) {
+    WCHAR className[64];
+    if (!GetClassName(hWnd, className, ARRAYSIZE(className))) {
+        return TargetWindowType::None;
+    }
+
+    if (_wcsicmp(className, L"CabinetWClass") == 0) {
+        return TargetWindowType::FileExplorer;
+    }
+
+    // Used by the desktop context menu.
+    if (_wcsicmp(className, L"XamlExplorerHostIslandWindow_WASDK") == 0) {
+        return TargetWindowType::XamlExplorerHost;
+    }
+
+    return TargetWindowType::None;
+}
+
+BackgroundTranslucentEffect GetEffectiveBackgroundTranslucentEffect() {
+    if (FindAtom(L"WindhawkFileExplorerStylerNoBackgroundEffect")) {
+        return BackgroundTranslucentEffect::kDefault;
+    }
+
+    return g_settings.backgroundTranslucentEffect.value_or(
+        g_themeBackgroundTranslucentEffect);
+}
+
+using DwmSetWindowAttribute_t = decltype(&DwmSetWindowAttribute);
+DwmSetWindowAttribute_t DwmSetWindowAttribute_Original;
+HRESULT WINAPI DwmSetWindowAttribute_Hook(HWND hWnd,
+                                          DWORD dwAttribute,
+                                          LPCVOID pvAttribute,
+                                          DWORD cbAttribute) {
+    auto original = [=]() {
+        return DwmSetWindowAttribute_Original(hWnd, dwAttribute, pvAttribute,
+                                              cbAttribute);
+    };
+
+    if (dwAttribute != DWMWA_SYSTEMBACKDROP_TYPE &&
+        dwAttribute != DWMWA_USE_HOSTBACKDROPBRUSH) {
+        return original();
+    }
+
+    if (GetTargetWindowType(hWnd) != TargetWindowType::FileExplorer) {
+        return original();
+    }
+
+    auto backgroundTranslucentEffect =
+        GetEffectiveBackgroundTranslucentEffect();
+
+    int backdropType;
+    switch (backgroundTranslucentEffect) {
+        case BackgroundTranslucentEffect::kDefault:
+            return original();
+        case BackgroundTranslucentEffect::kBlur:
+            backdropType = DWMSBT_AUTO;
+            break;
+        case BackgroundTranslucentEffect::kAcrylic:
+            backdropType = DWMSBT_TRANSIENTWINDOW;
+            break;
+        case BackgroundTranslucentEffect::kMica:
+            backdropType = DWMSBT_MAINWINDOW;
+            break;
+        case BackgroundTranslucentEffect::kMicaAlt:
+            backdropType = DWMSBT_TABBEDWINDOW;
+            break;
+        case BackgroundTranslucentEffect::kNone:
+            backdropType = DWMSBT_NONE;
+            break;
+    }
+
+    Wh_Log(L">");
+
+    return DwmSetWindowAttribute_Original(hWnd, DWMWA_SYSTEMBACKDROP_TYPE,
+                                          &backdropType, sizeof(backdropType));
+}
+
+using DwmExtendFrameIntoClientArea_t = decltype(&DwmExtendFrameIntoClientArea);
+DwmExtendFrameIntoClientArea_t DwmExtendFrameIntoClientArea_Original;
+HRESULT WINAPI DwmExtendFrameIntoClientArea_Hook(HWND hWnd,
+                                                 const MARGINS* pMarInset) {
+    auto original = [=]() {
+        return DwmExtendFrameIntoClientArea_Original(hWnd, pMarInset);
+    };
+
+    if (GetTargetWindowType(hWnd) != TargetWindowType::FileExplorer) {
+        return original();
+    }
+
+    auto backgroundTranslucentEffect =
+        GetEffectiveBackgroundTranslucentEffect();
+    if (backgroundTranslucentEffect == BackgroundTranslucentEffect::kDefault ||
+        g_settings.backgroundTranslucentEffectRegion !=
+            BackgroundTranslucentEffectRegion::kEntireWindow) {
+        return original();
+    }
+
+    Wh_Log(L">");
+
+    MARGINS margins = {-1, -1, -1, -1};
+    return DwmExtendFrameIntoClientArea_Original(hWnd, &margins);
+}
+
+// The File Explorer window hosted by the thread, set if it has the effect
+// extended to the entire window. DWM treats the client area as having an alpha
+// channel which GDI doesn't write, so text and some theme parts are rendered
+// here with explicit alpha. The rendering is based on the Translucent Windows
+// mod.
+thread_local HWND g_entireWindowEffectWndForThread;
+
+bool IsFileExplorerWindowPart(HWND hWnd) {
+    return GetTargetWindowType(GetAncestor(hWnd, GA_ROOT)) ==
+           TargetWindowType::FileExplorer;
+}
+
+struct DCWnd {
+    HWND hWnd;
+    bool fileExplorer;
+};
+
+// The windows being painted by the thread between BeginPaint and EndPaint,
+// innermost last. Painting can nest, e.g. with UpdateWindow on a child. Deeper
+// nesting than the array holds is attributed to the outer window.
+thread_local DCWnd g_paintingWndsForThread[8];
+thread_local size_t g_paintingWndCountForThread;
+
+// Memory DCs created by comctl32 for double buffering, with the window of the
+// DC they're compatible with. They're also drawn to outside of painting, e.g.
+// by the scroll bar fade animation.
+struct DoubleBufferDC {
+    HDC hdc;
+    DCWnd wnd;
+};
+thread_local DoubleBufferDC g_doubleBufferDCsForThread[8];
+thread_local size_t g_doubleBufferDCCountForThread;
+
+// Memory DCs have no window. They're attributed to the window of their double
+// buffer, or to the window being painted. Returns nullptr outside of painting.
+const DCWnd* GetMemoryDCWnd(HDC hdc) {
+    for (size_t i = 0; i < g_doubleBufferDCCountForThread; i++) {
+        if (g_doubleBufferDCsForThread[i].hdc == hdc) {
+            return &g_doubleBufferDCsForThread[i].wnd;
+        }
+    }
+
+    size_t count = g_paintingWndCountForThread;
+    return count ? &g_paintingWndsForThread[count - 1] : nullptr;
+}
+
+// Windows above it whose EndPaint was missed are removed as well.
+void PopPaintingWnd(HWND hWnd) {
+    for (size_t i = g_paintingWndCountForThread; i > 0; i--) {
+        if (g_paintingWndsForThread[i - 1].hWnd == hWnd) {
+            g_paintingWndCountForThread = i - 1;
+            return;
+        }
+    }
+}
+
+bool IsEntireWindowEffectDC(HDC hdc) {
+    if (!g_entireWindowEffectWndForThread) {
+        return false;
+    }
+
+    HWND hWnd = WindowFromDC(hdc);
+    if (hWnd) {
+        return IsFileExplorerWindowPart(hWnd);
+    }
+
+    // Memory DCs without a known window are skipped.
+    const DCWnd* memoryDCWnd = GetMemoryDCWnd(hdc);
+    return memoryDCWnd && memoryDCWnd->fileExplorer;
+}
+
+using BeginPaint_t = decltype(&BeginPaint);
+BeginPaint_t BeginPaint_Original;
+HDC WINAPI BeginPaint_Hook(HWND hWnd, LPPAINTSTRUCT lpPaint) {
+    // Pushed before the call to cover WM_ERASEBKGND, which BeginPaint sends.
+    bool pushed = false;
+    if (g_entireWindowEffectWndForThread &&
+        g_paintingWndCountForThread < ARRAYSIZE(g_paintingWndsForThread)) {
+        g_paintingWndsForThread[g_paintingWndCountForThread++] = {
+            hWnd, IsFileExplorerWindowPart(hWnd)};
+        pushed = true;
+    }
+
+    HDC hdc = BeginPaint_Original(hWnd, lpPaint);
+    if (!hdc && pushed) {
+        PopPaintingWnd(hWnd);
+    }
+
+    return hdc;
+}
+
+using EndPaint_t = decltype(&EndPaint);
+EndPaint_t EndPaint_Original;
+BOOL WINAPI EndPaint_Hook(HWND hWnd, const PAINTSTRUCT* lpPaint) {
+    PopPaintingWnd(hWnd);
+    return EndPaint_Original(hWnd, lpPaint);
+}
+
+// The content background is painted with the window color, which is white in
+// light mode. Fills of that color are replaced with transparent black.
+bool IsWindowBackgroundBrush(HDC hdc, HBRUSH hbr) {
+    if (hbr == (HBRUSH)(COLOR_WINDOW + 1)) {
+        return true;
+    }
+
+    COLORREF color;
+    if (hbr == GetStockObject(DC_BRUSH)) {
+        color = GetDCBrushColor(hdc);
+    } else {
+        LOGBRUSH logBrush;
+        if (GetObject(hbr, sizeof(logBrush), &logBrush) != sizeof(logBrush) ||
+            logBrush.lbStyle != BS_SOLID) {
+            return false;
+        }
+
+        color = logBrush.lbColor;
+    }
+
+    return color == GetSysColor(COLOR_WINDOW);
+}
+
+using FillRect_t = decltype(&FillRect);
+FillRect_t FillRect_Original;
+int WINAPI FillRect_Hook(HDC hDC, const RECT* lprc, HBRUSH hbr) {
+    if (IsEntireWindowEffectDC(hDC) && IsWindowBackgroundBrush(hDC, hbr)) {
+        hbr = (HBRUSH)GetStockObject(BLACK_BRUSH);
+    }
+
+    return FillRect_Original(hDC, lprc, hbr);
+}
+
+using PatBlt_t = decltype(&PatBlt);
+PatBlt_t PatBlt_Original;
+BOOL WINAPI PatBlt_Hook(HDC hdc, int x, int y, int w, int h, DWORD rop) {
+    if (rop == PATCOPY && IsEntireWindowEffectDC(hdc) &&
+        IsWindowBackgroundBrush(hdc,
+                                (HBRUSH)GetCurrentObject(hdc, OBJ_BRUSH))) {
+        HGDIOBJ prevBrush = SelectObject(hdc, GetStockObject(BLACK_BRUSH));
+        BOOL result = PatBlt_Original(hdc, x, y, w, h, rop);
+        SelectObject(hdc, prevBrush);
+        return result;
+    }
+
+    return PatBlt_Original(hdc, x, y, w, h, rop);
+}
+
+bool FillRectWithAlpha(HDC hdc, const RECT* rect, COLORREF color, BYTE alpha) {
+    BLENDFUNCTION blend = {AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
+    BP_PAINTPARAMS params = {sizeof(params)};
+    params.pBlendFunction = &blend;
+    HDC memDC;
+    HPAINTBUFFER hpb =
+        BeginBufferedPaint(hdc, rect, BPBF_TOPDOWNDIB, &params, &memDC);
+    if (!hpb) {
+        return false;
+    }
+
+    // The buffer is blended as premultiplied alpha.
+    HBRUSH brush = CreateSolidBrush(RGB(GetRValue(color) * alpha / 255,
+                                        GetGValue(color) * alpha / 255,
+                                        GetBValue(color) * alpha / 255));
+    FillRect_Original(memDC, rect, brush);
+    DeleteObject(brush);
+    BufferedPaintSetAlpha(hpb, rect, alpha);
+    EndBufferedPaint(hpb, TRUE);
+    return true;
+}
+
+HMODULE GetModuleFromAddress(void* address) {
+    HMODULE module;
+    if (!GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
+                               GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+                           (PCWSTR)address, &module)) {
+        return nullptr;
+    }
+
+    return module;
+}
+
+std::wstring GetModulePath(HMODULE module) {
+    if (!module) {
+        return L"<unknown>";
+    }
+
+    std::wstring path(MAX_PATH, L'\0');
+    while (true) {
+        DWORD len = GetModuleFileName(module, path.data(), path.size());
+        if (len == 0) {
+            return L"<unknown>";
+        }
+
+        // A result equal to the buffer size means the path was truncated.
+        if (len == path.size()) {
+            path.resize(len * 2);
+            continue;
+        }
+
+        path.resize(len);
+        return path;
+    }
+}
+
+// Whether the path is under the Windows directory.
+bool IsSystemModulePath(PCWSTR path) {
+    WCHAR windowsDir[MAX_PATH];
+    UINT len = GetSystemWindowsDirectory(windowsDir, ARRAYSIZE(windowsDir));
+    if (len == 0 || len >= ARRAYSIZE(windowsDir)) {
+        return false;
+    }
+
+    return _wcsnicmp(path, windowsDir, len) == 0 && path[len] == L'\\';
+}
+
+// Modules are matched by file name, since some, such as comctl32.dll, are
+// loaded in more than one version. Another hook on top of ours makes its hook
+// function the direct caller, so a few frames further up the stack are checked
+// as well. A hook isn't in a system module, so the search stops at the first
+// frame in one.
+[[clang::noinline]] bool IsHookCallerFromModule(void* retAddress,
+                                                PCWSTR moduleName,
+                                                bool logMismatches = true) {
+    auto isExpectedModule = [moduleName](const std::wstring& modulePath) {
+        return _wcsicmp(PathFindFileName(modulePath.c_str()), moduleName) == 0;
+    };
+
+    std::wstring callerPath = GetModulePath(GetModuleFromAddress(retAddress));
+    if (isExpectedModule(callerPath)) {
+        return true;
+    }
+
+    if (IsSystemModulePath(callerPath.c_str())) {
+        if (logMismatches) {
+            Wh_Log(L"Skipping caller %p in module %s, expected %s", retAddress,
+                   callerPath.c_str(), moduleName);
+        }
+        return false;
+    }
+
+    if (logMismatches) {
+        Wh_Log(L"Tracing caller %p in module %s, expected %s", retAddress,
+               callerPath.c_str(), moduleName);
+    }
+
+    // The backtrace skips the frames of this function, the hook, and the
+    // caller.
+    void* frames[4];
+    WORD count = CaptureStackBackTrace(3, ARRAYSIZE(frames), frames, nullptr);
+    for (WORD i = 0; i < count; i++) {
+        std::wstring modulePath =
+            GetModulePath(GetModuleFromAddress(frames[i]));
+        if (logMismatches) {
+            Wh_Log(L"Frame %u: %p in module %s", i + 1, frames[i],
+                   modulePath.c_str());
+        }
+        if (isExpectedModule(modulePath)) {
+            return true;
+        }
+
+        if (IsSystemModulePath(modulePath.c_str())) {
+            return false;
+        }
+    }
+
+    return false;
+}
+
+using CreateCompatibleDC_t = decltype(&CreateCompatibleDC);
+CreateCompatibleDC_t CreateCompatibleDC_Original;
+HDC WINAPI CreateCompatibleDC_Hook(HDC hdc) {
+    HDC memDC = CreateCompatibleDC_Original(hdc);
+    if (!memDC || !hdc || !g_entireWindowEffectWndForThread ||
+        g_doubleBufferDCCountForThread >=
+            ARRAYSIZE(g_doubleBufferDCsForThread)) {
+        return memDC;
+    }
+
+    HWND hWnd = WindowFromDC(hdc);
+    if (!hWnd) {
+        return memDC;
+    }
+
+    // uxtheme reuses its buffered paint DCs for other targets, so only comctl32
+    // DCs, which are created for each use, are tracked.
+    if (!IsHookCallerFromModule(__builtin_return_address(0), L"comctl32.dll",
+                                /*logMismatches=*/false)) {
+        return memDC;
+    }
+
+    g_doubleBufferDCsForThread[g_doubleBufferDCCountForThread++] = {
+        memDC, {hWnd, IsFileExplorerWindowPart(hWnd)}};
+    return memDC;
+}
+
+using DeleteDC_t = decltype(&DeleteDC);
+DeleteDC_t DeleteDC_Original;
+BOOL WINAPI DeleteDC_Hook(HDC hdc) {
+    for (size_t i = 0; i < g_doubleBufferDCCountForThread; i++) {
+        if (g_doubleBufferDCsForThread[i].hdc == hdc) {
+            g_doubleBufferDCsForThread[i] =
+                g_doubleBufferDCsForThread[--g_doubleBufferDCCountForThread];
+            break;
+        }
+    }
+
+    return DeleteDC_Original(hdc);
+}
+
+// The navigation pane divider is a horizontal line drawn by ExplorerFrame.dll,
+// which is drawn translucent.
+using Polyline_t = decltype(&Polyline);
+Polyline_t Polyline_Original;
+BOOL WINAPI Polyline_Hook(HDC hdc, const POINT* apt, int cpt) {
+    if (cpt != 2 || apt[0].y != apt[1].y || !IsEntireWindowEffectDC(hdc)) {
+        return Polyline_Original(hdc, apt, cpt);
+    }
+
+    LOGPEN pen;
+    if (GetObject(GetCurrentObject(hdc, OBJ_PEN), sizeof(pen), &pen) !=
+            sizeof(pen) ||
+        pen.lopnStyle != PS_SOLID) {
+        return Polyline_Original(hdc, apt, cpt);
+    }
+
+    if (!IsHookCallerFromModule(__builtin_return_address(0),
+                                L"ExplorerFrame.dll")) {
+        return Polyline_Original(hdc, apt, cpt);
+    }
+
+    // A wide pen is centered on the line, and the last point isn't drawn.
+    int width = std::max(pen.lopnWidth.x, 1L);
+    int top = apt[0].y - width / 2;
+    RECT rect = {std::min(apt[0].x, apt[1].x), top,
+                 std::max(apt[0].x, apt[1].x), top + width};
+    if (!FillRectWithAlpha(hdc, &rect, pen.lopnColor, 96)) {
+        return Polyline_Original(hdc, apt, cpt);
+    }
+
+    return TRUE;
+}
+
+BYTE g_lightTextAlphaLut[256];
+BYTE g_darkTextAlphaLut[256];
+
+void InitTextAlphaLuts() {
+    for (int i = 0; i < 256; i++) {
+        // Inverse gamma from 1.2 for low to 1.5 for full coverage, brightens
+        // antialiased edges similarly to DrawTextWithGlow.
+        float a = i / 255.0f;
+        float gamma = 1.2f + 0.3f * a;
+        g_lightTextAlphaLut[i] = (BYTE)(powf(a, 1.0f / gamma) * 255.0f + 0.5f);
+
+        // Dark text is heavy with boosted edges. The max opacity matches the
+        // WinUI TextFillColorPrimary light theme color (#E4000000).
+        g_darkTextAlphaLut[i] = (BYTE)(i * 0xE4 / 255);
+    }
+}
+
+bool CalcExtTextOutRect(HDC hdc,
+                        int x,
+                        int y,
+                        UINT options,
+                        const RECT* lprect,
+                        LPCWSTR lpString,
+                        UINT c,
+                        const INT* lpDx,
+                        RECT* textRect) {
+    SIZE textSize;
+    BOOL res = (options & ETO_GLYPH_INDEX)
+                   ? GetTextExtentPointI(hdc, (WORD*)lpString, c, &textSize)
+                   : GetTextExtentPoint32(hdc, lpString, c, &textSize);
+    if (!res) {
+        return false;
+    }
+
+    if (lpDx) {
+        int dx = 0;
+        int dy = 0;
+        UINT stride = (options & ETO_PDY) ? 2 : 1;
+        for (UINT i = 0; i < c; i++) {
+            dx += lpDx[i * stride];
+            if (options & ETO_PDY) {
+                dy += lpDx[i * stride + 1];
+            }
+        }
+
+        textSize.cx = std::max(textSize.cx, (LONG)dx);
+        textSize.cy += abs(dy);
+    }
+
+    // TA_BASELINE and TA_CENTER are supersets of TA_BOTTOM and TA_RIGHT, so the
+    // fields are compared as a whole.
+    UINT align = GetTextAlign(hdc);
+    switch (align & (TA_BOTTOM | TA_BASELINE)) {
+        case TA_BASELINE: {
+            TEXTMETRIC tm;
+            if (GetTextMetrics(hdc, &tm)) {
+                y -= tm.tmAscent;
+            }
+            break;
+        }
+        case TA_BOTTOM:
+            y -= textSize.cy;
+            break;
+    }
+
+    switch (align & (TA_RIGHT | TA_CENTER)) {
+        case TA_CENTER:
+            x -= textSize.cx / 2;
+            break;
+        case TA_RIGHT:
+            x -= textSize.cx;
+            break;
+    }
+
+    SetRect(textRect, x, y, x + textSize.cx, y + textSize.cy);
+
+    if (lprect) {
+        if (options & ETO_CLIPPED) {
+            IntersectRect(textRect, textRect, lprect);
+        }
+        if (options & ETO_OPAQUE) {
+            UnionRect(textRect, textRect, lprect);
+        }
+    }
+
+    return !IsRectEmpty(textRect);
+}
+
+bool PaintExtTextOutBackground(HDC hdc, const RECT* lprect) {
+    COLORREF color = GetBkColor(hdc);
+
+    // The selection highlight is made opaque, other backgrounds are left for
+    // DWM to treat as with any other GDI fill.
+    if (color != GetSysColor(COLOR_HIGHLIGHT)) {
+        HBRUSH brush = CreateSolidBrush(color);
+        FillRect(hdc, lprect, brush);
+        DeleteObject(brush);
+        return true;
+    }
+
+    BP_PAINTPARAMS params = {sizeof(params)};
+    HDC memDC;
+    HPAINTBUFFER hpb =
+        BeginBufferedPaint(hdc, lprect, BPBF_TOPDOWNDIB, &params, &memDC);
+    if (!hpb) {
+        return false;
+    }
+
+    FillRect(memDC, lprect, GetSysColorBrush(COLOR_HIGHLIGHT));
+    BufferedPaintMakeOpaque(hpb, lprect);
+    EndBufferedPaint(hpb, TRUE);
+    return true;
+}
+
+using ExtTextOutW_t = decltype(&ExtTextOutW);
+ExtTextOutW_t ExtTextOutW_Original;
+
+BOOL ExtTextOutWithAlpha(HDC hdc,
+                         int x,
+                         int y,
+                         UINT options,
+                         const RECT* lprect,
+                         LPCWSTR lpString,
+                         UINT c,
+                         const INT* lpDx) {
+    auto original = [=]() {
+        return ExtTextOutW_Original(hdc, x, y, options, lprect, lpString, c,
+                                    lpDx);
+    };
+
+    if (!lpString || !c || !options || (GetTextAlign(hdc) & TA_UPDATECP)) {
+        return original();
+    }
+
+    if ((options & (ETO_OPAQUE | ETO_CLIPPED)) &&
+        (!lprect || IsRectEmpty(lprect))) {
+        return original();
+    }
+
+    RECT textRect;
+    if (!CalcExtTextOutRect(hdc, x, y, options, lprect, lpString, c, lpDx,
+                            &textRect)) {
+        return original();
+    }
+
+    if ((options & ETO_OPAQUE) && !PaintExtTextOutBackground(hdc, lprect)) {
+        return original();
+    }
+
+    BLENDFUNCTION blend = {AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
+    BP_PAINTPARAMS params = {sizeof(params)};
+    params.dwFlags = BPPF_ERASE | BPPF_NOCLIP;
+    params.pBlendFunction = &blend;
+    HDC memDC;
+    HPAINTBUFFER hpb =
+        BeginBufferedPaint(hdc, &textRect, BPBF_TOPDOWNDIB, &params, &memDC);
+    if (!hpb) {
+        return original();
+    }
+
+    // Draw a white coverage mask, then turn it into the text color with alpha.
+    HGDIOBJ prevFont = SelectObject(memDC, GetCurrentObject(hdc, OBJ_FONT));
+    SetTextAlign(memDC, GetTextAlign(hdc));
+    SetLayout(memDC, GetLayout(hdc));
+    SetBkMode(memDC, TRANSPARENT);
+    SetTextColor(memDC, RGB(255, 255, 255));
+
+    BOOL result = ExtTextOutW_Original(memDC, x, y, options & ~ETO_OPAQUE,
+                                       lprect, lpString, c, lpDx);
+
+    SelectObject(memDC, prevFont);
+
+    RGBQUAD* pixels;
+    int rowWidth;
+    if (FAILED(GetBufferedPaintBits(hpb, &pixels, &rowWidth))) {
+        EndBufferedPaint(hpb, FALSE);
+        return original();
+    }
+
+    COLORREF textColor = GetTextColor(hdc);
+    BYTE textRed = GetRValue(textColor);
+    BYTE textGreen = GetGValue(textColor);
+    BYTE textBlue = GetBValue(textColor);
+
+    bool darkText = textRed * 299 + textGreen * 587 + textBlue * 114 < 128000;
+    const BYTE* alphaLut = darkText ? g_darkTextAlphaLut : g_lightTextAlphaLut;
+
+    int width = textRect.right - textRect.left;
+    int height = textRect.bottom - textRect.top;
+    for (int row = 0; row < height; row++) {
+        RGBQUAD* rowPixels = pixels + row * rowWidth;
+        for (int col = 0; col < width; col++) {
+            RGBQUAD& px = rowPixels[col];
+            if (!(px.rgbBlue | px.rgbGreen | px.rgbRed)) {
+                continue;
+            }
+
+            BYTE luma = (px.rgbBlue + (px.rgbGreen << 1) + px.rgbRed) >> 2;
+            BYTE alpha = alphaLut[luma];
+            px.rgbBlue = (textBlue * alpha) >> 8;
+            px.rgbGreen = (textGreen * alpha) >> 8;
+            px.rgbRed = (textRed * alpha) >> 8;
+            px.rgbReserved = alpha;
+        }
+    }
+
+    EndBufferedPaint(hpb, TRUE);
+    return result;
+}
+
+BOOL WINAPI ExtTextOutW_Hook(HDC hdc,
+                             int x,
+                             int y,
+                             UINT options,
+                             const RECT* lprect,
+                             LPCWSTR lpString,
+                             UINT c,
+                             const INT* lpDx) {
+    if (!IsEntireWindowEffectDC(hdc)) {
+        return ExtTextOutW_Original(hdc, x, y, options, lprect, lpString, c,
+                                    lpDx);
+    }
+
+    bool windowBk =
+        (options & ETO_OPAQUE) && GetBkColor(hdc) == GetSysColor(COLOR_WINDOW);
+    COLORREF prevBkColor = windowBk ? SetBkColor(hdc, RGB(0, 0, 0)) : 0;
+    BOOL result =
+        ExtTextOutWithAlpha(hdc, x, y, options, lprect, lpString, c, lpDx);
+    if (windowBk) {
+        SetBkColor(hdc, prevBkColor);
+    }
+
+    return result;
+}
+
+using DrawTextWithGlow_t =
+    HRESULT(WINAPI*)(HDC hdcMem,
+                     LPWSTR pszText,
+                     UINT cch,
+                     RECT* pRect,
+                     DWORD dwFlags,
+                     COLORREF crText,
+                     COLORREF crGlow,
+                     UINT nGlowRadius,
+                     UINT nGlowIntensity,
+                     BOOL fPreMultiply,
+                     DTT_CALLBACK_PROC pfnDrawTextCallback,
+                     LPARAM lParam);
+DrawTextWithGlow_t DrawTextWithGlow_Original;
+HRESULT WINAPI DrawTextWithGlow_Hook(HDC hdcMem,
+                                     LPWSTR pszText,
+                                     UINT cch,
+                                     RECT* pRect,
+                                     DWORD dwFlags,
+                                     COLORREF crText,
+                                     COLORREF crGlow,
+                                     UINT nGlowRadius,
+                                     UINT nGlowIntensity,
+                                     BOOL fPreMultiply,
+                                     DTT_CALLBACK_PROC pfnDrawTextCallback,
+                                     LPARAM lParam) {
+    auto original = [=]() {
+        return DrawTextWithGlow_Original(
+            hdcMem, pszText, cch, pRect, dwFlags, crText, crGlow, nGlowRadius,
+            nGlowIntensity, fPreMultiply, pfnDrawTextCallback, lParam);
+    };
+
+    if (nGlowRadius > 0 || !IsEntireWindowEffectDC(hdcMem)) {
+        return original();
+    }
+
+    if ((pRect->right == pRect->left || pRect->bottom == pRect->top) &&
+        !(dwFlags & DT_CALCRECT)) {
+        return original();
+    }
+
+    // Draw plain text, the alpha is handled by the ExtTextOutW hook.
+    COLORREF prevTextColor = SetTextColor(hdcMem, crText);
+    COLORREF prevBkColor = SetBkColor(hdcMem, RGB(0, 0, 0));
+
+    HRESULT result;
+    if (pfnDrawTextCallback) {
+        result =
+            pfnDrawTextCallback(hdcMem, pszText, cch, pRect, dwFlags, lParam);
+    } else {
+        result =
+            DrawTextW(hdcMem, pszText, cch, pRect, dwFlags & ~DT_MODIFYSTRING)
+                ? S_OK
+                : E_FAIL;
+    }
+
+    SetTextColor(hdcMem, prevTextColor);
+    SetBkColor(hdcMem, prevBkColor);
+
+    return result;
+}
+
+struct ThemePartBitmaps {
+    HDC scrollBarThumb[4];
+    HDC headerItem[2];
+};
+
+// Theme part bitmaps are shared by the File Explorer threads, keyed by DPI.
+SRWLOCK g_themePartCacheLock = SRWLOCK_INIT;
+[[clang::no_destroy]] winrt::com_ptr<ID2D1Factory> g_d2dFactory;
+std::unordered_map<UINT, ThemePartBitmaps> g_themePartCache;
+
+void DeleteThemePartBitmap(HDC& hdc) {
+    if (hdc) {
+        HGDIOBJ bitmap = GetCurrentObject(hdc, OBJ_BITMAP);
+        DeleteDC(hdc);
+        DeleteObject(bitmap);
+        hdc = nullptr;
+    }
+}
+
+void ClearThemePartCache() {
+    AcquireSRWLockExclusive(&g_themePartCacheLock);
+
+    for (auto& [dpi, bitmaps] : g_themePartCache) {
+        for (HDC& hdc : bitmaps.scrollBarThumb) {
+            DeleteThemePartBitmap(hdc);
+        }
+
+        for (HDC& hdc : bitmaps.headerItem) {
+            DeleteThemePartBitmap(hdc);
+        }
+    }
+
+    g_themePartCache.clear();
+    g_d2dFactory = nullptr;
+
+    ReleaseSRWLockExclusive(&g_themePartCacheLock);
+}
+
+UINT GetThemePartDpi(HDC hdc) {
+    HWND hWnd = WindowFromDC(hdc);
+    if (!hWnd) {
+        const DCWnd* memoryDCWnd = GetMemoryDCWnd(hdc);
+        hWnd =
+            memoryDCWnd ? memoryDCWnd->hWnd : g_entireWindowEffectWndForThread;
+    }
+
+    UINT dpi = GetDpiForWindow(hWnd);
+    return dpi ? dpi : GetDpiForSystem();
+}
+
+D2D1_COLOR_F ThemePartColor(BYTE a, BYTE r, BYTE g, BYTE b) {
+    return D2D1::ColorF(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
+}
+
+winrt::com_ptr<ID2D1DCRenderTarget> CreateBoundRenderTarget(HDC hdc,
+                                                            const RECT* rect) {
+    if (!g_d2dFactory &&
+        FAILED(D2D1CreateFactory(D2D1_FACTORY_TYPE_MULTI_THREADED,
+                                 __uuidof(ID2D1Factory), nullptr,
+                                 g_d2dFactory.put_void()))) {
+        return nullptr;
+    }
+
+    D2D1_RENDER_TARGET_PROPERTIES props = D2D1::RenderTargetProperties(
+        D2D1_RENDER_TARGET_TYPE_SOFTWARE,
+        D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM,
+                          D2D1_ALPHA_MODE_PREMULTIPLIED),
+        0, 0, D2D1_RENDER_TARGET_USAGE_GDI_COMPATIBLE);
+
+    winrt::com_ptr<ID2D1DCRenderTarget> renderTarget;
+    if (FAILED(
+            g_d2dFactory->CreateDCRenderTarget(&props, renderTarget.put())) ||
+        FAILED(renderTarget->BindDC(hdc, rect))) {
+        return nullptr;
+    }
+
+    return renderTarget;
+}
+
+// Returns a memory DC with a 32-bit bitmap selected, painted by drawFunc.
+template <typename DrawFunc>
+HDC CreateThemePartBitmap(int width, int height, DrawFunc drawFunc) {
+    HDC hdc = CreateCompatibleDC(nullptr);
+    if (!hdc) {
+        return nullptr;
+    }
+
+    BITMAPINFO bmi = {};
+    bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    bmi.bmiHeader.biWidth = width;
+    bmi.bmiHeader.biHeight = -height;
+    bmi.bmiHeader.biPlanes = 1;
+    bmi.bmiHeader.biBitCount = 32;
+    bmi.bmiHeader.biCompression = BI_RGB;
+
+    void* bits;
+    HBITMAP bitmap =
+        CreateDIBSection(hdc, &bmi, DIB_RGB_COLORS, &bits, nullptr, 0);
+    if (!bitmap) {
+        DeleteDC(hdc);
+        return nullptr;
+    }
+
+    SelectObject(hdc, bitmap);
+
+    RECT rect = {0, 0, width, height};
+    auto renderTarget = CreateBoundRenderTarget(hdc, &rect);
+    if (!renderTarget) {
+        DeleteThemePartBitmap(hdc);
+        return nullptr;
+    }
+
+    renderTarget->BeginDraw();
+    drawFunc(renderTarget.get());
+    if (FAILED(renderTarget->EndDraw())) {
+        DeleteThemePartBitmap(hdc);
+        return nullptr;
+    }
+
+    return hdc;
+}
+
+// Stretches the bitmap over the rect, keeping the margins unscaled.
+void AlphaBlendNineGrid(HDC hdc,
+                        const RECT* rect,
+                        HDC src,
+                        int left,
+                        int top,
+                        int right,
+                        int bottom) {
+    BITMAP bmp;
+    if (!GetObject(GetCurrentObject(src, OBJ_BITMAP), sizeof(bmp), &bmp)) {
+        return;
+    }
+
+    int width = rect->right - rect->left;
+    int height = rect->bottom - rect->top;
+    left = std::min(left, width);
+    right = std::min(right, width - left);
+    top = std::min(top, height);
+    bottom = std::min(bottom, height - top);
+
+    const int srcX[] = {0, left, bmp.bmWidth - right, (int)bmp.bmWidth};
+    const int srcY[] = {0, top, bmp.bmHeight - bottom, (int)bmp.bmHeight};
+    const int dstX[] = {rect->left, rect->left + left, rect->right - right,
+                        rect->right};
+    const int dstY[] = {rect->top, rect->top + top, rect->bottom - bottom,
+                        rect->bottom};
+
+    BLENDFUNCTION blend = {AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            int dstWidth = dstX[i + 1] - dstX[i];
+            int dstHeight = dstY[j + 1] - dstY[j];
+            int srcWidth = srcX[i + 1] - srcX[i];
+            int srcHeight = srcY[j + 1] - srcY[j];
+            if (dstWidth > 0 && dstHeight > 0 && srcWidth > 0 &&
+                srcHeight > 0) {
+                AlphaBlend(hdc, dstX[i], dstY[j], dstWidth, dstHeight, src,
+                           srcX[i], srcY[j], srcWidth, srcHeight, blend);
+            }
+        }
+    }
+}
+
+bool PaintScrollBarThumb(HDC hdc,
+                         int iPartId,
+                         int iStateId,
+                         LPCRECT pRect,
+                         UINT dpi) {
+    bool horizontal = iPartId == SBP_THUMBBTNHORZ;
+    bool normal = iStateId == SCRBS_NORMAL;
+    float scale = dpi / 96.0f;
+
+    HDC& cached = g_themePartCache[dpi]
+                      .scrollBarThumb[(horizontal ? 2 : 0) + (normal ? 0 : 1)];
+    if (!cached) {
+        int width = (horizontal ? 20 : 17) * scale;
+        int height = (horizontal ? 17 : 11) * scale;
+        cached = CreateThemePartBitmap(
+            width, height, [&](ID2D1RenderTarget* renderTarget) {
+                // The thumb gets wider when hovered.
+                float inset = normal ? 0.35f : 0.25f;
+                D2D1_RECT_F rect =
+                    horizontal ? D2D1::RectF(0, height * inset, width,
+                                             height - height * inset)
+                               : D2D1::RectF(width * inset, 0,
+                                             width - width * inset, height);
+                float radius = 4.0f * scale;
+
+                winrt::com_ptr<ID2D1SolidColorBrush> brush;
+                renderTarget->CreateSolidColorBrush(
+                    normal ? ThemePartColor(128, 160, 160, 160)
+                           : ThemePartColor(160, 224, 224, 224),
+                    brush.put());
+                if (brush) {
+                    renderTarget->FillRoundedRectangle(
+                        D2D1::RoundedRect(rect, radius, radius), brush.get());
+                }
+            });
+        if (!cached) {
+            return false;
+        }
+    }
+
+    FillRect(hdc, pRect, (HBRUSH)GetStockObject(BLACK_BRUSH));
+    AlphaBlendNineGrid(hdc, pRect, cached, 8 * scale, 5 * scale, 8 * scale,
+                       5 * scale);
+    return true;
+}
+
+bool PaintScrollBarArrow(HDC hdc, int iStateId, LPCRECT pRect, UINT dpi) {
+    // States 1-16 are normal, hot, pressed and disabled for each of up, down,
+    // left and right. States 17-20 are hover for each direction.
+    int direction;
+    int state;
+    if (iStateId >= ABS_UPNORMAL && iStateId <= ABS_RIGHTDISABLED) {
+        direction = (iStateId - ABS_UPNORMAL) / 4;
+        state = (iStateId - ABS_UPNORMAL) % 4 + 1;
+    } else if (iStateId >= ABS_UPHOVER && iStateId <= ABS_RIGHTHOVER) {
+        direction = iStateId - ABS_UPHOVER;
+        state = 0;
+    } else {
+        return false;
+    }
+
+    FillRect(hdc, pRect, (HBRUSH)GetStockObject(BLACK_BRUSH));
+
+    // Arrows are hidden until the scroll bar is hovered.
+    if (state == 1) {
+        return true;
+    }
+
+    float scale = dpi / 96.0f;
+    float baseWidth = 7.0f * scale;
+    float arrowHeight = 4.5f * scale;
+    D2D1_COLOR_F color = ThemePartColor(128, 160, 160, 160);
+    if (state == 2) {
+        baseWidth = 8.0f * scale;
+        arrowHeight = 5.5f * scale;
+        color = ThemePartColor(192, 224, 224, 224);
+    } else if (state == 4) {
+        color = ThemePartColor(192, 64, 64, 64);
+    }
+
+    // An up arrow with a thick base, rotated clockwise for the other
+    // directions.
+    D2D1_POINT_2F center = D2D1::Point2F((pRect->right - pRect->left) / 2.0f,
+                                         (pRect->bottom - pRect->top) / 2.0f);
+    const D2D1_POINT_2F points[] = {
+        {center.x - 1 - baseWidth / 2, center.y + arrowHeight / 2},
+        {center.x - 1 - baseWidth / 2, center.y + 2 + arrowHeight / 2},
+        {center.x + baseWidth / 2, center.y + 2 + arrowHeight / 2},
+        {center.x + baseWidth / 2, center.y + arrowHeight / 2},
+        {center.x, center.y - arrowHeight / 2},
+        {center.x - 1, center.y - arrowHeight / 2},
+    };
+
+    // Up, down, left, right.
+    constexpr float kRotationAngles[] = {0, 180, 270, 90};
+
+    auto renderTarget = CreateBoundRenderTarget(hdc, pRect);
+    if (!renderTarget) {
+        return false;
+    }
+
+    winrt::com_ptr<ID2D1PathGeometry> geometry;
+    winrt::com_ptr<ID2D1GeometrySink> sink;
+    winrt::com_ptr<ID2D1SolidColorBrush> brush;
+    if (FAILED(g_d2dFactory->CreatePathGeometry(geometry.put())) ||
+        FAILED(geometry->Open(sink.put())) ||
+        FAILED(renderTarget->CreateSolidColorBrush(color, brush.put()))) {
+        return false;
+    }
+
+    sink->BeginFigure(points[0], D2D1_FIGURE_BEGIN_FILLED);
+    sink->AddLines(points + 1, ARRAYSIZE(points) - 1);
+    sink->EndFigure(D2D1_FIGURE_END_CLOSED);
+    sink->Close();
+
+    renderTarget->BeginDraw();
+    renderTarget->SetTransform(
+        D2D1::Matrix3x2F::Rotation(kRotationAngles[direction], center));
+    renderTarget->FillGeometry(geometry.get(), brush.get());
+    return SUCCEEDED(renderTarget->EndDraw());
+}
+
+bool PaintScrollBarPart(HDC hdc,
+                        int iPartId,
+                        int iStateId,
+                        LPCRECT pRect,
+                        UINT dpi) {
+    switch (iPartId) {
+        case SBP_ARROWBTN:
+            return PaintScrollBarArrow(hdc, iStateId, pRect, dpi);
+
+        case SBP_THUMBBTNHORZ:
+        case SBP_THUMBBTNVERT:
+            return PaintScrollBarThumb(hdc, iPartId, iStateId, pRect, dpi);
+
+        case SBP_LOWERTRACKHORZ:
+        case SBP_UPPERTRACKHORZ:
+        case SBP_LOWERTRACKVERT:
+        case SBP_UPPERTRACKVERT:
+            FillRect(hdc, pRect, (HBRUSH)GetStockObject(BLACK_BRUSH));
+            return true;
+    }
+
+    return false;
+}
+
+bool PaintHeaderPart(HDC hdc,
+                     int iPartId,
+                     int iStateId,
+                     LPCRECT pRect,
+                     UINT dpi) {
+    if (iPartId != 0 && iPartId != HP_HEADERITEM) {
+        return false;
+    }
+
+    FillRect(hdc, pRect, (HBRUSH)GetStockObject(BLACK_BRUSH));
+
+    // Item states cycle through normal, hot and pressed.
+    if (iPartId == 0 || iStateId % 3 == 1) {
+        return true;
+    }
+
+    bool hot = iStateId % 3 == 2;
+    float scale = dpi / 96.0f;
+
+    HDC& cached = g_themePartCache[dpi].headerItem[hot ? 0 : 1];
+    if (!cached) {
+        int size = 24 * scale;
+        cached = CreateThemePartBitmap(
+            size, size, [&](ID2D1RenderTarget* renderTarget) {
+                winrt::com_ptr<ID2D1PathGeometry> geometry;
+                winrt::com_ptr<ID2D1GeometrySink> sink;
+                winrt::com_ptr<ID2D1SolidColorBrush> brush;
+                if (FAILED(g_d2dFactory->CreatePathGeometry(geometry.put())) ||
+                    FAILED(geometry->Open(sink.put())) ||
+                    FAILED(renderTarget->CreateSolidColorBrush(
+                        hot ? ThemePartColor(96, 144, 144, 144)
+                            : ThemePartColor(64, 144, 144, 144),
+                        brush.put()))) {
+                    return;
+                }
+
+                // Rounded bottom corners.
+                float radius = 6.0f * scale;
+                D2D1_SIZE_F arcSize = D2D1::SizeF(radius, radius);
+                sink->BeginFigure(D2D1::Point2F(0, 0),
+                                  D2D1_FIGURE_BEGIN_FILLED);
+                sink->AddLine(D2D1::Point2F(size, 0));
+                sink->AddLine(D2D1::Point2F(size, size - radius));
+                sink->AddArc(D2D1::ArcSegment(
+                    D2D1::Point2F(size - radius, size), arcSize, 0,
+                    D2D1_SWEEP_DIRECTION_CLOCKWISE, D2D1_ARC_SIZE_SMALL));
+                sink->AddLine(D2D1::Point2F(radius, size));
+                sink->AddArc(D2D1::ArcSegment(
+                    D2D1::Point2F(0, size - radius), arcSize, 0,
+                    D2D1_SWEEP_DIRECTION_CLOCKWISE, D2D1_ARC_SIZE_SMALL));
+                sink->EndFigure(D2D1_FIGURE_END_CLOSED);
+                sink->Close();
+
+                renderTarget->FillGeometry(geometry.get(), brush.get());
+            });
+        if (!cached) {
+            return false;
+        }
+    }
+
+    AlphaBlendNineGrid(hdc, pRect, cached, 12 * scale, 0, 11 * scale,
+                       12 * scale);
+    return true;
+}
+
+// The separator between the navigation pane and the content.
+bool PaintPaneSeparatorPart(HDC hdc, int iPartId, LPCRECT pRect) {
+    if (iPartId != 3 && iPartId != 4) {
+        return false;
+    }
+
+    FillRect(hdc, pRect, (HBRUSH)GetStockObject(BLACK_BRUSH));
+    return true;
+}
+
+using GetThemeClass_t = HRESULT(WINAPI*)(HTHEME hTheme,
+                                         LPWSTR pszClassName,
+                                         int cchClassName);
+GetThemeClass_t g_pGetThemeClass;
+
+bool PaintThemeBackground(HTHEME hTheme,
+                          HDC hdc,
+                          int iPartId,
+                          int iStateId,
+                          LPCRECT pRect,
+                          LPCRECT pClipRect) {
+    if (!g_pGetThemeClass || !IsEntireWindowEffectDC(hdc)) {
+        return false;
+    }
+
+    WCHAR themeClass[64];
+    if (FAILED(g_pGetThemeClass(hTheme, themeClass, ARRAYSIZE(themeClass)))) {
+        return false;
+    }
+
+    enum class Part { ScrollBar, Header, PaneSeparator };
+    Part part;
+    if (_wcsicmp(themeClass, L"ScrollBar") == 0) {
+        part = Part::ScrollBar;
+    } else if (_wcsicmp(themeClass, L"Header") == 0) {
+        part = Part::Header;
+    } else if (_wcsicmp(themeClass, L"PreviewPane") == 0) {
+        part = Part::PaneSeparator;
+    } else {
+        return false;
+    }
+
+    int savedDC = 0;
+    if (pClipRect) {
+        savedDC = SaveDC(hdc);
+        IntersectClipRect(hdc, pClipRect->left, pClipRect->top,
+                          pClipRect->right, pClipRect->bottom);
+    }
+
+    UINT dpi = GetThemePartDpi(hdc);
+
+    AcquireSRWLockExclusive(&g_themePartCacheLock);
+
+    bool painted = false;
+    switch (part) {
+        case Part::ScrollBar:
+            painted = PaintScrollBarPart(hdc, iPartId, iStateId, pRect, dpi);
+            break;
+        case Part::Header:
+            painted = PaintHeaderPart(hdc, iPartId, iStateId, pRect, dpi);
+            break;
+        case Part::PaneSeparator:
+            painted = PaintPaneSeparatorPart(hdc, iPartId, pRect);
+            break;
+    }
+
+    ReleaseSRWLockExclusive(&g_themePartCacheLock);
+
+    if (savedDC) {
+        RestoreDC(hdc, savedDC);
+    }
+
+    return painted;
+}
+
+using DrawThemeBackground_t = decltype(&DrawThemeBackground);
+DrawThemeBackground_t DrawThemeBackground_Original;
+HRESULT WINAPI DrawThemeBackground_Hook(HTHEME hTheme,
+                                        HDC hdc,
+                                        int iPartId,
+                                        int iStateId,
+                                        LPCRECT pRect,
+                                        LPCRECT pClipRect) {
+    if (PaintThemeBackground(hTheme, hdc, iPartId, iStateId, pRect,
+                             pClipRect)) {
+        return S_OK;
+    }
+
+    return DrawThemeBackground_Original(hTheme, hdc, iPartId, iStateId, pRect,
+                                        pClipRect);
+}
+
+using DrawThemeBackgroundEx_t = decltype(&DrawThemeBackgroundEx);
+DrawThemeBackgroundEx_t DrawThemeBackgroundEx_Original;
+HRESULT WINAPI DrawThemeBackgroundEx_Hook(HTHEME hTheme,
+                                          HDC hdc,
+                                          int iPartId,
+                                          int iStateId,
+                                          LPCRECT pRect,
+                                          const DTBGOPTS* pOptions) {
+    LPCRECT pClipRect = pOptions && (pOptions->dwFlags & DTBG_CLIPRECT)
+                            ? &pOptions->rcClip
+                            : nullptr;
+    if (PaintThemeBackground(hTheme, hdc, iPartId, iStateId, pRect,
+                             pClipRect)) {
+        return S_OK;
+    }
+
+    return DrawThemeBackgroundEx_Original(hTheme, hdc, iPartId, iStateId, pRect,
+                                          pOptions);
+}
+
+// Based on the Translucent Windows mod.
+void SetAccentBlurBehind(HWND hWnd, bool enable) {
+    // Without blur behind, the extended frame is drawn over the accent blur.
+    HRGN hRgn = enable ? CreateRectRgn(0, 0, -1, -1) : nullptr;
+    DWM_BLURBEHIND blurBehind = {
+        .dwFlags = DWM_BB_ENABLE | (enable ? DWM_BB_BLURREGION : 0u),
+        .fEnable = enable,
+        .hRgnBlur = hRgn,
+    };
+    DwmEnableBlurBehindWindow(hWnd, &blurBehind);
+    if (hRgn) {
+        DeleteObject(hRgn);
+    }
+
+    if (!enable) {
+        // Restore the accent policy set by WinUI when the window is created
+        // (ACCENT_ENABLE_HOSTBACKDROP).
+        BOOL useHostBackdropBrush = TRUE;
+        DwmSetWindowAttribute_Original(hWnd, DWMWA_USE_HOSTBACKDROPBRUSH,
+                                       &useHostBackdropBrush,
+                                       sizeof(useHostBackdropBrush));
+        return;
+    }
+
+    constexpr int ACCENT_ENABLE_ACRYLICBLURBEHIND = 4;
+
+    struct ACCENT_POLICY {
+        int AccentState;
+        int AccentFlags;
+        int GradientColor;
+        int AnimationId;
+    };
+
+    constexpr DWORD WCA_ACCENT_POLICY = 19;
+
+    struct WINDOWCOMPOSITIONATTRIBDATA {
+        DWORD Attrib;
+        PVOID pvData;
+        SIZE_T cbData;
+    };
+
+    using SetWindowCompositionAttribute_t =
+        BOOL(WINAPI*)(HWND, WINDOWCOMPOSITIONATTRIBDATA*);
+    static auto pSetWindowCompositionAttribute =
+        (SetWindowCompositionAttribute_t)GetProcAddress(
+            GetModuleHandle(L"user32.dll"), "SetWindowCompositionAttribute");
+    if (!pSetWindowCompositionAttribute) {
+        return;
+    }
+
+    ACCENT_POLICY accentPolicy = {
+        .AccentState = ACCENT_ENABLE_ACRYLICBLURBEHIND,
+        // AABBGGRR.
+        .GradientColor = 0x3A232323,
+    };
+
+    WINDOWCOMPOSITIONATTRIBDATA data = {
+        .Attrib = WCA_ACCENT_POLICY,
+        .pvData = &accentPolicy,
+        .cbData = sizeof(accentPolicy),
+    };
+
+    pSetWindowCompositionAttribute(hWnd, &data);
+}
+
+void ApplyBackgroundTranslucentEffect(
+    HWND hWnd,
+    std::optional<BackgroundTranslucentEffect> effectToApply = std::nullopt) {
+    constexpr WCHAR kBackgroundTranslucentEffectAppliedKey[] =
+        L"windhawk_background_effect-" WH_MOD_ID;
+
+    auto effect =
+        effectToApply.value_or(GetEffectiveBackgroundTranslucentEffect());
+
+    bool entireWindowEffect =
+        effect != BackgroundTranslucentEffect::kDefault &&
+        g_settings.backgroundTranslucentEffectRegion ==
+            BackgroundTranslucentEffectRegion::kEntireWindow;
+    g_entireWindowEffectWndForThread = entireWindowEffect ? hWnd : nullptr;
+
+    if (effect == BackgroundTranslucentEffect::kDefault) {
+        if (!RemoveProp(hWnd, kBackgroundTranslucentEffectAppliedKey)) {
+            return;
+        }
+    } else {
+        SetProp(hWnd, kBackgroundTranslucentEffectAppliedKey, (HANDLE)1);
+    }
+
+    Wh_Log(L"Applying background translucent effect %d for %08X",
+           static_cast<int>(effect), (DWORD)(ULONG_PTR)hWnd);
+
+    if (effect != BackgroundTranslucentEffect::kDefault &&
+        g_settings.backgroundTranslucentEffectRegion ==
+            BackgroundTranslucentEffectRegion::kEntireWindow) {
+        MARGINS margins = {-1, -1, -1, -1};
+        DwmExtendFrameIntoClientArea_Original(hWnd, &margins);
+    }
+
+    int backdropType;
+    switch (effect) {
+        case BackgroundTranslucentEffect::kDefault:
+            backdropType = DWMSBT_TABBEDWINDOW;
+            break;
+        case BackgroundTranslucentEffect::kBlur:
+            backdropType = DWMSBT_AUTO;
+            break;
+        case BackgroundTranslucentEffect::kAcrylic:
+            backdropType = DWMSBT_TRANSIENTWINDOW;
+            break;
+        case BackgroundTranslucentEffect::kMica:
+            backdropType = DWMSBT_MAINWINDOW;
+            break;
+        case BackgroundTranslucentEffect::kMicaAlt:
+            backdropType = DWMSBT_TABBEDWINDOW;
+            break;
+        case BackgroundTranslucentEffect::kNone:
+            backdropType = DWMSBT_NONE;
+            break;
+    }
+
+    // Use exactly one backdrop mechanism at a time. The Blur mode is
+    // implemented by AccentBlurBehind, while the other modes use the native
+    // Windows 11 SystemBackdrop materials.
+    if (effect == BackgroundTranslucentEffect::kBlur) {
+        BOOL disableDwmTransitions = FALSE;
+        DwmSetWindowAttribute_Original(
+            hWnd, DWMWA_TRANSITIONS_FORCEDISABLED,
+            &disableDwmTransitions, sizeof(disableDwmTransitions));
+
+        int noneBackdrop = DWMSBT_NONE;
+        DwmSetWindowAttribute_Original(
+            hWnd, DWMWA_SYSTEMBACKDROP_TYPE, &noneBackdrop,
+            sizeof(noneBackdrop));
+
+        SetAccentBlurBehind(hWnd, true);
+    } else {
+        BOOL disableDwmTransitions = FALSE;
+        DwmSetWindowAttribute_Original(
+            hWnd, DWMWA_TRANSITIONS_FORCEDISABLED,
+            &disableDwmTransitions, sizeof(disableDwmTransitions));
+
+        SetAccentBlurBehind(hWnd, false);
+
+        DwmSetWindowAttribute_Original(
+            hWnd, DWMWA_SYSTEMBACKDROP_TYPE, &backdropType,
+            sizeof(backdropType));
+    }
+}
+
+void TriggerWindowCompositionUpdate(HWND hWnd) {
+    WINDOWPOS windowPos = {
+        .hwnd = hWnd,
+        .flags = SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE,
+    };
+    SendMessage(hWnd, WM_WINDOWPOSCHANGED, 0, (LPARAM)&windowPos);
+    SendMessage(hWnd, WM_DWMCOMPOSITIONCHANGED, 0, 0);
+
+    // Repaint the content, which is rendered differently with the effect
+    // extended to the entire window.
+    RedrawWindow(hWnd, nullptr, nullptr,
+                 RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
+}
+
+void OnWindowCreated(HWND hWnd, PCSTR funcName) {
+    TargetWindowType windowType = GetTargetWindowType(hWnd);
+    if (windowType != TargetWindowType::None) {
+        Wh_Log(L"Initializing - Created window %08X via %S",
+               (DWORD)(ULONG_PTR)hWnd, funcName);
+
+        if (windowType == TargetWindowType::FileExplorer) {
+            ApplyBackgroundTranslucentEffect(hWnd);
+        }
+
+        InitializeForCurrentThread();
+        InitializeSettingsAndTap();
+    }
+}
+
+using CreateWindowExW_t = decltype(&CreateWindowExW);
+CreateWindowExW_t CreateWindowExW_Original;
+HWND WINAPI CreateWindowExW_Hook(DWORD dwExStyle,
+                                 LPCWSTR lpClassName,
+                                 LPCWSTR lpWindowName,
+                                 DWORD dwStyle,
+                                 int X,
+                                 int Y,
+                                 int nWidth,
+                                 int nHeight,
+                                 HWND hWndParent,
+                                 HMENU hMenu,
+                                 HINSTANCE hInstance,
+                                 PVOID lpParam) {
+    HWND hWnd = CreateWindowExW_Original(dwExStyle, lpClassName, lpWindowName,
+                                         dwStyle, X, Y, nWidth, nHeight,
+                                         hWndParent, hMenu, hInstance, lpParam);
+    if (!hWnd) {
+        return hWnd;
+    }
+
+    OnWindowCreated(hWnd, __FUNCTION__);
+
+    return hWnd;
+}
+
+using CreateWindowInBand_t = HWND(WINAPI*)(DWORD dwExStyle,
+                                           LPCWSTR lpClassName,
+                                           LPCWSTR lpWindowName,
+                                           DWORD dwStyle,
+                                           int X,
+                                           int Y,
+                                           int nWidth,
+                                           int nHeight,
+                                           HWND hWndParent,
+                                           HMENU hMenu,
+                                           HINSTANCE hInstance,
+                                           PVOID lpParam,
+                                           DWORD dwBand);
+CreateWindowInBand_t CreateWindowInBand_Original;
+HWND WINAPI CreateWindowInBand_Hook(DWORD dwExStyle,
+                                    LPCWSTR lpClassName,
+                                    LPCWSTR lpWindowName,
+                                    DWORD dwStyle,
+                                    int X,
+                                    int Y,
+                                    int nWidth,
+                                    int nHeight,
+                                    HWND hWndParent,
+                                    HMENU hMenu,
+                                    HINSTANCE hInstance,
+                                    PVOID lpParam,
+                                    DWORD dwBand) {
+    HWND hWnd = CreateWindowInBand_Original(
+        dwExStyle, lpClassName, lpWindowName, dwStyle, X, Y, nWidth, nHeight,
+        hWndParent, hMenu, hInstance, lpParam, dwBand);
+    if (!hWnd) {
+        return hWnd;
+    }
+
+    OnWindowCreated(hWnd, __FUNCTION__);
+
+    return hWnd;
+}
+
+using CreateWindowInBandEx_t = HWND(WINAPI*)(DWORD dwExStyle,
+                                             LPCWSTR lpClassName,
+                                             LPCWSTR lpWindowName,
+                                             DWORD dwStyle,
+                                             int X,
+                                             int Y,
+                                             int nWidth,
+                                             int nHeight,
+                                             HWND hWndParent,
+                                             HMENU hMenu,
+                                             HINSTANCE hInstance,
+                                             PVOID lpParam,
+                                             DWORD dwBand,
+                                             DWORD dwTypeFlags);
+CreateWindowInBandEx_t CreateWindowInBandEx_Original;
+HWND WINAPI CreateWindowInBandEx_Hook(DWORD dwExStyle,
+                                      LPCWSTR lpClassName,
+                                      LPCWSTR lpWindowName,
+                                      DWORD dwStyle,
+                                      int X,
+                                      int Y,
+                                      int nWidth,
+                                      int nHeight,
+                                      HWND hWndParent,
+                                      HMENU hMenu,
+                                      HINSTANCE hInstance,
+                                      PVOID lpParam,
+                                      DWORD dwBand,
+                                      DWORD dwTypeFlags) {
+    HWND hWnd = CreateWindowInBandEx_Original(
+        dwExStyle, lpClassName, lpWindowName, dwStyle, X, Y, nWidth, nHeight,
+        hWndParent, hMenu, hInstance, lpParam, dwBand, dwTypeFlags);
+    if (!hWnd) {
+        return hWnd;
+    }
+
+    OnWindowCreated(hWnd, __FUNCTION__);
+
+    return hWnd;
+}
+
+PFN_INITIALIZE_XAML_DIAGNOSTICS_EX InitializeXamlDiagnosticsEx_Original;
+HRESULT WINAPI
+InitializeXamlDiagnosticsEx_Hook(_In_ PCWSTR endPointName,
+                                 _In_ DWORD pid,
+                                 _In_ PCWSTR wszDllXamlDiagnostics,
+                                 _In_ PCWSTR wszTAPDllName,
+                                 _In_ CLSID tapClsid,
+                                 _In_opt_ PCWSTR wszInitializationData) {
+    if (g_inInjectWindhawkTAP) {
+        return InitializeXamlDiagnosticsEx_Original(
+            endPointName, pid, wszDllXamlDiagnostics, wszTAPDllName, tapClsid,
+            wszInitializationData);
+    }
+
+    bool blockCall = false;
+
+    switch (g_settings.xamlDiagnosticsHandling) {
+        case XamlDiagnosticsHandling::kAlert: {
+            void* retAddress = __builtin_return_address(0);
+
+            WCHAR modulePath[MAX_PATH];
+            PCWSTR modulePathStr = L"<unknown>";
+            HMODULE module;
+            if (GetModuleHandleEx(
+                    GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
+                        GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+                    reinterpret_cast<LPCWSTR>(retAddress), &module)) {
+                switch (GetModuleFileName(module, modulePath,
+                                          ARRAYSIZE(modulePath))) {
+                    case 0:
+                    case ARRAYSIZE(modulePath):
+                        break;
+
+                    default:
+                        modulePathStr = modulePath;
+                        break;
+                }
+            }
+
+            WCHAR message[1024];
+            _snwprintf_s(
+                message, _TRUNCATE,
+                L"The following module is trying to use XAML diagnostics:\n\n"
+                L"%s\n\n"
+                L"There can only be one consumer at a time. Blocking it might "
+                L"break that module, but allowing it might break this mod.\n\n"
+                L"Do you want to block it?\n\n"
+                L"Note: You can change this behavior in the mod settings.",
+                modulePathStr);
+            int result = MessageBox(
+                nullptr, message, L"Windows 11 File Explorer Styler - Windhawk",
+                MB_YESNO | MB_ICONQUESTION | MB_TOPMOST);
+            blockCall = (result == IDYES);
+            break;
+        }
+
+        case XamlDiagnosticsHandling::kBlock:
+            blockCall = true;
+            break;
+
+        case XamlDiagnosticsHandling::kAllow:
+            blockCall = false;
+            break;
+    }
+
+    if (blockCall) {
+        Wh_Log(L"Blocking InitializeXamlDiagnosticsEx call");
+        // Return success to avoid exception in the caller.
+        return S_OK;
+    }
+
+    Wh_Log(L"Allowing InitializeXamlDiagnosticsEx call");
+    return InitializeXamlDiagnosticsEx_Original(
+        endPointName, pid, wszDllXamlDiagnostics, wszTAPDllName, tapClsid,
+        wszInitializationData);
+}
+
+bool HookInitializeXamlDiagnosticsExIfNeeded() {
+    if (InitializeXamlDiagnosticsEx_Original) {
+        return false;  // Already hooked
+    }
+
+    const HMODULE wux = GetModuleHandle(L"Microsoft.Internal.FrameworkUdk.dll");
+    if (!wux) {
+        return false;  // DLL not loaded yet
+    }
+
+    const auto ixde = reinterpret_cast<PFN_INITIALIZE_XAML_DIAGNOSTICS_EX>(
+        GetProcAddress(wux, "InitializeXamlDiagnosticsEx"));
+    if (!ixde) {
+        return false;
+    }
+
+    Wh_Log(L"Hooking InitializeXamlDiagnosticsEx to handle other consumers");
+    return WindhawkUtils::SetFunctionHook(
+        ixde, InitializeXamlDiagnosticsEx_Hook,
+        &InitializeXamlDiagnosticsEx_Original);
+}
+
+using LoadLibraryExW_t = decltype(&LoadLibraryExW);
+LoadLibraryExW_t LoadLibraryExW_Original;
+HMODULE WINAPI LoadLibraryExW_Hook(LPCWSTR lpLibFileName,
+                                   HANDLE hFile,
+                                   DWORD dwFlags) {
+    HMODULE module = LoadLibraryExW_Original(lpLibFileName, hFile, dwFlags);
+
+    if (module && !InitializeXamlDiagnosticsEx_Original && lpLibFileName) {
+        PCWSTR fileName = wcsrchr(lpLibFileName, L'\\');
+        fileName = fileName ? fileName + 1 : lpLibFileName;
+        // CoreMessagingXP.dll loads Microsoft.Internal.FrameworkUdk.dll via the
+        // import table.
+        if (_wcsicmp(fileName, L"CoreMessagingXP.dll") == 0 &&
+            HookInitializeXamlDiagnosticsExIfNeeded()) {
+            Wh_ApplyHookOperations();
+        }
+    }
+
+    return module;
+}
+
+using RunFromWindowThreadProc_t = void(WINAPI*)(PVOID parameter);
+
+bool RunFromWindowThread(HWND hWnd,
+                         RunFromWindowThreadProc_t proc,
+                         PVOID procParam) {
+    static const UINT runFromWindowThreadRegisteredMsg =
+        RegisterWindowMessage(L"Windhawk_RunFromWindowThread_" WH_MOD_ID);
+
+    struct RUN_FROM_WINDOW_THREAD_PARAM {
+        RunFromWindowThreadProc_t proc;
+        PVOID procParam;
+    };
+
+    DWORD dwThreadId = GetWindowThreadProcessId(hWnd, nullptr);
+    if (dwThreadId == 0) {
+        return false;
+    }
+
+    if (dwThreadId == GetCurrentThreadId()) {
+        proc(procParam);
+        return true;
+    }
+
+    HHOOK hook = SetWindowsHookEx(
+        WH_CALLWNDPROC,
+        [](int nCode, WPARAM wParam, LPARAM lParam) WINAPI -> LRESULT {
+            if (nCode == HC_ACTION) {
+                const CWPSTRUCT* cwp = (const CWPSTRUCT*)lParam;
+                if (cwp->message == runFromWindowThreadRegisteredMsg) {
+                    RUN_FROM_WINDOW_THREAD_PARAM* param =
+                        (RUN_FROM_WINDOW_THREAD_PARAM*)cwp->lParam;
+                    param->proc(param->procParam);
+                }
+            }
+
+            return CallNextHookEx(nullptr, nCode, wParam, lParam);
+        },
+        nullptr, dwThreadId);
+    if (!hook) {
+        return false;
+    }
+
+    RUN_FROM_WINDOW_THREAD_PARAM param;
+    param.proc = proc;
+    param.procParam = procParam;
+    SendMessage(hWnd, runFromWindowThreadRegisteredMsg, 0, (LPARAM)&param);
+
+    UnhookWindowsHookEx(hook);
+
+    return true;
+}
+
+std::vector<HWND> GetTargetWnds() {
+    struct ENUM_WINDOWS_PARAM {
+        std::vector<HWND>* hWnds;
+        DWORD currentProcessId;
+    };
+
+    std::vector<HWND> hWnds;
+    ENUM_WINDOWS_PARAM param = {&hWnds, GetCurrentProcessId()};
+    EnumWindows(
+        [](HWND hWnd, LPARAM lParam) WINAPI -> BOOL {
+            ENUM_WINDOWS_PARAM& param = *(ENUM_WINDOWS_PARAM*)lParam;
+
+            DWORD dwProcessId = 0;
+            if (!GetWindowThreadProcessId(hWnd, &dwProcessId) ||
+                dwProcessId != param.currentProcessId) {
+                return TRUE;
+            }
+
+            if (GetTargetWindowType(hWnd) != TargetWindowType::None) {
+                param.hWnds->push_back(hWnd);
+            }
+
+            return TRUE;
+        },
+        (LPARAM)&param);
+
+    return hWnds;
+}
+
+using XamlIslandViewAdapter_get_DesiredSizeInPhysicalPixels_t =
+    HRESULT(WINAPI*)(void* pThis, SIZE* size);
+XamlIslandViewAdapter_get_DesiredSizeInPhysicalPixels_t
+    XamlIslandViewAdapter_get_DesiredSizeInPhysicalPixels_Original;
+HRESULT WINAPI
+XamlIslandViewAdapter_get_DesiredSizeInPhysicalPixels_Hook(void* pThis,
+                                                           SIZE* size) {
+    Wh_Log(L">");
+
+    HRESULT ret =
+        XamlIslandViewAdapter_get_DesiredSizeInPhysicalPixels_Original(pThis,
+                                                                       size);
+
+    int explorerFrameContainerHeight = g_settings.explorerFrameContainerHeight;
+    if (!explorerFrameContainerHeight) {
+        explorerFrameContainerHeight = g_themeExplorerFrameContainerHeight;
+    }
+
+    if (SUCCEEDED(ret) && explorerFrameContainerHeight) {
+        int originalCy = size->cy;
+        size->cy = MulDiv(size->cy, explorerFrameContainerHeight, 136);
+        Wh_Log(L"%d -> %d", originalCy, size->cy);
+    }
+
+    return ret;
+}
+
+bool HookWindowsUIFileExplorerSymbols() {
+    HMODULE module = LoadLibraryEx(L"Windows.UI.FileExplorer.dll", nullptr,
+                                   LOAD_LIBRARY_SEARCH_SYSTEM32);
+    if (!module) {
+        Wh_Log(L"Couldn't load Windows.UI.FileExplorer.dll");
+        return false;
+    }
+
+    // Windows.UI.FileExplorer.dll
+    WindhawkUtils::SYMBOL_HOOK hooks[] = {
+        {
+            {LR"(public: virtual long __cdecl XamlIslandViewAdapter::get_DesiredSizeInPhysicalPixels(struct tagSIZE *))"},
+            &XamlIslandViewAdapter_get_DesiredSizeInPhysicalPixels_Original,
+            XamlIslandViewAdapter_get_DesiredSizeInPhysicalPixels_Hook,
+        },
+    };
+
+    if (!HookSymbols(module, hooks, ARRAYSIZE(hooks))) {
+        Wh_Log(L"HookSymbols failed");
+        return false;
+    }
+
+    return true;
+}
+
+bool IsGlassExplorerShellProcess() {
+    WCHAR path[MAX_PATH];
+    DWORD length = GetModuleFileNameW(nullptr, path, ARRAYSIZE(path));
+    if (length == 0 || length >= ARRAYSIZE(path)) return false;
+    PCWSTR fileName = wcsrchr(path, L'\\');
+    fileName = fileName ? fileName + 1 : path;
+    return _wcsicmp(fileName, L"explorer.exe") == 0 ||
+           _wcsicmp(fileName, L"ShellExperienceHost.exe") == 0 ||
+           _wcsicmp(fileName, L"ShellHost.exe") == 0;
+}
+
+using DefWindowProcW_t = decltype(&DefWindowProcW);
+DefWindowProcW_t DefWindowProcW_Original;
+
+LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+    if (uMsg == WM_NCACTIVATE && !wParam && !IsIconic(hWnd)) return TRUE;
+    return DefWindowProcW_Original(hWnd, uMsg, wParam, lParam);
+}
+
+bool IsCurrentProcessExplorer() {
+    WCHAR path[MAX_PATH];
+    DWORD length = GetModuleFileNameW(nullptr, path, ARRAYSIZE(path));
+    if (length == 0 || length >= ARRAYSIZE(path)) return false;
+    PCWSTR fileName = wcsrchr(path, L'\\');
+    fileName = fileName ? fileName + 1 : path;
+    return _wcsicmp(fileName, L"explorer.exe") == 0;
+}
+
+bool RestartExplorerAfterSettingsChange() {
+    std::wstring command =
+        LR"(cmd.exe /c "timeout /t 1 /nobreak >nul & taskkill /f /im explorer.exe >nul 2>&1 & start "" explorer.exe")";
+    STARTUPINFOW si = {};
+    si.cb = sizeof(si);
+    PROCESS_INFORMATION pi = {};
+    if (!CreateProcessW(nullptr, command.data(), nullptr, nullptr, FALSE,
+                        CREATE_NO_WINDOW, nullptr, nullptr, &si, &pi)) return false;
+    CloseHandle(pi.hThread);
+    CloseHandle(pi.hProcess);
+    return true;
+}
+
+void RestartExplorerOnActivationIfNeeded() {
+    if (!g_settings.restartExplorerOnSettingsChange || !IsCurrentProcessExplorer()) return;
+    if (Wh_GetIntValue(L"restartExplorerActivationPending", 0) != 0) {
+        Wh_SetIntValue(L"restartExplorerActivationPending", 0);
+        return;
+    }
+    Wh_SetIntValue(L"restartExplorerActivationPending", 1);
+    if (!RestartExplorerAfterSettingsChange())
+        Wh_SetIntValue(L"restartExplorerActivationPending", 0);
+}
+
+void LoadSettings() {
+    g_settings.restartExplorerOnSettingsChange =
+        Wh_GetIntSetting(L"restartExplorerOnSettingsChange") != 0;
+
+    PCWSTR transparencyType = Wh_GetStringSetting(L"transparencyType");
+
+    if (!transparencyType || !*transparencyType ||
+        wcscmp(transparencyType, L"default") == 0) {
+        g_settings.backgroundTranslucentEffect =
+            BackgroundTranslucentEffect::kAcrylic;
+    } else if (wcscmp(transparencyType, L"blur") == 0) {
+        g_settings.backgroundTranslucentEffect =
+            BackgroundTranslucentEffect::kBlur;
+    } else if (wcscmp(transparencyType, L"acrylic") == 0) {
+        g_settings.backgroundTranslucentEffect =
+            BackgroundTranslucentEffect::kAcrylic;
+    } else if (wcscmp(transparencyType, L"mica") == 0) {
+        g_settings.backgroundTranslucentEffect =
+            BackgroundTranslucentEffect::kMica;
+    } else if (wcscmp(transparencyType, L"micaAlt") == 0) {
+        g_settings.backgroundTranslucentEffect =
+            BackgroundTranslucentEffect::kMicaAlt;
+    } else {
+        g_settings.backgroundTranslucentEffect =
+            BackgroundTranslucentEffect::kAcrylic;
+    }
+
+    if (transparencyType) {
+        Wh_FreeStringSetting(transparencyType);
+    }
+
+    g_settings.backgroundTranslucentEffectRegion =
+        BackgroundTranslucentEffectRegion::kEntireWindow;
+
+    g_settings.explorerFrameContainerHeight = 0;
+    g_settings.xamlDiagnosticsHandling = XamlDiagnosticsHandling::kBlock;
+}
+void LoadThemeSettings() {
+    const Theme* theme = GetSelectedTheme();
+    g_themeBackgroundTranslucentEffect =
+        theme ? theme->backgroundTranslucentEffect
+              : BackgroundTranslucentEffect::kDefault;
+    g_themeExplorerFrameContainerHeight =
+        theme ? theme->explorerFrameContainerHeight : 0;
+}
+
+BOOL Wh_ModInit() {
+    Wh_Log(L">");
+
+    WindhawkUtils::SetFunctionHook(DefWindowProcW, DefWindowProcW_Hook,
+                                   &DefWindowProcW_Original);
+
+    if (!IsGlassExplorerShellProcess()) return TRUE;
+
+    LoadSettings();
+    LoadThemeSettings();
+
+    WindhawkUtils::SetFunctionHook(CreateWindowExW, CreateWindowExW_Hook,
+                                   &CreateWindowExW_Original);
+
+    WindhawkUtils::SetFunctionHook(DwmSetWindowAttribute,
+                                   DwmSetWindowAttribute_Hook,
+                                   &DwmSetWindowAttribute_Original);
+
+    WindhawkUtils::SetFunctionHook(DwmExtendFrameIntoClientArea,
+                                   DwmExtendFrameIntoClientArea_Hook,
+                                   &DwmExtendFrameIntoClientArea_Original);
+
+    InitTextAlphaLuts();
+
+    WindhawkUtils::SetFunctionHook(BeginPaint, BeginPaint_Hook,
+                                   &BeginPaint_Original);
+
+    WindhawkUtils::SetFunctionHook(EndPaint, EndPaint_Hook, &EndPaint_Original);
+
+    WindhawkUtils::SetFunctionHook(CreateCompatibleDC, CreateCompatibleDC_Hook,
+                                   &CreateCompatibleDC_Original);
+
+    WindhawkUtils::SetFunctionHook(DeleteDC, DeleteDC_Hook, &DeleteDC_Original);
+
+    WindhawkUtils::SetFunctionHook(ExtTextOutW, ExtTextOutW_Hook,
+                                   &ExtTextOutW_Original);
+
+    WindhawkUtils::SetFunctionHook(FillRect, FillRect_Hook, &FillRect_Original);
+
+    WindhawkUtils::SetFunctionHook(PatBlt, PatBlt_Hook, &PatBlt_Original);
+
+    WindhawkUtils::SetFunctionHook(Polyline, Polyline_Hook, &Polyline_Original);
+
+    WindhawkUtils::SetFunctionHook(DrawThemeBackground,
+                                   DrawThemeBackground_Hook,
+                                   &DrawThemeBackground_Original);
+
+    WindhawkUtils::SetFunctionHook(DrawThemeBackgroundEx,
+                                   DrawThemeBackgroundEx_Hook,
+                                   &DrawThemeBackgroundEx_Original);
+
+    HMODULE uxthemeModule = GetModuleHandle(L"uxtheme.dll");
+    if (uxthemeModule) {
+        g_pGetThemeClass = (GetThemeClass_t)GetProcAddress(
+            uxthemeModule, MAKEINTRESOURCEA(74));
+
+        auto pDrawTextWithGlow = (DrawTextWithGlow_t)GetProcAddress(
+            uxthemeModule, MAKEINTRESOURCEA(126));
+        if (pDrawTextWithGlow) {
+            WindhawkUtils::SetFunctionHook(pDrawTextWithGlow,
+                                           DrawTextWithGlow_Hook,
+                                           &DrawTextWithGlow_Original);
+        }
+    }
+
+    HMODULE user32Module =
+        LoadLibraryEx(L"user32.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
+    if (user32Module) {
+        auto pCreateWindowInBand = (CreateWindowInBand_t)GetProcAddress(
+            user32Module, "CreateWindowInBand");
+        if (pCreateWindowInBand) {
+            WindhawkUtils::SetFunctionHook(pCreateWindowInBand,
+                                           CreateWindowInBand_Hook,
+                                           &CreateWindowInBand_Original);
+        }
+
+        auto pCreateWindowInBandEx = (CreateWindowInBandEx_t)GetProcAddress(
+            user32Module, "CreateWindowInBandEx");
+        if (pCreateWindowInBandEx) {
+            WindhawkUtils::SetFunctionHook(pCreateWindowInBandEx,
+                                           CreateWindowInBandEx_Hook,
+                                           &CreateWindowInBandEx_Original);
+        }
+    }
+
+    HMODULE kernelBaseModule = GetModuleHandle(L"kernelbase.dll");
+    auto pKernelBaseLoadLibraryExW = (decltype(&LoadLibraryExW))GetProcAddress(
+        kernelBaseModule, "LoadLibraryExW");
+    WindhawkUtils::SetFunctionHook(pKernelBaseLoadLibraryExW,
+                                   LoadLibraryExW_Hook,
+                                   &LoadLibraryExW_Original);
+
+    // Hook immediately if DLL is already loaded.
+    HookInitializeXamlDiagnosticsExIfNeeded();
+
+    HookWindowsUIFileExplorerSymbols();
+
+    return TRUE;
+}
+
+void Wh_ModAfterInit() {
+    Wh_Log(L">");
+
+    auto hTargetWnds = GetTargetWnds();
+    for (auto hTargetWnd : hTargetWnds) {
+        Wh_Log(L"Initializing for %08X", (DWORD)(ULONG_PTR)hTargetWnd);
+        RunFromWindowThread(
+            hTargetWnd,
+            [](PVOID param) WINAPI {
+                HWND hTargetWnd = (HWND)param;
+
+                InitializeForCurrentThread();
+
+                if (GetTargetWindowType(hTargetWnd) ==
+                    TargetWindowType::FileExplorer) {
+                    ApplyBackgroundTranslucentEffect(hTargetWnd);
+                    TriggerWindowCompositionUpdate(hTargetWnd);
+                }
+            },
+            (PVOID)hTargetWnd);
+    }
+
+    if (!hTargetWnds.empty()) {
+        Wh_Log(L"Initializing - Found target windows");
+        InitializeSettingsAndTap();
+    }
+
+    RestartExplorerOnActivationIfNeeded();
+}
+
+void Wh_ModUninit() {
+    Wh_Log(L">");
+
+    StopImageDownloads();
+
+    // Before the UI threads are uninitialized, so that a retry can't be
+    // scheduled on a thread which is being uninitialized.
+    StopImageLoadRetries();
+
+    UninitializeSettingsAndTap();
+
+    auto hTargetWnds = GetTargetWnds();
+    for (auto hTargetWnd : hTargetWnds) {
+        Wh_Log(L"Uninitializing for %08X", (DWORD)(ULONG_PTR)hTargetWnd);
+        RunFromWindowThread(
+            hTargetWnd,
+            [](PVOID param) WINAPI {
+                HWND hTargetWnd = (HWND)param;
+
+                UninitializeForCurrentThread();
+
+                if (GetTargetWindowType(hTargetWnd) ==
+                    TargetWindowType::FileExplorer) {
+                    ApplyBackgroundTranslucentEffect(
+                        hTargetWnd, BackgroundTranslucentEffect::kDefault);
+                    TriggerWindowCompositionUpdate(hTargetWnd);
+                }
+            },
+            (PVOID)hTargetWnd);
+    }
+
+    ClearThemePartCache();
+}
+
+void Wh_ModSettingsChanged() {
+    Wh_Log(L">");
+
+    UninitializeSettingsAndTap();
+
+    LoadSettings();
+    LoadThemeSettings();
+
+    auto hTargetWnds = GetTargetWnds();
+    for (auto hTargetWnd : hTargetWnds) {
+        Wh_Log(L"Reinitializing for %08X", (DWORD)(ULONG_PTR)hTargetWnd);
+        RunFromWindowThread(
+            hTargetWnd,
+            [](PVOID param) WINAPI {
+                HWND hTargetWnd = (HWND)param;
+
+                UninitializeForCurrentThread();
+                InitializeForCurrentThread();
+
+                if (GetTargetWindowType(hTargetWnd) ==
+                    TargetWindowType::FileExplorer) {
+                    ApplyBackgroundTranslucentEffect(hTargetWnd);
+                    TriggerWindowCompositionUpdate(hTargetWnd);
+                }
+            },
+            (PVOID)hTargetWnd);
+    }
+
+    if (!hTargetWnds.empty()) {
+        Wh_Log(L"Reinitializing - Found target windows");
+        InitializeSettingsAndTap();
+    }
+
+    if (g_settings.restartExplorerOnSettingsChange &&
+        IsCurrentProcessExplorer()) {
+        Wh_SetIntValue(L"restartExplorerActivationPending", 1);
+        if (!RestartExplorerAfterSettingsChange())
+            Wh_SetIntValue(L"restartExplorerActivationPending", 0);
+    }
+}
+) == std::wstring_view::npos) {
         return std::wstring(style);
     }
 
