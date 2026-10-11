@@ -52,7 +52,7 @@ enum class Material {
 Material g_material = Material::Mica;
 
 Material LoadMaterial() {
-    PWSTR value = Wh_GetStringSetting(L"material");
+    PCWSTR value = Wh_GetStringSetting(L"material");
     Material material = Material::Mica;
 
     if (value && _wcsicmp(value, L"micaAlt") == 0) {
