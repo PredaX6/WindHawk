@@ -10373,6 +10373,15 @@ DefWindowProcW_t DefWindowProcW_Original;
 LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     if (uMsg == WM_NCACTIVATE && !wParam && !IsIconic(hWnd)) return TRUE;
 
+    // Prepare the selected material before Windows makes the window visible.
+    // Applying Blur only after WM_WINDOWPOSCHANGED allows a first frame to
+    // appear translucent without the legacy Accent blur.
+    if (uMsg == WM_WINDOWPOSCHANGING && lParam &&
+        (((const WINDOWPOS*)lParam)->flags & SWP_SHOWWINDOW) &&
+        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer) {
+        ApplyBackgroundTranslucentEffect(hWnd);
+    }
+
     LRESULT result = DefWindowProcW_Original(hWnd, uMsg, wParam, lParam);
 
     // Explorer may reset or defer the backdrop while first showing the window.
