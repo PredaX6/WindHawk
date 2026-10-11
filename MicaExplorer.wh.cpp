@@ -2,7 +2,7 @@
 // @id              mica-explorer
 // @name            Mica Explorer
 // @description     Apply seven Blur and Mica styles to Windows 11 File Explorer.
-// @version         1.2.1
+// @version         1.2.2
 // @author          TeddySlexique
 // @github          https://github.com/PredaX6/WindHawk
 // @include         explorer.exe
@@ -18,6 +18,7 @@ Choose a background style for Windows 11 File Explorer:
 - **Défaut Blur** — standard AccentBlurBehind composition effect.
 - **Blur transparent** — acrylic blur with a lower tint opacity, where supported by Windows.
 - **Blur doux** — acrylic blur with a softer, lighter tint.
+- **Acrylique sombre (style menu Démarrer)** — dark-tinted acrylic intended to approximate the Start menu backdrop.
 - **Mica clair** — standard native Mica.
 - **Mica accentué** — Mica with immersive dark mode.
 - **Mica Alt clair** — native tabbed-window backdrop.
@@ -36,6 +37,7 @@ The exact appearance depends on Windows and its personalization settings.
   - blur: Défaut Blur
   - blurTransparent: Blur transparent
   - blurSoft: Blur doux
+  - startMenu: Acrylique sombre (style menu Démarrer)
   - mica: Mica clair
   - micaAccent: Mica accentué
   - micaAlt: Mica Alt clair
@@ -55,6 +57,7 @@ enum class Material {
     Blur,
     BlurTransparent,
     BlurSoft,
+    StartMenu,
     Mica,
     MicaAccent,
     MicaAlt,
@@ -117,6 +120,8 @@ Material LoadMaterial() {
         material = Material::BlurTransparent;
     } else if (value && _wcsicmp(value, L"blurSoft") == 0) {
         material = Material::BlurSoft;
+    } else if (value && _wcsicmp(value, L"startMenu") == 0) {
+        material = Material::StartMenu;
     } else if (value && _wcsicmp(value, L"micaAccent") == 0) {
         material = Material::MicaAccent;
     } else if (value && _wcsicmp(value, L"micaAlt") == 0) {
@@ -159,7 +164,8 @@ void ApplyMaterial(HWND hwnd) {
 
     const bool isBlur = g_material == Material::Blur ||
                         g_material == Material::BlurTransparent ||
-                        g_material == Material::BlurSoft;
+                        g_material == Material::BlurSoft ||
+                        g_material == Material::StartMenu;
     if (isBlur) {
         // Disable DWM's Mica/SystemBackdrop before applying the selected blur.
         const int backdropType = DWMSBT_NONE;
@@ -173,9 +179,16 @@ void ApplyMaterial(HWND hwnd) {
             } else {
                 // Acrylic blur accepts a tint/opacity through GradientColor.
                 policy.AccentState = ACCENT_ENABLE_ACRYLICBLURBEHIND;
-                policy.GradientColor = g_material == Material::BlurTransparent
-                    ? static_cast<int>(0x66000000)  // lower-opacity dark tint
-                    : static_cast<int>(0x99E8E8E8); // softer, light tint
+                if (g_material == Material::BlurTransparent) {
+                    policy.GradientColor = static_cast<int>(0x66000000);
+                } else if (g_material == Material::BlurSoft) {
+                    policy.GradientColor = static_cast<int>(0x99E8E8E8);
+                } else {
+                    // Dark, fairly opaque acrylic approximating the Start menu.
+                    // Windows controls the real Start menu material, so this
+                    // is a visual approximation rather than an exact clone.
+                    policy.GradientColor = static_cast<int>(0xCC232323);
+                }
             }
             WINDOWCOMPOSITIONATTRIBDATA data{
                 WCA_ACCENT_POLICY, &policy, sizeof(policy)};
