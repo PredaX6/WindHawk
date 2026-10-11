@@ -357,11 +357,6 @@ Windows](https://windhawk.net/mods/translucent-windows) mod.
 
 // ==WindhawkModSettings==
 /*
-- theme: "Translucent Explorer11"
-  $name: Thème
-  $description: "Thème unique activé : Translucent Explorer 11."
-  $options:
-  - Translucent Explorer11: Translucent Explorer 11
 - material: micaAccent
   $name: Style de transparence Mica Explorer
   $description: Choisissez le matériau de fenêtre tout en conservant le thème XAML intégré.
