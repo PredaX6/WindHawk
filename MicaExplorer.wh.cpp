@@ -1,9 +1,9 @@
 // ==WindhawkMod==
 // @id              mica-explorer
 // @name            Mica Explorer
-// @description     Mica and Blur materials with integrated translucent Explorer styling
+// @description     Matériaux Mica et flou avec style translucide intégré pour l’Explorateur
 // @version         2.0.0
-// @author          TeddySlexique (based on Windows 11 File Explorer Styler by m417z)
+// @author          TeddySlexique (basé sur Windows 11 File Explorer Styler de m417z)
 // @github          https://github.com/PredaX6/WindHawk
 // @twitter         https://twitter.com/m417z
 // @homepage        https://m417z.com/
@@ -25,15 +25,16 @@
 /*
 # Mica Explorer
 
-Mica Explorer combines the original six material choices with the integrated
-Translucent Explorer11 XAML theme. The theme styles the command bar, navigation
-bar, tabs, Home/Gallery views, tooltips, details view, and thumbnail area.
+Mica Explorer réunit les six effets de matériau d’origine et le thème XAML
+Translucent Explorer11 intégré. Ce thème personnalise la barre de commandes,
+la barre de navigation, les onglets, les vues Accueil et Galerie, les info-bulles,
+la vue détaillée et la zone des miniatures.
 
-This mod incorporates code from Windows 11 File Explorer Styler by m417z and is
-distributed under the GNU General Public License v3.0.
+Ce mod intègre du code de Windows 11 File Explorer Styler, créé par m417z, et
+est distribué sous la licence GNU GPL version 3.
 
-Also check out the **Windows 11 Taskbar Styler**, **Windows 11 Start Menu
-Styler** and **Windows 11 Notification Center Styler** mods.
+Consultez également les mods de personnalisation de la barre des tâches, du
+menu Démarrer et du centre de notifications de Windows 11.
 
 ## Themes
 
@@ -357,29 +358,29 @@ Windows](https://windhawk.net/mods/translucent-windows) mod.
 // ==WindhawkModSettings==
 /*
 - theme: "Translucent Explorer11"
-  $name: Theme
+  $name: Thème
   $description: >-
-    Themes are collections of styles. For details about the themes below, or for
-    information about submitting your own theme, refer to the relevant section
-    in the mod details.
+    Les thèmes regroupent des styles visuels. Consultez la description du mod
+    pour en savoir plus sur les thèmes disponibles ou sur la création de vos
+    propres thèmes.
   $options:
-  - "": None
+  - "": Aucun
   - Translucent Explorer11: Translucent Explorer11
   - MicaBar: MicaBar
-  - NoCommandBar: NoCommandBar
-  - Minimal Explorer11: Minimal Explorer11
-  - Tabless: Tabless
-  - Matter: Matter
-  - WindowGlass: WindowGlass
-  - AddressSearchOnly: AddressSearchOnly
-  - TintedGlass: TintedGlass
-  - LiquidGlass: LiquidGlass
-  - MicaTabless: MicaTabless
-  - OS26 Liquid Glass: OS26 Liquid Glass
-  - OS26 Liquid Glass_variant_Compact: OS26 Liquid Glass (Compact)
+  - NoCommandBar: Sans barre de commandes
+  - Minimal Explorer11: Explorateur 11 minimal
+  - Tabless: Sans onglets
+  - Matter: Matière
+  - WindowGlass: Verre de fenêtre
+  - AddressSearchOnly: Recherche dans la barre d’adresse uniquement
+  - TintedGlass: Verre teinté
+  - LiquidGlass: Verre liquide
+  - MicaTabless: Mica sans onglets
+  - OS26 Liquid Glass: Verre liquide OS26
+  - OS26 Liquid Glass_variant_Compact: Verre liquide OS26 (compact)
   - ZEUSosX_044: ZEUSosX_044
-  - Compact Explorer11: Compact Explorer11
-  - Float: Float
+  - Compact Explorer11: Explorateur 11 compact
+  - Float: Flottant
 - material: micaAccent
   $name: Style de transparence Mica Explorer
   $description: Choisissez le matériau de fenêtre tout en conservant le thème XAML intégré.
@@ -391,52 +392,53 @@ Windows](https://windhawk.net/mods/translucent-windows) mod.
   - micaAccent: Mica accentué
   - micaAltAccent: Mica Alt accentué
 - backgroundTranslucentEffect: ""
-  $name: Translucent background effect
+  $name: Effet de transparence de l’arrière-plan
   $description: >-
-    The translucent effect to use for the File Explorer background. For
-    additional translucent effects, check out the Translucent Windows mod.
+    Effet de transparence à appliquer à l’arrière-plan de l’Explorateur de
+    fichiers. Le mod Translucent Windows propose d’autres effets.
   $options:
-  - "": Default for the selected theme
-  - default: Windows default
-  - acrylicblur: Blur (AccentBlurBehind)
-  - acrylic: Acrylic
+  - "": Valeur par défaut du thème sélectionné
+  - default: Valeur par défaut de Windows
+  - acrylicblur: Flou (AccentBlurBehind)
+  - acrylic: Acrylique
   - mica: Mica
   - micaAlt: Mica Alt
-  - none: None
+  - none: Aucun
 - backgroundTranslucentEffectRegion: ""
-  $name: Translucent background effect region
+  $name: Zone d’application de la transparence
   $description: >-
-    The region where the translucent background effect is applied.
+    Zone de l’Explorateur dans laquelle appliquer l’effet de transparence.
   $options:
-  - "": Entire window
-  - explorerFrame: File Explorer frame only
+  - "": Fenêtre entière
+  - explorerFrame: Cadre de l’Explorateur uniquement
 - styleConstants: [""]
-  $name: Style constants
+  $name: Constantes de style
   $description: >-
-    Some themes support style constants for customization, such as colors. Refer
-    to the theme page for available constants. For technical details, refer to
-    the mod description.
+    Certains thèmes acceptent des constantes de personnalisation, par exemple
+    pour les couleurs. Consultez la page du thème pour connaître les constantes
+    disponibles et la description du mod pour les détails techniques.
 - controlStyles:
   - - target: ""
-      $name: Target
+      $name: Cible
     - styles: [""]
       $name: Styles
-  $name: Control styles
+  $name: Styles des éléments
 - themeResourceVariables: [""]
-  $name: Resource variables
+  $name: Variables de ressources
   $description: >-
-    Use "Key=Value" to override an existing resource with a new value.
+    Utilisez « Clé=Valeur » pour remplacer une ressource existante.
 
-    Use "Key@Dark=Value" or "Key@Light=Value" to define theme-aware resources
-    that can be referenced with {ThemeResource Key} in styles.
+    Utilisez « Clé@Dark=Valeur » ou « Clé@Light=Valeur » pour définir des
+    ressources adaptées au thème clair ou sombre, réutilisables avec
+    {ThemeResource Clé} dans les styles.
 
-    The ":=" syntax can be used to set a XAML value. For details, refer to the
-    mod description.
+    La syntaxe « := » permet de définir une valeur XAML. Consultez la description
+    du mod pour plus de détails.
 - explorerFrameContainerHeight: 0
-  $name: Explorer frame container height
+  $name: Hauteur du cadre de l’Explorateur
   $description: >-
-    The height of the explorer frame container which includes the tabs, the
-    address bar, and the command bar, set to zero to use the default height.
+    Hauteur du cadre contenant les onglets, la barre d’adresse et la barre de
+    commandes. La valeur 0 conserve la hauteur par défaut.
 - xamlDiagnosticsHandling: alert
   $name: XAML diagnostics consumer handling
   $description: >-
@@ -445,9 +447,9 @@ Windows](https://windhawk.net/mods/translucent-windows) mod.
     other programs from using it, which might break them. Allow will let them
     use it, which might break this mod.
   $options:
-  - alert: Alert (prompt before blocking)
-  - block: Block other consumers
-  - allow: Allow other consumers
+  - alert: Alerter (demander avant de bloquer)
+  - block: Bloquer les autres programmes
+  - allow: Autoriser les autres programmes
 */
 // ==/WindhawkModSettings==
 
