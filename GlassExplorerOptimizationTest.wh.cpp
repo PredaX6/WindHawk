@@ -10366,7 +10366,19 @@ DefWindowProcW_t DefWindowProcW_Original;
 
 LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     if (uMsg == WM_NCACTIVATE && !wParam && !IsIconic(hWnd)) return TRUE;
-    return DefWindowProcW_Original(hWnd, uMsg, wParam, lParam);
+
+    LRESULT result = DefWindowProcW_Original(hWnd, uMsg, wParam, lParam);
+
+    // Explorer may reset or defer the backdrop while first showing the window.
+    // Reapply the selected material after the initial show-position update.
+    if (uMsg == WM_WINDOWPOSCHANGED && lParam &&
+        (((const WINDOWPOS*)lParam)->flags & SWP_SHOWWINDOW) &&
+        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer) {
+        ApplyBackgroundTranslucentEffect(hWnd);
+        TriggerWindowCompositionUpdate(hWnd);
+    }
+
+    return result;
 }
 
 bool IsCurrentProcessExplorer() {
