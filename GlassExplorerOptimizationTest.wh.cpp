@@ -6952,12 +6952,12 @@ void ReapplyCustomizationsForSubtree(FrameworkElement element) {
         if (auto elementId = ElementIdFromElement(element);
             elementId != ElementId::None) {
             CleanupCustomizations(elementId);
-            auto className = winrt::get_class_name(element);
             if (element.try_as<muxc::ItemsRepeater>()) {
-                // Tracked non-repeater elements are already known theme targets.
                 // Keep repeater bookkeeping separate from style application.
                 HandleVirtualizingRepeater(elementId, element);
             } else {
+                // Only non-repeaters need their runtime class name for styling.
+                auto className = winrt::get_class_name(element);
                 ApplyCustomizations(elementId, element, className.c_str(), true);
             }
         }
@@ -7193,18 +7193,19 @@ void ApplyCustomizations(ElementId elementId,
                          FrameworkElement element,
                          PCWSTR fallbackClassName,
                          bool isKnownThemeTarget) {
-    // Before the early return below: a repeater rarely has styles of its own,
-    // but its item elements do.
-    HandleVirtualizingRepeater(elementId, element);
+    // Callers which pass isKnownThemeTarget=true have already established
+    // that this is a non-repeater theme target, so skip the redundant repeater
+    // type check on that hot path.
+    if (!isKnownThemeTarget) {
+        // Repeater bookkeeping must run before filtering unrelated elements:
+        // their descendants can be recycled without ordinary Remove/Add reports.
+        HandleVirtualizingRepeater(elementId, element);
 
-    // Repeater bookkeeping must run before this filter because its descendants
-    // can be recycled without ordinary Remove/Add notifications. The theme's
-    // rightmost selector types are fixed; unrelated elements need no style
-    // matching or per-element customization state.
-    if (!isKnownThemeTarget &&
-        !IsExplorerThemeTargetElement(element, fallbackClassName))
-    {
-        return;
+        // The theme's rightmost selector types are fixed; unrelated elements
+        // need no style matching or per-element customization state.
+        if (!IsExplorerThemeTargetElement(element, fallbackClassName)) {
+            return;
+        }
     }
 
     // Merge resource dictionary on the first actual styling target. Merging
