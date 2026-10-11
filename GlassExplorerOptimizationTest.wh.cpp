@@ -6953,7 +6953,13 @@ void ReapplyCustomizationsForSubtree(FrameworkElement element) {
             elementId != ElementId::None) {
             CleanupCustomizations(elementId);
             auto className = winrt::get_class_name(element);
-            ApplyCustomizations(elementId, element, className.c_str());
+            if (element.try_as<muxc::ItemsRepeater>()) {
+                // Tracked non-repeater elements are already known theme targets.
+                // Keep repeater bookkeeping separate from style application.
+                HandleVirtualizingRepeater(elementId, element);
+            } else {
+                ApplyCustomizations(elementId, element, className.c_str(), true);
+            }
         }
     } catch (winrt::hresult_error const& ex) {
         Wh_Log(L"Error %08X: %s", ex.code(), ex.message().c_str());
@@ -6964,6 +6970,9 @@ void ReapplyCustomizationsForSubtree(FrameworkElement element) {
     std::vector<FrameworkElement> children;
     try {
         int count = Media::VisualTreeHelper::GetChildrenCount(element);
+        // Reserve once for the snapshot to avoid repeated vector growth while
+        // preserving the child list before customization can mutate the tree.
+        children.reserve(count);
         for (int i = 0; i < count; i++) {
             if (auto child = Media::VisualTreeHelper::GetChild(element, i)
                                  .try_as<FrameworkElement>()) {
