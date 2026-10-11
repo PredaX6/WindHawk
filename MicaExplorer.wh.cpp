@@ -29,9 +29,9 @@
   $name: Style de transparence Mica Explorer
   $description: Choisissez le matériau de la fenêtre. Le thème XAML intégré reste inchangé.
   $options:
-  - blur: Default Blur
   - blurTransparent: Blur
   - blurSoft: Acrylic
+  - acrylicDark: Acrylic sombre
   - micaAccent: Mica
   - micaAltAccent: Mica Alt
 - backgroundTranslucentEffectRegion: ""
@@ -100,6 +100,7 @@ enum class BackgroundTranslucentEffect {
     kDefault,
     kBlur,
     kAcrylic,
+    kAcrylicDark,
     kMica,
     kMicaAlt,
     kNone,
@@ -9588,6 +9589,9 @@ HRESULT WINAPI DwmSetWindowAttribute_Hook(HWND hWnd,
         case BackgroundTranslucentEffect::kAcrylic:
             backdropType = DWMSBT_TRANSIENTWINDOW;
             break;
+        case BackgroundTranslucentEffect::kAcrylicDark:
+            backdropType = DWMSBT_NONE;
+            break;
         case BackgroundTranslucentEffect::kMica:
             backdropType = DWMSBT_MAINWINDOW;
             break;
@@ -10757,7 +10761,8 @@ HRESULT WINAPI DrawThemeBackgroundEx_Hook(HTHEME hTheme,
 }
 
 // Based on the Translucent Windows mod.
-void SetAccentBlurBehind(HWND hWnd, bool enable) {
+void SetAccentBlurBehind(HWND hWnd, bool enable,
+                         int gradientColor = 0x3A232323) {
     // Without blur behind, the extended frame is drawn over the accent blur.
     HRGN hRgn = enable ? CreateRectRgn(0, 0, -1, -1) : nullptr;
     DWM_BLURBEHIND blurBehind = {
@@ -10809,7 +10814,7 @@ void SetAccentBlurBehind(HWND hWnd, bool enable) {
     ACCENT_POLICY accentPolicy = {
         .AccentState = ACCENT_ENABLE_ACRYLICBLURBEHIND,
         // AABBGGRR.
-        .GradientColor = 0x3A232323,
+        .GradientColor = gradientColor,
     };
 
     WINDOWCOMPOSITIONATTRIBDATA data = {
@@ -10865,6 +10870,9 @@ void ApplyBackgroundTranslucentEffect(
         case BackgroundTranslucentEffect::kAcrylic:
             backdropType = DWMSBT_TRANSIENTWINDOW;
             break;
+        case BackgroundTranslucentEffect::kAcrylicDark:
+            backdropType = DWMSBT_NONE;
+            break;
         case BackgroundTranslucentEffect::kMica:
             backdropType = DWMSBT_MAINWINDOW;
             break;
@@ -10879,7 +10887,12 @@ void ApplyBackgroundTranslucentEffect(
     DwmSetWindowAttribute_Original(hWnd, DWMWA_SYSTEMBACKDROP_TYPE,
                                    &backdropType, sizeof(backdropType));
 
-    SetAccentBlurBehind(hWnd, effect == BackgroundTranslucentEffect::kBlur);
+    const bool acrylicDark =
+        effect == BackgroundTranslucentEffect::kAcrylicDark;
+    SetAccentBlurBehind(hWnd,
+                        effect == BackgroundTranslucentEffect::kBlur ||
+                            acrylicDark,
+                        acrylicDark ? 0xA0232323 : 0x3A232323);
 }
 
 void TriggerWindowCompositionUpdate(HWND hWnd) {
@@ -11440,11 +11453,12 @@ void LoadSettings() {
     // The XAML styling engine and its background-effect handling are supplied
     // by the GPL-3.0 Windows 11 File Explorer Styler codebase.
     PCWSTR material = Wh_GetStringSetting(L"material");
-    if (wcscmp(material, L"blur") == 0 ||
-        wcscmp(material, L"blurTransparent") == 0) {
+    if (wcscmp(material, L"blurTransparent") == 0) {
         g_settings.backgroundTranslucentEffect = BackgroundTranslucentEffect::kBlur;
     } else if (wcscmp(material, L"blurSoft") == 0) {
         g_settings.backgroundTranslucentEffect = BackgroundTranslucentEffect::kAcrylic;
+    } else if (wcscmp(material, L"acrylicDark") == 0) {
+        g_settings.backgroundTranslucentEffect = BackgroundTranslucentEffect::kAcrylicDark;
     } else if (wcscmp(material, L"micaAccent") == 0) {
         g_settings.backgroundTranslucentEffect = BackgroundTranslucentEffect::kMica;
     } else if (wcscmp(material, L"micaAltAccent") == 0) {
