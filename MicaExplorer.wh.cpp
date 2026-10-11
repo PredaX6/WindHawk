@@ -1,7 +1,7 @@
 // ==WindhawkMod==
 // @id              mica-explorer
 // @name            Mica Explorer
-// @description     Apply Mica or Mica Alt to Windows 11 File Explorer windows.
+// @description     Apply Acrylic, Mica, or Mica Alt to Windows 11 File Explorer windows.
 // @version         1.0.0
 // @author          TeddySlexique
 // @github          https://github.com/PredaX6/WindHawk
@@ -17,6 +17,7 @@
 A focused mod for the Windows 11 File Explorer window background.
 
 Available materials:
+- **Défaut Acrylic (SystemBackdrop)**
 - **Mica**
 - **Mica Alt**
 
@@ -31,6 +32,7 @@ Explorer or another component requests a different system backdrop type.
   $name: Material
   $description: Choisissez le matériau utilisé pour l'arrière-plan de l'Explorateur.
   $options:
+  - acrylic: Défaut Acrylic (SystemBackdrop)
   - mica: Mica
   - micaAlt: Mica Alt
 */
@@ -45,6 +47,7 @@ Explorer or another component requests a different system backdrop type.
 namespace {
 
 enum class Material {
+    Acrylic,
     Mica,
     MicaAlt,
 };
@@ -55,7 +58,9 @@ Material LoadMaterial() {
     PCWSTR value = Wh_GetStringSetting(L"material");
     Material material = Material::Mica;
 
-    if (value && _wcsicmp(value, L"micaAlt") == 0) {
+    if (value && _wcsicmp(value, L"acrylic") == 0) {
+        material = Material::Acrylic;
+    } else if (value && _wcsicmp(value, L"micaAlt") == 0) {
         material = Material::MicaAlt;
     }
 
@@ -67,8 +72,15 @@ Material LoadMaterial() {
 }
 
 int GetBackdropType() {
-    return g_material == Material::MicaAlt ? DWMSBT_TABBEDWINDOW
-                                           : DWMSBT_MAINWINDOW;
+    switch (g_material) {
+        case Material::Acrylic:
+            return DWMSBT_TRANSIENTWINDOW;
+        case Material::MicaAlt:
+            return DWMSBT_TABBEDWINDOW;
+        case Material::Mica:
+        default:
+            return DWMSBT_MAINWINDOW;
+    }
 }
 
 bool IsExplorerWindow(HWND hwnd) {
