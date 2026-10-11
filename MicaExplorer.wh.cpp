@@ -359,28 +359,9 @@ Windows](https://windhawk.net/mods/translucent-windows) mod.
 /*
 - theme: "Translucent Explorer11"
   $name: Thème
-  $description: >-
-    Les thèmes regroupent des styles visuels. Consultez la description du mod
-    pour en savoir plus sur les thèmes disponibles ou sur la création de vos
-    propres thèmes.
+  $description: Thème unique activé : Translucent Explorer 11.
   $options:
-  - "": Aucun
-  - Translucent Explorer11: Translucent Explorer11
-  - MicaBar: MicaBar
-  - NoCommandBar: Sans barre de commandes
-  - Minimal Explorer11: Explorateur 11 minimal
-  - Tabless: Sans onglets
-  - Matter: Matière
-  - WindowGlass: Verre de fenêtre
-  - AddressSearchOnly: Recherche dans la barre d’adresse uniquement
-  - TintedGlass: Verre teinté
-  - LiquidGlass: Verre liquide
-  - MicaTabless: Mica sans onglets
-  - OS26 Liquid Glass: Verre liquide OS26
-  - OS26 Liquid Glass_variant_Compact: Verre liquide OS26 (compact)
-  - ZEUSosX_044: ZEUSosX_044
-  - Compact Explorer11: Explorateur 11 compact
-  - Float: Flottant
+  - Translucent Explorer11: Translucent Explorer 11
 - material: micaAccent
   $name: Style de transparence Mica Explorer
   $description: Choisissez le matériau de fenêtre tout en conservant le thème XAML intégré.
@@ -9716,43 +9697,9 @@ void MergeResourceVariables() {
 }
 
 const Theme* GetSelectedTheme() {
-    PCWSTR themeName = Wh_GetStringSetting(L"theme");
-    const Theme* theme = nullptr;
-    if (wcscmp(themeName, L"Translucent Explorer11") == 0) {
-        theme = &g_themeTranslucent_Explorer11;
-    } else if (wcscmp(themeName, L"MicaBar") == 0) {
-        theme = &g_themeMicaBar;
-    } else if (wcscmp(themeName, L"NoCommandBar") == 0) {
-        theme = &g_themeNoCommandBar;
-    } else if (wcscmp(themeName, L"Minimal Explorer11") == 0) {
-        theme = &g_themeMinimal_Explorer11;
-    } else if (wcscmp(themeName, L"Tabless") == 0) {
-        theme = &g_themeTabless;
-    } else if (wcscmp(themeName, L"Matter") == 0) {
-        theme = &g_themeMatter;
-    } else if (wcscmp(themeName, L"WindowGlass") == 0) {
-        theme = &g_themeWindowGlass;
-    } else if (wcscmp(themeName, L"AddressSearchOnly") == 0) {
-        theme = &g_themeAddressSearchOnly;
-    } else if (wcscmp(themeName, L"TintedGlass") == 0) {
-        theme = &g_themeTintedGlass;
-    } else if (wcscmp(themeName, L"LiquidGlass") == 0) {
-        theme = &g_themeLiquidGlass;
-    } else if (wcscmp(themeName, L"MicaTabless") == 0) {
-        theme = &g_themeMicaTabless;
-    } else if (wcscmp(themeName, L"OS26 Liquid Glass") == 0) {
-        theme = &g_themeOS26_Liquid_Glass;
-    } else if (wcscmp(themeName, L"OS26 Liquid Glass_variant_Compact") == 0) {
-        theme = &g_themeOS26_Liquid_Glass_variant_Compact;
-    } else if (wcscmp(themeName, L"ZEUSosX_044") == 0) {
-        theme = &g_themeZEUSosX_044;
-    } else if (wcscmp(themeName, L"Compact Explorer11") == 0) {
-        theme = &g_themeCompact_Explorer11;
-    } else if (wcscmp(themeName, L"Float") == 0) {
-        theme = &g_themeFloat;
-    }
-    Wh_FreeStringSetting(themeName);
-    return theme;
+    // Mica Explorer is intentionally restricted to the Translucent Explorer 11 theme.
+    // Ignore any legacy theme value saved in the user's settings.
+    return &g_themeTranslucent_Explorer11;
 }
 
 void ProcessAllStylesFromSettings() {
