@@ -357,16 +357,6 @@ Windows](https://windhawk.net/mods/translucent-windows) mod.
 // ==WindhawkModSettings==
 /*
 - theme: "Translucent Explorer11"
-- material: micaAccent
-  $name: Style de transparence Mica Explorer
-  $description: Choisissez le matériau de fenêtre tout en conservant le thème XAML intégré.
-  $options:
-  - blur: Transparent Blur
-  - blurTransparent: Blur
-  - blurSoft: Clair Blur
-  - startMenu: Acrylique sombre (style menu Démarrer)
-  - micaAccent: Mica accentué
-  - micaAltAccent: Mica Alt accentué
   $name: Theme
   $description: >-
     Themes are collections of styles. For details about the themes below, or for
@@ -390,6 +380,16 @@ Windows](https://windhawk.net/mods/translucent-windows) mod.
   - ZEUSosX_044: ZEUSosX_044
   - Compact Explorer11: Compact Explorer11
   - Float: Float
+- material: micaAccent
+  $name: Style de transparence Mica Explorer
+  $description: Choisissez le matériau de fenêtre tout en conservant le thème XAML intégré.
+  $options:
+  - blur: Transparent Blur
+  - blurTransparent: Blur
+  - blurSoft: Clair Blur
+  - startMenu: Acrylique sombre (style menu Démarrer)
+  - micaAccent: Mica accentué
+  - micaAltAccent: Mica Alt accentué
 - backgroundTranslucentEffect: ""
   $name: Translucent background effect
   $description: >-
