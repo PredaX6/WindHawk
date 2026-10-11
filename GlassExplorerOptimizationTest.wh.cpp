@@ -9932,11 +9932,14 @@ void ApplyBackgroundTranslucentEffect(
     // Use exactly one backdrop mechanism at a time. The Blur mode is
     // implemented by AccentBlurBehind, while the other modes use the native
     // Windows 11 SystemBackdrop materials.
+    // Suppress DWM material transitions while switching the backdrop, then
+    // restore normal transitions so Explorer's window animations remain enabled.
+    BOOL disableDwmTransitions = TRUE;
+    DwmSetWindowAttribute_Original(
+        hWnd, DWMWA_TRANSITIONS_FORCEDISABLED,
+        &disableDwmTransitions, sizeof(disableDwmTransitions));
+
     if (effect == BackgroundTranslucentEffect::kBlur) {
-        BOOL disableDwmTransitions = FALSE;
-        DwmSetWindowAttribute_Original(
-            hWnd, DWMWA_TRANSITIONS_FORCEDISABLED,
-            &disableDwmTransitions, sizeof(disableDwmTransitions));
 
         int noneBackdrop = DWMSBT_NONE;
         DwmSetWindowAttribute_Original(
@@ -9945,17 +9948,18 @@ void ApplyBackgroundTranslucentEffect(
 
         SetAccentBlurBehind(hWnd, true);
     } else {
-        BOOL disableDwmTransitions = FALSE;
-        DwmSetWindowAttribute_Original(
-            hWnd, DWMWA_TRANSITIONS_FORCEDISABLED,
-            &disableDwmTransitions, sizeof(disableDwmTransitions));
-
         SetAccentBlurBehind(hWnd, false);
 
         DwmSetWindowAttribute_Original(
             hWnd, DWMWA_SYSTEMBACKDROP_TYPE, &backdropType,
             sizeof(backdropType));
     }
+
+    // Re-enable DWM transitions immediately after applying the material.
+    disableDwmTransitions = FALSE;
+    DwmSetWindowAttribute_Original(
+        hWnd, DWMWA_TRANSITIONS_FORCEDISABLED,
+        &disableDwmTransitions, sizeof(disableDwmTransitions));
 }
 
 void TriggerWindowCompositionUpdate(HWND hWnd) {
