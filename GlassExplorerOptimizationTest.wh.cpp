@@ -8636,7 +8636,10 @@ HRESULT WINAPI DwmSetWindowAttribute_Hook(HWND hWnd,
         case BackgroundTranslucentEffect::kDefault:
             return original();
         case BackgroundTranslucentEffect::kBlur:
-            backdropType = DWMSBT_AUTO;
+            // Blur is provided by the legacy Accent policy below, not by a
+            // system backdrop. Keep DWM's system backdrop disabled so Explorer
+            // cannot replace Accent blur with its automatic backdrop on show.
+            backdropType = DWMSBT_NONE;
             break;
         case BackgroundTranslucentEffect::kAcrylic:
             backdropType = DWMSBT_TRANSIENTWINDOW;
@@ -10409,7 +10412,8 @@ LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 
         if (GetEffectiveBackgroundTranslucentEffect() ==
             BackgroundTranslucentEffect::kBlur) {
-            SetProp(hWnd, kBlurRetryCountProp, nullptr);
+            RemoveProp(hWnd, kBlurRetryCountProp);
+            SetProp(hWnd, kBlurRetryCountProp, (HANDLE)(ULONG_PTR)1);
             SetTimer(hWnd, kBlurRetryTimerId, 15, BlurRetryTimerProc);
         }
     }
