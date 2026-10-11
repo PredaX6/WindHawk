@@ -1,7 +1,7 @@
 // ==WindhawkMod==
 // @id              mica-explorer
 // @name            Mica Explorer
-// @description     Apply five Blur and Mica styles to Windows 11 File Explorer.
+// @description     Apply seven Blur and Mica styles to Windows 11 File Explorer.
 // @version         1.1.0
 // @author          TeddySlexique
 // @github          https://github.com/PredaX6/WindHawk
@@ -15,7 +15,9 @@
 # Mica Explorer
 
 Choose a background style for Windows 11 File Explorer:
-- **Défaut Blur** — AccentBlurBehind composition effect.
+- **Défaut Blur** — standard AccentBlurBehind composition effect.
+- **Blur transparent** — acrylic blur with a lower tint opacity, where supported by Windows.
+- **Blur doux** — acrylic blur with a softer, lighter tint.
 - **Mica clair** — standard native Mica.
 - **Mica accentué** — Mica with immersive dark mode.
 - **Mica Alt clair** — native tabbed-window backdrop.
@@ -32,6 +34,8 @@ The exact appearance depends on Windows and its personalization settings.
   $description: Choisissez l'effet appliqué à l'arrière-plan de l'Explorateur.
   $options:
   - blur: Défaut Blur
+  - blurTransparent: Blur transparent
+  - blurSoft: Blur doux
   - mica: Mica clair
   - micaAccent: Mica accentué
   - micaAlt: Mica Alt clair
@@ -49,6 +53,8 @@ namespace {
 
 enum class Material {
     Blur,
+    BlurTransparent,
+    BlurSoft,
     Mica,
     MicaAccent,
     MicaAlt,
@@ -61,6 +67,7 @@ Material g_material = Material::Mica;
 enum ACCENT_STATE {
     ACCENT_DISABLED = 0,
     ACCENT_ENABLE_BLURBEHIND = 3,
+    ACCENT_ENABLE_ACRYLICBLURBEHIND = 4,
 };
 
 struct ACCENT_POLICY {
@@ -103,6 +110,10 @@ Material LoadMaterial() {
 
     if (value && _wcsicmp(value, L"blur") == 0) {
         material = Material::Blur;
+    } else if (value && _wcsicmp(value, L"blurTransparent") == 0) {
+        material = Material::BlurTransparent;
+    } else if (value && _wcsicmp(value, L"blurSoft") == 0) {
+        material = Material::BlurSoft;
     } else if (value && _wcsicmp(value, L"micaAccent") == 0) {
         material = Material::MicaAccent;
     } else if (value && _wcsicmp(value, L"micaAlt") == 0) {
@@ -136,14 +147,26 @@ void ApplyMaterial(HWND hwnd) {
         return;
     }
 
-    if (g_material == Material::Blur) {
-        // Disable DWM's Mica/SystemBackdrop first, then apply AccentBlurBehind.
+    const bool isBlur = g_material == Material::Blur ||
+                        g_material == Material::BlurTransparent ||
+                        g_material == Material::BlurSoft;
+    if (isBlur) {
+        // Disable DWM's Mica/SystemBackdrop before applying the selected blur.
         const int backdropType = DWMSBT_NONE;
         SetBackdropType(hwnd, backdropType);
 
         if (SetWindowCompositionAttribute_Original) {
             ACCENT_POLICY policy{};
-            policy.AccentState = ACCENT_ENABLE_BLURBEHIND;
+            if (g_material == Material::Blur) {
+                // Preserve the original Blur behavior.
+                policy.AccentState = ACCENT_ENABLE_BLURBEHIND;
+            } else {
+                // Acrylic blur accepts a tint/opacity through GradientColor.
+                policy.AccentState = ACCENT_ENABLE_ACRYLICBLURBEHIND;
+                policy.GradientColor = g_material == Material::BlurTransparent
+                    ? static_cast<int>(0x66000000)  // lower-opacity dark tint
+                    : static_cast<int>(0x99E8E8E8); // softer, light tint
+            }
             WINDOWCOMPOSITIONATTRIBDATA data{
                 WCA_ACCENT_POLICY, &policy, sizeof(policy)};
             SetWindowCompositionAttribute_Original(hwnd, &data);
