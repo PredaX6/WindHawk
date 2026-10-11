@@ -10376,6 +10376,13 @@ LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
         GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer) {
         ApplyBackgroundTranslucentEffect(hWnd);
         TriggerWindowCompositionUpdate(hWnd);
+
+        // The synthetic composition-change notification above can clear the
+        // legacy accent blur. Reapply Blur after the forced refresh.
+        if (GetEffectiveBackgroundTranslucentEffect() ==
+            BackgroundTranslucentEffect::kBlur) {
+            ApplyBackgroundTranslucentEffect(hWnd);
+        }
     }
 
     return result;
