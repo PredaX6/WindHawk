@@ -9812,6 +9812,49 @@ HRESULT WINAPI DrawThemeBackgroundEx_Hook(HTHEME hTheme,
                                           pOptions);
 }
 
+// Hook the accent-policy API because Explorer/WinUI may set its host-backdrop
+// accent after the window is created, overwriting the requested Blur effect.
+struct ACCENT_POLICY {
+    int AccentState;
+    int AccentFlags;
+    int GradientColor;
+    int AnimationId;
+};
+
+struct WINDOWCOMPOSITIONATTRIBDATA {
+    DWORD Attrib;
+    PVOID pvData;
+    SIZE_T cbData;
+};
+
+using SetWindowCompositionAttribute_t =
+    BOOL(WINAPI*)(HWND, WINDOWCOMPOSITIONATTRIBDATA*);
+SetWindowCompositionAttribute_t SetWindowCompositionAttribute_Original;
+
+constexpr DWORD WCA_ACCENT_POLICY = 19;
+constexpr int ACCENT_ENABLE_BLURBEHIND = 3;
+
+BOOL WINAPI SetWindowCompositionAttribute_Hook(
+    HWND hWnd, WINDOWCOMPOSITIONATTRIBDATA* data) {
+    if (data && data->Attrib == WCA_ACCENT_POLICY &&
+        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
+        GetEffectiveBackgroundTranslucentEffect() ==
+            BackgroundTranslucentEffect::kBlur) {
+        ACCENT_POLICY accentPolicy = {
+            .AccentState = ACCENT_ENABLE_BLURBEHIND,
+            .GradientColor = 0x3A232323,
+        };
+        WINDOWCOMPOSITIONATTRIBDATA blurData = {
+            .Attrib = WCA_ACCENT_POLICY,
+            .pvData = &accentPolicy,
+            .cbData = sizeof(accentPolicy),
+        };
+        return SetWindowCompositionAttribute_Original(hWnd, &blurData);
+    }
+
+    return SetWindowCompositionAttribute_Original(hWnd, data);
+}
+
 // Based on the Translucent Windows mod.
 void SetAccentBlurBehind(HWND hWnd, bool enable) {
     // Without blur behind, the extended frame is drawn over the accent blur.
@@ -9836,29 +9879,7 @@ void SetAccentBlurBehind(HWND hWnd, bool enable) {
         return;
     }
 
-    constexpr int ACCENT_ENABLE_BLURBEHIND = 3;
-
-    struct ACCENT_POLICY {
-        int AccentState;
-        int AccentFlags;
-        int GradientColor;
-        int AnimationId;
-    };
-
-    constexpr DWORD WCA_ACCENT_POLICY = 19;
-
-    struct WINDOWCOMPOSITIONATTRIBDATA {
-        DWORD Attrib;
-        PVOID pvData;
-        SIZE_T cbData;
-    };
-
-    using SetWindowCompositionAttribute_t =
-        BOOL(WINAPI*)(HWND, WINDOWCOMPOSITIONATTRIBDATA*);
-    static auto pSetWindowCompositionAttribute =
-        (SetWindowCompositionAttribute_t)GetProcAddress(
-            GetModuleHandle(L"user32.dll"), "SetWindowCompositionAttribute");
-    if (!pSetWindowCompositionAttribute) {
+    if (!SetWindowCompositionAttribute_Original) {
         return;
     }
 
@@ -9874,7 +9895,7 @@ void SetAccentBlurBehind(HWND hWnd, bool enable) {
         .cbData = sizeof(accentPolicy),
     };
 
-    pSetWindowCompositionAttribute(hWnd, &data);
+    SetWindowCompositionAttribute_Original(hWnd, &data);
 }
 
 void ApplyBackgroundTranslucentEffect(
@@ -10543,6 +10564,15 @@ BOOL Wh_ModInit() {
     WindhawkUtils::SetFunctionHook(DwmSetWindowAttribute,
                                    DwmSetWindowAttribute_Hook,
                                    &DwmSetWindowAttribute_Original);
+
+    auto pSetWindowCompositionAttribute =
+        (SetWindowCompositionAttribute_t)GetProcAddress(
+            GetModuleHandle(L"user32.dll"), "SetWindowCompositionAttribute");
+    if (pSetWindowCompositionAttribute) {
+        WindhawkUtils::SetFunctionHook(
+            pSetWindowCompositionAttribute, SetWindowCompositionAttribute_Hook,
+            &SetWindowCompositionAttribute_Original);
+    }
 
     WindhawkUtils::SetFunctionHook(DwmExtendFrameIntoClientArea,
                                    DwmExtendFrameIntoClientArea_Hook,
