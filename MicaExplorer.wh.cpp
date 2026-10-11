@@ -440,7 +440,7 @@ Windows](https://windhawk.net/mods/translucent-windows) mod.
     Hauteur du cadre contenant les onglets, la barre d’adresse et la barre de
     commandes. La valeur 0 conserve la hauteur par défaut.
 - xamlDiagnosticsHandling: alert
-  $name: XAML diagnostics consumer handling
+  $name: Gestion des diagnostics XAML
   $description: >-
     How to handle other programs (e.g. ExplorerBlurMica) that try to use XAML
     diagnostics. There can only be one consumer at a time. Block will prevent
