@@ -7856,6 +7856,11 @@ std::wstring AdjustTypeName(std::wstring_view type) {
         return result;
     }
 
+    // Most fully qualified names do not use the muxc: shorthand.
+    if (!type.starts_with(L"muxc:")) {
+        return std::wstring(type);
+    }
+
     static constexpr std::pair<std::wstring_view, std::wstring_view>
         adjustments[] = {
             {L"muxc:", L"Microsoft.UI.Xaml.Controls."},
