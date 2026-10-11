@@ -8619,6 +8619,18 @@ HRESULT WINAPI DwmSetWindowAttribute_Hook(HWND hWnd,
                                               cbAttribute);
     };
 
+    // Keep Explorer from fading into DWM's glass sheet during taskbar Peek.
+    // DWMWA_EXCLUDED_FROM_PEEK is independent of the backdrop material itself.
+    if (dwAttribute == DWMWA_EXCLUDED_FROM_PEEK &&
+        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
+        GetEffectiveBackgroundTranslucentEffect() ==
+            BackgroundTranslucentEffect::kBlur) {
+        const BOOL excludedFromPeek = TRUE;
+        return DwmSetWindowAttribute_Original(
+            hWnd, DWMWA_EXCLUDED_FROM_PEEK, &excludedFromPeek,
+            sizeof(excludedFromPeek));
+    }
+
     if (dwAttribute != DWMWA_SYSTEMBACKDROP_TYPE &&
         dwAttribute != DWMWA_USE_HOSTBACKDROPBRUSH) {
         return original();
@@ -9964,6 +9976,11 @@ void ApplyBackgroundTranslucentEffect(
         &disableDwmTransitions, sizeof(disableDwmTransitions));
 
     if (effect == BackgroundTranslucentEffect::kBlur) {
+        // Prevent DWM Peek from fading the Explorer window to a glass sheet.
+        const BOOL excludedFromPeek = TRUE;
+        DwmSetWindowAttribute_Original(
+            hWnd, DWMWA_EXCLUDED_FROM_PEEK, &excludedFromPeek,
+            sizeof(excludedFromPeek));
 
         int noneBackdrop = DWMSBT_NONE;
         DwmSetWindowAttribute_Original(
