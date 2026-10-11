@@ -10370,6 +10370,32 @@ bool IsGlassExplorerShellProcess() {
 using DefWindowProcW_t = decltype(&DefWindowProcW);
 DefWindowProcW_t DefWindowProcW_Original;
 
+// Diagnostic retry: the legacy Accent blur may be ignored while DWM is
+// animating a newly shown Explorer window. Reapply it briefly during startup.
+constexpr UINT_PTR kBlurRetryTimerId = 0x47455842;
+constexpr WCHAR kBlurRetryCountProp[] = L"windhawk_blur-retry-count-" WH_MOD_ID;
+
+VOID CALLBACK BlurRetryTimerProc(HWND hWnd, UINT, UINT_PTR timerId, DWORD) {
+    if (!IsWindow(hWnd) ||
+        GetTargetWindowType(hWnd) != TargetWindowType::FileExplorer ||
+        GetEffectiveBackgroundTranslucentEffect() !=
+            BackgroundTranslucentEffect::kBlur) {
+        KillTimer(hWnd, timerId);
+        RemoveProp(hWnd, kBlurRetryCountProp);
+        return;
+    }
+
+    ApplyBackgroundTranslucentEffect(hWnd);
+    const UINT attempts =
+        (UINT)(ULONG_PTR)GetProp(hWnd, kBlurRetryCountProp) + 1;
+    if (attempts >= 20) {
+        KillTimer(hWnd, timerId);
+        RemoveProp(hWnd, kBlurRetryCountProp);
+    } else {
+        SetProp(hWnd, kBlurRetryCountProp, (HANDLE)(ULONG_PTR)attempts);
+    }
+}
+
 LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     if (uMsg == WM_NCACTIVATE && !wParam && !IsIconic(hWnd)) return TRUE;
 
@@ -10380,6 +10406,12 @@ LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
     if (uMsg == WM_SHOWWINDOW && wParam &&
         GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer) {
         ApplyBackgroundTranslucentEffect(hWnd);
+
+        if (GetEffectiveBackgroundTranslucentEffect() ==
+            BackgroundTranslucentEffect::kBlur) {
+            SetProp(hWnd, kBlurRetryCountProp, nullptr);
+            SetTimer(hWnd, kBlurRetryTimerId, 15, BlurRetryTimerProc);
+        }
     }
 
     // Prepare the selected material before Windows makes the window visible.
