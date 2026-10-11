@@ -359,7 +359,7 @@ Windows](https://windhawk.net/mods/translucent-windows) mod.
 /*
 - theme: "Translucent Explorer11"
   $name: Thème
-  $description: Thème unique activé : Translucent Explorer 11.
+  $description: "Thème unique activé : Translucent Explorer 11."
   $options:
   - Translucent Explorer11: Translucent Explorer 11
 - material: micaAccent
