@@ -10373,9 +10373,16 @@ DefWindowProcW_t DefWindowProcW_Original;
 LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     if (uMsg == WM_NCACTIVATE && !wParam && !IsIconic(hWnd)) return TRUE;
 
+    // WM_SHOWWINDOW is sent before the window is displayed. Apply the
+    // material here as well as during WM_WINDOWPOSCHANGING, because Explorer
+    // can begin its opening animation before the position-change path has
+    // established the legacy Accent blur.
+    if (uMsg == WM_SHOWWINDOW && wParam &&
+        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer) {
+        ApplyBackgroundTranslucentEffect(hWnd);
+    }
+
     // Prepare the selected material before Windows makes the window visible.
-    // Applying Blur only after WM_WINDOWPOSCHANGED allows a first frame to
-    // appear translucent without the legacy Accent blur.
     if (uMsg == WM_WINDOWPOSCHANGING && lParam &&
         (((const WINDOWPOS*)lParam)->flags & SWP_SHOWWINDOW) &&
         GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer) {
