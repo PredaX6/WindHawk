@@ -386,7 +386,11 @@ HRESULT VisualTreeWatcher::OnVisualTreeChange(ParentChildRelation relation, Visu
                 // skip id bookkeeping and customization dispatch entirely.
                 const bool isVirtualizingRepeater =
                     static_cast<bool>(frameworkElement.try_as<muxc::ItemsRepeater>());
+                // ItemsRepeater needs bookkeeping regardless of whether it
+                // matches a style target. Let ApplyCustomizations perform its
+                // own target check for repeaters instead of checking twice here.
                 const bool isThemeTarget =
+                    !isVirtualizingRepeater &&
                     IsExplorerThemeTargetElement(frameworkElement, element.Type);
                 if (isVirtualizingRepeater || isThemeTarget)
                 {
