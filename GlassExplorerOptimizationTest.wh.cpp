@@ -3621,6 +3621,8 @@ void ScheduleImageLoadRetryOnAllUiThreads() {
 
     std::vector<winrt::Microsoft::UI::Dispatching::DispatcherQueue> dispatchers;
     {
+        // The registry size is an upper bound on live dispatchers to collect.
+        dispatchers.reserve(g_imageRetryDispatchers.size());
         std::lock_guard<std::mutex> lock(g_imageRetryMutex);
 
         if (!g_imageRetryActive) {
@@ -4159,6 +4161,10 @@ winrt::Windows::Foundation::IInspectable SetOrClearValue(
 
 // https://stackoverflow.com/a/5665377
 std::wstring EscapeXmlAttribute(std::wstring_view data) {
+    if (data.empty()) {
+        return {};
+    }
+
     std::wstring buffer;
     buffer.reserve(data.size());
     for (const auto c : data) {
@@ -4201,6 +4207,10 @@ std::wstring_view TrimStringView(std::wstring_view s) {
 // https://stackoverflow.com/a/46931770
 std::vector<std::wstring_view> SplitStringView(std::wstring_view s,
                                                std::wstring_view delimiter) {
+    if (delimiter.empty()) {
+        return {s};
+    }
+
     size_t pos_start = 0, pos_end, delim_len = delimiter.length();
     std::wstring_view token;
     std::vector<std::wstring_view> res;
@@ -4765,6 +4775,10 @@ std::wstring FormatDoubleInvariant(double d) {
 // by a decimal fraction or exponent. Returns std::nullopt on partial / bad
 // input.
 std::optional<double> ParseDoubleInvariant(std::wstring_view sv) {
+    if (sv.empty()) {
+        return std::nullopt;
+    }
+
     std::string narrow;
     narrow.reserve(sv.size());
     for (auto c : sv) {
@@ -5658,6 +5672,8 @@ class StyleVariableExpressionEvaluator {
     StyleExpressionValue ParseStringLiteral() {
         m_pos++;  // Skip the opening backtick.
         std::wstring out;
+        // The literal cannot contain more characters than remain in the expression.
+        out.reserve(m_text.size() - m_pos);
         while (m_pos < m_text.size()) {
             wchar_t c = m_text[m_pos];
             if (c == L'`') {
@@ -7561,7 +7577,15 @@ using StyleConstants = std::vector<StyleConstant>;
 
 std::wstring ApplyStyleConstants(std::wstring_view style,
                                  const StyleConstants& styleConstants) {
+    if (style.empty()) {
+        return {};
+    }
+    if (styleConstants.empty()) {
+        return std::wstring(style);
+    }
+
     std::wstring result;
+    result.reserve(style.size());
 
     size_t lastPos = 0;
     size_t findPos;
@@ -7824,7 +7848,12 @@ std::wstring AdjustTypeName(std::wstring_view type) {
             return L"Microsoft.UI.Xaml.Shapes.Rectangle";
         }
 
-        return L"Microsoft.UI.Xaml.Controls." + std::wstring{type};
+        constexpr std::wstring_view prefix = L"Microsoft.UI.Xaml.Controls.";
+        std::wstring result;
+        result.reserve(prefix.size() + type.size());
+        result += prefix;
+        result += type;
+        return result;
     }
 
     static constexpr std::pair<std::wstring_view, std::wstring_view>
@@ -7834,7 +7863,10 @@ std::wstring AdjustTypeName(std::wstring_view type) {
 
     for (const auto& adjustment : adjustments) {
         if (type.starts_with(adjustment.first)) {
-            auto result = std::wstring{adjustment.second};
+            std::wstring result;
+            result.reserve(adjustment.second.size() +
+                           type.size() - adjustment.first.size());
+            result += adjustment.second;
             result += type.substr(adjustment.first.size());
             return result;
         }
@@ -7846,6 +7878,10 @@ std::wstring AdjustTypeName(std::wstring_view type) {
 // Splits a target string on the commas which separate targets, ignoring commas
 // which are part of a `[Property=Value]` clause.
 std::vector<std::wstring_view> SplitTargetString(std::wstring_view target) {
+    if (target.find(L',') == std::wstring_view::npos) {
+        return {target};
+    }
+
     std::vector<std::wstring_view> result;
     // Every top-level comma creates at most one additional target token.
     result.reserve(std::count(target.begin(), target.end(), L',') + 1);
@@ -7882,6 +7918,8 @@ void AddElementCustomizationRulesForSingleTarget(
     ElementCustomizationRules elementCustomizationRules;
 
     auto targetParts = SplitStringView(target, L" > ");
+    // A target part can add at most one parent matcher.
+    elementCustomizationRules.parentElementMatchers.reserve(targetParts.size());
 
     bool first = true;
     bool hasVisualStateGroup = false;
@@ -7976,6 +8014,10 @@ void AddElementCustomizationRulesForSingleTarget(
 
 void AddElementCustomizationRules(std::wstring_view target,
                                   const std::vector<std::wstring>& styles) {
+    if (styles.empty() || target.empty()) {
+        return;
+    }
+
     auto targets = SplitTargetString(target);
 
     for (const auto& singleTarget : targets) {
@@ -8027,7 +8069,7 @@ bool ProcessSingleTargetStylesFromSettings(
             ApplyStyleConstants(styleSetting.get(), styleConstants));
     }
 
-    if (styles.size() > 0) {
+    if (!styles.empty()) {
         AddElementCustomizationRules(targetStringSetting.get(), styles);
     }
 
@@ -8095,13 +8137,15 @@ std::optional<ResourceVariableEntry> ParseResourceVariable(
 
 winrt::Windows::Foundation::IInspectable ParseXamlValue(
     std::wstring_view xamlValue) {
+    constexpr std::wstring_view prefix = L"        <Setter Property=\"Tag\">\n";
+    constexpr std::wstring_view middle = L"            <Setter.Value>\n";
+    constexpr std::wstring_view suffix = L"\n            </Setter.Value>\n        </Setter>\n";
     std::wstring xaml;
-    xaml += L"        <Setter Property=\"Tag\">\n";
-    xaml += L"            <Setter.Value>\n";
+    xaml.reserve(prefix.size() + middle.size() + xamlValue.size() + suffix.size());
+    xaml += prefix;
+    xaml += middle;
     xaml += xamlValue;
-    xaml += L"\n";
-    xaml += L"            </Setter.Value>\n";
-    xaml += L"        </Setter>\n";
+    xaml += suffix;
 
     auto style = GetStyleFromXamlSetters(L"FrameworkElement", xaml);
     return style.Setters().GetAt(0).as<Setter>().Value();
@@ -10494,7 +10538,7 @@ void Wh_ModAfterInit() {
             (PVOID)hTargetWnd);
     }
 
-    if (hTargetWnds.size() > 0) {
+    if (!hTargetWnds.empty()) {
         Wh_Log(L"Initializing - Found target windows");
         InitializeSettingsAndTap();
     }
@@ -10564,7 +10608,7 @@ void Wh_ModSettingsChanged() {
             (PVOID)hTargetWnd);
     }
 
-    if (hTargetWnds.size() > 0) {
+    if (!hTargetWnds.empty()) {
         Wh_Log(L"Reinitializing - Found target windows");
         InitializeSettingsAndTap();
     }
