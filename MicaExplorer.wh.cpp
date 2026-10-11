@@ -17,7 +17,7 @@
 Choose a background style for Windows 11 File Explorer:
 - **Transparent Blur** — standard AccentBlurBehind composition effect.
 - **Blur** — acrylic blur with a lower tint opacity, where supported by Windows.
-- **Blur doux** — acrylic blur with a softer, lighter tint.
+- **Clair Blur** — acrylic blur with a softer, lighter tint.
 - **Acrylique sombre (style menu Démarrer)** — dark-tinted acrylic intended to approximate the Start menu backdrop.
 - **Mica accentué** — Mica with immersive dark mode.
 - **Mica Alt accentué** — Mica Alt with immersive dark mode.
@@ -34,7 +34,7 @@ The exact appearance depends on Windows and its personalization settings.
   $options:
   - blur: Transparent Blur
   - blurTransparent: Blur
-  - blurSoft: Blur doux
+  - blurSoft: Clair Blur
   - startMenu: Acrylique sombre (style menu Démarrer)
   - micaAccent: Mica accentué
   - micaAltAccent: Mica Alt accentué
