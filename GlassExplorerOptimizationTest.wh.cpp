@@ -9962,13 +9962,19 @@ void ApplyBackgroundTranslucentEffect(
         &disableDwmTransitions, sizeof(disableDwmTransitions));
 }
 
-void TriggerWindowCompositionUpdate(HWND hWnd) {
+void TriggerWindowCompositionUpdate(HWND hWnd,
+                                     bool notifyCompositionChange = true) {
     WINDOWPOS windowPos = {
         .hwnd = hWnd,
         .flags = SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE,
     };
     SendMessage(hWnd, WM_WINDOWPOSCHANGED, 0, (LPARAM)&windowPos);
-    SendMessage(hWnd, WM_DWMCOMPOSITIONCHANGED, 0, 0);
+
+    // A synthetic composition-change notification can reset the legacy
+    // Accent blur. Callers applying Blur can skip this notification.
+    if (notifyCompositionChange) {
+        SendMessage(hWnd, WM_DWMCOMPOSITIONCHANGED, 0, 0);
+    }
 
     // Repaint the content, which is rendered differently with the effect
     // extended to the entire window.
@@ -10374,13 +10380,14 @@ LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
     if (uMsg == WM_WINDOWPOSCHANGED && lParam &&
         (((const WINDOWPOS*)lParam)->flags & SWP_SHOWWINDOW) &&
         GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer) {
+        const bool isBlur =
+            GetEffectiveBackgroundTranslucentEffect() ==
+            BackgroundTranslucentEffect::kBlur;
         ApplyBackgroundTranslucentEffect(hWnd);
-        TriggerWindowCompositionUpdate(hWnd);
+        TriggerWindowCompositionUpdate(hWnd, !isBlur);
 
-        // The synthetic composition-change notification above can clear the
-        // legacy accent blur. Reapply Blur after the forced refresh.
-        if (GetEffectiveBackgroundTranslucentEffect() ==
-            BackgroundTranslucentEffect::kBlur) {
+        // Keep the legacy Accent blur as the final operation for Blur mode.
+        if (isBlur) {
             ApplyBackgroundTranslucentEffect(hWnd);
         }
     }
