@@ -87,7 +87,8 @@ void SetBackdropType(HWND hwnd, int backdropType) {
         DwmSetWindowAttribute_Original(hwnd, DWMWA_SYSTEMBACKDROP_TYPE,
                                        &backdropType, sizeof(backdropType));
     } else {
-        SetBackdropType(hwnd, backdropType);
+        DwmSetWindowAttribute(hwnd, DWMWA_SYSTEMBACKDROP_TYPE, &backdropType,
+                              sizeof(backdropType));
     }
 }
 
@@ -129,8 +130,7 @@ void ApplyMaterial(HWND hwnd) {
     if (g_material == Material::Blur) {
         // Disable DWM's Mica/SystemBackdrop first, then apply AccentBlurBehind.
         const int backdropType = DWMSBT_NONE;
-        DwmSetWindowAttribute(hwnd, DWMWA_SYSTEMBACKDROP_TYPE, &backdropType,
-                              sizeof(backdropType));
+        SetBackdropType(hwnd, backdropType);
 
         if (SetWindowCompositionAttribute_Original) {
             ACCENT_POLICY policy{};
