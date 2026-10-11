@@ -2,12 +2,12 @@
 // @id              mica-explorer
 // @name            Mica Explorer
 // @description     Apply six Blur and Mica styles to Windows 11 File Explorer.
-// @version         1.2.5
+// @version         1.2.6
 // @author          TeddySlexique
 // @github          https://github.com/PredaX6/WindHawk
 // @include         explorer.exe
 // @architecture    x86-64
-// @compilerOptions -ldwmapi -lgdi32
+// @compilerOptions -lcomctl32 -ldwmapi -lgdi32
 // ==/WindhawkMod==
 
 // ==WindhawkModReadme==
@@ -42,6 +42,7 @@ The exact appearance depends on Windows and its personalization settings.
 // ==/WindhawkModSettings==
 
 #include <windows.h>
+#include <commctrl.h>
 #include <dwmapi.h>
 #include <windhawk_utils.h>
 
@@ -275,6 +276,31 @@ HRESULT WINAPI DwmSetWindowAttribute_Hook(HWND hwnd,
     return DwmSetWindowAttribute_Original(hwnd, attribute, value, valueSize);
 }
 
+// Reapply the material when Explorer actually shows a newly created window.
+// Explorer can reset its DWM/accent state after CreateWindowExW returns.
+constexpr UINT_PTR kMaterialSubclassId = 0x4D455850;
+
+LRESULT CALLBACK ExplorerWindowSubclassProc(HWND hwnd,
+                                             UINT message,
+                                             WPARAM wParam,
+                                             LPARAM lParam,
+                                             UINT_PTR subclassId,
+                                             DWORD_PTR) {
+    const LRESULT result = DefSubclassProc(hwnd, message, wParam, lParam);
+
+    if ((message == WM_SHOWWINDOW && wParam) ||
+        (message == WM_WINDOWPOSCHANGED && lParam &&
+         (reinterpret_cast<const WINDOWPOS*>(lParam)->flags & SWP_SHOWWINDOW))) {
+        ApplyMaterial(hwnd);
+    }
+
+    if (message == WM_NCDESTROY) {
+        RemoveWindowSubclass(hwnd, ExplorerWindowSubclassProc, subclassId);
+    }
+
+    return result;
+}
+
 using CreateWindowExW_t = decltype(&CreateWindowExW);
 CreateWindowExW_t CreateWindowExW_Original = nullptr;
 
@@ -294,8 +320,12 @@ HWND WINAPI CreateWindowExW_Hook(DWORD exStyle,
         exStyle, className, windowName, style, x, y, width, height, parent,
         menu, instance, parameter);
 
-    if (hwnd) {
+    if (hwnd && IsExplorerWindow(hwnd)) {
+        // Apply once after creation and attach a show-time callback so the
+        // final material is restored after Explorer finishes window setup.
         ApplyMaterial(hwnd);
+        SetWindowSubclass(hwnd, ExplorerWindowSubclassProc,
+                          kMaterialSubclassId, 0);
     }
 
     return hwnd;
