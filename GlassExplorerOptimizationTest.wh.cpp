@@ -10438,7 +10438,6 @@ VOID CALLBACK BlurRetryTimerProc(HWND hWnd, UINT, UINT_PTR timerId, DWORD) {
 }
 
 LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-    if (uMsg == WM_NCACTIVATE && !wParam && !IsIconic(hWnd)) return TRUE;
 
     // WM_SHOWWINDOW is sent before the window is displayed. Apply the
     // material here as well as during WM_WINDOWPOSCHANGING, because Explorer
