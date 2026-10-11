@@ -1,8 +1,8 @@
 // ==WindhawkMod==
 // @id              mica-explorer
 // @name            Mica Explorer
-// @description     Apply Acrylic, Mica, or Mica Alt to Windows 11 File Explorer windows.
-// @version         1.0.0
+// @description     Apply Blur, Mica, or Mica Alt to Windows 11 File Explorer windows.
+// @version         1.0.1
 // @author          TeddySlexique
 // @github          https://github.com/PredaX6/WindHawk
 // @include         explorer.exe
@@ -14,25 +14,23 @@
 /*
 # Mica Explorer
 
-A focused mod for the Windows 11 File Explorer window background.
+Choose one of three distinct background effects for Windows 11 File Explorer:
+- **Défaut Blur** — AccentBlurBehind composition effect.
+- **Mica** — native DWM SystemBackdrop.
+- **Mica Alt** — native tabbed-window DWM SystemBackdrop.
 
-Available materials:
-- **Défaut Acrylic (SystemBackdrop)**
-- **Mica**
-- **Mica Alt**
-
-The selected material is reapplied when Explorer creates a window and whenever
-Explorer or another component requests a different system backdrop type.
+The selected effect is applied to existing Explorer windows, new windows, and
+when Explorer attempts to change the system backdrop.
 */
 // ==/WindhawkModReadme==
 
 // ==WindhawkModSettings==
 /*
 - material: mica
-  $name: Material
-  $description: Choisissez le matériau utilisé pour l'arrière-plan de l'Explorateur.
+  $name: Style de transparence
+  $description: Choisissez l'effet appliqué à l'arrière-plan de l'Explorateur.
   $options:
-  - acrylic: Défaut Acrylic (SystemBackdrop)
+  - blur: Défaut Blur
   - mica: Mica
   - micaAlt: Mica Alt
 */
@@ -47,19 +45,46 @@ Explorer or another component requests a different system backdrop type.
 namespace {
 
 enum class Material {
-    Acrylic,
+    Blur,
     Mica,
     MicaAlt,
 };
 
 Material g_material = Material::Mica;
 
+// Undocumented User32 composition API used by Glass Explorer's Blur style.
+enum ACCENT_STATE {
+    ACCENT_DISABLED = 0,
+    ACCENT_ENABLE_BLURBEHIND = 3,
+};
+
+struct ACCENT_POLICY {
+    int AccentState;
+    int AccentFlags;
+    int GradientColor;
+    int AnimationId;
+};
+
+enum WINDOWCOMPOSITIONATTRIB {
+    WCA_ACCENT_POLICY = 19,
+};
+
+struct WINDOWCOMPOSITIONATTRIBDATA {
+    WINDOWCOMPOSITIONATTRIB Attribute;
+    PVOID Data;
+    SIZE_T SizeOfData;
+};
+
+using SetWindowCompositionAttribute_t =
+    BOOL(WINAPI*)(HWND, WINDOWCOMPOSITIONATTRIBDATA*);
+SetWindowCompositionAttribute_t SetWindowCompositionAttribute_Original = nullptr;
+
 Material LoadMaterial() {
     PCWSTR value = Wh_GetStringSetting(L"material");
     Material material = Material::Mica;
 
-    if (value && _wcsicmp(value, L"acrylic") == 0) {
-        material = Material::Acrylic;
+    if (value && _wcsicmp(value, L"blur") == 0) {
+        material = Material::Blur;
     } else if (value && _wcsicmp(value, L"micaAlt") == 0) {
         material = Material::MicaAlt;
     }
@@ -69,18 +94,6 @@ Material LoadMaterial() {
     }
 
     return material;
-}
-
-int GetBackdropType() {
-    switch (g_material) {
-        case Material::Acrylic:
-            return DWMSBT_TRANSIENTWINDOW;
-        case Material::MicaAlt:
-            return DWMSBT_TABBEDWINDOW;
-        case Material::Mica:
-        default:
-            return DWMSBT_MAINWINDOW;
-    }
 }
 
 bool IsExplorerWindow(HWND hwnd) {
@@ -101,7 +114,34 @@ void ApplyMaterial(HWND hwnd) {
         return;
     }
 
-    const int backdropType = GetBackdropType();
+    if (g_material == Material::Blur) {
+        // Disable DWM's Mica/SystemBackdrop first, then apply AccentBlurBehind.
+        const int backdropType = DWMSBT_NONE;
+        DwmSetWindowAttribute(hwnd, DWMWA_SYSTEMBACKDROP_TYPE, &backdropType,
+                              sizeof(backdropType));
+
+        if (SetWindowCompositionAttribute_Original) {
+            ACCENT_POLICY policy{};
+            policy.AccentState = ACCENT_ENABLE_BLURBEHIND;
+            WINDOWCOMPOSITIONATTRIBDATA data{
+                WCA_ACCENT_POLICY, &policy, sizeof(policy)};
+            SetWindowCompositionAttribute_Original(hwnd, &data);
+        }
+        return;
+    }
+
+    // Do not leave AccentBlurBehind active when switching to a DWM material.
+    if (SetWindowCompositionAttribute_Original) {
+        ACCENT_POLICY policy{};
+        policy.AccentState = ACCENT_DISABLED;
+        WINDOWCOMPOSITIONATTRIBDATA data{
+            WCA_ACCENT_POLICY, &policy, sizeof(policy)};
+        SetWindowCompositionAttribute_Original(hwnd, &data);
+    }
+
+    const int backdropType =
+        g_material == Material::MicaAlt ? DWMSBT_TABBEDWINDOW
+                                        : DWMSBT_MAINWINDOW;
     DwmSetWindowAttribute(hwnd, DWMWA_SYSTEMBACKDROP_TYPE, &backdropType,
                           sizeof(backdropType));
 }
@@ -112,24 +152,23 @@ BOOL CALLBACK EnumExplorerWindowsProc(HWND hwnd, LPARAM) {
 }
 
 using DwmSetWindowAttribute_t = decltype(&DwmSetWindowAttribute);
-DwmSetWindowAttribute_t DwmSetWindowAttribute_Original;
+DwmSetWindowAttribute_t DwmSetWindowAttribute_Original = nullptr;
 
 HRESULT WINAPI DwmSetWindowAttribute_Hook(HWND hwnd,
                                           DWORD attribute,
                                           LPCVOID value,
                                           DWORD valueSize) {
     if (attribute == DWMWA_SYSTEMBACKDROP_TYPE && IsExplorerWindow(hwnd)) {
-        const int backdropType = GetBackdropType();
-        return DwmSetWindowAttribute_Original(
-            hwnd, DWMWA_SYSTEMBACKDROP_TYPE, &backdropType,
-            sizeof(backdropType));
+        // Keep the chosen style even if Explorer requests another backdrop.
+        ApplyMaterial(hwnd);
+        return S_OK;
     }
 
     return DwmSetWindowAttribute_Original(hwnd, attribute, value, valueSize);
 }
 
 using CreateWindowExW_t = decltype(&CreateWindowExW);
-CreateWindowExW_t CreateWindowExW_Original;
+CreateWindowExW_t CreateWindowExW_Original = nullptr;
 
 HWND WINAPI CreateWindowExW_Hook(DWORD exStyle,
                                  LPCWSTR className,
@@ -158,6 +197,13 @@ HWND WINAPI CreateWindowExW_Hook(DWORD exStyle,
 
 BOOL Wh_ModInit() {
     g_material = LoadMaterial();
+
+    HMODULE user32 = GetModuleHandleW(L"user32.dll");
+    if (user32) {
+        SetWindowCompositionAttribute_Original =
+            reinterpret_cast<SetWindowCompositionAttribute_t>(
+                GetProcAddress(user32, "SetWindowCompositionAttribute"));
+    }
 
     WindhawkUtils::SetFunctionHook(DwmSetWindowAttribute,
                                    DwmSetWindowAttribute_Hook,
