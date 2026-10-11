@@ -2,7 +2,7 @@
 // @id              mica-explorer
 // @name            Mica Explorer
 // @description     Apply six Blur and Mica styles to Windows 11 File Explorer.
-// @version         1.2.3
+// @version         1.2.4
 // @author          TeddySlexique
 // @github          https://github.com/PredaX6/WindHawk
 // @include         explorer.exe
@@ -142,6 +142,16 @@ bool IsExplorerWindow(HWND hwnd) {
     return _wcsicmp(className, L"CabinetWClass") == 0;
 }
 
+void TriggerWindowCompositionUpdate(HWND hwnd) {
+    WINDOWPOS windowPos{};
+    windowPos.hwnd = hwnd;
+    windowPos.flags = SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE;
+    SendMessageW(hwnd, WM_WINDOWPOSCHANGED, 0, reinterpret_cast<LPARAM>(&windowPos));
+    SendMessageW(hwnd, WM_DWMCOMPOSITIONCHANGED, 0, 0);
+    RedrawWindow(hwnd, nullptr, nullptr,
+                 RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
+}
+
 void ApplyMaterial(HWND hwnd) {
     if (!IsExplorerWindow(hwnd)) {
         return;
@@ -186,6 +196,9 @@ void ApplyMaterial(HWND hwnd) {
                 WCA_ACCENT_POLICY, &policy, sizeof(policy)};
             SetWindowCompositionAttribute_Original(hwnd, &data);
         }
+        // Explorer can retain its previous opaque rendering until its window
+        // composition and frame are refreshed after the accent policy changes.
+        TriggerWindowCompositionUpdate(hwnd);
         return;
     }
 
@@ -209,6 +222,7 @@ void ApplyMaterial(HWND hwnd) {
 
     const int backdropType = isAlt ? DWMSBT_TABBEDWINDOW : DWMSBT_MAINWINDOW;
     SetBackdropType(hwnd, backdropType);
+    TriggerWindowCompositionUpdate(hwnd);
 }
 
 BOOL CALLBACK EnumExplorerWindowsProc(HWND hwnd, LPARAM) {
