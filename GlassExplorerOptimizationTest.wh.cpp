@@ -7108,6 +7108,56 @@ void HandleVirtualizingRepeater(ElementId elementId, FrameworkElement element) {
 
 void MergeResourceVariables();
 
+// The fixed Explorer theme only targets these leaf control types. Avoid
+// repeatedly running the selector engine for the many unrelated
+// FrameworkElements in Explorer. Check both the diagnostics fallback type and
+// the WinRT runtime class so either naming form remains valid.
+bool IsExplorerThemeTargetType(PCWSTR type) noexcept
+{
+    if (!type)
+    {
+        return false;
+    }
+
+    constexpr PCWSTR targetTypes[] = {
+        L"Grid",
+        L"Microsoft.UI.Xaml.Controls.Grid",
+        L"CommandBar",
+        L"Microsoft.UI.Xaml.Controls.CommandBar",
+        L"TabViewItem",
+        L"Microsoft.UI.Xaml.Controls.TabViewItem",
+        L"Microsoft.UI.Xaml.Shapes.Path",
+        L"Path",
+        L"ToolTip",
+        L"Microsoft.UI.Xaml.Controls.ToolTip",
+        L"StackPanel",
+        L"Microsoft.UI.Xaml.Controls.StackPanel",
+    };
+
+    for (PCWSTR targetType : targetTypes)
+    {
+        if (wcscmp(type, targetType) == 0)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool IsExplorerThemeTargetElement(
+    FrameworkElement const& element,
+    PCWSTR fallbackClassName)
+{
+    if (IsExplorerThemeTargetType(fallbackClassName))
+    {
+        return true;
+    }
+
+    const auto className = winrt::get_class_name(element);
+    return IsExplorerThemeTargetType(className.c_str());
+}
+
 void ApplyCustomizations(ElementId elementId,
                          FrameworkElement element,
                          PCWSTR fallbackClassName) {
@@ -7121,6 +7171,15 @@ void ApplyCustomizations(ElementId elementId,
     // Before the early return below: a repeater rarely has styles of its own,
     // but its item elements do.
     HandleVirtualizingRepeater(elementId, element);
+
+    // Repeater bookkeeping must run before this filter because its descendants
+    // can be recycled without ordinary Remove/Add notifications. The theme's
+    // rightmost selector types are fixed; unrelated elements need no style
+    // matching or per-element customization state.
+    if (!IsExplorerThemeTargetElement(element, fallbackClassName))
+    {
+        return;
+    }
 
     auto* state = GetStyleVariableState();
     if (!state) {
