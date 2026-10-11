@@ -10889,14 +10889,10 @@ void ApplyBackgroundTranslucentEffect(
     DwmSetWindowAttribute_Original(hWnd, DWMWA_SYSTEMBACKDROP_TYPE,
                                    &backdropType, sizeof(backdropType));
 
-    const bool acrylicDark =
-        effect == BackgroundTranslucentEffect::kAcrylicDark;
-    // Blur uses the legacy blur path; dark acrylic keeps the DWM acrylic
-    // backdrop (DWMSBT_TRANSIENTWINDOW) and applies a darker tint.
-    SetAccentBlurBehind(hWnd,
-                        effect == BackgroundTranslucentEffect::kBlur ||
-                            acrylicDark,
-                        acrylicDark ? 0xA0232323 : 0x3A232323);
+    // Keep the legacy Accent Policy only for Blur. For dark acrylic, test
+    // the native DWM acrylic backdrop on its own to avoid competing effects.
+    SetAccentBlurBehind(hWnd, effect == BackgroundTranslucentEffect::kBlur,
+                        0x3A232323);
 }
 
 void TriggerWindowCompositionUpdate(HWND hWnd) {
