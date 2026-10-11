@@ -79,6 +79,18 @@ using SetWindowCompositionAttribute_t =
     BOOL(WINAPI*)(HWND, WINDOWCOMPOSITIONATTRIBDATA*);
 SetWindowCompositionAttribute_t SetWindowCompositionAttribute_Original = nullptr;
 
+using DwmSetWindowAttribute_t = decltype(&DwmSetWindowAttribute);
+DwmSetWindowAttribute_t DwmSetWindowAttribute_Original = nullptr;
+
+void SetBackdropType(HWND hwnd, int backdropType) {
+    if (DwmSetWindowAttribute_Original) {
+        DwmSetWindowAttribute_Original(hwnd, DWMWA_SYSTEMBACKDROP_TYPE,
+                                       &backdropType, sizeof(backdropType));
+    } else {
+        SetBackdropType(hwnd, backdropType);
+    }
+}
+
 Material LoadMaterial() {
     PCWSTR value = Wh_GetStringSetting(L"material");
     Material material = Material::Mica;
@@ -142,8 +154,7 @@ void ApplyMaterial(HWND hwnd) {
     const int backdropType =
         g_material == Material::MicaAlt ? DWMSBT_TABBEDWINDOW
                                         : DWMSBT_MAINWINDOW;
-    DwmSetWindowAttribute(hwnd, DWMWA_SYSTEMBACKDROP_TYPE, &backdropType,
-                          sizeof(backdropType));
+    SetBackdropType(hwnd, backdropType);
 }
 
 BOOL CALLBACK EnumExplorerWindowsProc(HWND hwnd, LPARAM) {
@@ -151,8 +162,6 @@ BOOL CALLBACK EnumExplorerWindowsProc(HWND hwnd, LPARAM) {
     return TRUE;
 }
 
-using DwmSetWindowAttribute_t = decltype(&DwmSetWindowAttribute);
-DwmSetWindowAttribute_t DwmSetWindowAttribute_Original = nullptr;
 
 HRESULT WINAPI DwmSetWindowAttribute_Hook(HWND hwnd,
                                           DWORD attribute,
