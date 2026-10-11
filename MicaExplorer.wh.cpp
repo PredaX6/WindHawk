@@ -369,7 +369,6 @@ Windows](https://windhawk.net/mods/translucent-windows) mod.
   - blur: Transparent Blur
   - blurTransparent: Blur
   - blurSoft: Clair Blur
-  - startMenu: Acrylique sombre (style menu Démarrer)
   - micaAccent: Mica accentué
   - micaAltAccent: Mica Alt accentué
 - backgroundTranslucentEffect: ""
@@ -11797,8 +11796,7 @@ void LoadSettings() {
     if (wcscmp(material, L"blur") == 0 ||
         wcscmp(material, L"blurTransparent") == 0) {
         g_settings.backgroundTranslucentEffect = BackgroundTranslucentEffect::kBlur;
-    } else if (wcscmp(material, L"blurSoft") == 0 ||
-               wcscmp(material, L"startMenu") == 0) {
+    } else if (wcscmp(material, L"blurSoft") == 0) {
         g_settings.backgroundTranslucentEffect = BackgroundTranslucentEffect::kAcrylic;
     } else if (wcscmp(material, L"micaAccent") == 0) {
         g_settings.backgroundTranslucentEffect = BackgroundTranslucentEffect::kMica;
