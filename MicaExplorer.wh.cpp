@@ -150,6 +150,13 @@ void ApplyMaterial(HWND hwnd) {
         return;
     }
 
+    // Also apply this to already-existing Explorer windows, not only future
+    // DwmExtendFrameIntoClientArea calls.
+    if (DwmExtendFrameIntoClientArea_Original) {
+        const MARGINS fullWindowMargins{-1, -1, -1, -1};
+        DwmExtendFrameIntoClientArea_Original(hwnd, &fullWindowMargins);
+    }
+
     const bool isBlur = g_material == Material::Blur ||
                         g_material == Material::BlurTransparent ||
                         g_material == Material::BlurSoft;
