@@ -152,6 +152,9 @@ void ApplyCustomizations(
     winrt::Microsoft::UI::Xaml::FrameworkElement element,
     PCWSTR fallbackClassName,
     bool isKnownThemeTarget = false);
+void HandleVirtualizingRepeater(
+    ElementId elementId,
+    winrt::Microsoft::UI::Xaml::FrameworkElement element);
 void CleanupCustomizations(ElementId elementId);
 void QueueDiagnosticsRelease(InstanceHandle handle);
 void FlushDiagnosticsReleasesIfQuiet();
@@ -381,24 +384,23 @@ HRESULT VisualTreeWatcher::OnVisualTreeChange(ParentChildRelation relation, Visu
             auto frameworkElement = inspectable.try_as<mux::FrameworkElement>();
             if (frameworkElement)
             {
-                // Preserve repeater tracking even though ItemsRepeater itself
-                // is not a style target. For every other unrelated element,
-                // skip id bookkeeping and customization dispatch entirely.
-                const bool isVirtualizingRepeater =
-                    static_cast<bool>(frameworkElement.try_as<muxc::ItemsRepeater>());
-                // ItemsRepeater needs bookkeeping regardless of whether it
-                // matches a style target. Let ApplyCustomizations perform its
-                // own target check for repeaters instead of checking twice here.
-                const bool isThemeTarget =
-                    !isVirtualizingRepeater &&
-                    IsExplorerThemeTargetElement(frameworkElement, element.Type);
-                if (isVirtualizingRepeater || isThemeTarget)
+                // Preserve repeater tracking while bypassing the style-target
+                // filter for repeaters, which are never theme targets.
+                if (frameworkElement.try_as<muxc::ItemsRepeater>())
+                {
+                    auto elementId = GetOrCreateElementId(element.Handle, inspectable);
+                    if (elementId != ElementId::None)
+                    {
+                        HandleVirtualizingRepeater(elementId, frameworkElement);
+                    }
+                }
+                else if (IsExplorerThemeTargetElement(frameworkElement, element.Type))
                 {
                     auto elementId = GetOrCreateElementId(element.Handle, inspectable);
                     if (elementId != ElementId::None)
                     {
                         ApplyCustomizations(
-                            elementId, frameworkElement, element.Type, isThemeTarget);
+                            elementId, frameworkElement, element.Type, true);
                     }
                 }
             }
@@ -7138,7 +7140,8 @@ bool IsExplorerThemeTargetType(PCWSTR type) noexcept
         return false;
     }
 
-    constexpr PCWSTR targetTypes[] = {
+    const std::wstring_view typeView{type};
+    constexpr std::wstring_view targetTypes[] = {
         L"Grid",
         L"Microsoft.UI.Xaml.Controls.Grid",
         L"CommandBar",
@@ -7153,9 +7156,9 @@ bool IsExplorerThemeTargetType(PCWSTR type) noexcept
         L"Microsoft.UI.Xaml.Controls.StackPanel",
     };
 
-    for (PCWSTR targetType : targetTypes)
+    for (std::wstring_view targetType : targetTypes)
     {
-        if (wcscmp(type, targetType) == 0)
+        if (typeView == targetType)
         {
             return true;
         }
