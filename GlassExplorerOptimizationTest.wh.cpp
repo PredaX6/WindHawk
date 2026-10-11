@@ -5897,6 +5897,16 @@ std::optional<std::wstring> EvaluateStyleVariableExpression(
 std::optional<std::wstring> ExpandStyleVariables(
     std::wstring_view input,
     const StyleVariableLookupContext* context) {
+    // Most style values are literals. Avoid copying them into a mutable string
+    // and entering the substitution scanner when no opening token exists.
+    if (input.find(L"{{") == std::wstring_view::npos) {
+        if (input.find(L"}}") != std::wstring_view::npos) {
+            Wh_Log(L"Unmatched '}}' in style value");
+            return std::nullopt;
+        }
+        return std::wstring(input);
+    }
+
     std::wstring result(input);
     size_t scanFrom = 0;
 
