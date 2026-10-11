@@ -354,6 +354,11 @@ bool VisualTreeWatcher::ReleaseDiagnosticsReference(InstanceHandle handle)
     return weakElement && !weakElement.get();
 }
 
+// Forward declaration: filter unrelated FrameworkElements before creating per-element state.
+bool IsExplorerThemeTargetElement(
+    mux::FrameworkElement const& element,
+    PCWSTR fallbackClassName);
+
 HRESULT VisualTreeWatcher::OnVisualTreeChange(ParentChildRelation relation, VisualElement element, VisualMutationType mutationType) try
 {
     // This callback can fire very frequently while Explorer builds or updates
@@ -374,13 +379,19 @@ HRESULT VisualTreeWatcher::OnVisualTreeChange(ParentChildRelation relation, Visu
             auto frameworkElement = inspectable.try_as<mux::FrameworkElement>();
             if (frameworkElement)
             {
-                // Only FrameworkElement instances can match the mod's XAML
-                // customization rules. Avoid creating element-id bookkeeping
-                // for unrelated XAML objects on this hot path.
-                auto elementId = GetOrCreateElementId(element.Handle, inspectable);
-                if (elementId != ElementId::None)
+                // Preserve repeater tracking even though ItemsRepeater itself
+                // is not a style target. For every other unrelated element,
+                // skip id bookkeeping and customization dispatch entirely.
+                const bool isVirtualizingRepeater =
+                    static_cast<bool>(frameworkElement.try_as<muxc::ItemsRepeater>());
+                if (isVirtualizingRepeater ||
+                    IsExplorerThemeTargetElement(frameworkElement, element.Type))
                 {
-                    ApplyCustomizations(elementId, frameworkElement, element.Type);
+                    auto elementId = GetOrCreateElementId(element.Handle, inspectable);
+                    if (elementId != ElementId::None)
+                    {
+                        ApplyCustomizations(elementId, frameworkElement, element.Type);
+                    }
                 }
             }
         }
