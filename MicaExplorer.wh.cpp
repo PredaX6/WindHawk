@@ -29,11 +29,11 @@
   $name: Style de transparence Mica Explorer
   $description: Choisissez le matériau de la fenêtre. Le thème XAML intégré reste inchangé.
   $options:
-  - blur: Flou transparent
-  - blurTransparent: Flou
-  - blurSoft: Flou clair
-  - micaAccent: Mica accentué
-  - micaAltAccent: Mica Alt accentué
+  - blur: Default Blur
+  - blurTransparent: Blur
+  - blurSoft: Acrylic
+  - micaAccent: Mica
+  - micaAltAccent: Mica Alt
 - backgroundTranslucentEffectRegion: ""
   $name: Zone d’application de la transparence
   $description: >-
