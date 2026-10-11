@@ -394,15 +394,16 @@ Windows](https://windhawk.net/mods/translucent-windows) mod.
 - backgroundTranslucentEffect: ""
   $name: Effet de transparence de l’arrière-plan
   $description: >-
-    Effet de transparence à appliquer à l’arrière-plan de l’Explorateur de
-    fichiers. Le mod Translucent Windows propose d’autres effets.
+    Choisissez l’un des quatre effets de Translucent Windows. Les effets
+    SystemBackdrop nécessitent Windows 11 version 22H2 (build 22621) ou
+    une version ultérieure.
   $options:
   - "": Valeur par défaut du thème sélectionné
   - default: Valeur par défaut de Windows
   - acrylicblur: Flou (AccentBlurBehind)
-  - acrylic: Acrylique
-  - mica: Mica
-  - micaAlt: Mica Alt
+  - acrylicsystem: Acrylique (SystemBackdrop)
+  - mica: Mica (SystemBackdrop)
+  - mica_tabbed: Mica Alt (SystemBackdrop)
   - none: Aucun
 - backgroundTranslucentEffectRegion: ""
   $name: Zone d’application de la transparence
@@ -11823,13 +11824,17 @@ void LoadSettings() {
     } else if (wcscmp(backgroundTranslucentEffect, L"acrylicblur") == 0) {
         g_settings.backgroundTranslucentEffect =
             BackgroundTranslucentEffect::kBlur;
-    } else if (wcscmp(backgroundTranslucentEffect, L"acrylic") == 0) {
+    } else if (wcscmp(backgroundTranslucentEffect, L"acrylicsystem") == 0 ||
+               wcscmp(backgroundTranslucentEffect, L"acrylic") == 0) {
+        // "acrylic" is retained as an alias for previously saved settings.
         g_settings.backgroundTranslucentEffect =
             BackgroundTranslucentEffect::kAcrylic;
     } else if (wcscmp(backgroundTranslucentEffect, L"mica") == 0) {
         g_settings.backgroundTranslucentEffect =
             BackgroundTranslucentEffect::kMica;
-    } else if (wcscmp(backgroundTranslucentEffect, L"micaAlt") == 0) {
+    } else if (wcscmp(backgroundTranslucentEffect, L"mica_tabbed") == 0 ||
+               wcscmp(backgroundTranslucentEffect, L"micaAlt") == 0) {
+        // "micaAlt" is retained as an alias for previously saved settings.
         g_settings.backgroundTranslucentEffect =
             BackgroundTranslucentEffect::kMicaAlt;
     } else if (wcscmp(backgroundTranslucentEffect, L"none") == 0) {
