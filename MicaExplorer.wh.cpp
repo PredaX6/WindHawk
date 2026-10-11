@@ -152,6 +152,37 @@ void TriggerWindowCompositionUpdate(HWND hwnd) {
                  RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
 }
 
+// Match Glass Explorer's working AccentBlurBehind setup. The DWM blur-behind
+// region prevents the extended frame from being drawn over the accent material.
+void SetAccentBlurBehind(HWND hwnd, bool enable, int gradientColor = 0x3A232323) {
+    HRGN region = enable ? CreateRectRgn(0, 0, -1, -1) : nullptr;
+    DWM_BLURBEHIND blurBehind{};
+    blurBehind.dwFlags = DWM_BB_ENABLE | (enable ? DWM_BB_BLURREGION : 0u);
+    blurBehind.fEnable = enable;
+    blurBehind.hRgnBlur = region;
+    DwmEnableBlurBehindWindow(hwnd, &blurBehind);
+    if (region) {
+        DeleteObject(region);
+    }
+
+    if (SetWindowCompositionAttribute_Original) {
+        ACCENT_POLICY policy{};
+        policy.AccentState = enable ? ACCENT_ENABLE_ACRYLICBLURBEHIND : ACCENT_DISABLED;
+        policy.GradientColor = enable ? gradientColor : 0;
+        WINDOWCOMPOSITIONATTRIBDATA data{
+            WCA_ACCENT_POLICY, &policy, sizeof(policy)};
+        SetWindowCompositionAttribute_Original(hwnd, &data);
+    }
+
+    if (!enable && DwmSetWindowAttribute_Original) {
+        // Restore the backdrop brush that WinUI/Explorer normally owns.
+        const BOOL useHostBackdropBrush = TRUE;
+        DwmSetWindowAttribute_Original(hwnd, DWMWA_USE_HOSTBACKDROPBRUSH,
+                                       &useHostBackdropBrush,
+                                       sizeof(useHostBackdropBrush));
+    }
+}
+
 void ApplyMaterial(HWND hwnd) {
     if (!IsExplorerWindow(hwnd)) {
         return;
@@ -169,47 +200,34 @@ void ApplyMaterial(HWND hwnd) {
                         g_material == Material::BlurSoft ||
                         g_material == Material::StartMenu;
     if (isBlur) {
-        // Disable DWM's Mica/SystemBackdrop before applying the selected blur.
+        // Use the same sequence as Glass Explorer: disable the DWM system
+        // backdrop, allow the full-window blur-behind region, then apply acrylic.
         const int backdropType = DWMSBT_NONE;
         SetBackdropType(hwnd, backdropType);
 
-        if (SetWindowCompositionAttribute_Original) {
-            ACCENT_POLICY policy{};
-            if (g_material == Material::Blur) {
-                // Preserve the original Blur behavior.
-                policy.AccentState = ACCENT_ENABLE_BLURBEHIND;
-            } else {
-                // Acrylic blur accepts a tint/opacity through GradientColor.
-                policy.AccentState = ACCENT_ENABLE_ACRYLICBLURBEHIND;
-                if (g_material == Material::BlurTransparent) {
-                    policy.GradientColor = static_cast<int>(0x66000000);
-                } else if (g_material == Material::BlurSoft) {
-                    policy.GradientColor = static_cast<int>(0x99E8E8E8);
-                } else {
-                    // Dark, fairly opaque acrylic approximating the Start menu.
-                    // Windows controls the real Start menu material, so this
-                    // is a visual approximation rather than an exact clone.
-                    policy.GradientColor = static_cast<int>(0xCC232323);
-                }
-            }
-            WINDOWCOMPOSITIONATTRIBDATA data{
-                WCA_ACCENT_POLICY, &policy, sizeof(policy)};
-            SetWindowCompositionAttribute_Original(hwnd, &data);
+        const BOOL disableDwmTransitions = FALSE;
+        if (DwmSetWindowAttribute_Original) {
+            DwmSetWindowAttribute_Original(
+                hwnd, DWMWA_TRANSITIONS_FORCEDISABLED,
+                &disableDwmTransitions, sizeof(disableDwmTransitions));
         }
-        // Explorer can retain its previous opaque rendering until its window
-        // composition and frame are refreshed after the accent policy changes.
+
+        int gradientColor = 0x3A232323;
+        if (g_material == Material::BlurTransparent) {
+            gradientColor = 0x66000000;
+        } else if (g_material == Material::BlurSoft) {
+            gradientColor = static_cast<int>(0x99E8E8E8);
+        } else if (g_material == Material::StartMenu) {
+            gradientColor = static_cast<int>(0xCC232323);
+        }
+
+        SetAccentBlurBehind(hwnd, true, gradientColor);
         TriggerWindowCompositionUpdate(hwnd);
         return;
     }
 
-    // Do not leave AccentBlurBehind active when switching to a DWM material.
-    if (SetWindowCompositionAttribute_Original) {
-        ACCENT_POLICY policy{};
-        policy.AccentState = ACCENT_DISABLED;
-        WINDOWCOMPOSITIONATTRIBDATA data{
-            WCA_ACCENT_POLICY, &policy, sizeof(policy)};
-        SetWindowCompositionAttribute_Original(hwnd, &data);
-    }
+    // Remove both AccentBlurBehind layers before restoring a DWM material.
+    SetAccentBlurBehind(hwnd, false);
 
     const bool isAlt = g_material == Material::MicaAltAccent;
     const bool isAccent = g_material == Material::MicaAccent ||
