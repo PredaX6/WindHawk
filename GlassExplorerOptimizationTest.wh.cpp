@@ -8381,9 +8381,13 @@ const Theme* GetSelectedTheme() {
 
 void ProcessAllStylesFromSettings() {
     const Theme* theme = GetSelectedTheme();
+    const std::vector<PCWSTR> emptySettings;
 
-    StyleConstants styleConstants = LoadStyleConstants(
-        theme ? theme->styleConstants : std::vector<PCWSTR>{});
+    // Bind to the selected theme's vectors instead of copying them through a
+    // conditional expression. The empty vector preserves the null-theme path.
+    const auto& themeStyleConstants =
+        theme ? theme->styleConstants : emptySettings;
+    StyleConstants styleConstants = LoadStyleConstants(themeStyleConstants);
 
     if (theme) {
         for (const auto& themeTargetStyle : theme->targetStyles) {
@@ -8415,9 +8419,10 @@ void ProcessAllStylesFromSettings() {
         }
     }
 
+    const auto& themeResourceVariables =
+        theme ? theme->themeResourceVariables : emptySettings;
     g_resourceVariables = ProcessResourceVariablesFromSettings(
-        styleConstants,
-        theme ? theme->themeResourceVariables : std::vector<PCWSTR>{});
+        styleConstants, themeResourceVariables);
 }
 
 void UninitializeResourceVariables() {
@@ -10246,17 +10251,18 @@ bool RunFromWindowThread(HWND hWnd,
 std::vector<HWND> GetTargetWnds() {
     struct ENUM_WINDOWS_PARAM {
         std::vector<HWND>* hWnds;
+        DWORD currentProcessId;
     };
 
     std::vector<HWND> hWnds;
-    ENUM_WINDOWS_PARAM param = {&hWnds};
+    ENUM_WINDOWS_PARAM param = {&hWnds, GetCurrentProcessId()};
     EnumWindows(
         [](HWND hWnd, LPARAM lParam) WINAPI -> BOOL {
             ENUM_WINDOWS_PARAM& param = *(ENUM_WINDOWS_PARAM*)lParam;
 
             DWORD dwProcessId = 0;
             if (!GetWindowThreadProcessId(hWnd, &dwProcessId) ||
-                dwProcessId != GetCurrentProcessId()) {
+                dwProcessId != param.currentProcessId) {
                 return TRUE;
             }
 
