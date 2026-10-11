@@ -147,9 +147,11 @@ ElementId GetOrCreateElementId(
 ElementId FindElementId(InstanceHandle handle);
 void ForgetElementId(InstanceHandle handle);
 
-void ApplyCustomizations(ElementId elementId,
-                         winrt::Microsoft::UI::Xaml::FrameworkElement element,
-                         PCWSTR fallbackClassName);
+void ApplyCustomizations(
+    ElementId elementId,
+    winrt::Microsoft::UI::Xaml::FrameworkElement element,
+    PCWSTR fallbackClassName,
+    bool isKnownThemeTarget = false);
 void CleanupCustomizations(ElementId elementId);
 void QueueDiagnosticsRelease(InstanceHandle handle);
 void FlushDiagnosticsReleasesIfQuiet();
@@ -384,13 +386,15 @@ HRESULT VisualTreeWatcher::OnVisualTreeChange(ParentChildRelation relation, Visu
                 // skip id bookkeeping and customization dispatch entirely.
                 const bool isVirtualizingRepeater =
                     static_cast<bool>(frameworkElement.try_as<muxc::ItemsRepeater>());
-                if (isVirtualizingRepeater ||
-                    IsExplorerThemeTargetElement(frameworkElement, element.Type))
+                const bool isThemeTarget =
+                    IsExplorerThemeTargetElement(frameworkElement, element.Type);
+                if (isVirtualizingRepeater || isThemeTarget)
                 {
                     auto elementId = GetOrCreateElementId(element.Handle, inspectable);
                     if (elementId != ElementId::None)
                     {
-                        ApplyCustomizations(elementId, frameworkElement, element.Type);
+                        ApplyCustomizations(
+                            elementId, frameworkElement, element.Type, isThemeTarget);
                     }
                 }
             }
@@ -7171,7 +7175,8 @@ bool IsExplorerThemeTargetElement(
 
 void ApplyCustomizations(ElementId elementId,
                          FrameworkElement element,
-                         PCWSTR fallbackClassName) {
+                         PCWSTR fallbackClassName,
+                         bool isKnownThemeTarget) {
     // Before the early return below: a repeater rarely has styles of its own,
     // but its item elements do.
     HandleVirtualizingRepeater(elementId, element);
@@ -7180,7 +7185,8 @@ void ApplyCustomizations(ElementId elementId,
     // can be recycled without ordinary Remove/Add notifications. The theme's
     // rightmost selector types are fixed; unrelated elements need no style
     // matching or per-element customization state.
-    if (!IsExplorerThemeTargetElement(element, fallbackClassName))
+    if (!isKnownThemeTarget &&
+        !IsExplorerThemeTargetElement(element, fallbackClassName))
     {
         return;
     }
