@@ -1,8 +1,8 @@
 // ==WindhawkMod==
 // @id              mica-explorer
 // @name            Mica Explorer
-// @description     Apply seven Blur and Mica styles to Windows 11 File Explorer.
-// @version         1.2.2
+// @description     Apply six Blur and Mica styles to Windows 11 File Explorer.
+// @version         1.2.3
 // @author          TeddySlexique
 // @github          https://github.com/PredaX6/WindHawk
 // @include         explorer.exe
@@ -19,9 +19,7 @@ Choose a background style for Windows 11 File Explorer:
 - **Blur transparent** — acrylic blur with a lower tint opacity, where supported by Windows.
 - **Blur doux** — acrylic blur with a softer, lighter tint.
 - **Acrylique sombre (style menu Démarrer)** — dark-tinted acrylic intended to approximate the Start menu backdrop.
-- **Mica clair** — standard native Mica.
 - **Mica accentué** — Mica with immersive dark mode.
-- **Mica Alt clair** — native tabbed-window backdrop.
 - **Mica Alt accentué** — Mica Alt with immersive dark mode.
 
 The exact appearance depends on Windows and its personalization settings.
@@ -30,7 +28,7 @@ The exact appearance depends on Windows and its personalization settings.
 
 // ==WindhawkModSettings==
 /*
-- material: mica
+- material: micaAccent
   $name: Style de transparence
   $description: Choisissez l'effet appliqué à l'arrière-plan de l'Explorateur.
   $options:
@@ -38,9 +36,7 @@ The exact appearance depends on Windows and its personalization settings.
   - blurTransparent: Blur transparent
   - blurSoft: Blur doux
   - startMenu: Acrylique sombre (style menu Démarrer)
-  - mica: Mica clair
   - micaAccent: Mica accentué
-  - micaAlt: Mica Alt clair
   - micaAltAccent: Mica Alt accentué
 */
 // ==/WindhawkModSettings==
@@ -58,13 +54,11 @@ enum class Material {
     BlurTransparent,
     BlurSoft,
     StartMenu,
-    Mica,
     MicaAccent,
-    MicaAlt,
     MicaAltAccent,
 };
 
-Material g_material = Material::Mica;
+Material g_material = Material::MicaAccent;
 
 // Undocumented User32 composition API used by Glass Explorer's Blur style.
 enum ACCENT_STATE {
@@ -112,7 +106,7 @@ void SetBackdropType(HWND hwnd, int backdropType) {
 
 Material LoadMaterial() {
     PCWSTR value = Wh_GetStringSetting(L"material");
-    Material material = Material::Mica;
+    Material material = Material::MicaAccent;
 
     if (value && _wcsicmp(value, L"blur") == 0) {
         material = Material::Blur;
@@ -124,8 +118,6 @@ Material LoadMaterial() {
         material = Material::StartMenu;
     } else if (value && _wcsicmp(value, L"micaAccent") == 0) {
         material = Material::MicaAccent;
-    } else if (value && _wcsicmp(value, L"micaAlt") == 0) {
-        material = Material::MicaAlt;
     } else if (value && _wcsicmp(value, L"micaAltAccent") == 0) {
         material = Material::MicaAltAccent;
     }
@@ -206,8 +198,7 @@ void ApplyMaterial(HWND hwnd) {
         SetWindowCompositionAttribute_Original(hwnd, &data);
     }
 
-    const bool isAlt = g_material == Material::MicaAlt ||
-                       g_material == Material::MicaAltAccent;
+    const bool isAlt = g_material == Material::MicaAltAccent;
     const bool isAccent = g_material == Material::MicaAccent ||
                           g_material == Material::MicaAltAccent;
 
