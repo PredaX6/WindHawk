@@ -2,7 +2,7 @@
 // @id              mica-explorer
 // @name            Mica Explorer
 // @description     Apply seven Blur and Mica styles to Windows 11 File Explorer.
-// @version         1.2.0
+// @version         1.2.1
 // @author          TeddySlexique
 // @github          https://github.com/PredaX6/WindHawk
 // @include         explorer.exe
@@ -93,6 +93,9 @@ SetWindowCompositionAttribute_t SetWindowCompositionAttribute_Original = nullptr
 
 using DwmSetWindowAttribute_t = decltype(&DwmSetWindowAttribute);
 DwmSetWindowAttribute_t DwmSetWindowAttribute_Original = nullptr;
+
+using DwmExtendFrameIntoClientArea_t = decltype(&DwmExtendFrameIntoClientArea);
+DwmExtendFrameIntoClientArea_t DwmExtendFrameIntoClientArea_Original = nullptr;
 
 void SetBackdropType(HWND hwnd, int backdropType) {
     if (DwmSetWindowAttribute_Original) {
@@ -203,6 +206,19 @@ BOOL CALLBACK EnumExplorerWindowsProc(HWND hwnd, LPARAM) {
 }
 
 
+HRESULT WINAPI DwmExtendFrameIntoClientArea_Hook(HWND hwnd,
+                                                  const MARGINS* margins) {
+    if (IsExplorerWindow(hwnd)) {
+        // DWM backdrops are otherwise easily hidden by Explorer's opaque
+        // client area. Extend the DWM frame through the whole window so the
+        // selected material can be visible behind the Explorer content.
+        const MARGINS fullWindowMargins{-1, -1, -1, -1};
+        return DwmExtendFrameIntoClientArea_Original(hwnd, &fullWindowMargins);
+    }
+
+    return DwmExtendFrameIntoClientArea_Original(hwnd, margins);
+}
+
 HRESULT WINAPI DwmSetWindowAttribute_Hook(HWND hwnd,
                                           DWORD attribute,
                                           LPCVOID value,
@@ -257,6 +273,9 @@ BOOL Wh_ModInit() {
     WindhawkUtils::SetFunctionHook(DwmSetWindowAttribute,
                                    DwmSetWindowAttribute_Hook,
                                    &DwmSetWindowAttribute_Original);
+    WindhawkUtils::SetFunctionHook(DwmExtendFrameIntoClientArea,
+                                   DwmExtendFrameIntoClientArea_Hook,
+                                   &DwmExtendFrameIntoClientArea_Original);
     WindhawkUtils::SetFunctionHook(CreateWindowExW, CreateWindowExW_Hook,
                                    &CreateWindowExW_Original);
 
