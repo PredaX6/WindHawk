@@ -2,7 +2,7 @@
 // @id              mica-explorer
 // @name            Mica Explorer
 // @description     Apply six Blur and Mica styles to Windows 11 File Explorer.
-// @version         1.2.6
+// @version         1.2.7
 // @author          TeddySlexique
 // @github          https://github.com/PredaX6/WindHawk
 // @include         explorer.exe
@@ -303,6 +303,35 @@ LRESULT CALLBACK ExplorerWindowSubclassProc(HWND hwnd,
     return result;
 }
 
+// Apply the material at the API boundary that starts showing the window.
+using ShowWindow_t = decltype(&ShowWindow);
+ShowWindow_t ShowWindow_Original = nullptr;
+
+BOOL WINAPI ShowWindow_Hook(HWND hwnd, int cmdShow) {
+    if (cmdShow != SW_HIDE && IsExplorerWindow(hwnd)) {
+        ApplyMaterial(hwnd);
+    }
+
+    return ShowWindow_Original(hwnd, cmdShow);
+}
+
+using SetWindowPos_t = decltype(&SetWindowPos);
+SetWindowPos_t SetWindowPos_Original = nullptr;
+
+BOOL WINAPI SetWindowPos_Hook(HWND hwnd,
+                              HWND insertAfter,
+                              int x,
+                              int y,
+                              int cx,
+                              int cy,
+                              UINT flags) {
+    if ((flags & SWP_SHOWWINDOW) && IsExplorerWindow(hwnd)) {
+        ApplyMaterial(hwnd);
+    }
+
+    return SetWindowPos_Original(hwnd, insertAfter, x, y, cx, cy, flags);
+}
+
 using CreateWindowExW_t = decltype(&CreateWindowExW);
 CreateWindowExW_t CreateWindowExW_Original = nullptr;
 
@@ -353,6 +382,10 @@ BOOL Wh_ModInit() {
                                    &DwmExtendFrameIntoClientArea_Original);
     WindhawkUtils::SetFunctionHook(CreateWindowExW, CreateWindowExW_Hook,
                                    &CreateWindowExW_Original);
+    WindhawkUtils::SetFunctionHook(ShowWindow, ShowWindow_Hook,
+                                   &ShowWindow_Original);
+    WindhawkUtils::SetFunctionHook(SetWindowPos, SetWindowPos_Hook,
+                                   &SetWindowPos_Original);
 
     EnumWindows(EnumExplorerWindowsProc, 0);
     return TRUE;
