@@ -7,7 +7,7 @@
 // @github          https://github.com/PredaX6/WindHawk
 // @include         explorer.exe
 // @architecture    x86-64
-// @compilerOptions -ldwmapi
+// @compilerOptions -ldwmapi -lgdi32
 // ==/WindhawkMod==
 
 // ==WindhawkModReadme==
