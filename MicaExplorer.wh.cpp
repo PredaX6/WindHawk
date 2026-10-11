@@ -1,8 +1,8 @@
 // ==WindhawkMod==
 // @id              mica-explorer
 // @name            Mica Explorer
-// @description     Apply Blur, Mica, or Mica Alt to Windows 11 File Explorer windows.
-// @version         1.0.1
+// @description     Apply five Blur and Mica styles to Windows 11 File Explorer.
+// @version         1.1.0
 // @author          TeddySlexique
 // @github          https://github.com/PredaX6/WindHawk
 // @include         explorer.exe
@@ -14,13 +14,14 @@
 /*
 # Mica Explorer
 
-Choose one of three distinct background effects for Windows 11 File Explorer:
+Choose a background style for Windows 11 File Explorer:
 - **Défaut Blur** — AccentBlurBehind composition effect.
-- **Mica** — native DWM SystemBackdrop.
-- **Mica Alt** — native tabbed-window DWM SystemBackdrop.
+- **Mica clair** — standard native Mica.
+- **Mica accentué** — Mica with immersive dark mode.
+- **Mica Alt clair** — native tabbed-window backdrop.
+- **Mica Alt accentué** — Mica Alt with immersive dark mode.
 
-The selected effect is applied to existing Explorer windows, new windows, and
-when Explorer attempts to change the system backdrop.
+The exact appearance depends on Windows and its personalization settings.
 */
 // ==/WindhawkModReadme==
 
@@ -31,8 +32,10 @@ when Explorer attempts to change the system backdrop.
   $description: Choisissez l'effet appliqué à l'arrière-plan de l'Explorateur.
   $options:
   - blur: Défaut Blur
-  - mica: Mica
-  - micaAlt: Mica Alt
+  - mica: Mica clair
+  - micaAccent: Mica accentué
+  - micaAlt: Mica Alt clair
+  - micaAltAccent: Mica Alt accentué
 */
 // ==/WindhawkModSettings==
 
@@ -47,7 +50,9 @@ namespace {
 enum class Material {
     Blur,
     Mica,
+    MicaAccent,
     MicaAlt,
+    MicaAltAccent,
 };
 
 Material g_material = Material::Mica;
@@ -98,8 +103,12 @@ Material LoadMaterial() {
 
     if (value && _wcsicmp(value, L"blur") == 0) {
         material = Material::Blur;
+    } else if (value && _wcsicmp(value, L"micaAccent") == 0) {
+        material = Material::MicaAccent;
     } else if (value && _wcsicmp(value, L"micaAlt") == 0) {
         material = Material::MicaAlt;
+    } else if (value && _wcsicmp(value, L"micaAltAccent") == 0) {
+        material = Material::MicaAltAccent;
     }
 
     if (value) {
@@ -151,9 +160,17 @@ void ApplyMaterial(HWND hwnd) {
         SetWindowCompositionAttribute_Original(hwnd, &data);
     }
 
-    const int backdropType =
-        g_material == Material::MicaAlt ? DWMSBT_TABBEDWINDOW
-                                        : DWMSBT_MAINWINDOW;
+    const bool isAlt = g_material == Material::MicaAlt ||
+                       g_material == Material::MicaAltAccent;
+    const bool isAccent = g_material == Material::MicaAccent ||
+                          g_material == Material::MicaAltAccent;
+
+    // Accent variants use immersive dark mode for a distinct darker appearance.
+    const BOOL darkMode = isAccent ? TRUE : FALSE;
+    DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &darkMode,
+                          sizeof(darkMode));
+
+    const int backdropType = isAlt ? DWMSBT_TABBEDWINDOW : DWMSBT_MAINWINDOW;
     SetBackdropType(hwnd, backdropType);
 }
 
