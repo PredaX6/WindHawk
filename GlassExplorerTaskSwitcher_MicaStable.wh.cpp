@@ -1,5 +1,5 @@
 // ==WindhawkMod==
-// @id              GlassExplorerTaskSwitcher_MicaStable
+// @id              glass-explorer-task-switcher-mica-stable
 // @name            Glass Explorer Task Switcher — Mica Stable (experimental)
 // @description     Glass Explorer translucide avec changement de tâche à la molette et aux raccourcis clavier.
 // @version         0.1.0
@@ -23,7 +23,7 @@
   - Mica (SystemBackdrop)
   - MicaAlt (SystemBackdrop)
 
-- Hook du focus conservé pour supprimer la différence visuelle entre fenêtres actives et inactives.
+- Variante expérimentale : intercepte WM_NCACTIVATE en mode Mica/MicaAlt pour tenter de conserver le rendu non-client actif. Le rendu du fond Mica dépend toujours de DWM et peut donc varier.
 - Option pour relancer automatiquement Explorer à l'activation du mod et après chaque changement de paramètres.
 
 
