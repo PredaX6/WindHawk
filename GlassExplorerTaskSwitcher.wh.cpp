@@ -45,7 +45,6 @@ Seuls Windows 10 64 bits et Windows 11 sont pris en charge. Pour les versions pl
 
 // ==WindhawkModSettings==
 /*
-/*
 - transparencyType: default
   $name: Type de transparence
   $description: Choisissez le rendu de transparence de l'Explorateur.
@@ -58,9 +57,7 @@ Seuls Windows 10 64 bits et Windows 11 sont pris en charge. Pour les versions pl
 - restartExplorerOnSettingsChange: false
   $name: Relancer l'Explorateur Windows à chaque changement
   $description: Relance automatiquement l'Explorateur Windows après chaque changement et sauvegarde des paramètres du mod.
-*/
 
-/*
 - skipMinimizedWindows: true
   $name: Ignorer les fenêtres réduites
 - wrapAround: true
@@ -89,7 +86,6 @@ Seuls Windows 10 64 bits et Windows 11 sont pris en charge. Pour les versions pl
   $name: Personnaliser l'ancienne barre des tâches sous Windows 11
   $description: >-
     Activez cette option pour personnaliser l'ancienne barre des tâches de Windows 11 (si vous utilisez ExplorerPatcher ou un outil similaire).
-*/
 */
 // ==/WindhawkModSettings==
 
