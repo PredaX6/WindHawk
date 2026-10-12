@@ -98,7 +98,7 @@ path. Avoid running it alongside other window-animation mods.
     - easeOut: Ease out
     - easeInOut: Ease in-out
 */
- // ==/WindhawkModSettings==
+// ==/WindhawkModSettings==
 
 
 #include <windows.h>
