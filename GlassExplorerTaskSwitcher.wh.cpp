@@ -10984,7 +10984,8 @@ void* QueryViaVtableBackwards(void* object, void* vtable) {
 
 #pragma region scroll
 
-void SwitchToTaskItem(LONG_PTR lpMMTaskListLongPtr, void* taskItem) {
+void SwitchToTaskItem(LONG_PTR lpMMTaskListLongPtr, void* taskItem,
+                       bool minimizeForeground = true) {
     if (!lpMMTaskListLongPtr || !taskItem ||
         !CTaskListWnd_vftable_ITaskListSite ||
         !CTaskListWnd_SwitchToItem_Original) {
@@ -10992,12 +10993,14 @@ void SwitchToTaskItem(LONG_PTR lpMMTaskListLongPtr, void* taskItem) {
         return;
     }
 
-    // Preserve the original Task Switch behavior: minimize the currently
-    // active window before asking the shell to activate the next task.
-    HWND hForegroundWnd = GetForegroundWindow();
-    if (hForegroundWnd && IsWindow(hForegroundWnd) &&
-        !IsIconic(hForegroundWnd)) {
-        ShowWindowAsync(hForegroundWnd, SW_MINIMIZE);
+    // Optionally minimize the currently active window before switching.
+    // Wheel-down requests minimization; wheel-up switches without minimizing.
+    if (minimizeForeground) {
+        HWND hForegroundWnd = GetForegroundWindow();
+        if (hForegroundWnd && IsWindow(hForegroundWnd) &&
+            !IsIconic(hForegroundWnd)) {
+            ShowWindowAsync(hForegroundWnd, SW_MINIMIZE);
+        }
     }
 
     void* pThis_ITaskListSite = QueryViaVtable(
@@ -11348,7 +11351,7 @@ void OnTaskListScroll(HWND hMMTaskListWnd, short delta) {
                                              g_settings.skipMinimizedWindows,
                                              g_settings.wrapAround, nullptr);
         if (targetTaskItem) {
-            SwitchToTaskItem(lpMMTaskListLongPtr, targetTaskItem);
+            SwitchToTaskItem(lpMMTaskListLongPtr, targetTaskItem, delta < 0);
         }
     }
 
