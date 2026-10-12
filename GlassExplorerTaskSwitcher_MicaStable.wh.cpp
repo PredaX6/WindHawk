@@ -10546,9 +10546,8 @@ LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
     // Trigger only for minimize/restore/maximize commands. A simple focus loss
     // (WM_NCACTIVATE) intentionally leaves Blur's normal tint untouched.
     if (uMsg == WM_SYSCOMMAND &&
-        (wParam & 0xFFF0) == SC_MINIMIZE ||
-        uMsg == WM_SYSCOMMAND &&
-        ((wParam & 0xFFF0) == SC_RESTORE ||
+        ((wParam & 0xFFF0) == SC_MINIMIZE ||
+         (wParam & 0xFFF0) == SC_RESTORE ||
          (wParam & 0xFFF0) == SC_MAXIMIZE)) {
         StartBlurTransitionGray(hWnd);
     }
