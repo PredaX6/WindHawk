@@ -10451,26 +10451,44 @@ DefWindowProcW_t DefWindowProcW_Original;
 // animating a newly shown Explorer window. Reapply it briefly during startup.
 constexpr UINT_PTR kBlurRetryTimerId = 0x47455842;
 constexpr WCHAR kBlurRetryCountProp[] = L"windhawk_blur-retry-count-" WH_MOD_ID;
+constexpr UINT_PTR kBackdropRetryTimerId = 0x47455843;
+constexpr WCHAR kBackdropRetryCountProp[] =
+    L"windhawk_backdrop-retry-count-" WH_MOD_ID;
 
-VOID CALLBACK BlurRetryTimerProc(HWND hWnd, UINT, UINT_PTR timerId, DWORD) {
+// DWM can defer or replace a native system backdrop while an existing
+// Explorer window is initializing or being restored. Retry briefly without
+// activating the window or synthesizing focus messages.
+VOID CALLBACK BackdropRetryTimerProc(HWND hWnd, UINT, UINT_PTR timerId, DWORD) {
     if (!IsWindow(hWnd) ||
-        GetTargetWindowType(hWnd) != TargetWindowType::FileExplorer ||
-        GetEffectiveBackgroundTranslucentEffect() !=
-            BackgroundTranslucentEffect::kBlur) {
+        GetTargetWindowType(hWnd) != TargetWindowType::FileExplorer) {
         KillTimer(hWnd, timerId);
-        RemoveProp(hWnd, kBlurRetryCountProp);
+        RemoveProp(hWnd, kBackdropRetryCountProp);
         return;
     }
 
     ApplyBackgroundTranslucentEffect(hWnd);
+    RedrawWindow(hWnd, nullptr, nullptr,
+                 RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
+
     const UINT attempts =
-        (UINT)(ULONG_PTR)GetProp(hWnd, kBlurRetryCountProp) + 1;
+        (UINT)(ULONG_PTR)GetProp(hWnd, kBackdropRetryCountProp) + 1;
     if (attempts >= 20) {
         KillTimer(hWnd, timerId);
-        RemoveProp(hWnd, kBlurRetryCountProp);
+        RemoveProp(hWnd, kBackdropRetryCountProp);
     } else {
-        SetProp(hWnd, kBlurRetryCountProp, (HANDLE)(ULONG_PTR)attempts);
+        SetProp(hWnd, kBackdropRetryCountProp, (HANDLE)(ULONG_PTR)attempts);
     }
+}
+
+void StartBackdropRetry(HWND hWnd) {
+    if (!IsWindow(hWnd) ||
+        GetTargetWindowType(hWnd) != TargetWindowType::FileExplorer) {
+        return;
+    }
+
+    KillTimer(hWnd, kBackdropRetryTimerId);
+    SetProp(hWnd, kBackdropRetryCountProp, (HANDLE)(ULONG_PTR)0);
+    SetTimer(hWnd, kBackdropRetryTimerId, 30, BackdropRetryTimerProc);
 }
 
 LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
@@ -10504,6 +10522,8 @@ LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
             SetProp(hWnd, kBlurRetryCountProp, (HANDLE)(ULONG_PTR)1);
             SetTimer(hWnd, kBlurRetryTimerId, 15, BlurRetryTimerProc);
         }
+
+        StartBackdropRetry(hWnd);
     }
 
     // Prepare the selected material before Windows makes the window visible.
@@ -10514,6 +10534,18 @@ LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
     }
 
     LRESULT result = DefWindowProcW_Original(hWnd, uMsg, wParam, lParam);
+
+    // Restoring a minimized Explorer window can cause DWM to replace the
+    // selected system backdrop with its gray fallback. Reapply after the
+    // window has processed WM_SIZE, then retry briefly while DWM settles.
+    if (uMsg == WM_SIZE && wParam == SIZE_RESTORED &&
+        !IsIconic(hWnd) &&
+        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer) {
+        ApplyBackgroundTranslucentEffect(hWnd);
+        StartBackdropRetry(hWnd);
+        RedrawWindow(hWnd, nullptr, nullptr,
+                     RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
+    }
 
     // Applying the mod to an Explorer window that was already open can leave
     // DWM showing its fallback gray backdrop until the next user activation.
@@ -10751,6 +10783,7 @@ void GlassExplorer_ModAfterInit() {
                     TargetWindowType::FileExplorer) {
                     ApplyBackgroundTranslucentEffect(hTargetWnd);
                     TriggerWindowCompositionUpdate(hTargetWnd);
+                    StartBackdropRetry(hTargetWnd);
                 }
             },
             (PVOID)hTargetWnd);
