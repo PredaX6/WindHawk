@@ -1,7 +1,7 @@
 // ==WindhawkMod==
 // @id              winhawk-animation-engine
-// @name            WinHawk Animation Engine
-// @description     Configurable window open, close, minimize and restore/maximize animations.
+// @name            Moteur d’animation WinHawk
+// @description     Animations configurables d’ouverture, de fermeture, de réduction et de restauration/agrandissement des fenêtres.
 // @version         0.1.0
 // @author          PredaX6
 // @include         *
@@ -10,15 +10,15 @@
 
 // ==WindhawkModReadme==
 /*
-# WinHawk Animation Engine
+# Moteur d’animation WinHawk
 
 Adds configurable overlay animations for classic Win32 windows:
-- Opening / showing a window
-- Closing a window
-- Minimizing a window
-- Restoring / maximizing a window
+- Ouverture / affichage d’une fenêtre
+- Fermeture d’une fenêtre
+- Réduction d’une fenêtre
+- Restauration / agrandissement d’une fenêtre
 
-Each animation has its own enable switch, duration, scale and easing curve.
+Chaque animation possède ses propres options d’activation, de durée, d’échelle et de courbe d’accélération.
 The effect uses a captured window image in a temporary, non-activating overlay.
 Some apps (especially UWP/WinUI, protected surfaces, hardware video, and windows
 that do not respond to classic Win32 APIs) may not be captured or animated.
@@ -30,68 +30,68 @@ path. Avoid running it alongside other window-animation mods.
 // ==WindhawkModSettings==
 /*
 - open_enabled: true
-  $name: Animate opening
+  $name: Animer l’ouverture
 - open_duration: 220
-  $name: Opening duration (ms)
+  $name: Durée de l’ouverture (ms)
   #! $min: 50
   #! $max: 1500
 - open_scale: 82
-  $name: Opening start scale (%)
+  $name: Échelle initiale à l’ouverture (%)
   #! $min: 10
   #! $max: 100
 - open_easing: easeOut
-  $name: Opening easing
+  $name: Courbe d’animation à l’ouverture
   $options:
-    - linear: Linear
-    - easeIn: Ease in
-    - easeOut: Ease out
-    - easeInOut: Ease in-out
+    - linear: Linéaire
+    - easeIn: Accélération progressive
+    - easeOut: Décélération progressive
+    - easeInOut: Accélération puis décélération
 - close_enabled: true
-  $name: Animate closing
+  $name: Animer la fermeture
 - close_duration: 180
-  $name: Closing duration (ms)
+  $name: Durée de la fermeture (ms)
   #! $min: 50
   #! $max: 1500
 - close_scale: 82
-  $name: Closing end scale (%)
+  $name: Échelle finale à la fermeture (%)
   #! $min: 10
   #! $max: 100
 - close_easing: easeIn
-  $name: Closing easing
+  $name: Courbe d’animation à la fermeture
   $options:
     - linear: Linear
     - easeIn: Ease in
     - easeOut: Ease out
     - easeInOut: Ease in-out
 - minimize_enabled: true
-  $name: Animate minimizing
+  $name: Animer la réduction
 - minimize_duration: 260
-  $name: Minimize duration (ms)
+  $name: Durée de la réduction (ms)
   #! $min: 50
   #! $max: 1500
 - minimize_scale: 18
-  $name: Minimize end scale (%)
+  $name: Échelle finale à la réduction (%)
   #! $min: 10
   #! $max: 100
 - minimize_easing: easeIn
-  $name: Minimize easing
+  $name: Courbe d’animation à la réduction
   $options:
     - linear: Linear
     - easeIn: Ease in
     - easeOut: Ease out
     - easeInOut: Ease in-out
 - restore_enabled: true
-  $name: Animate restore / maximize
+  $name: Animer la restauration / l’agrandissement
 - restore_duration: 240
-  $name: Restore / maximize duration (ms)
+  $name: Durée de la restauration / de l’agrandissement (ms)
   #! $min: 50
   #! $max: 1500
 - restore_scale: 82
-  $name: Restore / maximize start scale (%)
+  $name: Échelle initiale à la restauration / à l’agrandissement (%)
   #! $min: 10
   #! $max: 100
 - restore_easing: easeOut
-  $name: Restore / maximize easing
+  $name: Courbe d’animation à la restauration / à l’agrandissement
   $options:
     - linear: Linear
     - easeIn: Ease in
