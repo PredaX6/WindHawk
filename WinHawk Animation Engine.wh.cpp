@@ -190,7 +190,7 @@ Special thanks to [@Abdullah Masood](https://github.com/Abdullah-Masood-05) for 
   - duration_ms: 360
     $name: Durée (ms)
     $description: >-
-      Durée de base de l’animation, de 200 à 1 400 ms. Les effets autres que Génie appliquent un léger
+      Durée de base de l’animation, de 1 à 1 400 ms. Les effets autres que Génie appliquent un léger
       ajustement du rythme. Le style Windows 10 ignore ce réglage et utilise une durée fixe similaire
       à celle du système.
   - unhide_taskbar: false
@@ -263,7 +263,7 @@ Special thanks to [@Abdullah Masood](https://github.com/Abdullah-Masood-05) for 
   - duration_ms: 630
     $name: Duration (ms)
     $description: >-
-      Durée de base de l’animation de fermeture, de 50 à 5 000 ms. Certains effets ajustent leur rythme.
+      Durée de base de l’animation de fermeture, de 1 à 5 000 ms. Certains effets ajustent leur rythme.
       En général, le thread d’interface de l’application qui se ferme ou masque sa fenêtre attend la
       fin de l’animation (seuls les messages envoyés sont traités). Dans Excel, si un autre classeur
       reste ouvert, les fermetures compatibles n’attendent que la première image de l’animation ; la
@@ -296,7 +296,7 @@ Special thanks to [@Abdullah Masood](https://github.com/Abdullah-Masood-05) for 
       y compris avec les gestes du pavé tactile.
   - duration_ms: 200
     $name: Duration (ms)
-    $description: Durée de l’animation de changement de fenêtre, de 50 à 1 000 ms.
+    $description: Durée de l’animation de changement de fenêtre, de 1 à 1 000 ms.
   $name: Changement de fenêtre
   $description: Configurez l’animation utilisée lors de la sélection d’une fenêtre avec Alt+Tab.
 - diagnostics:
@@ -2520,8 +2520,8 @@ static bool EnsureSharedStateMapped() {
     return true;
 }
 void LoadAnimSettings() {
-    g_durationMs.store(Clamp(Wh_GetIntSetting(L"minimize_restore.duration_ms"), 200, 1400), std::memory_order_relaxed);
-    g_closeDurationMs.store(Clamp(Wh_GetIntSetting(L"close.duration_ms"), 50, 5000), std::memory_order_relaxed);
+    g_durationMs.store(Clamp(Wh_GetIntSetting(L"minimize_restore.duration_ms"), 1, 1400), std::memory_order_relaxed);
+    g_closeDurationMs.store(Clamp(Wh_GetIntSetting(L"close.duration_ms"), 1, 5000), std::memory_order_relaxed);
     g_shatterBlockSize.store(Clamp(Wh_GetIntSetting(L"close.shatter_block_size"), 1, 100), std::memory_order_relaxed);
     {
         auto style = WindhawkUtils::StringSetting::make(L"close.effect_style");
@@ -2570,7 +2570,7 @@ void LoadAnimSettings() {
     g_hideAsClose.store(Wh_GetIntSetting(L"close.hide_as_close") != 0, std::memory_order_relaxed);
     g_launchAnimation.store(Wh_GetIntSetting(L"minimize_restore.launch_animation") != 0, std::memory_order_relaxed);
     g_switchAnimation.store(Wh_GetIntSetting(L"window_switch.switch_animation") != 0, std::memory_order_relaxed);
-    g_switchDurationMs.store(Clamp(Wh_GetIntSetting(L"window_switch.duration_ms"), 50, 1000), std::memory_order_relaxed);
+    g_switchDurationMs.store(Clamp(Wh_GetIntSetting(L"window_switch.duration_ms"), 1, 1000), std::memory_order_relaxed);
     g_unhideEnabled.store(Wh_GetIntSetting(L"minimize_restore.unhide_taskbar") != 0, std::memory_order_relaxed);
     g_unhideDurationMs.store(Clamp(Wh_GetIntSetting(L"minimize_restore.unhide_duration_ms"), 0, 5000), std::memory_order_relaxed);
     g_gpuAcceleration.store(
@@ -11065,24 +11065,24 @@ bool StartAnimation(HWND hWnd, BOOL rising, LONG_PTR originalExStyle, BOOL cloak
         if (!isClosing && effectStyle == 7) {
             durationMs = AnimConstants::Win10MinRestoreMs; // fixed, ignores duration setting
         } else if (!isClosing && effectStyle == 1) {
-            durationMs = Clamp((durationMs * 6) / 5, 260, 1400); // Ink Splash
+            durationMs = Clamp((durationMs * 6) / 5, 1, 1400); // Ink Splash
         } else if (!isClosing && effectStyle == 2) {
-            durationMs = Clamp((durationMs * 3) / 4, 200, 1100); // Scorch
+            durationMs = Clamp((durationMs * 3) / 4, 1, 1100); // Scorch
         } else if (!isClosing && effectStyle == 3) {
-            durationMs = Clamp((durationMs * 7) / 6, 300, 1200); // Splinter
+            durationMs = Clamp((durationMs * 7) / 6, 1, 1200); // Splinter
         } else if (!isClosing && effectStyle == 4) {
-            durationMs = Clamp((durationMs * 4) / 5, 220, 1100); // Mirage
+            durationMs = Clamp((durationMs * 4) / 5, 1, 1100); // Mirage
         } else if (!isClosing && effectStyle == 5) {
-            durationMs = Clamp((durationMs * 4) / 5, 220, 1100); // Stipple
+            durationMs = Clamp((durationMs * 4) / 5, 1, 1100); // Stipple
         } else if (!isClosing && effectStyle == 6) {
-            durationMs = Clamp((durationMs * 17) / 20, 200, 1200); // Swell
+            durationMs = Clamp((durationMs * 17) / 20, 1, 1200); // Swell
         }
     }
     {
         if (isClosing && effectStyle == 3) {
-            durationMs = Clamp((durationMs * 19) / 20, 320, 1300);
+            durationMs = Clamp((durationMs * 19) / 20, 1, 1300);
         } else if (isClosing && effectStyle == 4) {
-            durationMs = Clamp((durationMs * 55) / 100, 280, 900);
+            durationMs = Clamp((durationMs * 55) / 100, 1, 900);
         }
     }
     auto* data = new (std::nothrow) WindowAnimData{
