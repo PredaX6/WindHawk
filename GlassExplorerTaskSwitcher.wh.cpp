@@ -11280,19 +11280,6 @@ void OnTaskListScroll(HWND hMMTaskListWnd, short delta) {
     g_lastScrollDeltaRemainder = delta % WHEEL_DELTA;
 }
 
-// The legacy task-list traversal uses undocumented Explorer object layouts.
-// Contain access violations from stale or incompatible task-list pointers so
-// they don't terminate Explorer when the XAML taskbar wheel hook is invoked.
-bool TryOnTaskListScroll(HWND hMMTaskListWnd, short delta) {
-    __try {
-        OnTaskListScroll(hMMTaskListWnd, delta);
-        return true;
-    } __except (EXCEPTION_EXECUTE_HANDLER) {
-        Wh_Log(L"Mouse-wheel task switching aborted after an access violation");
-        return false;
-    }
-}
-
 HWND TaskListFromTaskbarWnd(HWND hTaskbarWnd) {
     HWND hReBarWindow32 =
         FindWindowEx(hTaskbarWnd, nullptr, L"ReBarWindow32", nullptr);
@@ -12133,11 +12120,9 @@ int TaskbarFrame_OnPointerWheelChanged_Hook(PVOID pThis, PVOID pArgs) {
     ZeroMemory(&input, sizeof(INPUT));
     SendInput(1, &input, sizeof(INPUT));
 
-    if (!TryOnTaskListScroll(hMMTaskListWnd, static_cast<short>(delta))) {
-        // Fall back to the native handler if the legacy task-list structures
-        // aren't safe to traverse on this Windows build.
-        return original();
-    }
+    // Run the legacy task-list traversal directly. This code is compiled with
+    // Clang, which doesn't support MSVC's __try/__except syntax here.
+    OnTaskListScroll(hMMTaskListWnd, static_cast<short>(delta));
 
     args.Handled(true);
     return 0;
