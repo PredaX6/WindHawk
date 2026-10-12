@@ -10587,17 +10587,10 @@ LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
     if (uMsg == WM_SIZE && wParam == SIZE_RESTORED &&
         !IsIconic(hWnd) &&
         GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer) {
-        const bool blurTransition =
-            GetEffectiveBackgroundTranslucentEffect() ==
-                BackgroundTranslucentEffect::kBlur &&
-            GetProp(hWnd, kBlurTransitionProp);
-        if (blurTransition) {
-            // Restore Accent Blur on the actual restored-size notification,
-            // rather than relying solely on the transition timer.
-            KillTimer(hWnd, kBlurTransitionTimerId);
-            RemoveProp(hWnd, kBlurTransitionProp);
-        }
-
+        // Do not cancel the delayed Blur transition timer here. WM_SIZE can
+        // arrive before DWM finishes the restore animation; applying Accent
+        // Blur immediately is too early, while the timer reapplies it after
+        // DWM has settled.
         SendMessage(hWnd, WM_NCACTIVATE, TRUE, 0);
         ApplyBackgroundTranslucentEffect(hWnd);
         StartBackdropRetry(hWnd);
