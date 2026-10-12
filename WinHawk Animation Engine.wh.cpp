@@ -1037,7 +1037,7 @@ static void InvalidateEffectShuffleLocked(EffectShuffleBag<EffectCount>& bag) {
 static int ResolveMinRestoreEffectStyle() {
     if (g_minRestoreShuffleEffect.load(std::memory_order_relaxed)) {
         if (auto* sharedState = EnsureSharedEffectShuffleState()) {
-            return ConsumeGlobalEffectShuffle<8>(
+            return ConsumeGlobalEffectShuffle<9>(
                 &sharedState->minRestoreNextOrdinal,
                 &sharedState->minRestoreSeed, 0x4D525354u);
         }
@@ -1072,7 +1072,7 @@ static int PeekMinRestoreEffectStyle(HWND hWnd) {
     }
     if (g_minRestoreShuffleEffect.load(std::memory_order_relaxed)) {
         if (auto* sharedState = EnsureSharedEffectShuffleState()) {
-            return PeekGlobalEffectShuffle<8>(
+            return PeekGlobalEffectShuffle<9>(
                 &sharedState->minRestoreNextOrdinal,
                 &sharedState->minRestoreSeed, 0x4D525354u);
         }
