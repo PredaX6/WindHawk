@@ -9879,12 +9879,16 @@ SetWindowCompositionAttribute_t SetWindowCompositionAttribute_Original;
 constexpr DWORD WCA_ACCENT_POLICY = 19;
 constexpr int ACCENT_ENABLE_BLURBEHIND = 3;
 
+// Experimental test: use DWM's system Acrylic backdrop for the Blur option.
+constexpr bool kTestBlurUsingSystemBackdrop = true;
+
 BOOL WINAPI SetWindowCompositionAttribute_Hook(
     HWND hWnd, WINDOWCOMPOSITIONATTRIBDATA* data) {
     if (data && data->Attrib == WCA_ACCENT_POLICY &&
         GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
         GetEffectiveBackgroundTranslucentEffect() ==
-            BackgroundTranslucentEffect::kBlur) {
+            BackgroundTranslucentEffect::kBlur &&
+        !kTestBlurUsingSystemBackdrop) {
         ACCENT_POLICY accentPolicy = {
             .AccentState = ACCENT_ENABLE_BLURBEHIND,
             .GradientColor = 0x3A232323,
@@ -9982,7 +9986,9 @@ void ApplyBackgroundTranslucentEffect(
             backdropType = DWMSBT_TABBEDWINDOW;
             break;
         case BackgroundTranslucentEffect::kBlur:
-            backdropType = DWMSBT_AUTO;
+            backdropType = kTestBlurUsingSystemBackdrop
+                               ? DWMSBT_TRANSIENTWINDOW
+                               : DWMSBT_AUTO;
             break;
         case BackgroundTranslucentEffect::kAcrylic:
             backdropType = DWMSBT_TRANSIENTWINDOW;
@@ -9998,9 +10004,9 @@ void ApplyBackgroundTranslucentEffect(
             break;
     }
 
-    // Use exactly one backdrop mechanism at a time. The Blur mode is
-    // implemented by AccentBlurBehind, while the other modes use the native
-    // Windows 11 SystemBackdrop materials.
+    // Experimental test: the Blur mode uses DWM's native Acrylic system
+    // backdrop instead of AccentBlurBehind. This keeps the material under
+    // DWM control while preserving the normal window transition settings.
     // Suppress DWM material transitions while switching the backdrop, then
     // restore normal transitions so Explorer's window animations remain enabled.
     BOOL disableDwmTransitions = TRUE;
@@ -10014,19 +10020,20 @@ void ApplyBackgroundTranslucentEffect(
         DwmSetWindowAttribute_Original(
             hWnd, DWMWA_EXCLUDED_FROM_PEEK, &excludedFromPeek,
             sizeof(excludedFromPeek));
+    }
 
+    if (effect != BackgroundTranslucentEffect::kBlur ||
+        kTestBlurUsingSystemBackdrop) {
+        SetAccentBlurBehind(hWnd, false);
+        DwmSetWindowAttribute_Original(
+            hWnd, DWMWA_SYSTEMBACKDROP_TYPE, &backdropType,
+            sizeof(backdropType));
+    } else {
         int noneBackdrop = DWMSBT_NONE;
         DwmSetWindowAttribute_Original(
             hWnd, DWMWA_SYSTEMBACKDROP_TYPE, &noneBackdrop,
             sizeof(noneBackdrop));
-
         SetAccentBlurBehind(hWnd, true);
-    } else {
-        SetAccentBlurBehind(hWnd, false);
-
-        DwmSetWindowAttribute_Original(
-            hWnd, DWMWA_SYSTEMBACKDROP_TYPE, &backdropType,
-            sizeof(backdropType));
     }
 
     // Re-enable DWM transitions immediately after applying the material.
