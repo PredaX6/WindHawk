@@ -10458,12 +10458,44 @@ constexpr UINT_PTR kBackdropRetryTimerId = 0x47455843;
 constexpr WCHAR kBackdropRetryCountProp[] =
     L"windhawk_backdrop-retry-count-" WH_MOD_ID;
 
-// Experimental: use DWM's native Acrylic only during minimize/restore
-// animations, then restore legacy Accent Blur after the transition settles.
+// Experimental: use DWM's native Acrylic during minimize/restore
+// animations, then retry restoring legacy Accent Blur after DWM settles.
 constexpr UINT_PTR kBlurTransitionTimerId = 0x47455845;
-constexpr UINT kBlurTransitionDelayMs = 400;
+constexpr UINT kBlurTransitionDelayMs = 700;
+constexpr UINT kBlurTransitionRetryMs = 100;
+constexpr UINT kBlurTransitionMaxRetries = 12;
 constexpr WCHAR kBlurTransitionProp[] =
     L"windhawk_blur-transition-" WH_MOD_ID;
+constexpr WCHAR kBlurTransitionRetryProp[] =
+    L"windhawk_blur-transition-retries-" WH_MOD_ID;
+
+VOID CALLBACK BlurTransitionTimerProc(HWND hWnd, UINT, UINT_PTR timerId, DWORD) {
+    if (!IsWindow(hWnd) ||
+        GetTargetWindowType(hWnd) != TargetWindowType::FileExplorer ||
+        GetEffectiveBackgroundTranslucentEffect() !=
+            BackgroundTranslucentEffect::kBlur) {
+        KillTimer(hWnd, timerId);
+        RemoveProp(hWnd, kBlurTransitionProp);
+        RemoveProp(hWnd, kBlurTransitionRetryProp);
+        return;
+    }
+
+    // DWM can overwrite Accent Blur more than once during the animation.
+    // Reapply periodically without synthesizing activation or repaint messages.
+    ApplyBackgroundTranslucentEffect(hWnd);
+    const UINT retries =
+        (UINT)(ULONG_PTR)GetProp(hWnd, kBlurTransitionRetryProp) + 1;
+    if (retries >= kBlurTransitionMaxRetries) {
+        KillTimer(hWnd, timerId);
+        RemoveProp(hWnd, kBlurTransitionProp);
+        RemoveProp(hWnd, kBlurTransitionRetryProp);
+    } else {
+        SetProp(hWnd, kBlurTransitionRetryProp,
+                (HANDLE)(ULONG_PTR)retries);
+        SetTimer(hWnd, timerId, kBlurTransitionRetryMs,
+                 BlurTransitionTimerProc);
+    }
+}
 
 void BeginBlurNativeTransition(HWND hWnd) {
     if (GetTargetWindowType(hWnd) != TargetWindowType::FileExplorer ||
@@ -10473,6 +10505,7 @@ void BeginBlurNativeTransition(HWND hWnd) {
     }
 
     SetProp(hWnd, kBlurTransitionProp, (HANDLE)1);
+    SetProp(hWnd, kBlurTransitionRetryProp, (HANDLE)(ULONG_PTR)0);
     KillTimer(hWnd, kBlurTransitionTimerId);
 
     // Hand the transition to DWM's native Acrylic backdrop.
@@ -10483,16 +10516,7 @@ void BeginBlurNativeTransition(HWND hWnd) {
         sizeof(acrylicBackdrop));
 
     SetTimer(hWnd, kBlurTransitionTimerId, kBlurTransitionDelayMs,
-             [](HWND hwnd, UINT, UINT_PTR timerId, DWORD) {
-        KillTimer(hwnd, timerId);
-        RemoveProp(hwnd, kBlurTransitionProp);
-        if (IsWindow(hwnd) &&
-            GetTargetWindowType(hwnd) == TargetWindowType::FileExplorer &&
-            GetEffectiveBackgroundTranslucentEffect() ==
-                BackgroundTranslucentEffect::kBlur) {
-            ApplyBackgroundTranslucentEffect(hwnd);
-        }
-    });
+             BlurTransitionTimerProc);
 }
 
 // DWM can defer or replace a native system backdrop while an existing
