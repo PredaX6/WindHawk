@@ -10040,11 +10040,13 @@ void ApplyBackgroundTranslucentEffect(
             hWnd, DWMWA_SYSTEMBACKDROP_TYPE, &backdropType,
             sizeof(backdropType));
     } else {
+        // Enable Accent Blur before removing the native system backdrop. The
+        // overlap avoids a transparent frame during the Acrylic -> Blur handoff.
+        SetAccentBlurBehind(hWnd, true);
         int noneBackdrop = DWMSBT_NONE;
         DwmSetWindowAttribute_Original(
             hWnd, DWMWA_SYSTEMBACKDROP_TYPE, &noneBackdrop,
             sizeof(noneBackdrop));
-        SetAccentBlurBehind(hWnd, true);
     }
 
     // Legacy Accent Blur is reset by DWM during window transitions and
@@ -10554,11 +10556,9 @@ VOID CALLBACK EndTransitionAcrylicTimerProc(HWND hWnd, UINT, UINT_PTR timerId,
 
 LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
-    // Switch to Acrylic before Windows starts minimizing, maximizing, or
-    // restoring the window; return to the selected Blur effect after animation.
+    // Acrylic's native system backdrop can turn black during DWM's minimize
+    // animation. Use it only for restore/maximize; keep Accent Blur for minimize.
     if (uMsg == WM_SYSCOMMAND &&
-        (wParam & 0xFFF0) == SC_MINIMIZE ||
-        uMsg == WM_SYSCOMMAND &&
         ((wParam & 0xFFF0) == SC_MAXIMIZE ||
          (wParam & 0xFFF0) == SC_RESTORE)) {
         StartTransitionAcrylic(hWnd);
@@ -10599,12 +10599,10 @@ LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 
     LRESULT result = DefWindowProcW_Original(hWnd, uMsg, wParam, lParam);
 
-    // WM_SIZE may be delivered before the DWM transition has visually
-    // completed. Debounce it and restore Accent Blur only after the size has
-    // settled; a rapid follow-up transition cancels/restarts this timer.
+    // Restore Accent Blur only after a restore/maximize transition has
+    // settled. Minimize does not enter Acrylic mode, avoiding DWM's black frame.
     if (uMsg == WM_SIZE &&
-        (wParam == SIZE_MINIMIZED || wParam == SIZE_RESTORED ||
-         wParam == SIZE_MAXIMIZED) &&
+        (wParam == SIZE_RESTORED || wParam == SIZE_MAXIMIZED) &&
         GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
         GetProp(hWnd, kTransitionAcrylicProp)) {
         KillTimer(hWnd, kTransitionAcrylicTimerId);
