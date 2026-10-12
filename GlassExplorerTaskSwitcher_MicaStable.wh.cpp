@@ -9880,7 +9880,7 @@ constexpr DWORD WCA_ACCENT_POLICY = 19;
 constexpr int ACCENT_ENABLE_BLURBEHIND = 3;
 
 // Experimental test: use DWM's system Acrylic backdrop for the Blur option.
-constexpr bool kTestBlurUsingSystemBackdrop = true;
+constexpr bool kTestBlurUsingSystemBackdrop = false;
 
 BOOL WINAPI SetWindowCompositionAttribute_Hook(
     HWND hWnd, WINDOWCOMPOSITIONATTRIBDATA* data) {
