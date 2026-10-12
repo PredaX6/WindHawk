@@ -10515,6 +10515,17 @@ LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 
     LRESULT result = DefWindowProcW_Original(hWnd, uMsg, wParam, lParam);
 
+    // Applying the mod to an Explorer window that was already open can leave
+    // DWM showing its fallback gray backdrop until the next user activation.
+    // Reapply the selected material and repaint after the non-client activation
+    // message, including when WM_NCACTIVATE was kept visually active above.
+    if (uMsg == WM_NCACTIVATE &&
+        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer) {
+        ApplyBackgroundTranslucentEffect(hWnd);
+        RedrawWindow(hWnd, nullptr, nullptr,
+                     RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
+    }
+
     // Explorer may reset or defer the backdrop while first showing the window.
     // Reapply the selected material after the initial show-position update.
     if (uMsg == WM_WINDOWPOSCHANGED && lParam &&
