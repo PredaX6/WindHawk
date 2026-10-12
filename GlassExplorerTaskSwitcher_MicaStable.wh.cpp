@@ -10529,7 +10529,9 @@ VOID CALLBACK TransitionAcrylicTimerProc(HWND hWnd, UINT, UINT_PTR timerId,
 
 void StartTransitionAcrylic(HWND hWnd) {
     if (!IsWindow(hWnd) ||
-        GetTargetWindowType(hWnd) != TargetWindowType::FileExplorer) {
+        GetTargetWindowType(hWnd) != TargetWindowType::FileExplorer ||
+        GetEffectiveBackgroundTranslucentEffect() !=
+            BackgroundTranslucentEffect::kBlur) {
         return;
     }
 
