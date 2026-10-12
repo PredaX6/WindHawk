@@ -36,7 +36,7 @@
 > The upstream mod is licensed under MIT. Original author and project attribution are retained. This fork uses a distinct Windhawk mod ID so it can coexist with the upstream mod. Upstream updates are not automatically synchronized.
 
 > ## ⚠️ **`PLEASE READ THESE NOTES:`**
-> * **Packaged & System Apps:** Some protected or system-hosted windows, such as parts of Settings, Microsoft Store, and Windows shell surfaces, will not be animated because they bypass the mod's interception and use native Windows transitions instead.
+> * **Packaged & System Apps:** Packaged app frames (`ApplicationFrameWindow`, used by many UWP apps) are now eligible for close and classic Show Desktop effects. Launch animation still waits for a sufficiently sized frame to avoid animating a temporary blank host. Some protected or system-hosted surfaces, including parts of Settings and the Windows shell, can bypass interception or lack a safe capturable frame and therefore retain native transitions.
 > * **Browsers & Tray Apps:** Enable **"Animate windows hidden to the tray"** if you want close animations for apps such as Chrome, Edge, Discord, and Windhawk, because clicking the 'X' button may only hide their window or leave the app running instead of actually closing it.
 > * **Excel:** Close animations use an unobscured screen snapshot, never `PrintWindow`. If the workbook window can't be captured safely, its close uses the native transition instead. When another workbook window remains open, Excel can finish closing while the captured image continues animating.
 
@@ -587,9 +587,12 @@ namespace AnimConstants {
     constexpr size_t SnapshotCacheMaxEntries = 3;
     constexpr size_t SnapshotCacheMaxBytes = 64ull * 1024ull * 1024ull;
 }
+// CoreWindow and XAML island hosts may represent child/content or shell-owned
+// surfaces rather than a stable, capturable top-level app frame. Keep them out
+// of snapshot-based effects, but allow ApplicationFrameWindow: packaged app
+// frames can use the regular animation paths once their real surface is ready.
 static constexpr std::wstring_view kGdiExcludedClasses[] = {
     L"CoreWindow",
-    L"ApplicationFrameWindow",
     L"XamlExplorerHostIslandWindow"
 };
 static constexpr std::wstring_view kAlwaysExcludedClasses[] = {
