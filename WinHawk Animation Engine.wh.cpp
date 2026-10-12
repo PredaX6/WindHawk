@@ -204,7 +204,9 @@ static DWORD WINAPI AnimationThread(void* parameter) {
 
     auto revealTarget = [&]() {
         if (revealWindow && IsWindow(revealWindow) && ShowWindow_Original) {
-            ShowWindow_Original(revealWindow, SW_SHOWNA);
+            SetWindowPos(revealWindow, nullptr, 0, 0, 0, 0,
+                         SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER |
+                         SWP_NOACTIVATE | SWP_SHOWWINDOW);
         }
     };
 
@@ -267,7 +269,9 @@ static DWORD WINAPI AnimationThread(void* parameter) {
         }
         if (!overlayShown) {
             if (revealWindow && IsWindow(revealWindow)) {
-                ShowWindow_Original(revealWindow, SW_HIDE);
+                SetWindowPos(revealWindow, nullptr, 0, 0, 0, 0,
+                             SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER |
+                             SWP_NOACTIVATE | SWP_HIDEWINDOW);
                 targetHidden = true;
             }
             ShowWindow(overlay, SW_SHOWNOACTIVATE);
@@ -374,9 +378,13 @@ BOOL WINAPI ShowWindow_Hook(HWND hwnd, int command) {
                 RECT rc{};
                 HBITMAP bitmap = CaptureWindow(hwnd, &rc);
                 if (bitmap) {
-                    ShowWindow_Original(hwnd, SW_HIDE);
+                    SetWindowPos(hwnd, nullptr, 0, 0, 0, 0,
+                                 SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER |
+                                 SWP_NOACTIVATE | SWP_HIDEWINDOW);
                     if (!StartAnimation(hwnd, settings, true, bitmap, &rc, hwnd)) {
-                        ShowWindow_Original(hwnd, SW_SHOWNA);
+                        SetWindowPos(hwnd, nullptr, 0, 0, 0, 0,
+                                     SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER |
+                                     SWP_NOACTIVATE | SWP_SHOWWINDOW);
                     }
                 }
             }
