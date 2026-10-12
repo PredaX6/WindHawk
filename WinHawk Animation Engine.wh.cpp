@@ -103,6 +103,9 @@ path. Avoid running it alongside other window-animation mods.
 
 #include <windows.h>
 #include <dwmapi.h>
+#ifndef DWMWA_CLOAK
+#define DWMWA_CLOAK 13
+#endif
 #include <algorithm>
 #include <atomic>
 #include <cmath>
@@ -122,6 +125,8 @@ static AnimationSettings g_minimize{true, 260, 18, 0};
 static AnimationSettings g_restore{true, 240, 82, 1};
 static std::atomic<bool> g_unloading{false};
 static ATOM g_overlayClass = 0;
+static constexpr wchar_t kSysCommandAnimationProp[] =
+    L"WinHawkAnimationEngine.SysCommandAnimation";
 
 using ShowWindow_t = decltype(&ShowWindow);
 using DefWindowProcW_t = decltype(&DefWindowProcW);
@@ -134,6 +139,7 @@ struct AnimationJob {
     AnimationSettings settings;
     bool opening;
     HWND revealWindow;
+    bool uncloaksTarget;
 };
 
 static int ClampInt(int value, int low, int high) {
@@ -159,7 +165,8 @@ static bool IsEligibleWindow(HWND hwnd) {
     return rc.right - rc.left >= 80 && rc.bottom - rc.top >= 60;
 }
 
-static HBITMAP CaptureWindow(HWND hwnd, RECT* outRect) {
+static HBITMAP CaptureWindow(HWND hwnd, RECT* outRect,
+                             bool allowScreenFallback = true) {
     if (!IsEligibleWindow(hwnd) || !GetWindowRect(hwnd, outRect)) return nullptr;
     int width = outRect->right - outRect->left;
     int height = outRect->bottom - outRect->top;
@@ -178,7 +185,7 @@ static HBITMAP CaptureWindow(HWND hwnd, RECT* outRect) {
     HGDIOBJ old = SelectObject(memory, bitmap);
     PatBlt(memory, 0, 0, width, height, BLACKNESS);
     BOOL captured = PrintWindow(hwnd, memory, 2 /* PW_RENDERFULLCONTENT */);
-    if (!captured) {
+    if (!captured && allowScreenFallback) {
         captured = BitBlt(memory, 0, 0, width, height, screen,
                           outRect->left, outRect->top, SRCCOPY);
     }
@@ -200,10 +207,17 @@ static DWORD WINAPI AnimationThread(void* parameter) {
     AnimationSettings settings = job->settings;
     bool opening = job->opening;
     HWND revealWindow = job->revealWindow;
+    bool uncloaksTarget = job->uncloaksTarget;
     delete job;
 
     auto revealTarget = [&]() {
-        if (revealWindow && IsWindow(revealWindow) && ShowWindow_Original) {
+        if (revealWindow && IsWindow(revealWindow)) {
+            if (uncloaksTarget) {
+                const BOOL cloak = FALSE;
+                DwmSetWindowAttribute(revealWindow, DWMWA_CLOAK,
+                                      &cloak, sizeof(cloak));
+                DwmFlush();
+            }
             SetWindowPos(revealWindow, nullptr, 0, 0, 0, 0,
                          SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER |
                          SWP_NOACTIVATE | SWP_SHOWWINDOW);
@@ -245,7 +259,6 @@ static DWORD WINAPI AnimationThread(void* parameter) {
     int duration = ClampInt(settings.duration, 50, 1500);
     int endScale = ClampInt(settings.scale, 10, 100);
     ULONGLONG started = GetTickCount64();
-    bool targetHidden = false;
     bool overlayShown = false;
     for (;;) {
         if (g_unloading.load()) break;
@@ -268,12 +281,6 @@ static DWORD WINAPI AnimationThread(void* parameter) {
             break;
         }
         if (!overlayShown) {
-            if (revealWindow && IsWindow(revealWindow)) {
-                SetWindowPos(revealWindow, nullptr, 0, 0, 0, 0,
-                             SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER |
-                             SWP_NOACTIVATE | SWP_HIDEWINDOW);
-                targetHidden = true;
-            }
             ShowWindow(overlay, SW_SHOWNOACTIVATE);
             overlayShown = true;
         }
@@ -287,13 +294,13 @@ static DWORD WINAPI AnimationThread(void* parameter) {
     ReleaseDC(nullptr, screen);
     DestroyWindow(overlay);
     DeleteObject(bitmap);
-    if (targetHidden || revealWindow) revealTarget();
+    if (revealWindow) revealTarget();
     return 0;
 }
 
 static bool StartAnimation(HWND hwnd, const AnimationSettings& settings, bool opening,
                            HBITMAP captured = nullptr, const RECT* capturedRect = nullptr,
-                           HWND revealWindow = nullptr) {
+                           HWND revealWindow = nullptr, bool uncloaksTarget = false) {
     if (!settings.enabled || g_unloading.load()) {
         if (captured) DeleteObject(captured);
         return false;
@@ -304,7 +311,8 @@ static bool StartAnimation(HWND hwnd, const AnimationSettings& settings, bool op
     else if (capturedRect) rect = *capturedRect;
     if (!bitmap) return false;
 
-    auto* job = new (std::nothrow) AnimationJob{bitmap, rect, settings, opening, revealWindow};
+    auto* job = new (std::nothrow) AnimationJob{
+        bitmap, rect, settings, opening, revealWindow, uncloaksTarget};
     if (!job) {
         DeleteObject(bitmap);
         return false;
@@ -350,6 +358,10 @@ static void LoadSettings() {
 }
 
 BOOL WINAPI ShowWindow_Hook(HWND hwnd, int command) {
+    if (GetPropW(hwnd, kSysCommandAnimationProp)) {
+        return ShowWindow_Original(hwnd, command);
+    }
+
     bool wasIconic = IsIconic(hwnd) != FALSE;
     bool minimizing = command == SW_MINIMIZE || command == SW_SHOWMINIMIZED ||
                       command == SW_SHOWMINNOACTIVE || command == SW_FORCEMINIMIZE;
@@ -357,6 +369,28 @@ BOOL WINAPI ShowWindow_Hook(HWND hwnd, int command) {
     HBITMAP minimizeBitmap = nullptr;
     if (minimizing && g_minimize.enabled) {
         minimizeBitmap = CaptureWindow(hwnd, &minimizeRect);
+    }
+
+    const bool showCommand =
+        command == SW_SHOW || command == SW_SHOWNORMAL ||
+        command == SW_SHOWDEFAULT || command == SW_RESTORE ||
+        command == SW_SHOWMAXIMIZED;
+    const AnimationSettings* showSettings = nullptr;
+    bool cloakedForAnimation = false;
+    if (!minimizing && showCommand && IsEligibleWindow(hwnd)) {
+        showSettings = (wasIconic || command == SW_SHOWMAXIMIZED ||
+                        command == SW_RESTORE) ? &g_restore : &g_open;
+        const bool needsVisualTransition =
+            !IsWindowVisible(hwnd) || wasIconic ||
+            command == SW_SHOWMAXIMIZED || command == SW_RESTORE;
+        if (showSettings->enabled && needsVisualTransition) {
+            const BOOL cloak = TRUE;
+            if (SUCCEEDED(DwmSetWindowAttribute(
+                    hwnd, DWMWA_CLOAK, &cloak, sizeof(cloak)))) {
+                cloakedForAnimation = true;
+                DwmFlush();
+            }
+        }
     }
 
     BOOL result = ShowWindow_Original(hwnd, command);
@@ -368,26 +402,22 @@ BOOL WINAPI ShowWindow_Hook(HWND hwnd, int command) {
         return result;
     }
 
-    if (command == SW_SHOW || command == SW_SHOWNORMAL || command == SW_SHOWDEFAULT ||
-        command == SW_RESTORE || command == SW_SHOWMAXIMIZED) {
-        if (IsEligibleWindow(hwnd)) {
-            const AnimationSettings& settings =
-                (wasIconic || command == SW_SHOWMAXIMIZED || command == SW_RESTORE)
-                    ? g_restore : g_open;
-            if (settings.enabled) {
-                RECT rc{};
-                HBITMAP bitmap = CaptureWindow(hwnd, &rc);
-                if (bitmap) {
-                    SetWindowPos(hwnd, nullptr, 0, 0, 0, 0,
-                                 SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER |
-                                 SWP_NOACTIVATE | SWP_HIDEWINDOW);
-                    if (!StartAnimation(hwnd, settings, true, bitmap, &rc, hwnd)) {
-                        SetWindowPos(hwnd, nullptr, 0, 0, 0, 0,
-                                     SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER |
-                                     SWP_NOACTIVATE | SWP_SHOWWINDOW);
-                    }
-                }
+    if (cloakedForAnimation && showSettings) {
+        DwmFlush();
+        Sleep(20);
+        RECT rc{};
+        HBITMAP bitmap = CaptureWindow(hwnd, &rc, false);
+        if (bitmap) {
+            if (StartAnimation(hwnd, *showSettings, true, bitmap, &rc, hwnd, true)) {
+                return result;
             }
+        } else {
+            const BOOL cloak = FALSE;
+            DwmSetWindowAttribute(hwnd, DWMWA_CLOAK, &cloak, sizeof(cloak));
+            DwmFlush();
+            SetWindowPos(hwnd, nullptr, 0, 0, 0, 0,
+                         SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER |
+                         SWP_NOACTIVATE | SWP_SHOWWINDOW);
         }
     }
     return result;
@@ -406,15 +436,38 @@ LRESULT WINAPI DefWindowProcW_Hook(HWND hwnd, UINT message, WPARAM wParam, LPARA
             return result;
         }
         if (command == SC_RESTORE || command == SC_MAXIMIZE) {
-            LRESULT result = DefWindowProcW_Original(hwnd, message, wParam, lParam);
+            bool cloakedForAnimation = false;
             if (IsEligibleWindow(hwnd) && g_restore.enabled) {
+                const BOOL cloak = TRUE;
+                if (SUCCEEDED(DwmSetWindowAttribute(
+                        hwnd, DWMWA_CLOAK, &cloak, sizeof(cloak)))) {
+                    cloakedForAnimation = true;
+                    DwmFlush();
+                    SetPropW(hwnd, kSysCommandAnimationProp, (HANDLE)1);
+                }
+            }
+
+            LRESULT result = DefWindowProcW_Original(hwnd, message, wParam, lParam);
+            if (GetPropW(hwnd, kSysCommandAnimationProp)) {
+                RemovePropW(hwnd, kSysCommandAnimationProp);
+            }
+            if (cloakedForAnimation) {
+                DwmFlush();
+                Sleep(20);
                 RECT rc{};
-                HBITMAP bitmap = CaptureWindow(hwnd, &rc);
+                HBITMAP bitmap = CaptureWindow(hwnd, &rc, false);
                 if (bitmap) {
-                    ShowWindow_Original(hwnd, SW_HIDE);
-                    if (!StartAnimation(hwnd, g_restore, true, bitmap, &rc, hwnd)) {
-                        ShowWindow_Original(hwnd, SW_SHOWNA);
+                    if (StartAnimation(hwnd, g_restore, true, bitmap, &rc,
+                                       hwnd, true)) {
+                        return result;
                     }
+                } else {
+                    const BOOL cloak = FALSE;
+                    DwmSetWindowAttribute(hwnd, DWMWA_CLOAK, &cloak, sizeof(cloak));
+                    DwmFlush();
+                    SetWindowPos(hwnd, nullptr, 0, 0, 0, 0,
+                                 SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER |
+                                 SWP_NOACTIVATE | SWP_SHOWWINDOW);
                 }
             }
             return result;
