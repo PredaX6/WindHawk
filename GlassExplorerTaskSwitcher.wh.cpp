@@ -11252,6 +11252,73 @@ LONG_PTR* TaskbarScroll(LONG_PTR lpMMTaskListLongPtr,
 
 #pragma endregion  // scroll
 
+// Avoid traversing undocumented Explorer task-list objects in the XAML taskbar
+// wheel hook. Enumerate normal top-level windows instead, so a Windows update
+// cannot invalidate the mod's assumptions about Explorer's private memory.
+struct WheelCycleWindows {
+    std::vector<HWND> windows;
+    bool skipMinimized;
+};
+
+BOOL CALLBACK CollectWheelCycleWindows(HWND hwnd, LPARAM lParam) {
+    auto* state = reinterpret_cast<WheelCycleWindows*>(lParam);
+    if (!IsWindow(hwnd) || !IsWindowVisible(hwnd) || GetWindow(hwnd, GW_OWNER)) {
+        return TRUE;
+    }
+
+    LONG_PTR exStyle = GetWindowLongPtr(hwnd, GWL_EXSTYLE);
+    if ((exStyle & WS_EX_TOOLWINDOW) && !(exStyle & WS_EX_APPWINDOW)) {
+        return TRUE;
+    }
+
+    if (state->skipMinimized && IsIconic(hwnd)) {
+        return TRUE;
+    }
+
+    state->windows.push_back(hwnd);
+    return TRUE;
+}
+
+void OnTaskbarWheelSafe(short delta) {
+    int clicks = -delta / WHEEL_DELTA;
+    if (!clicks) {
+        return;
+    }
+    if (g_settings.reverseScrollingDirection) {
+        clicks = -clicks;
+    }
+
+    WheelCycleWindows state{{}, g_settings.skipMinimizedWindows};
+    EnumWindows(CollectWheelCycleWindows, reinterpret_cast<LPARAM>(&state));
+    if (state.windows.empty()) {
+        return;
+    }
+
+    HWND foreground = GetForegroundWindow();
+    auto it = std::find(state.windows.begin(), state.windows.end(), foreground);
+    int currentIndex = it == state.windows.end()
+                           ? 0
+                           : static_cast<int>(it - state.windows.begin());
+    int targetIndex = currentIndex + clicks;
+
+    if (g_settings.wrapAround) {
+        int count = static_cast<int>(state.windows.size());
+        targetIndex = ((targetIndex % count) + count) % count;
+    } else {
+        targetIndex = std::clamp(targetIndex, 0,
+                                 static_cast<int>(state.windows.size()) - 1);
+    }
+
+    HWND target = state.windows[targetIndex];
+    if (!IsWindow(target)) {
+        return;
+    }
+    if (IsIconic(target)) {
+        ShowWindowAsync(target, SW_RESTORE);
+    }
+    SetForegroundWindow(target);
+}
+
 void OnTaskListScroll(HWND hMMTaskListWnd, short delta) {
     if (g_lastScrollTarget == hMMTaskListWnd &&
         GetTickCount() - g_lastScrollTime < 1000 * 5) {
@@ -12120,9 +12187,9 @@ int TaskbarFrame_OnPointerWheelChanged_Hook(PVOID pThis, PVOID pArgs) {
     ZeroMemory(&input, sizeof(INPUT));
     SendInput(1, &input, sizeof(INPUT));
 
-    // Run the legacy task-list traversal directly. This code is compiled with
-    // Clang, which doesn't support MSVC's __try/__except syntax here.
-    OnTaskListScroll(hMMTaskListWnd, static_cast<short>(delta));
+    // Do not traverse undocumented Explorer task-list pointers here: that
+    // path can crash/restart Explorer on current Windows 11 builds.
+    OnTaskbarWheelSafe(static_cast<short>(delta));
 
     args.Handled(true);
     return 0;
