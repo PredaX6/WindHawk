@@ -12538,7 +12538,7 @@ BOOL Wh_ModInit() {
         return FALSE;
     }
 
-
+    if (g_winVersion >= WinVersion::Win11) {
         if (HMODULE taskbarViewModule = GetTaskbarViewModuleHandle()) {
             g_taskbarViewDllLoaded = true;
             if (!HookTaskbarViewDllSymbols(taskbarViewModule)) {
