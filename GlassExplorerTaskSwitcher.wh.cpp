@@ -10954,6 +10954,53 @@ void* QueryViaVtableBackwards(void* object, void* vtable) {
 
 #pragma region scroll
 
+struct ForegroundAppWindowSearch {
+    DWORD processId;
+    HWND window;
+};
+
+BOOL CALLBACK FindForegroundAppWindow(HWND hwnd, LPARAM lParam) {
+    auto* search = reinterpret_cast<ForegroundAppWindowSearch*>(lParam);
+    DWORD processId = 0;
+    if (!IsWindowVisible(hwnd) ||
+        GetWindowThreadProcessId(hwnd, &processId) == 0 ||
+        processId != search->processId ||
+        GetWindow(hwnd, GW_OWNER) != nullptr) {
+        return TRUE;
+    }
+
+    LONG_PTR exStyle = GetWindowLongPtr(hwnd, GWL_EXSTYLE);
+    if ((exStyle & WS_EX_TOOLWINDOW) && !(exStyle & WS_EX_APPWINDOW)) {
+        return TRUE;
+    }
+
+    search->window = hwnd;
+    return FALSE;
+}
+
+HWND GetWindowToMinimize(HWND foregroundWnd) {
+    if (!foregroundWnd || !IsWindow(foregroundWnd)) {
+        return nullptr;
+    }
+
+    // Prefer the root owner only when it is a real visible window. Some apps
+    // use hidden owner windows, which must not be minimized instead of the UI.
+    HWND rootOwner = GetAncestor(foregroundWnd, GA_ROOTOWNER);
+    if (rootOwner && IsWindowVisible(rootOwner) &&
+        GetWindow(rootOwner, GW_OWNER) == nullptr) {
+        return rootOwner;
+    }
+
+    DWORD processId = 0;
+    if (!GetWindowThreadProcessId(foregroundWnd, &processId) || !processId) {
+        return foregroundWnd;
+    }
+
+    ForegroundAppWindowSearch search{processId, nullptr};
+    EnumWindows(FindForegroundAppWindow, reinterpret_cast<LPARAM>(&search));
+    return search.window ? search.window : foregroundWnd;
+}
+
 void SwitchToTaskItem(LONG_PTR lpMMTaskListLongPtr, void* taskItem,
                        bool minimizeForeground = true) {
     if (!lpMMTaskListLongPtr || !taskItem ||
@@ -10966,16 +11013,7 @@ void SwitchToTaskItem(LONG_PTR lpMMTaskListLongPtr, void* taskItem,
     // Optionally minimize the currently active window before switching.
     // Wheel-down requests minimization; wheel-up switches without minimizing.
     if (minimizeForeground) {
-        HWND hForegroundWnd = GetForegroundWindow();
-        // Some applications (including WinHawk) may have an owned/popup
-        // window in the foreground. Minimize the root owner so the application
-        // itself minimizes, just as it does when its main window is active.
-        if (hForegroundWnd) {
-            HWND hRootOwnerWnd = GetAncestor(hForegroundWnd, GA_ROOTOWNER);
-            if (hRootOwnerWnd) {
-                hForegroundWnd = hRootOwnerWnd;
-            }
-        }
+        HWND hForegroundWnd = GetWindowToMinimize(GetForegroundWindow());
         if (hForegroundWnd && IsWindow(hForegroundWnd) &&
             !IsIconic(hForegroundWnd)) {
             ShowWindowAsync(hForegroundWnd, SW_MINIMIZE);
