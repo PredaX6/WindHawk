@@ -10458,6 +10458,43 @@ constexpr UINT_PTR kBackdropRetryTimerId = 0x47455843;
 constexpr WCHAR kBackdropRetryCountProp[] =
     L"windhawk_backdrop-retry-count-" WH_MOD_ID;
 
+// Experimental: use DWM's native Acrylic only during minimize/restore
+// animations, then restore legacy Accent Blur after the transition settles.
+constexpr UINT_PTR kBlurTransitionTimerId = 0x47455845;
+constexpr UINT kBlurTransitionDelayMs = 400;
+constexpr WCHAR kBlurTransitionProp[] =
+    L"windhawk_blur-transition-" WH_MOD_ID;
+
+void BeginBlurNativeTransition(HWND hWnd) {
+    if (GetTargetWindowType(hWnd) != TargetWindowType::FileExplorer ||
+        GetEffectiveBackgroundTranslucentEffect() !=
+            BackgroundTranslucentEffect::kBlur) {
+        return;
+    }
+
+    SetProp(hWnd, kBlurTransitionProp, (HANDLE)1);
+    KillTimer(hWnd, kBlurTransitionTimerId);
+
+    // Hand the transition to DWM's native Acrylic backdrop.
+    SetAccentBlurBehind(hWnd, false);
+    int acrylicBackdrop = DWMSBT_TRANSIENTWINDOW;
+    DwmSetWindowAttribute_Original(
+        hWnd, DWMWA_SYSTEMBACKDROP_TYPE, &acrylicBackdrop,
+        sizeof(acrylicBackdrop));
+
+    SetTimer(hWnd, kBlurTransitionTimerId, kBlurTransitionDelayMs,
+             [](HWND hwnd, UINT, UINT_PTR timerId, DWORD) {
+        KillTimer(hwnd, timerId);
+        RemoveProp(hwnd, kBlurTransitionProp);
+        if (IsWindow(hwnd) &&
+            GetTargetWindowType(hwnd) == TargetWindowType::FileExplorer &&
+            GetEffectiveBackgroundTranslucentEffect() ==
+                BackgroundTranslucentEffect::kBlur) {
+            ApplyBackgroundTranslucentEffect(hwnd);
+        }
+    });
+}
+
 // DWM can defer or replace a native system backdrop while an existing
 // Explorer window is initializing or being restored. Retry briefly without
 // activating the window or synthesizing focus messages.
@@ -10526,6 +10563,15 @@ LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
         StartBackdropRetry(hWnd);
     }
 
+    // Switch to DWM-native Acrylic before Explorer begins a minimize/restore
+    // animation. The timer restores Accent Blur after the transition.
+    if (uMsg == WM_SYSCOMMAND &&
+        (((wParam & 0xFFF0) == SC_MINIMIZE) ||
+         ((wParam & 0xFFF0) == SC_RESTORE) ||
+         ((wParam & 0xFFF0) == SC_MAXIMIZE))) {
+        BeginBlurNativeTransition(hWnd);
+    }
+
     // Prepare the selected material before Windows makes the window visible.
     if (uMsg == WM_WINDOWPOSCHANGING && lParam &&
         (((const WINDOWPOS*)lParam)->flags & SWP_SHOWWINDOW) &&
@@ -10541,11 +10587,17 @@ LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
     if (uMsg == WM_SIZE && wParam == SIZE_RESTORED &&
         !IsIconic(hWnd) &&
         GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer) {
-        SendMessage(hWnd, WM_NCACTIVATE, TRUE, 0);
-        ApplyBackgroundTranslucentEffect(hWnd);
-        StartBackdropRetry(hWnd);
-        RedrawWindow(hWnd, nullptr, nullptr,
-                     RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
+        const bool blurTransition =
+            GetEffectiveBackgroundTranslucentEffect() ==
+                BackgroundTranslucentEffect::kBlur &&
+            GetProp(hWnd, kBlurTransitionProp);
+        if (!blurTransition) {
+            SendMessage(hWnd, WM_NCACTIVATE, TRUE, 0);
+            ApplyBackgroundTranslucentEffect(hWnd);
+            StartBackdropRetry(hWnd);
+            RedrawWindow(hWnd, nullptr, nullptr,
+                         RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
+        }
     }
 
     // Applying the mod to an Explorer window that was already open can leave
@@ -10553,7 +10605,8 @@ LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
     // Reapply the selected material and repaint after the non-client activation
     // message, including when WM_NCACTIVATE was kept visually active above.
     if (uMsg == WM_NCACTIVATE &&
-        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer) {
+        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
+        !GetProp(hWnd, kBlurTransitionProp)) {
         ApplyBackgroundTranslucentEffect(hWnd);
         RedrawWindow(hWnd, nullptr, nullptr,
                      RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
