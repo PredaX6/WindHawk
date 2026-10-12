@@ -55,10 +55,6 @@ Utilisez la molette de la souris au-dessus de la barre des tâches pour passer d
   $name: Activer le changement avec la molette
   $description: >-
     Désactivez cette option pour utiliser uniquement les raccourcis clavier pour changer de tâche.
-- oldTaskbarOnWin11: false
-  $name: Personnaliser l'ancienne barre des tâches sous Windows 11
-  $description: >-
-    Activez cette option pour personnaliser l'ancienne barre des tâches de Windows 11 (si vous utilisez ExplorerPatcher ou un outil similaire).
 */
 // ==/WindhawkModSettings==
 
@@ -10846,7 +10842,6 @@ struct {
     std::vector<Region> customScrollRegions;
     WindhawkUtils::StringSetting cycleLeftKeyboardShortcut;
     WindhawkUtils::StringSetting cycleRightKeyboardShortcut;
-    bool oldTaskbarOnWin11;
 } g_settings;
 
 enum class WinVersion {
@@ -12193,7 +12188,6 @@ void LoadSettings() {
         WindhawkUtils::StringSetting::make(L"cycleLeftKeyboardShortcut");
     g_settings.cycleRightKeyboardShortcut =
         WindhawkUtils::StringSetting::make(L"cycleRightKeyboardShortcut");
-    g_settings.oldTaskbarOnWin11 = Wh_GetIntSetting(L"oldTaskbarOnWin11");
 }
 
 bool HookTaskbarViewDllSymbols(HMODULE module) {
@@ -12544,17 +12538,7 @@ BOOL Wh_ModInit() {
         return FALSE;
     }
 
-    if (g_settings.oldTaskbarOnWin11) {
-        bool hasWin10Taskbar = g_winVersion < WinVersion::Win11_24H2;
 
-        if (g_winVersion >= WinVersion::Win11) {
-            g_winVersion = WinVersion::Win10;
-        }
-
-        if (hasWin10Taskbar && !HookTaskbarSymbols()) {
-            return FALSE;
-        }
-    } else if (g_winVersion >= WinVersion::Win11) {
         if (HMODULE taskbarViewModule = GetTaskbarViewModuleHandle()) {
             g_taskbarViewDllLoaded = true;
             if (!HookTaskbarViewDllSymbols(taskbarViewModule)) {
@@ -12635,14 +12619,9 @@ BOOL Wh_ModSettingsChanged(BOOL* bReload) {
         return TRUE;
     }
 
-    bool prevOldTaskbarOnWin11 = g_settings.oldTaskbarOnWin11;
-
     LoadSettings();
 
-    *bReload = g_settings.oldTaskbarOnWin11 != prevOldTaskbarOnWin11;
-    if (*bReload) {
-        return TRUE;
-    }
+    *bReload = FALSE;
 
     if (HWND hTaskBandWnd = GetTaskBandWnd()) {
         SendMessage(hTaskBandWnd, g_hotkeyRegisteredMsg, HOTKEY_UPDATE, 0);
