@@ -8641,6 +8641,11 @@ BackgroundTranslucentEffect GetEffectiveBackgroundTranslucentEffect() {
         g_themeBackgroundTranslucentEffect);
 }
 
+// Temporarily use the native Acrylic system backdrop during window transitions.
+// Restore Accent Blur on the first completed restore/maximize size notification.
+constexpr WCHAR kTransitionAcrylicProp[] =
+    L"windhawk_transition-acrylic-" WH_MOD_ID;
+
 using DwmSetWindowAttribute_t = decltype(&DwmSetWindowAttribute);
 DwmSetWindowAttribute_t DwmSetWindowAttribute_Original;
 HRESULT WINAPI DwmSetWindowAttribute_Hook(HWND hWnd,
@@ -9884,11 +9889,6 @@ constexpr int ACCENT_ENABLE_BLURBEHIND = 3;
 // Keep Blur on the legacy AccentBlurBehind path. DWM's system backdrop
 // renders Acrylic, not the intended Accent Blur material.
 constexpr bool kTestBlurUsingSystemBackdrop = false;
-
-// Temporarily use the native Acrylic system backdrop during window transitions.
-// Restore Accent Blur on the first completed restore/maximize size notification.
-constexpr WCHAR kTransitionAcrylicProp[] =
-    L"windhawk_transition-acrylic-" WH_MOD_ID;
 
 BOOL WINAPI SetWindowCompositionAttribute_Hook(
     HWND hWnd, WINDOWCOMPOSITIONATTRIBDATA* data) {
