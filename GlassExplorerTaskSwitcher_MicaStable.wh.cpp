@@ -10513,6 +10513,9 @@ void StartBackdropRetry(HWND hWnd) {
     SetTimer(hWnd, kBackdropRetryTimerId, 30, BackdropRetryTimerProc);
 }
 
+constexpr UINT_PTR kTransitionAcrylicTimerId = 0x47455844;
+constexpr UINT kTransitionAcrylicSettleDelayMs = 250;
+
 void StartTransitionAcrylic(HWND hWnd) {
     if (!IsWindow(hWnd) ||
         GetTargetWindowType(hWnd) != TargetWindowType::FileExplorer ||
@@ -10521,10 +10524,32 @@ void StartTransitionAcrylic(HWND hWnd) {
         return;
     }
 
-    // No timer: keep native Acrylic for the whole transition. WM_SIZE after
-    // restore/maximize switches back to the configured Accent Blur.
+    // Cancel a pending restoration if another transition starts. Acrylic must
+    // remain active until the latest transition has settled.
+    KillTimer(hWnd, kTransitionAcrylicTimerId);
     SetProp(hWnd, kTransitionAcrylicProp, (HANDLE)1);
     ApplyBackgroundTranslucentEffect(hWnd);
+}
+
+VOID CALLBACK EndTransitionAcrylicTimerProc(HWND hWnd, UINT, UINT_PTR timerId,
+                                             DWORD) {
+    KillTimer(hWnd, timerId);
+
+    if (!IsWindow(hWnd) ||
+        GetTargetWindowType(hWnd) != TargetWindowType::FileExplorer) {
+        RemoveProp(hWnd, kTransitionAcrylicProp);
+        return;
+    }
+
+    // A size notification can arrive before DWM has finished animating.
+    // Restore Accent Blur only after the window has remained stable for the
+    // settle delay; a newer transition cancels this timer.
+    if (RemoveProp(hWnd, kTransitionAcrylicProp)) {
+        ApplyBackgroundTranslucentEffect(
+            hWnd, BackgroundTranslucentEffect::kBlur);
+        RedrawWindow(hWnd, nullptr, nullptr,
+                     RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
+    }
 }
 
 LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
@@ -10574,18 +10599,27 @@ LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 
     LRESULT result = DefWindowProcW_Original(hWnd, uMsg, wParam, lParam);
 
-    // WM_SIZE fires after restore and maximize. Reapply the selected DWM
-    // backdrop after Windows updates the window size.
+    // WM_SIZE may be delivered before the DWM transition has visually
+    // completed. Debounce it and restore Accent Blur only after the size has
+    // settled; a rapid follow-up transition cancels/restarts this timer.
+    if (uMsg == WM_SIZE &&
+        (wParam == SIZE_MINIMIZED || wParam == SIZE_RESTORED ||
+         wParam == SIZE_MAXIMIZED) &&
+        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
+        GetProp(hWnd, kTransitionAcrylicProp)) {
+        KillTimer(hWnd, kTransitionAcrylicTimerId);
+        SetTimer(hWnd, kTransitionAcrylicTimerId,
+                 kTransitionAcrylicSettleDelayMs,
+                 EndTransitionAcrylicTimerProc);
+    }
+
+    // Reapply the selected backdrop after Windows updates the restored or
+    // maximized window size. While the transition flag is set, this keeps
+    // Acrylic active until the settle timer restores Accent Blur.
     if (uMsg == WM_SIZE &&
         (wParam == SIZE_RESTORED || wParam == SIZE_MAXIMIZED) &&
         !IsIconic(hWnd) &&
         GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer) {
-        // End transition Acrylic only once Explorer reports its restored or
-        // maximized size. Do this before WM_NCACTIVATE reapplies the material.
-        if (RemoveProp(hWnd, kTransitionAcrylicProp)) {
-            ApplyBackgroundTranslucentEffect(
-                hWnd, BackgroundTranslucentEffect::kBlur);
-        }
         SendMessage(hWnd, WM_NCACTIVATE, TRUE, 0);
         ApplyBackgroundTranslucentEffect(hWnd);
         StartBackdropRetry(hWnd);
