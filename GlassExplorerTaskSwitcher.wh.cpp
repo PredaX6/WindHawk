@@ -100,6 +100,7 @@ Seuls Windows 10 64 bits et Windows 11 sont pris en charge. Pour les versions pl
 #include <winrt/Microsoft.UI.Xaml.h>
 #include <winrt/Microsoft.UI.Xaml.Controls.h>
 #include <winrt/Microsoft.UI.Xaml.Input.h>
+#include <winrt/Microsoft.UI.Input.h>
 
 struct ThemeTargetStyles {
     PCWSTR target;
