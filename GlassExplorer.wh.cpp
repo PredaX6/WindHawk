@@ -192,6 +192,7 @@ namespace winrt {
 // alias some long namespaces for convenience
 namespace wf = winrt::Windows::Foundation;
 namespace mux = winrt::Microsoft::UI::Xaml;
+namespace muxc = winrt::Microsoft::UI::Xaml::Controls;
 
 // A weak reference for the object, or an empty one when the object is null or
 // doesn't support weak references: cppwinrt's make_weak dereferences a null
@@ -726,7 +727,6 @@ using namespace std::string_view_literals;
 
 using namespace winrt::Microsoft::UI::Xaml;
 
-namespace muxc = winrt::Microsoft::UI::Xaml::Controls;
 namespace wge = winrt::Windows::Graphics::Effects;
 namespace muc = winrt::Microsoft::UI::Composition;
 namespace muxh = mux::Hosting;
