@@ -55,20 +55,6 @@ Utilisez la molette de la souris au-dessus de la barre des tâches pour passer d
   $name: Activer le changement avec la molette
   $description: >-
     Désactivez cette option pour utiliser uniquement les raccourcis clavier pour changer de tâche.
-- customScrollRegions: ""
-  $name: Zones de défilement personnalisées
-  $description: >-
-    Liste de zones personnalisées séparées par des virgules sur la barre des tâches où le défilement changera de tâche. Si cette option est définie, elle remplace l'utilisation par défaut de la zone des tâches. Chaque zone est une plage comme "100-200" (pixels) ou "20%-50%" (pourcentage de la longueur de la barre des tâches).
-- cycleLeftKeyboardShortcut: Alt+VK_OEM_4
-  $name: Raccourci clavier pour la tâche précédente
-  $description: >-
-    Touches modificatrices possibles : Alt, Ctrl, Maj, Win. Pour connaître les touches utilisables,
-    consultez la page suivante :
-    https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
-
-    Laissez vide pour désactiver.
-- cycleRightKeyboardShortcut: Alt+VK_OEM_6
-  $name: Raccourci clavier pour la tâche suivante
 - oldTaskbarOnWin11: false
   $name: Personnaliser l'ancienne barre des tâches sous Windows 11
   $description: >-
