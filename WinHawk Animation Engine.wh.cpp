@@ -29,107 +29,76 @@ path. Avoid running it alongside other window-animation mods.
 
 // ==WindhawkModSettings==
 /*
-- open_enabled:
-  - name: Animate opening
-  - type: bool
-  - default: true
-- open_duration:
-  - name: Opening duration (ms)
-  - type: int
-  - default: 220
-  - min: 50
-  - max: 1500
-- open_scale:
-  - name: Opening start scale (%)
-  - type: int
-  - default: 82
-  - min: 10
-  - max: 100
-- open_easing:
-  - name: Opening easing
-  - type: select
-  - default: easeOut
-  - options:
+- open_enabled: true
+  $name: Animate opening
+- open_duration: 220
+  $name: Opening duration (ms)
+  #! $min: 50
+  #! $max: 1500
+- open_scale: 82
+  $name: Opening start scale (%)
+  #! $min: 10
+  #! $max: 100
+- open_easing: easeOut
+  $name: Opening easing
+  $options:
     - linear: Linear
     - easeIn: Ease in
     - easeOut: Ease out
     - easeInOut: Ease in-out
-- close_enabled:
-  - name: Animate closing
-  - type: bool
-  - default: true
-- close_duration:
-  - name: Closing duration (ms)
-  - type: int
-  - default: 180
-  - min: 50
-  - max: 1500
-- close_scale:
-  - name: Closing end scale (%)
-  - type: int
-  - default: 82
-  - min: 10
-  - max: 100
-- close_easing:
-  - name: Closing easing
-  - type: select
-  - default: easeIn
-  - options:
+- close_enabled: true
+  $name: Animate closing
+- close_duration: 180
+  $name: Closing duration (ms)
+  #! $min: 50
+  #! $max: 1500
+- close_scale: 82
+  $name: Closing end scale (%)
+  #! $min: 10
+  #! $max: 100
+- close_easing: easeIn
+  $name: Closing easing
+  $options:
     - linear: Linear
     - easeIn: Ease in
     - easeOut: Ease out
     - easeInOut: Ease in-out
-- minimize_enabled:
-  - name: Animate minimizing
-  - type: bool
-  - default: true
-- minimize_duration:
-  - name: Minimize duration (ms)
-  - type: int
-  - default: 260
-  - min: 50
-  - max: 1500
-- minimize_scale:
-  - name: Minimize end scale (%)
-  - type: int
-  - default: 18
-  - min: 10
-  - max: 100
-- minimize_easing:
-  - name: Minimize easing
-  - type: select
-  - default: easeIn
-  - options:
+- minimize_enabled: true
+  $name: Animate minimizing
+- minimize_duration: 260
+  $name: Minimize duration (ms)
+  #! $min: 50
+  #! $max: 1500
+- minimize_scale: 18
+  $name: Minimize end scale (%)
+  #! $min: 10
+  #! $max: 100
+- minimize_easing: easeIn
+  $name: Minimize easing
+  $options:
     - linear: Linear
     - easeIn: Ease in
     - easeOut: Ease out
     - easeInOut: Ease in-out
-- restore_enabled:
-  - name: Animate restore / maximize
-  - type: bool
-  - default: true
-- restore_duration:
-  - name: Restore / maximize duration (ms)
-  - type: int
-  - default: 240
-  - min: 50
-  - max: 1500
-- restore_scale:
-  - name: Restore / maximize start scale (%)
-  - type: int
-  - default: 82
-  - min: 10
-  - max: 100
-- restore_easing:
-  - name: Restore / maximize easing
-  - type: select
-  - default: easeOut
-  - options:
+- restore_enabled: true
+  $name: Animate restore / maximize
+- restore_duration: 240
+  $name: Restore / maximize duration (ms)
+  #! $min: 50
+  #! $max: 1500
+- restore_scale: 82
+  $name: Restore / maximize start scale (%)
+  #! $min: 10
+  #! $max: 100
+- restore_easing: easeOut
+  $name: Restore / maximize easing
+  $options:
     - linear: Linear
     - easeIn: Ease in
     - easeOut: Ease out
     - easeInOut: Ease in-out
 */
+ // ==/WindhawkModSettings==
 
 
 #include <windows.h>
