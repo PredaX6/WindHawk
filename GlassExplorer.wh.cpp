@@ -14,8 +14,6 @@
 /*
 # Glass Explorer
 
-- Thème fixe : **Translucent Explorer 11**
-- Application réelle du thème via le moteur XAML/WinUI de Translucent Windows.
 - Transparence DWM configurable :
   - Défaut Acrylic (SystemBackdrop)
   - Blur (AccentBlurBehind)
@@ -25,7 +23,6 @@
 - Hook du focus conservé pour supprimer la différence visuelle entre fenêtres actives et inactives.
 - Option pour relancer automatiquement Explorer à l'activation du mod et après chaque changement de paramètres.
 
-Aucun autre thème ou réglage utilisateur n'est conservé.
 */
 // ==/WindhawkModReadme==
 
