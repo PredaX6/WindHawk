@@ -10969,9 +10969,7 @@ void SwitchToTaskItem(LONG_PTR lpMMTaskListLongPtr, void* taskItem,
         HWND hForegroundWnd = GetForegroundWindow();
         if (hForegroundWnd && IsWindow(hForegroundWnd) &&
             !IsIconic(hForegroundWnd)) {
-            // Use the synchronous call so the minimize request is processed
-            // before the task switch activates the next window.
-            ShowWindow(hForegroundWnd, SW_MINIMIZE);
+            ShowWindowAsync(hForegroundWnd, SW_MINIMIZE);
         }
     }
 
