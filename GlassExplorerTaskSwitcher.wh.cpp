@@ -11306,10 +11306,20 @@ void OnTaskListScroll(HWND hMMTaskListWnd, short delta) {
         Wh_Log(L"%d clicks (delta=%d)", clicks, delta);
 
         LONG_PTR lpMMTaskListLongPtr = GetWindowLongPtr(hMMTaskListWnd, 0);
-        PVOID targetTaskItem = TaskbarScroll(lpMMTaskListLongPtr, clicks,
-                                             true,
-                                             true, nullptr);
-        if (targetTaskItem) {
+        const int direction = clicks > 0 ? 1 : -1;
+
+        // Process each wheel notch separately. Scrolling down minimizes the
+        // current window before activating the next one; scrolling up only
+        // switches to the previous window without minimizing it.
+        for (int i = 0; i < abs(clicks); i++) {
+            PVOID targetTaskItem = TaskbarScroll(lpMMTaskListLongPtr,
+                                                 direction,
+                                                 true,
+                                                 true, nullptr);
+            if (!targetTaskItem) {
+                break;
+            }
+
             SwitchToTaskItem(lpMMTaskListLongPtr, targetTaskItem, delta < 0);
         }
     }
