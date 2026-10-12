@@ -304,10 +304,20 @@ static void LoadSettings() {
 
 BOOL WINAPI ShowWindow_Hook(HWND hwnd, int command) {
     bool wasIconic = IsIconic(hwnd) != FALSE;
+    bool minimizing = command == SW_MINIMIZE || command == SW_SHOWMINIMIZED ||
+                      command == SW_SHOWMINNOACTIVE || command == SW_FORCEMINIMIZE;
+    RECT minimizeRect{};
+    HBITMAP minimizeBitmap = nullptr;
+    if (minimizing && g_minimize.enabled) {
+        minimizeBitmap = CaptureWindow(hwnd, &minimizeRect);
+    }
+
     BOOL result = ShowWindow_Original(hwnd, command);
 
-    if (command == SW_MINIMIZE || command == SW_SHOWMINIMIZED ||
-        command == SW_SHOWMINNOACTIVE || command == SW_FORCEMINIMIZE) {
+    if (minimizing) {
+        if (minimizeBitmap) {
+            StartAnimation(hwnd, g_minimize, false, minimizeBitmap, &minimizeRect);
+        }
         return result;
     }
 
