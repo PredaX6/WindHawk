@@ -17,8 +17,6 @@
 ## Glass Explorer
 # Glass Explorer
 
-- Thème fixe : **Translucent Explorer 11**
-- Application réelle du thème via le moteur XAML/WinUI de Translucent Windows.
 - Transparence DWM configurable :
   - Défaut Acrylic (SystemBackdrop)
   - Blur (AccentBlurBehind)
@@ -28,14 +26,12 @@
 - Hook du focus conservé pour supprimer la différence visuelle entre fenêtres actives et inactives.
 - Option pour relancer automatiquement Explorer à l'activation du mod et après chaque changement de paramètres.
 
-Aucun autre thème ou réglage utilisateur n'est conservé.
 
 ## Taches Switch
 # Changer de tâche avec la molette
 
 Utilisez la molette de la souris au-dessus de la barre des tâches pour passer d'un bouton de la barre des tâches à l'autre.
 
-Des raccourcis clavier peuvent également être utilisés. Les raccourcis par défaut sont `Alt+[` et `Alt+]`, mais ils peuvent être modifiés dans les paramètres du mod.
 
 Seuls Windows 10 64 bits et Windows 11 sont pris en charge. Pour les versions plus anciennes de Windows, utilisez [7+ Taskbar Tweaker](https://tweaker.ramensoftware.com/).
 
