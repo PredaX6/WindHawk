@@ -133,6 +133,7 @@ struct AnimationJob {
     RECT rect;
     AnimationSettings settings;
     bool opening;
+    HWND revealWindow;
 };
 
 static int ClampInt(int value, int low, int high) {
@@ -198,10 +199,18 @@ static DWORD WINAPI AnimationThread(void* parameter) {
     RECT rect = job->rect;
     AnimationSettings settings = job->settings;
     bool opening = job->opening;
+    HWND revealWindow = job->revealWindow;
     delete job;
+
+    auto revealTarget = [&]() {
+        if (revealWindow && IsWindow(revealWindow) && ShowWindow_Original) {
+            ShowWindow_Original(revealWindow, SW_SHOWNA);
+        }
+    };
 
     if (g_unloading.load() || !bitmap) {
         if (bitmap) DeleteObject(bitmap);
+        revealTarget();
         return 0;
     }
 
@@ -214,6 +223,7 @@ static DWORD WINAPI AnimationThread(void* parameter) {
         GetModuleHandleW(nullptr), nullptr);
     if (!overlay) {
         DeleteObject(bitmap);
+        revealTarget();
         return 0;
     }
 
@@ -226,13 +236,15 @@ static DWORD WINAPI AnimationThread(void* parameter) {
         if (screen) ReleaseDC(nullptr, screen);
         DestroyWindow(overlay);
         DeleteObject(bitmap);
+        revealTarget();
         return 0;
     }
 
-    ShowWindow(overlay, SW_SHOWNOACTIVATE);
     int duration = ClampInt(settings.duration, 50, 1500);
     int endScale = ClampInt(settings.scale, 10, 100);
     ULONGLONG started = GetTickCount64();
+    bool targetHidden = false;
+    bool overlayShown = false;
     for (;;) {
         if (g_unloading.load()) break;
         float t = static_cast<float>(GetTickCount64() - started) / duration;
@@ -253,6 +265,14 @@ static DWORD WINAPI AnimationThread(void* parameter) {
                                  source, &sourcePoint, 0, &blend, ULW_ALPHA)) {
             break;
         }
+        if (!overlayShown) {
+            if (revealWindow && IsWindow(revealWindow)) {
+                ShowWindow_Original(revealWindow, SW_HIDE);
+                targetHidden = true;
+            }
+            ShowWindow(overlay, SW_SHOWNOACTIVATE);
+            overlayShown = true;
+        }
         if (t >= 1.0f) break;
         DwmFlush();
         Sleep(1);
@@ -263,32 +283,36 @@ static DWORD WINAPI AnimationThread(void* parameter) {
     ReleaseDC(nullptr, screen);
     DestroyWindow(overlay);
     DeleteObject(bitmap);
+    if (targetHidden || revealWindow) revealTarget();
     return 0;
 }
 
-static void StartAnimation(HWND hwnd, const AnimationSettings& settings, bool opening,
-                           HBITMAP captured = nullptr, const RECT* capturedRect = nullptr) {
+static bool StartAnimation(HWND hwnd, const AnimationSettings& settings, bool opening,
+                           HBITMAP captured = nullptr, const RECT* capturedRect = nullptr,
+                           HWND revealWindow = nullptr) {
     if (!settings.enabled || g_unloading.load()) {
         if (captured) DeleteObject(captured);
-        return;
+        return false;
     }
     RECT rect{};
     HBITMAP bitmap = captured;
     if (!bitmap) bitmap = CaptureWindow(hwnd, &rect);
     else if (capturedRect) rect = *capturedRect;
-    if (!bitmap) return;
+    if (!bitmap) return false;
 
-    auto* job = new (std::nothrow) AnimationJob{bitmap, rect, settings, opening};
+    auto* job = new (std::nothrow) AnimationJob{bitmap, rect, settings, opening, revealWindow};
     if (!job) {
         DeleteObject(bitmap);
-        return;
+        return false;
     }
     HANDLE thread = CreateThread(nullptr, 0, AnimationThread, job, 0, nullptr);
-    if (thread) CloseHandle(thread);
-    else {
-        DeleteObject(bitmap);
-        delete job;
+    if (thread) {
+        CloseHandle(thread);
+        return true;
     }
+    DeleteObject(bitmap);
+    delete job;
+    return false;
 }
 
 static AnimationSettings ReadSettings(const wchar_t* prefix) {
@@ -343,8 +367,19 @@ BOOL WINAPI ShowWindow_Hook(HWND hwnd, int command) {
     if (command == SW_SHOW || command == SW_SHOWNORMAL || command == SW_SHOWDEFAULT ||
         command == SW_RESTORE || command == SW_SHOWMAXIMIZED) {
         if (IsEligibleWindow(hwnd)) {
-            StartAnimation(hwnd, (wasIconic || command == SW_SHOWMAXIMIZED ||
-                                  command == SW_RESTORE) ? g_restore : g_open, true);
+            const AnimationSettings& settings =
+                (wasIconic || command == SW_SHOWMAXIMIZED || command == SW_RESTORE)
+                    ? g_restore : g_open;
+            if (settings.enabled) {
+                RECT rc{};
+                HBITMAP bitmap = CaptureWindow(hwnd, &rc);
+                if (bitmap) {
+                    ShowWindow_Original(hwnd, SW_HIDE);
+                    if (!StartAnimation(hwnd, settings, true, bitmap, &rc, hwnd)) {
+                        ShowWindow_Original(hwnd, SW_SHOWNA);
+                    }
+                }
+            }
         }
     }
     return result;
@@ -364,7 +399,16 @@ LRESULT WINAPI DefWindowProcW_Hook(HWND hwnd, UINT message, WPARAM wParam, LPARA
         }
         if (command == SC_RESTORE || command == SC_MAXIMIZE) {
             LRESULT result = DefWindowProcW_Original(hwnd, message, wParam, lParam);
-            if (IsEligibleWindow(hwnd)) StartAnimation(hwnd, g_restore, true);
+            if (IsEligibleWindow(hwnd) && g_restore.enabled) {
+                RECT rc{};
+                HBITMAP bitmap = CaptureWindow(hwnd, &rc);
+                if (bitmap) {
+                    ShowWindow_Original(hwnd, SW_HIDE);
+                    if (!StartAnimation(hwnd, g_restore, true, bitmap, &rc, hwnd)) {
+                        ShowWindow_Original(hwnd, SW_SHOWNA);
+                    }
+                }
+            }
             return result;
         }
     }
