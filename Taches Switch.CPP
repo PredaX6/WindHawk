@@ -26,7 +26,6 @@
 
 Utilisez la molette de la souris au-dessus de la barre des tâches pour passer d'un bouton de la barre des tâches à l'autre.
 
-Des raccourcis clavier peuvent également être utilisés. Les raccourcis par défaut sont `Alt+[` et `Alt+]`, mais ils peuvent être modifiés dans les paramètres du mod.
 
 Seuls Windows 10 64 bits et Windows 11 sont pris en charge. Pour les versions plus anciennes de Windows, utilisez [7+ Taskbar Tweaker](https://tweaker.ramensoftware.com/).
 
