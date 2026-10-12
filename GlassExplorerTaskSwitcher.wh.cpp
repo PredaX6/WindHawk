@@ -10980,23 +10980,26 @@ void* QueryViaVtableBackwards(void* object, void* vtable) {
 #pragma region scroll
 
 void SwitchToTaskItem(LONG_PTR lpMMTaskListLongPtr, void* taskItem) {
-    HWND hForegroundWnd = GetForegroundWindow();
-
-    // Réduit uniquement la fenêtre actuellement active.
-    if (hForegroundWnd &&
-        IsWindow(hForegroundWnd) &&
-        !IsIconic(hForegroundWnd)) {
-        ShowWindowAsync(hForegroundWnd, SW_MINIMIZE);
+    if (!lpMMTaskListLongPtr || !taskItem ||
+        !CTaskListWnd_vftable_ITaskListSite ||
+        !CTaskListWnd_SwitchToItem_Original) {
+        Wh_Log(L"SwitchToTaskItem skipped: invalid task-list state");
+        return;
     }
 
+    // Let the shell activate/restore the selected task itself. Minimizing the
+    // foreground window before switching can interfere with Explorer's own
+    // taskbar event handling and cause a restart loop.
     void* pThis_ITaskListSite = QueryViaVtable(
         (void*)lpMMTaskListLongPtr,
         CTaskListWnd_vftable_ITaskListSite);
 
-    // Laisse Windows sélectionner/restaurer l'élément suivant.
-    CTaskListWnd_SwitchToItem_Original(
-        pThis_ITaskListSite,
-        taskItem);
+    if (!pThis_ITaskListSite) {
+        Wh_Log(L"SwitchToTaskItem skipped: ITaskListSite not found");
+        return;
+    }
+
+    CTaskListWnd_SwitchToItem_Original(pThis_ITaskListSite, taskItem);
 }
 
 HWND GetTaskItemWnd(PVOID taskItem) {
