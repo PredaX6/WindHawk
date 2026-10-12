@@ -10456,39 +10456,6 @@ constexpr WCHAR kBackdropRetryCountProp[] =
 // DWM can defer or replace a native system backdrop while an existing
 // Explorer window is initializing or being restored. Retry briefly without
 // activating the window or synthesizing focus messages.
-// Briefly strengthen the neutral gray tint around minimize/restore animations
-// in Blur mode, then restore the configured Accent blur.
-constexpr UINT_PTR kBlurAnimationTintTimerId = 0x47455844;
-
-void ApplyBlurAnimationTint(HWND hWnd, bool grayTint) {
-    if (!SetWindowCompositionAttribute_Original) {
-        return;
-    }
-
-    ACCENT_POLICY accentPolicy = {
-        .AccentState = ACCENT_ENABLE_BLURBEHIND,
-        // ACCENT_POLICY GradientColor uses AABBGGRR. Increase the neutral
-        // gray tint only for the short minimize/restore transition.
-        .GradientColor = grayTint ? 0x70333333 : 0x3A232323,
-    };
-    WINDOWCOMPOSITIONATTRIBDATA data = {
-        .Attrib = WCA_ACCENT_POLICY,
-        .pvData = &accentPolicy,
-        .cbData = sizeof(accentPolicy),
-    };
-    SetWindowCompositionAttribute_Original(hWnd, &data);
-}
-
-VOID CALLBACK BlurAnimationTintTimerProc(HWND hWnd, UINT, UINT_PTR timerId, DWORD) {
-    KillTimer(hWnd, timerId);
-    if (IsWindow(hWnd) &&
-        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
-        GetEffectiveBackgroundTranslucentEffect() ==
-            BackgroundTranslucentEffect::kBlur) {
-        ApplyBlurAnimationTint(hWnd, false);
-    }
-}
-
 VOID CALLBACK BackdropRetryTimerProc(HWND hWnd, UINT, UINT_PTR timerId, DWORD) {
     if (!IsWindow(hWnd) ||
         GetTargetWindowType(hWnd) != TargetWindowType::FileExplorer) {
@@ -10527,22 +10494,6 @@ void StartBackdropRetry(HWND hWnd) {
 }
 
 LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-
-    // AccentBlurBehind has no native inactive SystemBackdrop transition.
-    // Give Blur a short gray tint immediately before minimize/restore starts,
-    // then return to its normal tint after the animation begins.
-    if (uMsg == WM_SYSCOMMAND &&
-        ((wParam & 0xFFF0) == SC_MINIMIZE ||
-         (wParam & 0xFFF0) == SC_RESTORE) &&
-        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
-        GetEffectiveBackgroundTranslucentEffect() ==
-            BackgroundTranslucentEffect::kBlur) {
-        KillTimer(hWnd, kBlurAnimationTintTimerId);
-        ApplyBlurAnimationTint(hWnd, true);
-        SetTimer(hWnd, kBlurAnimationTintTimerId, 220,
-                 BlurAnimationTintTimerProc);
-    }
-
 
     // Preserve the active non-client appearance when Explorer loses activation
     // while using a native DWM system backdrop.
