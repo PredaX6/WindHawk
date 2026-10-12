@@ -9879,9 +9879,9 @@ SetWindowCompositionAttribute_t SetWindowCompositionAttribute_Original;
 constexpr DWORD WCA_ACCENT_POLICY = 19;
 constexpr int ACCENT_ENABLE_BLURBEHIND = 3;
 
-// Use DWM's native Acrylic system backdrop for Blur so the material remains
-// managed by DWM throughout minimize, restore, and maximize animations.
-constexpr bool kTestBlurUsingSystemBackdrop = true;
+// Keep Blur on the legacy AccentBlurBehind path. DWM's system backdrop
+// renders Acrylic, not the intended Accent Blur material.
+constexpr bool kTestBlurUsingSystemBackdrop = false;
 
 BOOL WINAPI SetWindowCompositionAttribute_Hook(
     HWND hWnd, WINDOWCOMPOSITIONATTRIBDATA* data) {
@@ -10037,8 +10037,12 @@ void ApplyBackgroundTranslucentEffect(
         SetAccentBlurBehind(hWnd, true);
     }
 
-    // Re-enable DWM transitions immediately after applying the material.
-    disableDwmTransitions = FALSE;
+    // Legacy Accent Blur is reset by DWM during window transitions and
+    // can flash black/transparent. Keep DWM transitions disabled in Blur mode
+    // rather than showing broken transition frames. Other materials retain
+    // the normal Windows transition behavior.
+    disableDwmTransitions =
+        effect == BackgroundTranslucentEffect::kBlur ? TRUE : FALSE;
     DwmSetWindowAttribute_Original(
         hWnd, DWMWA_TRANSITIONS_FORCEDISABLED,
         &disableDwmTransitions, sizeof(disableDwmTransitions));
