@@ -10461,7 +10461,7 @@ constexpr WCHAR kBackdropRetryCountProp[] =
 // Separate, non-activating retries for the legacy Accent blur during minimize.
 // Do not send WM_NCACTIVATE or force redraws from this timer.
 constexpr UINT_PTR kAccentBlurRetryTimerId = 0x47455844;
-constexpr UINT kAccentBlurRetryMaxAttempts = 18;
+constexpr UINT kAccentBlurRetryMaxAttempts = 30;
 constexpr WCHAR kAccentBlurRetryCountProp[] =
     L"windhawk_accent-blur-retry-count-" WH_MOD_ID;
 
@@ -10560,6 +10560,20 @@ LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
         StartBackdropRetry(hWnd);
     }
 
+    // Start retrying before DefWindowProc handles SC_MINIMIZE, so the first
+    // Accent-blur reapplication can overlap the native minimize animation.
+    // Restrict this experiment to Blur and do not alter animation settings.
+    if (uMsg == WM_SYSCOMMAND &&
+        (wParam & 0xFFF0) == SC_MINIMIZE &&
+        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
+        GetEffectiveBackgroundTranslucentEffect() ==
+            BackgroundTranslucentEffect::kBlur) {
+        KillTimer(hWnd, kAccentBlurRetryTimerId);
+        SetProp(hWnd, kAccentBlurRetryCountProp, (HANDLE)(ULONG_PTR)0);
+        SetTimer(hWnd, kAccentBlurRetryTimerId, 16, AccentBlurRetryTimerProc);
+        SetAccentBlurBehind(hWnd, true);
+    }
+
     // Prepare the selected material before Windows makes the window visible.
     if (uMsg == WM_WINDOWPOSCHANGING && lParam &&
         (((const WINDOWPOS*)lParam)->flags & SWP_SHOWWINDOW) &&
@@ -10568,17 +10582,6 @@ LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
     }
 
     LRESULT result = DefWindowProcW_Original(hWnd, uMsg, wParam, lParam);
-
-    // When Explorer is minimized, DWM may discard the legacy Accent blur
-    // while the minimize animation is still running. For Blur only, reapply
-    // Accent blur after the size transition without synthesizing activation
-    // messages or forcing a repaint during the animation.
-    if (uMsg == WM_SIZE && wParam == SIZE_MINIMIZED &&
-        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
-        GetEffectiveBackgroundTranslucentEffect() ==
-            BackgroundTranslucentEffect::kBlur) {
-        SetTimer(hWnd, kAccentBlurRetryTimerId, 35, AccentBlurRetryTimerProc);
-    }
 
     // Restoring a minimized Explorer window can cause DWM to replace the
     // selected system backdrop with its gray fallback. Reapply after the
