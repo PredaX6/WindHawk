@@ -12,7 +12,6 @@
 // @exclude         StartMenuExperienceHost.exe
 // @exclude         SearchHost.exe
 // @exclude         dwm.exe
-// @exclude         mmc.exe
 // @exclude         git.exe
 // @exclude         git-remote-https.exe
 // @exclude         AudioCaptureService.exe
@@ -39,7 +38,6 @@
 > ## ⚠️ **`PLEASE READ THESE NOTES:`**
 > * **Packaged & System Apps:** Some protected or system-hosted windows, such as parts of Settings, Microsoft Store, and Windows shell surfaces, will not be animated because they bypass the mod's interception and use native Windows transitions instead.
 > * **Browsers & Tray Apps:** Enable **"Animate windows hidden to the tray"** if you want close animations for apps such as Chrome, Edge, Discord, and Windhawk, because clicking the 'X' button may only hide their window or leave the app running instead of actually closing it.
-> * **MMC Consoles:** Services, Task Scheduler, Event Viewer, and other `mmc.exe` snap-ins are excluded and use native Windows transitions.
 > * **Excel:** Close animations use an unobscured screen snapshot, never `PrintWindow`. If the workbook window can't be captured safely, its close uses the native transition instead. When another workbook window remains open, Excel can finish closing while the captured image continues animating.
 
 ---
@@ -155,11 +153,12 @@ Special thanks to [@Abdullah Masood](https://github.com/Abdullah-Masood-05) for 
   - restore_animation: true
     $name: Animer la restauration
     $description: Animer le retour des fenêtres depuis la barre des tâches.
-  - launch_animation: false
+  - launch_animation: true
     $name: Animer l’ouverture des applications
     $description: >-
-      Désactivé par défaut. Activez cette option pour utiliser l’animation de restauration lors de la
-      première ouverture d’une fenêtre d’application. Les navigateurs de la famille Firefox, comme
+      Active l’animation de restauration lors de la première ouverture d’une fenêtre d’application.
+      Certaines fenêtres système protégées ou hébergées par le shell Windows peuvent rester natives.
+      Les navigateurs de la famille Firefox, comme
       Firefox et Waterfox, utilisent une voie de compatibilité limitée à l’alpha pour leur fenêtre
       de démarrage, afin de préserver la restauration de session tout en conservant l’animation.
       Certaines applications qui ouvrent leur fenêtre de manière asynchrone peuvent apparaître sans
