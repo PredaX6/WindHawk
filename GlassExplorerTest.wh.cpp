@@ -102,6 +102,7 @@ void OnModuleLoaded(HMODULE module, LPCWSTR lpLibFileName);
 
 #include <winrt/Microsoft.UI.Xaml.h>
 #include <winrt/Microsoft.UI.Xaml.Input.h>
+#include <winrt/Microsoft.UI.Input.h>
 
 struct ThemeTargetStyles {
     PCWSTR target;
