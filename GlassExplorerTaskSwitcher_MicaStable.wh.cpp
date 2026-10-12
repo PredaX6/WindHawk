@@ -10547,15 +10547,19 @@ VOID CALLBACK EndTransitionAcrylicTimerProc(HWND hWnd, UINT, UINT_PTR timerId,
         return;
     }
 
-    // Apply the final Blur configuration before clearing the transition
-    // override. This prevents hooked DWM calls from observing a half-switched
-    // state and removes the transparent gap during Acrylic -> Accent Blur.
-    if (GetProp(hWnd, kTransitionAcrylicProp) ||
-        GetProp(hWnd, kTransitionMinimizeProp)) {
+    // Apply Blur before clearing the Acrylic override, so the DWM hooks
+    // never observe an intermediate transparent state. For minimize, clear
+    // its temporary animation flag first so normal Blur settings are restored.
+    if (GetProp(hWnd, kTransitionAcrylicProp)) {
         ApplyBackgroundTranslucentEffect(
             hWnd, BackgroundTranslucentEffect::kBlur);
         RemoveProp(hWnd, kTransitionAcrylicProp);
+        RedrawWindow(hWnd, nullptr, nullptr,
+                     RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
+    } else if (GetProp(hWnd, kTransitionMinimizeProp)) {
         RemoveProp(hWnd, kTransitionMinimizeProp);
+        ApplyBackgroundTranslucentEffect(
+            hWnd, BackgroundTranslucentEffect::kBlur);
         RedrawWindow(hWnd, nullptr, nullptr,
                      RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
     }
