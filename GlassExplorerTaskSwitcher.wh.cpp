@@ -10992,9 +10992,14 @@ void SwitchToTaskItem(LONG_PTR lpMMTaskListLongPtr, void* taskItem) {
         return;
     }
 
-    // Let the shell activate/restore the selected task itself. Minimizing the
-    // foreground window before switching can interfere with Explorer's own
-    // taskbar event handling and cause a restart loop.
+    // Preserve the original Task Switch behavior: minimize the currently
+    // active window before asking the shell to activate the next task.
+    HWND hForegroundWnd = GetForegroundWindow();
+    if (hForegroundWnd && IsWindow(hForegroundWnd) &&
+        !IsIconic(hForegroundWnd)) {
+        ShowWindowAsync(hForegroundWnd, SW_MINIMIZE);
+    }
+
     void* pThis_ITaskListSite = QueryViaVtable(
         (void*)lpMMTaskListLongPtr,
         CTaskListWnd_vftable_ITaskListSite);
