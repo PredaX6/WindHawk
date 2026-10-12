@@ -28,7 +28,7 @@
 
 
 ## Taches Switch
-# Changer de tâche avec la molette
+# Changer de tâche avec la molette dans la barre des tâches
 
 Utilisez la molette de la souris au-dessus de la barre des tâches pour passer d'un bouton de la barre des tâches à l'autre.
 
@@ -52,7 +52,7 @@ Utilisez la molette de la souris au-dessus de la barre des tâches pour passer d
   $description: Relance automatiquement l'Explorateur Windows après chaque changement et sauvegarde des paramètres du mod.
 
 - enableMouseWheelCycling: true
-  $name: Activer le changement avec la molette
+  $name: Activer le défilement d'applications avec la molette dans la barre des tâches
   $description: >-
     Désactivez cette option pour utiliser uniquement les raccourcis clavier pour changer de tâche.
 */
