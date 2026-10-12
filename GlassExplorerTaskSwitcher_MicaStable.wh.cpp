@@ -10489,6 +10489,15 @@ VOID CALLBACK BlurTransitionTimerProc(HWND hWnd, UINT, UINT_PTR timerId, DWORD) 
         KillTimer(hWnd, timerId);
         RemoveProp(hWnd, kBlurTransitionProp);
         RemoveProp(hWnd, kBlurTransitionRetryProp);
+
+        // Once DWM's transition window has elapsed, refresh the non-client
+        // state explicitly. The normal WM_NCACTIVATE path reapplies Accent
+        // Blur after this marker is removed; then enforce it as the final
+        // operation and repaint the frame.
+        SendMessage(hWnd, WM_NCACTIVATE, TRUE, 0);
+        ApplyBackgroundTranslucentEffect(hWnd);
+        RedrawWindow(hWnd, nullptr, nullptr,
+                     RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
     } else {
         SetProp(hWnd, kBlurTransitionRetryProp,
                 (HANDLE)(ULONG_PTR)retries);
