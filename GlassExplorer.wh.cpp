@@ -9861,7 +9861,7 @@ BOOL WINAPI SetWindowCompositionAttribute_Hook(
                 // inactive windows. Acrylic uses a stronger tint.
                 .GradientColor = effect == BackgroundTranslucentEffect::kBlur
                                      ? 0x3A232323
-                                     : 0xCC121212,
+                                     : 0x4D121212,
             };
             WINDOWCOMPOSITIONATTRIBDATA effectData = {
                 .Attrib = WCA_ACCENT_POLICY,
@@ -10008,7 +10008,7 @@ void ApplyBackgroundTranslucentEffect(
 
         ACCENT_POLICY accentPolicy = {
             .AccentState = ACCENT_ENABLE_ACRYLICBLURBEHIND,
-            .GradientColor = 0xCC121212,
+            .GradientColor = 0x4D121212,
         };
         WINDOWCOMPOSITIONATTRIBDATA acrylicData = {
             .Attrib = WCA_ACCENT_POLICY,
