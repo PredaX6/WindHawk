@@ -29,60 +29,108 @@ path. Avoid running it alongside other window-animation mods.
 
 // ==WindhawkModSettings==
 /*
-- open_enabled: true
+- open_enabled:
   - name: Animate opening
-- open_duration: 220
+  - type: bool
+  - default: true
+- open_duration:
   - name: Opening duration (ms)
-- open_scale: 82
+  - type: int
+  - default: 220
+  - min: 50
+  - max: 1500
+- open_scale:
   - name: Opening start scale (%)
-- open_easing: easeOut
+  - type: int
+  - default: 82
+  - min: 10
+  - max: 100
+- open_easing:
   - name: Opening easing
   - type: select
+  - default: easeOut
   - options:
     - linear: Linear
+    - easeIn: Ease in
     - easeOut: Ease out
     - easeInOut: Ease in-out
-- close_enabled: true
+- close_enabled:
   - name: Animate closing
-- close_duration: 180
+  - type: bool
+  - default: true
+- close_duration:
   - name: Closing duration (ms)
-- close_scale: 82
+  - type: int
+  - default: 180
+  - min: 50
+  - max: 1500
+- close_scale:
   - name: Closing end scale (%)
-- close_easing: easeIn
+  - type: int
+  - default: 82
+  - min: 10
+  - max: 100
+- close_easing:
   - name: Closing easing
   - type: select
+  - default: easeIn
   - options:
     - linear: Linear
+    - easeIn: Ease in
     - easeOut: Ease out
     - easeInOut: Ease in-out
-- minimize_enabled: true
+- minimize_enabled:
   - name: Animate minimizing
-- minimize_duration: 260
+  - type: bool
+  - default: true
+- minimize_duration:
   - name: Minimize duration (ms)
-- minimize_scale: 18
+  - type: int
+  - default: 260
+  - min: 50
+  - max: 1500
+- minimize_scale:
   - name: Minimize end scale (%)
-- minimize_easing: easeIn
+  - type: int
+  - default: 18
+  - min: 10
+  - max: 100
+- minimize_easing:
   - name: Minimize easing
   - type: select
+  - default: easeIn
   - options:
     - linear: Linear
+    - easeIn: Ease in
     - easeOut: Ease out
     - easeInOut: Ease in-out
-- restore_enabled: true
+- restore_enabled:
   - name: Animate restore / maximize
-- restore_duration: 240
+  - type: bool
+  - default: true
+- restore_duration:
   - name: Restore / maximize duration (ms)
-- restore_scale: 82
+  - type: int
+  - default: 240
+  - min: 50
+  - max: 1500
+- restore_scale:
   - name: Restore / maximize start scale (%)
-- restore_easing: easeOut
+  - type: int
+  - default: 82
+  - min: 10
+  - max: 100
+- restore_easing:
   - name: Restore / maximize easing
   - type: select
+  - default: easeOut
   - options:
     - linear: Linear
+    - easeIn: Ease in
     - easeOut: Ease out
     - easeInOut: Ease in-out
 */
-// ==/WindhawkModSettings==
+
 
 #include <windows.h>
 #include <dwmapi.h>
@@ -125,8 +173,9 @@ static int ClampInt(int value, int low, int high) {
 static float Ease(float t, int easing) {
     t = (std::max)(0.0f, (std::min)(1.0f, t));
     switch (easing) {
-    case 1: return 1.0f - (1.0f - t) * (1.0f - t);
-    case 2: return t * t * (3.0f - 2.0f * t);
+    case 1: return t * t;
+    case 2: return 1.0f - (1.0f - t) * (1.0f - t);
+    case 3: return t * t * (3.0f - 2.0f * t);
     default: return t;
     }
 }
@@ -289,8 +338,9 @@ static AnimationSettings ReadSettings(const wchar_t* prefix) {
     wcscat_s(key, _countof(key), L"_easing");
     PCWSTR easing = Wh_GetStringSetting(key);
     s.easing = 0;
-    if (easing && wcscmp(easing, L"easeOut") == 0) s.easing = 1;
-    else if (easing && wcscmp(easing, L"easeInOut") == 0) s.easing = 2;
+    if (easing && wcscmp(easing, L"easeIn") == 0) s.easing = 1;
+    else if (easing && wcscmp(easing, L"easeOut") == 0) s.easing = 2;
+    else if (easing && wcscmp(easing, L"easeInOut") == 0) s.easing = 3;
     if (easing) Wh_FreeStringSetting(easing);
     return s;
 }
