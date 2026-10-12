@@ -11020,9 +11020,32 @@ void SwitchToTaskItem(LONG_PTR lpMMTaskListLongPtr, void* taskItem,
                                  ? foregroundBeforeScroll
                                  : GetForegroundWindow();
         HWND hForegroundWnd = GetWindowToMinimize(foregroundWnd);
+        DWORD foregroundPid = 0;
+        DWORD targetPid = 0;
+        WCHAR foregroundClass[128] = {};
+        WCHAR targetClass[128] = {};
+        if (foregroundWnd && IsWindow(foregroundWnd)) {
+            GetWindowThreadProcessId(foregroundWnd, &foregroundPid);
+            GetClassNameW(foregroundWnd, foregroundClass,
+                          ARRAYSIZE(foregroundClass));
+        }
+        if (hForegroundWnd && IsWindow(hForegroundWnd)) {
+            GetWindowThreadProcessId(hForegroundWnd, &targetPid);
+            GetClassNameW(hForegroundWnd, targetClass,
+                          ARRAYSIZE(targetClass));
+        }
+
+        Wh_Log(L"Wheel minimize: foreground=%p pid=%lu class='%s', target=%p pid=%lu class='%s'",
+               foregroundWnd, foregroundPid, foregroundClass,
+               hForegroundWnd, targetPid, targetClass);
+
         if (hForegroundWnd && IsWindow(hForegroundWnd) &&
             !IsIconic(hForegroundWnd)) {
-            ShowWindowAsync(hForegroundWnd, SW_MINIMIZE);
+            BOOL wasVisible = ShowWindowAsync(hForegroundWnd, SW_MINIMIZE);
+            Wh_Log(L"Wheel minimize requested: target=%p ShowWindowAsync=%d iconicNow=%d",
+                   hForegroundWnd, wasVisible, IsIconic(hForegroundWnd));
+        } else {
+            Wh_Log(L"Wheel minimize skipped: target invalid or already iconic");
         }
     }
 
