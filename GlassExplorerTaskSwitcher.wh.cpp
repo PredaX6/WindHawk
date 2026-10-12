@@ -10967,6 +10967,15 @@ void SwitchToTaskItem(LONG_PTR lpMMTaskListLongPtr, void* taskItem,
     // Wheel-down requests minimization; wheel-up switches without minimizing.
     if (minimizeForeground) {
         HWND hForegroundWnd = GetForegroundWindow();
+        // Some applications (including WinHawk) may have an owned/popup
+        // window in the foreground. Minimize the root owner so the application
+        // itself minimizes, just as it does when its main window is active.
+        if (hForegroundWnd) {
+            HWND hRootOwnerWnd = GetAncestor(hForegroundWnd, GA_ROOTOWNER);
+            if (hRootOwnerWnd) {
+                hForegroundWnd = hRootOwnerWnd;
+            }
+        }
         if (hForegroundWnd && IsWindow(hForegroundWnd) &&
             !IsIconic(hForegroundWnd)) {
             ShowWindowAsync(hForegroundWnd, SW_MINIMIZE);
