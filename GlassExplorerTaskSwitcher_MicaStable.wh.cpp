@@ -10458,42 +10458,37 @@ constexpr UINT_PTR kBackdropRetryTimerId = 0x47455843;
 constexpr WCHAR kBackdropRetryCountProp[] =
     L"windhawk_backdrop-retry-count-" WH_MOD_ID;
 
-// Experimental: use DWM's native Acrylic during minimize/restore
-// animations, then retry restoring legacy Accent Blur after DWM settles.
+// After a minimize/restore/maximize/resize transition, DWM may have
+// overwritten legacy Accent Blur. Reapply it after the animation settles.
 constexpr UINT_PTR kBlurTransitionTimerId = 0x47455845;
 constexpr UINT kBlurTransitionDelayMs = 700;
 constexpr UINT kBlurTransitionRetryMs = 100;
 constexpr UINT kBlurTransitionMaxRetries = 12;
-constexpr WCHAR kBlurTransitionProp[] =
-    L"windhawk_blur-transition-" WH_MOD_ID;
 constexpr WCHAR kBlurTransitionRetryProp[] =
     L"windhawk_blur-transition-retries-" WH_MOD_ID;
 
 VOID CALLBACK BlurTransitionTimerProc(HWND hWnd, UINT, UINT_PTR timerId, DWORD) {
     if (!IsWindow(hWnd) ||
+        IsIconic(hWnd) ||
         GetTargetWindowType(hWnd) != TargetWindowType::FileExplorer ||
         GetEffectiveBackgroundTranslucentEffect() !=
             BackgroundTranslucentEffect::kBlur) {
         KillTimer(hWnd, timerId);
-        RemoveProp(hWnd, kBlurTransitionProp);
         RemoveProp(hWnd, kBlurTransitionRetryProp);
         return;
     }
 
-    // DWM can overwrite Accent Blur more than once during the animation.
-    // Reapply periodically without synthesizing activation or repaint messages.
+    // Keep Accent Blur as the selected material; do not switch to native
+    // Acrylic, synthesize activation during the animation, or repaint each try.
     ApplyBackgroundTranslucentEffect(hWnd);
+
     const UINT retries =
         (UINT)(ULONG_PTR)GetProp(hWnd, kBlurTransitionRetryProp) + 1;
     if (retries >= kBlurTransitionMaxRetries) {
         KillTimer(hWnd, timerId);
-        RemoveProp(hWnd, kBlurTransitionProp);
         RemoveProp(hWnd, kBlurTransitionRetryProp);
 
-        // Once DWM's transition window has elapsed, refresh the non-client
-        // state explicitly. The normal WM_NCACTIVATE path reapplies Accent
-        // Blur after this marker is removed; then enforce it as the final
-        // operation and repaint the frame.
+        // Refresh the non-client backdrop once DWM's transition has settled.
         SendMessage(hWnd, WM_NCACTIVATE, TRUE, 0);
         ApplyBackgroundTranslucentEffect(hWnd);
         RedrawWindow(hWnd, nullptr, nullptr,
@@ -10506,24 +10501,17 @@ VOID CALLBACK BlurTransitionTimerProc(HWND hWnd, UINT, UINT_PTR timerId, DWORD) 
     }
 }
 
-void BeginBlurNativeTransition(HWND hWnd) {
-    if (GetTargetWindowType(hWnd) != TargetWindowType::FileExplorer ||
+void StartBlurTransitionRetry(HWND hWnd) {
+    if (!IsWindow(hWnd) ||
+        IsIconic(hWnd) ||
+        GetTargetWindowType(hWnd) != TargetWindowType::FileExplorer ||
         GetEffectiveBackgroundTranslucentEffect() !=
             BackgroundTranslucentEffect::kBlur) {
         return;
     }
 
-    SetProp(hWnd, kBlurTransitionProp, (HANDLE)1);
-    SetProp(hWnd, kBlurTransitionRetryProp, (HANDLE)(ULONG_PTR)0);
     KillTimer(hWnd, kBlurTransitionTimerId);
-
-    // Hand the transition to DWM's native Acrylic backdrop.
-    SetAccentBlurBehind(hWnd, false);
-    int acrylicBackdrop = DWMSBT_TRANSIENTWINDOW;
-    DwmSetWindowAttribute_Original(
-        hWnd, DWMWA_SYSTEMBACKDROP_TYPE, &acrylicBackdrop,
-        sizeof(acrylicBackdrop));
-
+    SetProp(hWnd, kBlurTransitionRetryProp, (HANDLE)(ULONG_PTR)0);
     SetTimer(hWnd, kBlurTransitionTimerId, kBlurTransitionDelayMs,
              BlurTransitionTimerProc);
 }
@@ -10596,15 +10584,6 @@ LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
         StartBackdropRetry(hWnd);
     }
 
-    // Switch to DWM-native Acrylic before Explorer begins a minimize/restore
-    // animation. The timer restores Accent Blur after the transition.
-    if (uMsg == WM_SYSCOMMAND &&
-        (((wParam & 0xFFF0) == SC_MINIMIZE) ||
-         ((wParam & 0xFFF0) == SC_RESTORE) ||
-         ((wParam & 0xFFF0) == SC_MAXIMIZE))) {
-        BeginBlurNativeTransition(hWnd);
-    }
-
     // Prepare the selected material before Windows makes the window visible.
     if (uMsg == WM_WINDOWPOSCHANGING && lParam &&
         (((const WINDOWPOS*)lParam)->flags & SWP_SHOWWINDOW) &&
@@ -10614,21 +10593,23 @@ LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 
     LRESULT result = DefWindowProcW_Original(hWnd, uMsg, wParam, lParam);
 
-    // Restoring a minimized Explorer window can cause DWM to replace the
-    // selected system backdrop with its gray fallback. Reapply after the
-    // window has processed WM_SIZE, then retry briefly while DWM settles.
-    if (uMsg == WM_SIZE && wParam == SIZE_RESTORED &&
+    // WM_SIZE fires after restore and maximize. Keep the immediate
+    // reapplication, then retry after the native transition has settled.
+    if (uMsg == WM_SIZE &&
+        (wParam == SIZE_RESTORED || wParam == SIZE_MAXIMIZED) &&
         !IsIconic(hWnd) &&
         GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer) {
-        // Do not cancel the delayed Blur transition timer here. WM_SIZE can
-        // arrive before DWM finishes the restore animation; applying Accent
-        // Blur immediately is too early, while the timer reapplies it after
-        // DWM has settled.
         SendMessage(hWnd, WM_NCACTIVATE, TRUE, 0);
         ApplyBackgroundTranslucentEffect(hWnd);
         StartBackdropRetry(hWnd);
+        StartBlurTransitionRetry(hWnd);
         RedrawWindow(hWnd, nullptr, nullptr,
                      RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
+    }
+
+    // Manual resizing may also cause DWM to reset the legacy Accent blur.
+    if (uMsg == WM_EXITSIZEMOVE) {
+        StartBlurTransitionRetry(hWnd);
     }
 
     // Applying the mod to an Explorer window that was already open can leave
@@ -10636,8 +10617,7 @@ LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
     // Reapply the selected material and repaint after the non-client activation
     // message, including when WM_NCACTIVATE was kept visually active above.
     if (uMsg == WM_NCACTIVATE &&
-        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
-        !GetProp(hWnd, kBlurTransitionProp)) {
+        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer) {
         ApplyBackgroundTranslucentEffect(hWnd);
         RedrawWindow(hWnd, nullptr, nullptr,
                      RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
