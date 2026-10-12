@@ -10544,6 +10544,7 @@ VOID CALLBACK EndTransitionAcrylicTimerProc(HWND hWnd, UINT, UINT_PTR timerId,
     if (!IsWindow(hWnd) ||
         GetTargetWindowType(hWnd) != TargetWindowType::FileExplorer) {
         RemoveProp(hWnd, kTransitionAcrylicProp);
+        RemoveProp(hWnd, kTransitionMinimizeProp);
         return;
     }
 
