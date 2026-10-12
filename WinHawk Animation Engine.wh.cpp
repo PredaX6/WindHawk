@@ -60,7 +60,7 @@
 
 ---
 
-### `Minimize, Restore and Launch - 8 Styles`
+### `Minimize, Restore and Launch - 9 Styles`
 
 | Animation&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Preview |
 | --- | --- |
@@ -72,6 +72,7 @@
 | **Mirage** | ![Mirage](https://raw.githubusercontent.com/redrag2105/windhawk-windows-animations-preview/b96dea88ab53f4b781e472d3683f645f4e368f8e/mirage.gif) |
 | **Stipple** | ![Stipple](https://raw.githubusercontent.com/redrag2105/windhawk-windows-animations-preview/b96dea88ab53f4b781e472d3683f645f4e368f8e/stipple.gif) |
 | **Swell** | ![Swell](https://raw.githubusercontent.com/redrag2105/windhawk-windows-animations-preview/b96dea88ab53f4b781e472d3683f645f4e368f8e/swell.gif) |
+| **Retro TV Off/On** | *CRT shutdown and reverse startup effect* |
 
 ---
 
