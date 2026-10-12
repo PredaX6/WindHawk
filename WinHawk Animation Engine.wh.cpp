@@ -187,6 +187,7 @@ Special thanks to [@Abdullah Masood](https://github.com/Abdullah-Masood-05) for 
     - mirage: Mirage — Ondulation chatoyante
     - stipple: Pointillisme — Expansion en points
     - swell: Gonflement — Expansion et fondu
+    - tv_off_on: Téléviseur rétro — Extinction et rallumage CRT
   - duration_ms: 360
     $name: Durée (ms)
     $description: >-
@@ -856,7 +857,7 @@ static SharedEffectShuffleState* EnsureSharedEffectShuffleState();
 
 std::mutex g_EffectShuffleMutex;
 EffectShuffleBag<6> g_CloseEffectShuffle;
-EffectShuffleBag<8> g_MinRestoreEffectShuffle;
+EffectShuffleBag<9> g_MinRestoreEffectShuffle;
 
 static uint32_t MixGlobalShuffleValue(uint32_t value) {
     value ^= value >> 16;
@@ -2542,6 +2543,7 @@ void LoadAnimSettings() {
                           : wcscmp(style, L"mirage") == 0   ? 4
                           : wcscmp(style, L"stipple") == 0  ? 5
                           : wcscmp(style, L"swell") == 0    ? 6
+                          : wcscmp(style, L"tv_off_on") == 0 ? 8
                                                             : 0;
         g_minRestoreEffectStyle.store(value, std::memory_order_relaxed);
     }
@@ -8295,6 +8297,10 @@ private:
         const float decay = 1.0f - u;
         if (decay > 0.02f) DrawSharpCrtDot(cx, cy, decay * decay);
     }
+    void RenderCrtOn(float progress) {
+        // Restoration reverses the CRT shutdown: dot -> phosphor line -> image.
+        RenderCrtOff(1.0f - Clamp(progress, 0.0f, 1.0f));
+    }
     void RenderPixelMelt(float progress) {
         const int stripCount = (int)meltLag.size();
         if (!srcBits || !pBits || stripCount < 1 || W < 1 || H < 1) return;
@@ -8826,6 +8832,15 @@ public:
                 monBottom, std::max(origTop + H, targetBottom) + pad);
             boundW = boundRight - boundLeft;
             boundH = boundBottom - boundTop;
+        } else if (minRestoreEffect == 8) {
+            // CRT collapse stays centered on the original window rectangle.
+            const int pad = 4;
+            boundLeft = std::max(monLeft, origLeft - pad);
+            boundTop = std::max(monTop, origTop - pad);
+            const int boundRight = std::min(monRight, origLeft + W + pad);
+            const int boundBottom = std::min(monBottom, origTop + H + pad);
+            boundW = boundRight - boundLeft;
+            boundH = boundBottom - boundTop;
         } else {
             // Genie bends rows for horizontal taskbars and columns for
             // vertical taskbars. Its canvas is the exact union of the source
@@ -9345,7 +9360,8 @@ public:
             ULW_ALPHA);
         const bool synchronizePilotHandoff =
             !data->isClosing &&
-            (minRestoreEffect == 6 || minRestoreEffect == 7);
+            (minRestoreEffect == 6 || minRestoreEffect == 7 ||
+             minRestoreEffect == 8);
         if (presented) {
             OnFramePresented(synchronizePilotHandoff);
         }
@@ -9453,6 +9469,8 @@ public:
             const int dstX = origLeft - boundLeft;
             const int dstY = origTop - boundTop;
             DrawBlock(0, 0, dstX, dstY, 1.0f, W, H);
+        } else if (minRestoreEffect == 8 && data->isRising) {
+            RenderCrtOn(0.0f);
         } else if (minRestoreEffect == 6) {
             const int dstW = std::max(1, (int)((float)W * 1.18f + 0.5f));
             const int dstH = std::max(1, (int)((float)H * 1.18f + 0.5f));
@@ -10250,6 +10268,9 @@ public:
                     RenderSwell(progress, fade);
                 } else if (minRestoreEffect == 7) {
                     RenderWin10MinRestore(progress, fade);
+                } else if (minRestoreEffect == 8) {
+                    if (data->isRising) RenderCrtOn(progress);
+                    else RenderCrtOff(progress);
                 } else {
                     RenderMinimizeRestore(progress, fade);
                 }
