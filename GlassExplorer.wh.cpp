@@ -12232,6 +12232,10 @@ void HandleLoadedModuleIfExplorerPatcher(HMODULE module) {
 }
 
 void OnModuleLoaded(HMODULE module, LPCWSTR lpLibFileName) {
+    if (!g_initialized) {
+        return;
+    }
+
     HandleLoadedModuleIfExplorerPatcher(module);
     HandleLoadedModuleIfTaskbarView(module, lpLibFileName);
 }
