@@ -10462,6 +10462,10 @@ VOID CALLBACK BackdropRetryTimerProc(HWND hWnd, UINT, UINT_PTR timerId, DWORD) {
         return;
     }
 
+    // Explorer can retain a gray inactive backdrop until its non-client
+    // activation state is refreshed. WM_NCACTIVATE does not give the window
+    // foreground focus; the hook preserves the active visual state by design.
+    SendMessage(hWnd, WM_NCACTIVATE, TRUE, 0);
     ApplyBackgroundTranslucentEffect(hWnd);
     RedrawWindow(hWnd, nullptr, nullptr,
                  RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
@@ -10530,6 +10534,7 @@ LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
     if (uMsg == WM_SIZE && wParam == SIZE_RESTORED &&
         !IsIconic(hWnd) &&
         GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer) {
+        SendMessage(hWnd, WM_NCACTIVATE, TRUE, 0);
         ApplyBackgroundTranslucentEffect(hWnd);
         StartBackdropRetry(hWnd);
         RedrawWindow(hWnd, nullptr, nullptr,
@@ -10772,6 +10777,8 @@ void GlassExplorer_ModAfterInit() {
                     TargetWindowType::FileExplorer) {
                     ApplyBackgroundTranslucentEffect(hTargetWnd);
                     TriggerWindowCompositionUpdate(hTargetWnd);
+                    SendMessage(hTargetWnd, WM_NCACTIVATE, TRUE, 0);
+                    ApplyBackgroundTranslucentEffect(hTargetWnd);
                     StartBackdropRetry(hTargetWnd);
                 }
             },
