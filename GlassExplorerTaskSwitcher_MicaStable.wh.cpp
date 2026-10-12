@@ -9897,9 +9897,9 @@ BOOL WINAPI SetWindowCompositionAttribute_Hook(
             BackgroundTranslucentEffect::kBlur) {
         ACCENT_POLICY accentPolicy = {
             .AccentState = ACCENT_ENABLE_BLURBEHIND,
-            .GradientColor = static_cast<int>(
-                IsBlurTransitionGray(hWnd) ? kBlurTransitionGrayColor
-                                           : kBlurTransitionNormalColor),
+            .GradientColor = IsBlurTransitionGray(hWnd)
+                                 ? kBlurTransitionGrayColor
+                                 : kBlurTransitionNormalColor,
         };
         WINDOWCOMPOSITIONATTRIBDATA blurData = {
             .Attrib = WCA_ACCENT_POLICY,
@@ -9943,9 +9943,9 @@ void SetAccentBlurBehind(HWND hWnd, bool enable) {
     ACCENT_POLICY accentPolicy = {
         .AccentState = ACCENT_ENABLE_BLURBEHIND,
         // AABBGGRR. Use a stronger neutral gray only during minimize/restore.
-        .GradientColor = static_cast<int>(
-            IsBlurTransitionGray(hWnd) ? kBlurTransitionGrayColor
-                                       : kBlurTransitionNormalColor),
+        .GradientColor = IsBlurTransitionGray(hWnd)
+                             ? kBlurTransitionGrayColor
+                             : kBlurTransitionNormalColor,
     };
 
     WINDOWCOMPOSITIONATTRIBDATA data = {
