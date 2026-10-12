@@ -88,6 +88,10 @@ Le thème et le changement de tâches sont réunis dans ce mod.
 #include <unordered_map>
 #include <vector>
 
+#ifdef GetCurrentTime
+#undef GetCurrentTime
+#endif
+
 #include <winrt/Windows.UI.Input.h>
 #include <winrt/Windows.UI.Xaml.Controls.h>
 #include <winrt/Windows.UI.Xaml.Input.h>
@@ -95,8 +99,6 @@ Le thème et le changement de tâches sont réunis dans ce mod.
 namespace TaskbarSwitch {
 void OnModuleLoaded(HMODULE module, LPCWSTR lpLibFileName);
 }
-
-#undef GetCurrentTime
 
 #include <winrt/Microsoft.UI.Xaml.h>
 
@@ -11842,11 +11844,12 @@ int TaskbarFrame_OnPointerWheelChanged_Hook(PVOID pThis, PVOID pArgs) {
         return original();
     }
 
-    auto taskbarFrameElement = taskbarFrame.as<UIElement>();
+    auto taskbarFrameElement =
+        taskbarFrame.as<winrt::Microsoft::UI::Xaml::UIElement>();
 
-    Input::PointerRoutedEventArgs args = nullptr;
+    winrt::Microsoft::UI::Xaml::Input::PointerRoutedEventArgs args = nullptr;
     ((IUnknown*)pArgs)
-        ->QueryInterface(winrt::guid_of<Input::PointerRoutedEventArgs>(),
+        ->QueryInterface(winrt::guid_of<winrt::Microsoft::UI::Xaml::Input::PointerRoutedEventArgs>(),
                          winrt::put_abi(args));
     if (!args) {
         return original();
