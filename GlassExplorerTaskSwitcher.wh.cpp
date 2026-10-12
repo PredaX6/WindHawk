@@ -98,6 +98,7 @@ Seuls Windows 10 64 bits et Windows 11 sont pris en charge. Pour les versions pl
 #undef GetCurrentTime
 
 #include <winrt/Microsoft.UI.Xaml.h>
+#include <winrt/Microsoft.UI.Xaml.Controls.h>
 
 struct ThemeTargetStyles {
     PCWSTR target;
@@ -235,6 +236,7 @@ namespace winrt {
 // alias some long namespaces for convenience
 namespace wf = winrt::Windows::Foundation;
 namespace mux = winrt::Microsoft::UI::Xaml;
+namespace muxc = winrt::Microsoft::UI::Xaml::Controls;
 
 // A weak reference for the object, or an empty one when the object is null or
 // doesn't support weak references: cppwinrt's make_weak dereferences a null
@@ -12080,11 +12082,11 @@ int TaskbarFrame_OnPointerWheelChanged_Hook(PVOID pThis, PVOID pArgs) {
         return original();
     }
 
-    auto taskbarFrameElement = taskbarFrame.as<UIElement>();
+    auto taskbarFrameElement = taskbarFrame.as<winrt::Microsoft::UI::Xaml::UIElement>();
 
-    Input::PointerRoutedEventArgs args = nullptr;
+    winrt::Microsoft::UI::Xaml::Input::PointerRoutedEventArgs args = nullptr;
     ((IUnknown*)pArgs)
-        ->QueryInterface(winrt::guid_of<Input::PointerRoutedEventArgs>(),
+        ->QueryInterface(winrt::guid_of<winrt::Microsoft::UI::Xaml::Input::PointerRoutedEventArgs>(),
                          winrt::put_abi(args));
     if (!args) {
         return original();
