@@ -11002,7 +11002,8 @@ HWND GetWindowToMinimize(HWND foregroundWnd) {
 }
 
 void SwitchToTaskItem(LONG_PTR lpMMTaskListLongPtr, void* taskItem,
-                       bool minimizeForeground = true) {
+                       bool minimizeForeground = true,
+                       HWND foregroundBeforeScroll = nullptr) {
     if (!lpMMTaskListLongPtr || !taskItem ||
         !CTaskListWnd_vftable_ITaskListSite ||
         !CTaskListWnd_SwitchToItem_Original) {
@@ -11013,7 +11014,12 @@ void SwitchToTaskItem(LONG_PTR lpMMTaskListLongPtr, void* taskItem,
     // Optionally minimize the currently active window before switching.
     // Wheel-down requests minimization; wheel-up switches without minimizing.
     if (minimizeForeground) {
-        HWND hForegroundWnd = GetWindowToMinimize(GetForegroundWindow());
+        // The taskbar hooks may steal foreground activation before this
+        // function runs. Use the foreground window captured before SendInput.
+        HWND foregroundWnd = foregroundBeforeScroll
+                                 ? foregroundBeforeScroll
+                                 : GetForegroundWindow();
+        HWND hForegroundWnd = GetWindowToMinimize(foregroundWnd);
         if (hForegroundWnd && IsWindow(hForegroundWnd) &&
             !IsIconic(hForegroundWnd)) {
             ShowWindowAsync(hForegroundWnd, SW_MINIMIZE);
@@ -11341,7 +11347,8 @@ void OnTaskbarWheelSafe(short delta) {
     SetForegroundWindow(target);
 }
 
-void OnTaskListScroll(HWND hMMTaskListWnd, short delta) {
+void OnTaskListScroll(HWND hMMTaskListWnd, short delta,
+                      HWND foregroundBeforeScroll = nullptr) {
     if (g_lastScrollTarget == hMMTaskListWnd &&
         GetTickCount() - g_lastScrollTime < 1000 * 5) {
         delta += g_lastScrollDeltaRemainder;
@@ -11367,7 +11374,8 @@ void OnTaskListScroll(HWND hMMTaskListWnd, short delta) {
                 break;
             }
 
-            SwitchToTaskItem(lpMMTaskListLongPtr, targetTaskItem, delta < 0);
+            SwitchToTaskItem(lpMMTaskListLongPtr, targetTaskItem, delta < 0,
+                             foregroundBeforeScroll);
         }
     }
 
@@ -12093,11 +12101,15 @@ LRESULT WINAPI TrayUI_WndProc_Hook(void* pThis,
                                      : PtInRect(&rc, pt)) {
             short delta = GET_WHEEL_DELTA_WPARAM(wParam);
 
+            // Capture the active app before the taskbar steals foreground
+            // activation, otherwise GetForegroundWindow may return Explorer.
+            HWND foregroundBeforeScroll = GetForegroundWindow();
+
             // Allows to steal focus.
             INPUT input{};
             SendInput(1, &input, sizeof(INPUT));
 
-            OnTaskListScroll(hTaskListWnd, delta);
+            OnTaskListScroll(hTaskListWnd, delta, foregroundBeforeScroll);
 
             *flag = false;
             return 0;
@@ -12133,11 +12145,16 @@ LRESULT WINAPI CSecondaryTray_v_WndProc_Hook(void* pThis,
                                      : PtInRect(&rc, pt)) {
             short delta = GET_WHEEL_DELTA_WPARAM(wParam);
 
+            // Capture the active app before the taskbar steals foreground
+            // activation, otherwise GetForegroundWindow may return Explorer.
+            HWND foregroundBeforeScroll = GetForegroundWindow();
+
             // Allows to steal focus.
             INPUT input{};
             SendInput(1, &input, sizeof(INPUT));
 
-            OnTaskListScroll(hSecondaryTaskListWnd, delta);
+            OnTaskListScroll(hSecondaryTaskListWnd, delta,
+                             foregroundBeforeScroll);
 
             return 0;
         }
@@ -12206,6 +12223,9 @@ int TaskbarFrame_OnPointerWheelChanged_Hook(PVOID pThis, PVOID pArgs) {
         return original();
     }
 
+    // Capture the active app before the taskbar steals foreground activation.
+    HWND foregroundBeforeScroll = GetForegroundWindow();
+
     // Allows to steal focus.
     INPUT input;
     ZeroMemory(&input, sizeof(INPUT));
@@ -12213,7 +12233,8 @@ int TaskbarFrame_OnPointerWheelChanged_Hook(PVOID pThis, PVOID pArgs) {
 
     // Use the original task-switcher implementation after obtaining the
     // correct Windows.UI.Xaml event arguments from Taskbar.View.dll.
-    OnTaskListScroll(hMMTaskListWnd, static_cast<short>(delta));
+    OnTaskListScroll(hMMTaskListWnd, static_cast<short>(delta),
+                     foregroundBeforeScroll);
 
     args.Handled(true);
     return 0;
