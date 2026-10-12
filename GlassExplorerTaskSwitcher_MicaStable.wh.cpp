@@ -10447,10 +10447,6 @@ bool IsGlassExplorerShellProcess() {
 using DefWindowProcW_t = decltype(&DefWindowProcW);
 DefWindowProcW_t DefWindowProcW_Original;
 
-// Diagnostic retry: the legacy Accent blur may be ignored while DWM is
-// animating a newly shown Explorer window. Reapply it briefly during startup.
-constexpr UINT_PTR kBlurRetryTimerId = 0x47455842;
-constexpr WCHAR kBlurRetryCountProp[] = L"windhawk_blur-retry-count-" WH_MOD_ID;
 constexpr UINT_PTR kBackdropRetryTimerId = 0x47455843;
 constexpr WCHAR kBackdropRetryCountProp[] =
     L"windhawk_backdrop-retry-count-" WH_MOD_ID;
@@ -10515,13 +10511,6 @@ LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
     if (uMsg == WM_SHOWWINDOW && wParam &&
         GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer) {
         ApplyBackgroundTranslucentEffect(hWnd);
-
-        if (GetEffectiveBackgroundTranslucentEffect() ==
-            BackgroundTranslucentEffect::kBlur) {
-            RemoveProp(hWnd, kBlurRetryCountProp);
-            SetProp(hWnd, kBlurRetryCountProp, (HANDLE)(ULONG_PTR)1);
-            SetTimer(hWnd, kBlurRetryTimerId, 15, BlurRetryTimerProc);
-        }
 
         StartBackdropRetry(hWnd);
     }
