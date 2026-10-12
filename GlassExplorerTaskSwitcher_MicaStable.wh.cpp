@@ -23,7 +23,7 @@
   - Mica (SystemBackdrop)
   - MicaAlt (SystemBackdrop)
 
-- Variante expérimentale : intercepte WM_NCACTIVATE en mode Mica/MicaAlt pour tenter de conserver le rendu non-client actif. Le rendu du fond Mica dépend toujours de DWM et peut donc varier.
+- Variante expérimentale : intercepte WM_NCACTIVATE pour Défaut, Acrylic, Mica et MicaAlt afin de tenter de conserver le rendu non-client actif. Le rendu du fond reste contrôlé par DWM et peut donc varier.
 - Option pour relancer automatiquement Explorer à l'activation du mod et après chaque changement de paramètres.
 
 
@@ -10476,12 +10476,14 @@ VOID CALLBACK BlurRetryTimerProc(HWND hWnd, UINT, UINT_PTR timerId, DWORD) {
 LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
     // Experimental: preserve the active non-client appearance when
-    // an Explorer window loses activation while using native Mica.
+    // Explorer loses activation while using a native DWM system backdrop.
     if (uMsg == WM_NCACTIVATE &&
         !wParam &&
         GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer) {
         const auto effect = GetEffectiveBackgroundTranslucentEffect();
-        if (effect == BackgroundTranslucentEffect::kMica ||
+        if (effect == BackgroundTranslucentEffect::kDefault ||
+            effect == BackgroundTranslucentEffect::kAcrylic ||
+            effect == BackgroundTranslucentEffect::kMica ||
             effect == BackgroundTranslucentEffect::kMicaAlt) {
             wParam = TRUE;
         }
