@@ -1,8 +1,8 @@
 // ==WindhawkMod==
 // @id              glass-explorer
-// @name            GlassExplorer
-// @description     Windows 11 25H2 : Translucent Explorer 11 avec 4 styles de transparence.
-// @version         1.6.1
+// @name            Glass Explorer
+// @description     Explorateur de fichiers translucide avec traitement XAML optimisé.
+// @version         1.0.0
 // @author          TeddySlexique
 // @github          https://github.com/PredaX6
 // @include         *
@@ -12,7 +12,7 @@
 
 // ==WindhawkModReadme==
 /*
-# GlassExplorer
+# Glass Explorer
 
 - Thème fixe : **Translucent Explorer 11**
 - Application réelle du thème via le moteur XAML/WinUI de Translucent Windows.
@@ -147,9 +147,14 @@ ElementId GetOrCreateElementId(
 ElementId FindElementId(InstanceHandle handle);
 void ForgetElementId(InstanceHandle handle);
 
-void ApplyCustomizations(ElementId elementId,
-                         winrt::Microsoft::UI::Xaml::FrameworkElement element,
-                         PCWSTR fallbackClassName);
+void ApplyCustomizations(
+    ElementId elementId,
+    winrt::Microsoft::UI::Xaml::FrameworkElement element,
+    PCWSTR fallbackClassName,
+    bool isKnownThemeTarget = false);
+void HandleVirtualizingRepeater(
+    ElementId elementId,
+    winrt::Microsoft::UI::Xaml::FrameworkElement element);
 void CleanupCustomizations(ElementId elementId);
 void QueueDiagnosticsRelease(InstanceHandle handle);
 void FlushDiagnosticsReleasesIfQuiet();
@@ -354,30 +359,17 @@ bool VisualTreeWatcher::ReleaseDiagnosticsReference(InstanceHandle handle)
     return weakElement && !weakElement.get();
 }
 
+// Forward declaration: filter unrelated FrameworkElements before creating per-element state.
+bool IsExplorerThemeTargetElement(
+    mux::FrameworkElement const& element,
+    PCWSTR fallbackClassName);
+
 HRESULT VisualTreeWatcher::OnVisualTreeChange(ParentChildRelation relation, VisualElement element, VisualMutationType mutationType) try
 {
-    Wh_Log(L"========================================");
-
-    switch (mutationType)
-    {
-    case Add:
-        Wh_Log(L"Mutation type: Add %llu", element.Handle);
-        break;
-
-    case Remove:
-        Wh_Log(L"Mutation type: Remove %llu", element.Handle);
-        break;
-
-    default:
-        Wh_Log(L"Mutation type: %d %llu", static_cast<int>(mutationType), element.Handle);
-        break;
-    }
-
-    Wh_Log(L"Element type: %s", element.Type);
-
+    // This callback can fire very frequently while Explorer builds or updates
+    // its visual tree. Avoid verbose per-mutation logging on the hot path.
     if (!g_initializedForThread)
     {
-        Wh_Log(L"Not initialized for thread %u", GetCurrentThreadId());
         return S_OK;
     }
 
@@ -389,23 +381,28 @@ HRESULT VisualTreeWatcher::OnVisualTreeChange(ParentChildRelation relation, Visu
         if (mutationType == Add)
         {
             const auto inspectable = FromHandle(element.Handle);
-            auto elementId = GetOrCreateElementId(element.Handle, inspectable);
             auto frameworkElement = inspectable.try_as<mux::FrameworkElement>();
             if (frameworkElement)
             {
-                Wh_Log(L"FrameworkElement name: %s", frameworkElement.Name().c_str());
-                if (elementId == ElementId::None)
+                // Preserve repeater tracking while bypassing the style-target
+                // filter for repeaters, which are never theme targets.
+                if (frameworkElement.try_as<muxc::ItemsRepeater>())
                 {
-                    Wh_Log(L"Skipping element which can't be given an id");
+                    auto elementId = GetOrCreateElementId(element.Handle, inspectable);
+                    if (elementId != ElementId::None)
+                    {
+                        HandleVirtualizingRepeater(elementId, frameworkElement);
+                    }
                 }
-                else
+                else if (IsExplorerThemeTargetElement(frameworkElement, element.Type))
                 {
-                    ApplyCustomizations(elementId, frameworkElement, element.Type);
+                    auto elementId = GetOrCreateElementId(element.Handle, inspectable);
+                    if (elementId != ElementId::None)
+                    {
+                        ApplyCustomizations(
+                            elementId, frameworkElement, element.Type, true);
+                    }
                 }
-            }
-            else
-            {
-                Wh_Log(L"Skipping non-FrameworkElement");
             }
         }
         else if (mutationType == Remove)
@@ -1511,12 +1508,8 @@ winrt::Windows::Foundation::IInspectable ReadLocalValueWithWorkaround(
 #endif
     }
 
-    Wh_Log(L"Read property value %s",
-           value ? (value == DependencyProperty::UnsetValue()
-                        ? L"(unset)"
-                        : winrt::get_class_name(value).c_str())
-                 : L"(null)");
-
+    // Avoid per-property logging here: matcher evaluation can call this
+    // frequently while the visual tree is being built or updated.
     return value;
 }
 
@@ -3634,6 +3627,8 @@ void ScheduleImageLoadRetryOnAllUiThreads() {
             return;
         }
 
+        // Read the registry size under its lock; it bounds live dispatchers.
+        dispatchers.reserve(g_imageRetryDispatchers.size());
         for (auto& weakDispatcher : g_imageRetryDispatchers) {
             if (auto dispatcher = weakDispatcher.get()) {
                 dispatchers.push_back(dispatcher);
@@ -4166,6 +4161,15 @@ winrt::Windows::Foundation::IInspectable SetOrClearValue(
 
 // https://stackoverflow.com/a/5665377
 std::wstring EscapeXmlAttribute(std::wstring_view data) {
+    if (data.empty()) {
+        return {};
+    }
+
+    // Most style values contain no XML attribute metacharacters.
+    if (data.find_first_of(L"&\"<>") == std::wstring_view::npos) {
+        return std::wstring(data);
+    }
+
     std::wstring buffer;
     buffer.reserve(data.size());
     for (const auto c : data) {
@@ -4196,6 +4200,9 @@ std::wstring EscapeXmlAttribute(std::wstring_view data) {
 
 // https://stackoverflow.com/a/54364173
 std::wstring_view TrimStringView(std::wstring_view s) {
+    if (s.empty()) {
+        return s;
+    }
     s.remove_prefix(std::min(s.find_first_not_of(L" \t\r\v\n"), s.size()));
     s.remove_suffix(
         std::min(s.size() - s.find_last_not_of(L" \t\r\v\n") - 1, s.size()));
@@ -4205,9 +4212,18 @@ std::wstring_view TrimStringView(std::wstring_view s) {
 // https://stackoverflow.com/a/46931770
 std::vector<std::wstring_view> SplitStringView(std::wstring_view s,
                                                std::wstring_view delimiter) {
+    if (delimiter.empty() ||
+        s.find(delimiter) == std::wstring_view::npos) {
+        return {s};
+    }
+
     size_t pos_start = 0, pos_end, delim_len = delimiter.length();
     std::wstring_view token;
     std::vector<std::wstring_view> res;
+    // Bound the number of non-overlapping tokens to avoid vector growth.
+    if (delim_len > 0) {
+        res.reserve(s.size() / delim_len + 1);
+    }
 
     while ((pos_end = s.find(delimiter, pos_start)) !=
            std::wstring_view::npos) {
@@ -4695,6 +4711,7 @@ const PropertyValues& GetResolvedPropertyValues(
             std::get<PropertyValuesUnresolved>(*propertyValuesMaybeUnresolved);
         if (!propertyValuesStr.empty()) {
             std::wstring xaml;
+            propertyValues.reserve(propertyValuesStr.size());
 
             for (const auto& [property, value] : propertyValuesStr) {
                 xaml += L"        <Setter Property=\"";
@@ -4764,6 +4781,10 @@ std::wstring FormatDoubleInvariant(double d) {
 // by a decimal fraction or exponent. Returns std::nullopt on partial / bad
 // input.
 std::optional<double> ParseDoubleInvariant(std::wstring_view sv) {
+    if (sv.empty()) {
+        return std::nullopt;
+    }
+
     std::string narrow;
     narrow.reserve(sv.size());
     for (auto c : sv) {
@@ -4888,15 +4909,50 @@ std::optional<double> UnboxedPropertyValueAsNumeric(
 bool TestElementMatcher(FrameworkElement element,
                         ElementMatcher& matcher,
                         VisualStateGroup* visualStateGroup,
-                        PCWSTR fallbackClassName) {
-    if (!matcher.type.empty() &&
-        matcher.type != winrt::get_class_name(element) &&
-        (!fallbackClassName || matcher.type != fallbackClassName)) {
-        return false;
+                        PCWSTR fallbackClassName,
+                        PCWSTR cachedClassName = nullptr,
+                        PCWSTR cachedElementName = nullptr) {
+    // Avoid querying XAML metadata for matchers that don't constrain the
+    // corresponding field. Parent matchers can run many times for one target.
+    std::wstring_view className;
+    std::wstring_view elementName;
+    winrt::hstring classNameStorage;
+    winrt::hstring elementNameStorage;
+
+    if (!matcher.type.empty()) {
+        if (cachedClassName) {
+            className = cachedClassName;
+        } else {
+            classNameStorage = winrt::get_class_name(element);
+            className = classNameStorage;
+        }
+
+        if (matcher.type != className &&
+            (!fallbackClassName || matcher.type != fallbackClassName)) {
+            return false;
+        }
     }
 
-    if (!matcher.name.empty() && matcher.name != element.Name()) {
-        return false;
+    if (!matcher.name.empty()) {
+        if (cachedElementName) {
+            elementName = cachedElementName;
+        } else {
+            elementNameStorage = element.Name();
+            elementName = elementNameStorage;
+        }
+
+        if (matcher.name != elementName) {
+            return false;
+        }
+    }
+
+    // A completely unconstrained matcher matches every FrameworkElement.
+    // This is a common case for wildcard/parent rules, so return before any
+    // property or visual-state processing.
+    if (!matcher.oneBasedIndex &&
+        matcher.propertyValues.index() == 0 &&
+        !matcher.visualStateGroupName) {
+        return true;
     }
 
     if (matcher.oneBasedIndex) {
@@ -4913,12 +4969,24 @@ bool TestElementMatcher(FrameworkElement element,
         }
     }
 
-    auto elementDo = element.as<DependencyObject>();
+    // Skip resolving property values entirely when this matcher has no
+    // property filters. Empty matchers are common in parent chains, so avoid
+    // the resolver call (and its associated variant handling/logging).
+    const bool hasPropertyValues = std::visit(
+        [](const auto& values) { return !values.empty(); },
+        matcher.propertyValues);
+    if (hasPropertyValues) {
+        const auto& propertyValues =
+            GetResolvedPropertyValues(matcher.type, &matcher.propertyValues);
+        if (propertyValues.empty()) {
+            return true;
+        }
 
-    for (const auto& propertyValue :
-         GetResolvedPropertyValues(matcher.type, &matcher.propertyValues)) {
-        const auto value =
-            ReadLocalValueWithWorkaround(elementDo, propertyValue.first);
+        auto elementDo = element.as<DependencyObject>();
+
+        for (const auto& propertyValue : propertyValues) {
+            const auto value =
+                ReadLocalValueWithWorkaround(elementDo, propertyValue.first);
         if (!value) {
             Wh_Log(L"Null property value");
             return false;
@@ -4934,8 +5002,9 @@ bool TestElementMatcher(FrameworkElement element,
             return false;
         }
 
-        if (*expectedUnboxed != *valueUnboxed) {
-            return false;
+            if (*expectedUnboxed != *valueUnboxed) {
+                return false;
+            }
         }
     }
 
@@ -4960,8 +5029,42 @@ struct ElementResolvedRules {
 ElementResolvedRules FindElementPropertyOverrides(FrameworkElement element,
                                                   PCWSTR fallbackClassName) {
     ElementResolvedRules result;
+    if (g_elementsCustomizationRules.empty()) {
+        return result;
+    }
+
+    // These values are queried repeatedly while the same element is tested
+    // against multiple rules and parent matchers. Cache them for this apply
+    // pass instead of asking the XAML object for them on every matcher test.
+    const auto elementClassName = winrt::get_class_name(element);
+    const auto elementName = element.Name();
     std::unordered_set<DependencyProperty> propertiesAdded;
     std::unordered_set<std::wstring> capturesAdded;
+
+    // Captures are collected from matching rules and cannot exceed the number
+    // of rules. Reserve once to avoid repeated vector growth in capture-heavy
+    // configurations.
+    result.captures.reserve(g_elementsCustomizationRules.size());
+
+    // The rule list bounds the number of unique properties and captures that
+    // can be inserted. Reserve once to avoid repeated hash-table rehashes when
+    // an element matches many rules.
+    propertiesAdded.reserve(g_elementsCustomizationRules.size());
+    capturesAdded.reserve(g_elementsCustomizationRules.size());
+
+    // Cache the immediate parent lazily. Rules without a parent selector do
+    // not pay for the lookup, while direct-parent fast paths reuse it.
+    FrameworkElement cachedDirectParent{nullptr};
+    bool directParentCached = false;
+    auto getDirectParent = [&]() -> FrameworkElement {
+        if (!directParentCached) {
+            cachedDirectParent =
+                Media::VisualTreeHelper::GetParent(element)
+                    .try_as<FrameworkElement>();
+            directParentCached = true;
+        }
+        return cachedDirectParent;
+    };
 
     for (auto it = g_elementsCustomizationRules.rbegin();
          it != g_elementsCustomizationRules.rend(); ++it) {
@@ -4970,7 +5073,8 @@ ElementResolvedRules FindElementPropertyOverrides(FrameworkElement element,
         VisualStateGroup visualStateGroup = nullptr;
 
         if (!TestElementMatcher(element, override.elementMatcher,
-                                &visualStateGroup, fallbackClassName)) {
+                                &visualStateGroup, fallbackClassName,
+                                elementClassName.c_str(), elementName.c_str())) {
             continue;
         }
 
@@ -4981,60 +5085,98 @@ ElementResolvedRules FindElementPropertyOverrides(FrameworkElement element,
         // for the wildcard's next matcher leads to a failure further up the
         // chain, retry with a farther ancestor.
         auto& parentMatchers = override.parentElementMatchers;
-        auto matchParents = [&](auto& self, FrameworkElement iter,
-                                size_t mi) -> bool {
-            if (mi >= parentMatchers.size()) {
-                return true;
+
+        // Most rules do not have a parent selector at all. Skip the
+        // parent-matching machinery entirely for that common case.
+        if (parentMatchers.empty()) {
+            // The element matcher already matched; there is no parent
+            // constraint to evaluate.
+        // The overwhelmingly common parent selector is a single direct
+        // ancestor. Handle it without creating the recursive matcher lambda;
+        // wildcard/root chains still use the full matcher below.
+        } else if (parentMatchers.size() == 1 &&
+                   parentMatchers[0].kind == ElementMatcher::Kind::Element) {
+            auto parent = getDirectParent();
+            if (!parent ||
+                !TestElementMatcher(parent, parentMatchers[0],
+                                     &visualStateGroup, nullptr)) {
+                continue;
+            }
+        } else if (parentMatchers.size() == 2 &&
+                   parentMatchers[0].kind == ElementMatcher::Kind::Element &&
+                   parentMatchers[1].kind == ElementMatcher::Kind::Element) {
+            // Fast path for a two-level direct parent chain.
+            auto parent = getDirectParent();
+            if (!parent ||
+                !TestElementMatcher(parent, parentMatchers[0],
+                                     &visualStateGroup, nullptr)) {
+                continue;
             }
 
-            auto& matcher = parentMatchers[mi];
-
-            if (matcher.kind == ElementMatcher::Kind::Root) {
-                if (Media::VisualTreeHelper::GetParent(iter)) {
-                    return false;
+            auto grandParent =
+                Media::VisualTreeHelper::GetParent(parent)
+                    .try_as<FrameworkElement>();
+            if (!grandParent ||
+                !TestElementMatcher(grandParent, parentMatchers[1],
+                                     &visualStateGroup, nullptr)) {
+                continue;
+            }
+        } else {
+            auto matchParents = [&](auto& self, FrameworkElement iter,
+                                    size_t mi) -> bool {
+                if (mi >= parentMatchers.size()) {
+                    return true;
                 }
 
-                return self(self, iter, mi + 1);
-            }
+                auto& matcher = parentMatchers[mi];
 
-            if (matcher.kind == ElementMatcher::Kind::Wildcard) {
-                // '*' is always followed by an Element matcher (validated at
-                // parse time). Walk up parents and try recursing for each
-                // ancestor that matches the next matcher.
-                auto& nextMatcher = parentMatchers[mi + 1];
-                auto cur = iter;
-                while (true) {
-                    auto parent = Media::VisualTreeHelper::GetParent(cur)
-                                      .try_as<FrameworkElement>();
-                    if (!parent) {
+                if (matcher.kind == ElementMatcher::Kind::Root) {
+                    if (Media::VisualTreeHelper::GetParent(iter)) {
                         return false;
                     }
 
-                    cur = parent;
-                    if (TestElementMatcher(cur, nextMatcher, &visualStateGroup,
-                                           nullptr) &&
-                        self(self, cur, mi + 2)) {
-                        return true;
+                    return self(self, iter, mi + 1);
+                }
+
+                if (matcher.kind == ElementMatcher::Kind::Wildcard) {
+                    // '*' is always followed by an Element matcher (validated
+                    // at parse time). Walk up parents and try recursing for
+                    // each ancestor that matches the next matcher.
+                    auto& nextMatcher = parentMatchers[mi + 1];
+                    auto cur = iter;
+                    while (true) {
+                        auto parent = Media::VisualTreeHelper::GetParent(cur)
+                                          .try_as<FrameworkElement>();
+                        if (!parent) {
+                            return false;
+                        }
+
+                        cur = parent;
+                        if (TestElementMatcher(
+                                cur, nextMatcher, &visualStateGroup, nullptr) &&
+                            self(self, cur, mi + 2)) {
+                            return true;
+                        }
                     }
                 }
+
+                auto parent = Media::VisualTreeHelper::GetParent(iter)
+                                  .try_as<FrameworkElement>();
+                if (!parent) {
+                    return false;
+                }
+
+                if (!TestElementMatcher(parent, matcher, &visualStateGroup,
+                                         nullptr)) {
+                    return false;
+                }
+
+                return self(self, parent, mi + 1);
+            };
+
+            if (!matchParents(matchParents, element, 0)) {
+                continue;
             }
-
-            auto parent = Media::VisualTreeHelper::GetParent(iter)
-                              .try_as<FrameworkElement>();
-            if (!parent) {
-                return false;
-            }
-
-            if (!TestElementMatcher(parent, matcher, &visualStateGroup,
-                                    nullptr)) {
-                return false;
-            }
-
-            return self(self, parent, mi + 1);
-        };
-
-        if (!matchParents(matchParents, element, 0)) {
-            continue;
         }
 
         const auto& resolvedRules = GetResolvedPropertyOverrides(
@@ -5042,15 +5184,23 @@ ElementResolvedRules FindElementPropertyOverrides(FrameworkElement element,
 
         result.hasDynamicValues |= resolvedRules.hasDynamicValues;
 
-        auto& propertyOverridesForVSG =
-            result.overridesPerVSG[visualStateGroup];
+        // A matched rule can legally resolve to no property overrides and no
+        // captures. Avoid creating an empty VSG map entry in that case.
+        if (resolvedRules.propertyOverrides.empty() &&
+            resolvedRules.captures.empty()) {
+            continue;
+        }
+
         for (const auto& [property, valuesPerVisualState] :
              resolvedRules.propertyOverrides) {
-            bool propertyInserted = propertiesAdded.insert(property).second;
-            if (!propertyInserted) {
+            if (!propertiesAdded.insert(property).second) {
                 continue;
             }
 
+            // Only create the VSG/property maps after confirming that this
+            // rule contributes a property which was not already resolved.
+            auto& propertyOverridesForVSG =
+                result.overridesPerVSG[visualStateGroup];
             auto& propertyOverrides = propertyOverridesForVSG[property];
             for (const auto& [visualState, value] : valuesPerVisualState) {
                 propertyOverrides.insert({visualState, value});
@@ -5528,6 +5678,8 @@ class StyleVariableExpressionEvaluator {
     StyleExpressionValue ParseStringLiteral() {
         m_pos++;  // Skip the opening backtick.
         std::wstring out;
+        // The literal cannot contain more characters than remain in the expression.
+        out.reserve(m_text.size() - m_pos);
         while (m_pos < m_text.size()) {
             wchar_t c = m_text[m_pos];
             if (c == L'`') {
@@ -5751,6 +5903,16 @@ std::optional<std::wstring> EvaluateStyleVariableExpression(
 std::optional<std::wstring> ExpandStyleVariables(
     std::wstring_view input,
     const StyleVariableLookupContext* context) {
+    // Most style values are literals. Avoid copying them into a mutable string
+    // and entering the substitution scanner when no opening token exists.
+    if (input.find(L"{{") == std::wstring_view::npos) {
+        if (input.find(L"}}") != std::wstring_view::npos) {
+            Wh_Log(L"Unmatched '}}' in style value");
+            return std::nullopt;
+        }
+        return std::wstring(input);
+    }
+
     std::wstring result(input);
     size_t scanFrom = 0;
 
@@ -6061,6 +6223,9 @@ std::optional<PropertyOverrideValue> ResolveDynamicStyleValue(
             : nullptr;
 
     std::vector<StyleVariableDependency> newDeps;
+    // Reuse the previous dependency count as a starting capacity; expansion
+    // can still grow normally when the expression now references more names.
+    newDeps.reserve(propertyCustomizationState->variableDependencies.size());
     StyleVariableLookupContext context{state, consumerNode, &newDeps};
     std::optional<std::wstring> expanded;
     bool skipped = false;
@@ -6372,6 +6537,7 @@ void SetUpCapturesForElement(StyleVariableState* state,
     // we only subscribe once and only when needed.
     std::vector<std::pair<DependencyProperty, std::wstring>>
         sizeChangedCaptures;
+    sizeChangedCaptures.reserve(captures.size());
 
     for (const auto& capture : captures) {
         const auto [it, inserted] =
@@ -6828,8 +6994,14 @@ void ReapplyCustomizationsForSubtree(FrameworkElement element) {
         if (auto elementId = ElementIdFromElement(element);
             elementId != ElementId::None) {
             CleanupCustomizations(elementId);
-            auto className = winrt::get_class_name(element);
-            ApplyCustomizations(elementId, element, className.c_str());
+            if (element.try_as<muxc::ItemsRepeater>()) {
+                // Keep repeater bookkeeping separate from style application.
+                HandleVirtualizingRepeater(elementId, element);
+            } else {
+                // Only non-repeaters need their runtime class name for styling.
+                auto className = winrt::get_class_name(element);
+                ApplyCustomizations(elementId, element, className.c_str(), true);
+            }
         }
     } catch (winrt::hresult_error const& ex) {
         Wh_Log(L"Error %08X: %s", ex.code(), ex.message().c_str());
@@ -6840,6 +7012,9 @@ void ReapplyCustomizationsForSubtree(FrameworkElement element) {
     std::vector<FrameworkElement> children;
     try {
         int count = Media::VisualTreeHelper::GetChildrenCount(element);
+        // Reserve once for the snapshot to avoid repeated vector growth while
+        // preserving the child list before customization can mutate the tree.
+        children.reserve(count);
         for (int i = 0; i < count; i++) {
             if (auto child = Media::VisualTreeHelper::GetChild(element, i)
                                  .try_as<FrameworkElement>()) {
@@ -6902,13 +7077,21 @@ bool SameRepeaterItem(RepeaterItem const& a, RepeaterItem const& b) {
 // Treat a cleared element as removed and a prepared one as newly added.
 void HandleVirtualizingRepeater(ElementId elementId, FrameworkElement element) {
     auto repeater = element.try_as<muxc::ItemsRepeater>();
-    if (!repeater || g_virtualizingRepeaters.contains(elementId)) {
+    if (!repeater) {
+        return;
+    }
+
+    // Avoid a contains() lookup followed by operator[]: try_emplace performs
+    // the membership test and state lookup in one hash-table operation.
+    auto [stateIt, inserted] =
+        g_virtualizingRepeaters.try_emplace(elementId);
+    if (!inserted) {
         return;
     }
 
     Wh_Log(L"Tracking recycling of %s", winrt::get_class_name(element).c_str());
 
-    auto& state = g_virtualizingRepeaters[elementId];
+    auto& state = stateIt->second;
 
     state.elementClearingRevoker = repeater.ElementClearing(
         winrt::auto_revoke,
@@ -6997,19 +7180,83 @@ void HandleVirtualizingRepeater(ElementId elementId, FrameworkElement element) {
 
 void MergeResourceVariables();
 
+// The fixed Explorer theme only targets these leaf control types. Avoid
+// repeatedly running the selector engine for the many unrelated
+// FrameworkElements in Explorer. Check both the diagnostics fallback type and
+// the WinRT runtime class so either naming form remains valid.
+bool IsExplorerThemeTargetType(PCWSTR type) noexcept
+{
+    if (!type)
+    {
+        return false;
+    }
+
+    const std::wstring_view typeView{type};
+    constexpr std::wstring_view targetTypes[] = {
+        L"Grid",
+        L"Microsoft.UI.Xaml.Controls.Grid",
+        L"CommandBar",
+        L"Microsoft.UI.Xaml.Controls.CommandBar",
+        L"TabViewItem",
+        L"Microsoft.UI.Xaml.Controls.TabViewItem",
+        L"Microsoft.UI.Xaml.Shapes.Path",
+        L"Path",
+        L"ToolTip",
+        L"Microsoft.UI.Xaml.Controls.ToolTip",
+        L"StackPanel",
+        L"Microsoft.UI.Xaml.Controls.StackPanel",
+    };
+
+    for (std::wstring_view targetType : targetTypes)
+    {
+        if (typeView == targetType)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool IsExplorerThemeTargetElement(
+    FrameworkElement const& element,
+    PCWSTR fallbackClassName)
+{
+    if (IsExplorerThemeTargetType(fallbackClassName))
+    {
+        return true;
+    }
+
+    const auto className = winrt::get_class_name(element);
+    return IsExplorerThemeTargetType(className.c_str());
+}
+
 void ApplyCustomizations(ElementId elementId,
                          FrameworkElement element,
-                         PCWSTR fallbackClassName) {
-    // Merge resource dictionary on first element add. Merging it earlier on
-    // window creation doesn't work, perhaps merged dictionaries are reset
-    // during initialization.
+                         PCWSTR fallbackClassName,
+                         bool isKnownThemeTarget) {
+    // Callers which pass isKnownThemeTarget=true have already established
+    // that this is a non-repeater theme target, so skip the redundant repeater
+    // type check on that hot path.
+    if (!isKnownThemeTarget) {
+        // Repeater bookkeeping must run before filtering unrelated elements:
+        // their descendants can be recycled without ordinary Remove/Add reports.
+        HandleVirtualizingRepeater(elementId, element);
+
+        // The theme's rightmost selector types are fixed; unrelated elements
+        // need no style matching or per-element customization state.
+        if (!IsExplorerThemeTargetElement(element, fallbackClassName)) {
+            return;
+        }
+    }
+
+    // Merge resource dictionary on the first actual styling target. Merging
+    // it earlier on window creation doesn't work, perhaps merged dictionaries
+    // are reset during initialization. Deferring it also avoids loading theme
+    // resources for repeaters and unrelated elements that need no styling.
     if (!g_resourceVariablesThemeDict) {
         MergeResourceVariables();
     }
-
-    // Before the early return below: a repeater rarely has styles of its own,
-    // but its item elements do.
-    HandleVirtualizingRepeater(elementId, element);
 
     auto* state = GetStyleVariableState();
     if (!state) {
@@ -7285,6 +7532,8 @@ void CleanupCustomizations(ElementId elementId) {
     // just-unregistered capture callbacks can't re-seed a variable
     // mid-teardown.
     std::vector<std::wstring> removedVarNames;
+    removedVarNames.reserve(
+        elementCustomizationState.captureCustomizationStates.size());
     if (state) {
         for (const auto& [property, captureState] :
              elementCustomizationState.captureCustomizationStates) {
@@ -7344,7 +7593,16 @@ using StyleConstants = std::vector<StyleConstant>;
 
 std::wstring ApplyStyleConstants(std::wstring_view style,
                                  const StyleConstants& styleConstants) {
+    if (style.empty()) {
+        return {};
+    }
+    if (styleConstants.empty() ||
+        style.find('$') == std::wstring_view::npos) {
+        return std::wstring(style);
+    }
+
     std::wstring result;
+    result.reserve(style.size());
 
     size_t lastPos = 0;
     size_t findPos;
@@ -7607,17 +7865,30 @@ std::wstring AdjustTypeName(std::wstring_view type) {
             return L"Microsoft.UI.Xaml.Shapes.Rectangle";
         }
 
-        return L"Microsoft.UI.Xaml.Controls." + std::wstring{type};
+        constexpr std::wstring_view prefix = L"Microsoft.UI.Xaml.Controls.";
+        std::wstring result;
+        result.reserve(prefix.size() + type.size());
+        result += prefix;
+        result += type;
+        return result;
     }
 
-    static const std::vector<std::pair<std::wstring_view, std::wstring_view>>
-        adjustments = {
+    // Most fully qualified names do not use the muxc: shorthand.
+    if (!type.starts_with(L"muxc:")) {
+        return std::wstring(type);
+    }
+
+    static constexpr std::pair<std::wstring_view, std::wstring_view>
+        adjustments[] = {
             {L"muxc:", L"Microsoft.UI.Xaml.Controls."},
     };
 
     for (const auto& adjustment : adjustments) {
         if (type.starts_with(adjustment.first)) {
-            auto result = std::wstring{adjustment.second};
+            std::wstring result;
+            result.reserve(adjustment.second.size() +
+                           type.size() - adjustment.first.size());
+            result += adjustment.second;
             result += type.substr(adjustment.first.size());
             return result;
         }
@@ -7629,7 +7900,13 @@ std::wstring AdjustTypeName(std::wstring_view type) {
 // Splits a target string on the commas which separate targets, ignoring commas
 // which are part of a `[Property=Value]` clause.
 std::vector<std::wstring_view> SplitTargetString(std::wstring_view target) {
+    if (target.find(L',') == std::wstring_view::npos) {
+        return {target};
+    }
+
     std::vector<std::wstring_view> result;
+    // Every top-level comma creates at most one additional target token.
+    result.reserve(std::count(target.begin(), target.end(), L',') + 1);
 
     size_t partBegin = 0;
     bool inProperty = false;
@@ -7663,6 +7940,8 @@ void AddElementCustomizationRulesForSingleTarget(
     ElementCustomizationRules elementCustomizationRules;
 
     auto targetParts = SplitStringView(target, L" > ");
+    // A target part can add at most one parent matcher.
+    elementCustomizationRules.parentElementMatchers.reserve(targetParts.size());
 
     bool first = true;
     bool hasVisualStateGroup = false;
@@ -7757,6 +8036,10 @@ void AddElementCustomizationRulesForSingleTarget(
 
 void AddElementCustomizationRules(std::wstring_view target,
                                   const std::vector<std::wstring>& styles) {
+    if (styles.empty() || target.empty()) {
+        return;
+    }
+
     auto targets = SplitTargetString(target);
 
     for (const auto& singleTarget : targets) {
@@ -7808,7 +8091,7 @@ bool ProcessSingleTargetStylesFromSettings(
             ApplyStyleConstants(styleSetting.get(), styleConstants));
     }
 
-    if (styles.size() > 0) {
+    if (!styles.empty()) {
         AddElementCustomizationRules(targetStringSetting.get(), styles);
     }
 
@@ -7876,13 +8159,15 @@ std::optional<ResourceVariableEntry> ParseResourceVariable(
 
 winrt::Windows::Foundation::IInspectable ParseXamlValue(
     std::wstring_view xamlValue) {
+    constexpr std::wstring_view prefix = L"        <Setter Property=\"Tag\">\n";
+    constexpr std::wstring_view middle = L"            <Setter.Value>\n";
+    constexpr std::wstring_view suffix = L"\n            </Setter.Value>\n        </Setter>\n";
     std::wstring xaml;
-    xaml += L"        <Setter Property=\"Tag\">\n";
-    xaml += L"            <Setter.Value>\n";
+    xaml.reserve(prefix.size() + middle.size() + xamlValue.size() + suffix.size());
+    xaml += prefix;
+    xaml += middle;
     xaml += xamlValue;
-    xaml += L"\n";
-    xaml += L"            </Setter.Value>\n";
-    xaml += L"        </Setter>\n";
+    xaml += suffix;
 
     auto style = GetStyleFromXamlSetters(L"FrameworkElement", xaml);
     return style.Setters().GetAt(0).as<Setter>().Value();
@@ -8023,6 +8308,9 @@ std::vector<ResourceVariableEntry> ProcessResourceVariablesFromSettings(
     const StyleConstants& styleConstants,
     const std::vector<PCWSTR>& themeResourceVariables) {
     std::vector<ResourceVariableEntry> resourceVariables;
+    // The configured theme entries are a known lower bound; custom settings
+    // can still append more entries without changing behavior.
+    resourceVariables.reserve(themeResourceVariables.size());
 
     for (const auto& themeResourceVariable : themeResourceVariables) {
         Wh_Log(L"Processing theme resource variable %s", themeResourceVariable);
@@ -8110,9 +8398,13 @@ const Theme* GetSelectedTheme() {
 
 void ProcessAllStylesFromSettings() {
     const Theme* theme = GetSelectedTheme();
+    const std::vector<PCWSTR> emptySettings;
 
-    StyleConstants styleConstants = LoadStyleConstants(
-        theme ? theme->styleConstants : std::vector<PCWSTR>{});
+    // Bind to the selected theme's vectors instead of copying them through a
+    // conditional expression. The empty vector preserves the null-theme path.
+    const auto& themeStyleConstants =
+        theme ? theme->styleConstants : emptySettings;
+    StyleConstants styleConstants = LoadStyleConstants(themeStyleConstants);
 
     if (theme) {
         for (const auto& themeTargetStyle : theme->targetStyles) {
@@ -8144,9 +8436,10 @@ void ProcessAllStylesFromSettings() {
         }
     }
 
+    const auto& themeResourceVariables =
+        theme ? theme->themeResourceVariables : emptySettings;
     g_resourceVariables = ProcessResourceVariablesFromSettings(
-        styleConstants,
-        theme ? theme->themeResourceVariables : std::vector<PCWSTR>{});
+        styleConstants, themeResourceVariables);
 }
 
 void UninitializeResourceVariables() {
@@ -8326,6 +8619,18 @@ HRESULT WINAPI DwmSetWindowAttribute_Hook(HWND hWnd,
                                               cbAttribute);
     };
 
+    // Keep Explorer from fading into DWM's glass sheet during taskbar Peek.
+    // DWMWA_EXCLUDED_FROM_PEEK is independent of the backdrop material itself.
+    if (dwAttribute == DWMWA_EXCLUDED_FROM_PEEK &&
+        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
+        GetEffectiveBackgroundTranslucentEffect() ==
+            BackgroundTranslucentEffect::kBlur) {
+        const BOOL excludedFromPeek = TRUE;
+        return DwmSetWindowAttribute_Original(
+            hWnd, DWMWA_EXCLUDED_FROM_PEEK, &excludedFromPeek,
+            sizeof(excludedFromPeek));
+    }
+
     if (dwAttribute != DWMWA_SYSTEMBACKDROP_TYPE &&
         dwAttribute != DWMWA_USE_HOSTBACKDROPBRUSH) {
         return original();
@@ -8343,7 +8648,10 @@ HRESULT WINAPI DwmSetWindowAttribute_Hook(HWND hWnd,
         case BackgroundTranslucentEffect::kDefault:
             return original();
         case BackgroundTranslucentEffect::kBlur:
-            backdropType = DWMSBT_AUTO;
+            // Blur is provided by the legacy Accent policy below, not by a
+            // system backdrop. Keep DWM's system backdrop disabled so Explorer
+            // cannot replace Accent blur with its automatic backdrop on show.
+            backdropType = DWMSBT_NONE;
             break;
         case BackgroundTranslucentEffect::kAcrylic:
             backdropType = DWMSBT_TRANSIENTWINDOW;
@@ -9516,6 +9824,49 @@ HRESULT WINAPI DrawThemeBackgroundEx_Hook(HTHEME hTheme,
                                           pOptions);
 }
 
+// Hook the accent-policy API because Explorer/WinUI may set its host-backdrop
+// accent after the window is created, overwriting the requested Blur effect.
+struct ACCENT_POLICY {
+    int AccentState;
+    int AccentFlags;
+    int GradientColor;
+    int AnimationId;
+};
+
+struct WINDOWCOMPOSITIONATTRIBDATA {
+    DWORD Attrib;
+    PVOID pvData;
+    SIZE_T cbData;
+};
+
+using SetWindowCompositionAttribute_t =
+    BOOL(WINAPI*)(HWND, WINDOWCOMPOSITIONATTRIBDATA*);
+SetWindowCompositionAttribute_t SetWindowCompositionAttribute_Original;
+
+constexpr DWORD WCA_ACCENT_POLICY = 19;
+constexpr int ACCENT_ENABLE_BLURBEHIND = 3;
+
+BOOL WINAPI SetWindowCompositionAttribute_Hook(
+    HWND hWnd, WINDOWCOMPOSITIONATTRIBDATA* data) {
+    if (data && data->Attrib == WCA_ACCENT_POLICY &&
+        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
+        GetEffectiveBackgroundTranslucentEffect() ==
+            BackgroundTranslucentEffect::kBlur) {
+        ACCENT_POLICY accentPolicy = {
+            .AccentState = ACCENT_ENABLE_BLURBEHIND,
+            .GradientColor = 0x3A232323,
+        };
+        WINDOWCOMPOSITIONATTRIBDATA blurData = {
+            .Attrib = WCA_ACCENT_POLICY,
+            .pvData = &accentPolicy,
+            .cbData = sizeof(accentPolicy),
+        };
+        return SetWindowCompositionAttribute_Original(hWnd, &blurData);
+    }
+
+    return SetWindowCompositionAttribute_Original(hWnd, data);
+}
+
 // Based on the Translucent Windows mod.
 void SetAccentBlurBehind(HWND hWnd, bool enable) {
     // Without blur behind, the extended frame is drawn over the accent blur.
@@ -9540,34 +9891,12 @@ void SetAccentBlurBehind(HWND hWnd, bool enable) {
         return;
     }
 
-    constexpr int ACCENT_ENABLE_ACRYLICBLURBEHIND = 4;
-
-    struct ACCENT_POLICY {
-        int AccentState;
-        int AccentFlags;
-        int GradientColor;
-        int AnimationId;
-    };
-
-    constexpr DWORD WCA_ACCENT_POLICY = 19;
-
-    struct WINDOWCOMPOSITIONATTRIBDATA {
-        DWORD Attrib;
-        PVOID pvData;
-        SIZE_T cbData;
-    };
-
-    using SetWindowCompositionAttribute_t =
-        BOOL(WINAPI*)(HWND, WINDOWCOMPOSITIONATTRIBDATA*);
-    static auto pSetWindowCompositionAttribute =
-        (SetWindowCompositionAttribute_t)GetProcAddress(
-            GetModuleHandle(L"user32.dll"), "SetWindowCompositionAttribute");
-    if (!pSetWindowCompositionAttribute) {
+    if (!SetWindowCompositionAttribute_Original) {
         return;
     }
 
     ACCENT_POLICY accentPolicy = {
-        .AccentState = ACCENT_ENABLE_ACRYLICBLURBEHIND,
+        .AccentState = ACCENT_ENABLE_BLURBEHIND,
         // AABBGGRR.
         .GradientColor = 0x3A232323,
     };
@@ -9578,7 +9907,7 @@ void SetAccentBlurBehind(HWND hWnd, bool enable) {
         .cbData = sizeof(accentPolicy),
     };
 
-    pSetWindowCompositionAttribute(hWnd, &data);
+    SetWindowCompositionAttribute_Original(hWnd, &data);
 }
 
 void ApplyBackgroundTranslucentEffect(
@@ -9639,11 +9968,19 @@ void ApplyBackgroundTranslucentEffect(
     // Use exactly one backdrop mechanism at a time. The Blur mode is
     // implemented by AccentBlurBehind, while the other modes use the native
     // Windows 11 SystemBackdrop materials.
+    // Suppress DWM material transitions while switching the backdrop, then
+    // restore normal transitions so Explorer's window animations remain enabled.
+    BOOL disableDwmTransitions = TRUE;
+    DwmSetWindowAttribute_Original(
+        hWnd, DWMWA_TRANSITIONS_FORCEDISABLED,
+        &disableDwmTransitions, sizeof(disableDwmTransitions));
+
     if (effect == BackgroundTranslucentEffect::kBlur) {
-        BOOL disableDwmTransitions = FALSE;
+        // Prevent DWM Peek from fading the Explorer window to a glass sheet.
+        const BOOL excludedFromPeek = TRUE;
         DwmSetWindowAttribute_Original(
-            hWnd, DWMWA_TRANSITIONS_FORCEDISABLED,
-            &disableDwmTransitions, sizeof(disableDwmTransitions));
+            hWnd, DWMWA_EXCLUDED_FROM_PEEK, &excludedFromPeek,
+            sizeof(excludedFromPeek));
 
         int noneBackdrop = DWMSBT_NONE;
         DwmSetWindowAttribute_Original(
@@ -9652,26 +9989,33 @@ void ApplyBackgroundTranslucentEffect(
 
         SetAccentBlurBehind(hWnd, true);
     } else {
-        BOOL disableDwmTransitions = FALSE;
-        DwmSetWindowAttribute_Original(
-            hWnd, DWMWA_TRANSITIONS_FORCEDISABLED,
-            &disableDwmTransitions, sizeof(disableDwmTransitions));
-
         SetAccentBlurBehind(hWnd, false);
 
         DwmSetWindowAttribute_Original(
             hWnd, DWMWA_SYSTEMBACKDROP_TYPE, &backdropType,
             sizeof(backdropType));
     }
+
+    // Re-enable DWM transitions immediately after applying the material.
+    disableDwmTransitions = FALSE;
+    DwmSetWindowAttribute_Original(
+        hWnd, DWMWA_TRANSITIONS_FORCEDISABLED,
+        &disableDwmTransitions, sizeof(disableDwmTransitions));
 }
 
-void TriggerWindowCompositionUpdate(HWND hWnd) {
+void TriggerWindowCompositionUpdate(HWND hWnd,
+                                     bool notifyCompositionChange = true) {
     WINDOWPOS windowPos = {
         .hwnd = hWnd,
         .flags = SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE,
     };
     SendMessage(hWnd, WM_WINDOWPOSCHANGED, 0, (LPARAM)&windowPos);
-    SendMessage(hWnd, WM_DWMCOMPOSITIONCHANGED, 0, 0);
+
+    // A synthetic composition-change notification can reset the legacy
+    // Accent blur. Callers applying Blur can skip this notification.
+    if (notifyCompositionChange) {
+        SendMessage(hWnd, WM_DWMCOMPOSITIONCHANGED, 0, 0);
+    }
 
     // Repaint the content, which is rendered differently with the effect
     // extended to the entire window.
@@ -9975,17 +10319,18 @@ bool RunFromWindowThread(HWND hWnd,
 std::vector<HWND> GetTargetWnds() {
     struct ENUM_WINDOWS_PARAM {
         std::vector<HWND>* hWnds;
+        DWORD currentProcessId;
     };
 
     std::vector<HWND> hWnds;
-    ENUM_WINDOWS_PARAM param = {&hWnds};
+    ENUM_WINDOWS_PARAM param = {&hWnds, GetCurrentProcessId()};
     EnumWindows(
         [](HWND hWnd, LPARAM lParam) WINAPI -> BOOL {
             ENUM_WINDOWS_PARAM& param = *(ENUM_WINDOWS_PARAM*)lParam;
 
             DWORD dwProcessId = 0;
             if (!GetWindowThreadProcessId(hWnd, &dwProcessId) ||
-                dwProcessId != GetCurrentProcessId()) {
+                dwProcessId != param.currentProcessId) {
                 return TRUE;
             }
 
@@ -10066,9 +10411,77 @@ bool IsGlassExplorerShellProcess() {
 using DefWindowProcW_t = decltype(&DefWindowProcW);
 DefWindowProcW_t DefWindowProcW_Original;
 
+// Diagnostic retry: the legacy Accent blur may be ignored while DWM is
+// animating a newly shown Explorer window. Reapply it briefly during startup.
+constexpr UINT_PTR kBlurRetryTimerId = 0x47455842;
+constexpr WCHAR kBlurRetryCountProp[] = L"windhawk_blur-retry-count-" WH_MOD_ID;
+
+VOID CALLBACK BlurRetryTimerProc(HWND hWnd, UINT, UINT_PTR timerId, DWORD) {
+    if (!IsWindow(hWnd) ||
+        GetTargetWindowType(hWnd) != TargetWindowType::FileExplorer ||
+        GetEffectiveBackgroundTranslucentEffect() !=
+            BackgroundTranslucentEffect::kBlur) {
+        KillTimer(hWnd, timerId);
+        RemoveProp(hWnd, kBlurRetryCountProp);
+        return;
+    }
+
+    ApplyBackgroundTranslucentEffect(hWnd);
+    const UINT attempts =
+        (UINT)(ULONG_PTR)GetProp(hWnd, kBlurRetryCountProp) + 1;
+    if (attempts >= 20) {
+        KillTimer(hWnd, timerId);
+        RemoveProp(hWnd, kBlurRetryCountProp);
+    } else {
+        SetProp(hWnd, kBlurRetryCountProp, (HANDLE)(ULONG_PTR)attempts);
+    }
+}
+
 LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-    if (uMsg == WM_NCACTIVATE && !wParam && !IsIconic(hWnd)) return TRUE;
-    return DefWindowProcW_Original(hWnd, uMsg, wParam, lParam);
+
+    // WM_SHOWWINDOW is sent before the window is displayed. Apply the
+    // material here as well as during WM_WINDOWPOSCHANGING, because Explorer
+    // can begin its opening animation before the position-change path has
+    // established the legacy Accent blur.
+    if (uMsg == WM_SHOWWINDOW && wParam &&
+        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer) {
+        ApplyBackgroundTranslucentEffect(hWnd);
+
+        if (GetEffectiveBackgroundTranslucentEffect() ==
+            BackgroundTranslucentEffect::kBlur) {
+            RemoveProp(hWnd, kBlurRetryCountProp);
+            SetProp(hWnd, kBlurRetryCountProp, (HANDLE)(ULONG_PTR)1);
+            SetTimer(hWnd, kBlurRetryTimerId, 15, BlurRetryTimerProc);
+        }
+    }
+
+    // Prepare the selected material before Windows makes the window visible.
+    if (uMsg == WM_WINDOWPOSCHANGING && lParam &&
+        (((const WINDOWPOS*)lParam)->flags & SWP_SHOWWINDOW) &&
+        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer) {
+        ApplyBackgroundTranslucentEffect(hWnd);
+    }
+
+    LRESULT result = DefWindowProcW_Original(hWnd, uMsg, wParam, lParam);
+
+    // Explorer may reset or defer the backdrop while first showing the window.
+    // Reapply the selected material after the initial show-position update.
+    if (uMsg == WM_WINDOWPOSCHANGED && lParam &&
+        (((const WINDOWPOS*)lParam)->flags & SWP_SHOWWINDOW) &&
+        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer) {
+        const bool isBlur =
+            GetEffectiveBackgroundTranslucentEffect() ==
+            BackgroundTranslucentEffect::kBlur;
+        ApplyBackgroundTranslucentEffect(hWnd);
+        TriggerWindowCompositionUpdate(hWnd, !isBlur);
+
+        // Keep the legacy Accent blur as the final operation for Blur mode.
+        if (isBlur) {
+            ApplyBackgroundTranslucentEffect(hWnd);
+        }
+    }
+
+    return result;
 }
 
 bool IsCurrentProcessExplorer() {
@@ -10167,6 +10580,15 @@ BOOL Wh_ModInit() {
     WindhawkUtils::SetFunctionHook(DwmSetWindowAttribute,
                                    DwmSetWindowAttribute_Hook,
                                    &DwmSetWindowAttribute_Original);
+
+    auto pSetWindowCompositionAttribute =
+        (SetWindowCompositionAttribute_t)GetProcAddress(
+            GetModuleHandle(L"user32.dll"), "SetWindowCompositionAttribute");
+    if (pSetWindowCompositionAttribute) {
+        WindhawkUtils::SetFunctionHook(
+            pSetWindowCompositionAttribute, SetWindowCompositionAttribute_Hook,
+            &SetWindowCompositionAttribute_Original);
+    }
 
     WindhawkUtils::SetFunctionHook(DwmExtendFrameIntoClientArea,
                                    DwmExtendFrameIntoClientArea_Hook,
@@ -10272,7 +10694,7 @@ void Wh_ModAfterInit() {
             (PVOID)hTargetWnd);
     }
 
-    if (hTargetWnds.size() > 0) {
+    if (!hTargetWnds.empty()) {
         Wh_Log(L"Initializing - Found target windows");
         InitializeSettingsAndTap();
     }
@@ -10342,7 +10764,7 @@ void Wh_ModSettingsChanged() {
             (PVOID)hTargetWnd);
     }
 
-    if (hTargetWnds.size() > 0) {
+    if (!hTargetWnds.empty()) {
         Wh_Log(L"Reinitializing - Found target windows");
         InitializeSettingsAndTap();
     }
