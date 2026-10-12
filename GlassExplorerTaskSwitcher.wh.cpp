@@ -8687,7 +8687,9 @@ HRESULT WINAPI DwmSetWindowAttribute_Hook(HWND hWnd,
             backdropType = DWMSBT_NONE;
             break;
         case BackgroundTranslucentEffect::kAcrylic:
-            backdropType = DWMSBT_TRANSIENTWINDOW;
+            // Use a fixed Accent Acrylic material instead of DWM's native
+            // transient backdrop, which changes appearance when focus is lost.
+            backdropType = DWMSBT_NONE;
             break;
         case BackgroundTranslucentEffect::kMica:
             backdropType = DWMSBT_MAINWINDOW;
@@ -9878,23 +9880,32 @@ SetWindowCompositionAttribute_t SetWindowCompositionAttribute_Original;
 
 constexpr DWORD WCA_ACCENT_POLICY = 19;
 constexpr int ACCENT_ENABLE_BLURBEHIND = 3;
+constexpr int ACCENT_ENABLE_ACRYLICBLURBEHIND = 4;
 
 BOOL WINAPI SetWindowCompositionAttribute_Hook(
     HWND hWnd, WINDOWCOMPOSITIONATTRIBDATA* data) {
     if (data && data->Attrib == WCA_ACCENT_POLICY &&
-        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
-        GetEffectiveBackgroundTranslucentEffect() ==
-            BackgroundTranslucentEffect::kBlur) {
-        ACCENT_POLICY accentPolicy = {
-            .AccentState = ACCENT_ENABLE_BLURBEHIND,
-            .GradientColor = 0x3A232323,
-        };
-        WINDOWCOMPOSITIONATTRIBDATA blurData = {
-            .Attrib = WCA_ACCENT_POLICY,
-            .pvData = &accentPolicy,
-            .cbData = sizeof(accentPolicy),
-        };
-        return SetWindowCompositionAttribute_Original(hWnd, &blurData);
+        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer) {
+        auto effect = GetEffectiveBackgroundTranslucentEffect();
+        if (effect == BackgroundTranslucentEffect::kBlur ||
+            effect == BackgroundTranslucentEffect::kAcrylic) {
+            ACCENT_POLICY accentPolicy = {
+                .AccentState = effect == BackgroundTranslucentEffect::kBlur
+                                   ? ACCENT_ENABLE_BLURBEHIND
+                                   : ACCENT_ENABLE_ACRYLICBLURBEHIND,
+                // Fixed tint prevents active/inactive appearance changes.
+                // Accent colors use AABBGGRR format.
+                .GradientColor = effect == BackgroundTranslucentEffect::kBlur
+                                     ? 0x3A232323
+                                     : 0x4D121212,
+            };
+            WINDOWCOMPOSITIONATTRIBDATA effectData = {
+                .Attrib = WCA_ACCENT_POLICY,
+                .pvData = &accentPolicy,
+                .cbData = sizeof(accentPolicy),
+            };
+            return SetWindowCompositionAttribute_Original(hWnd, &effectData);
+        }
     }
 
     return SetWindowCompositionAttribute_Original(hWnd, data);
@@ -9985,7 +9996,9 @@ void ApplyBackgroundTranslucentEffect(
             backdropType = DWMSBT_AUTO;
             break;
         case BackgroundTranslucentEffect::kAcrylic:
-            backdropType = DWMSBT_TRANSIENTWINDOW;
+            // Use a fixed Accent Acrylic material instead of DWM's native
+            // transient backdrop, which changes appearance when focus is lost.
+            backdropType = DWMSBT_NONE;
             break;
         case BackgroundTranslucentEffect::kMica:
             backdropType = DWMSBT_MAINWINDOW;
@@ -10021,6 +10034,28 @@ void ApplyBackgroundTranslucentEffect(
             sizeof(noneBackdrop));
 
         SetAccentBlurBehind(hWnd, true);
+    } else if (effect == BackgroundTranslucentEffect::kAcrylic) {
+        // Disable the focus-sensitive DWM backdrop and use Accent Acrylic
+        // with a constant tint for both active and inactive Explorer windows.
+        SetAccentBlurBehind(hWnd, false);
+
+        int noneBackdrop = DWMSBT_NONE;
+        DwmSetWindowAttribute_Original(
+            hWnd, DWMWA_SYSTEMBACKDROP_TYPE, &noneBackdrop,
+            sizeof(noneBackdrop));
+
+        ACCENT_POLICY accentPolicy = {
+            .AccentState = ACCENT_ENABLE_ACRYLICBLURBEHIND,
+            .GradientColor = 0x4D121212,
+        };
+        WINDOWCOMPOSITIONATTRIBDATA data = {
+            .Attrib = WCA_ACCENT_POLICY,
+            .pvData = &accentPolicy,
+            .cbData = sizeof(accentPolicy),
+        };
+        if (SetWindowCompositionAttribute_Original) {
+            SetWindowCompositionAttribute_Original(hWnd, &data);
+        }
     } else {
         SetAccentBlurBehind(hWnd, false);
 
