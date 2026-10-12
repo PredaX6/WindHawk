@@ -11268,7 +11268,7 @@ void OnTaskbarWheelSafe(short delta) {
         return;
     }
 
-    WheelCycleWindows state{{}, true};
+    WheelCycleWindows state{{}, false};
     EnumWindows(CollectWheelCycleWindows, reinterpret_cast<LPARAM>(&state));
     if (state.windows.empty()) {
         return;
@@ -11314,7 +11314,7 @@ void OnTaskListScroll(HWND hMMTaskListWnd, short delta) {
         for (int i = 0; i < abs(clicks); i++) {
             PVOID targetTaskItem = TaskbarScroll(lpMMTaskListLongPtr,
                                                  direction,
-                                                 true,
+                                                 false,
                                                  true, nullptr);
             if (!targetTaskItem) {
                 break;
