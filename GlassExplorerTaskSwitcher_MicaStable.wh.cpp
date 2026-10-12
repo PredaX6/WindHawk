@@ -9878,16 +9878,6 @@ SetWindowCompositionAttribute_t SetWindowCompositionAttribute_Original;
 
 constexpr DWORD WCA_ACCENT_POLICY = 19;
 constexpr int ACCENT_ENABLE_BLURBEHIND = 3;
-constexpr DWORD kBlurTransitionNormalColor = 0x3A232323;
-constexpr DWORD kBlurTransitionGrayColor = 0x604A4A4A;
-constexpr UINT_PTR kBlurTransitionTimerId = 0x47455844;
-constexpr UINT kBlurTransitionDurationMs = 180;
-constexpr WCHAR kBlurTransitionGrayProp[] =
-    L"windhawk_blur-transition-gray-" WH_MOD_ID;
-
-bool IsBlurTransitionGray(HWND hWnd) {
-    return GetProp(hWnd, kBlurTransitionGrayProp) != nullptr;
-}
 
 BOOL WINAPI SetWindowCompositionAttribute_Hook(
     HWND hWnd, WINDOWCOMPOSITIONATTRIBDATA* data) {
@@ -9897,9 +9887,7 @@ BOOL WINAPI SetWindowCompositionAttribute_Hook(
             BackgroundTranslucentEffect::kBlur) {
         ACCENT_POLICY accentPolicy = {
             .AccentState = ACCENT_ENABLE_BLURBEHIND,
-            .GradientColor = IsBlurTransitionGray(hWnd)
-                                 ? kBlurTransitionGrayColor
-                                 : kBlurTransitionNormalColor,
+            .GradientColor = 0x3A232323,
         };
         WINDOWCOMPOSITIONATTRIBDATA blurData = {
             .Attrib = WCA_ACCENT_POLICY,
@@ -9942,10 +9930,8 @@ void SetAccentBlurBehind(HWND hWnd, bool enable) {
 
     ACCENT_POLICY accentPolicy = {
         .AccentState = ACCENT_ENABLE_BLURBEHIND,
-        // AABBGGRR. Use a stronger neutral gray only during minimize/restore.
-        .GradientColor = IsBlurTransitionGray(hWnd)
-                             ? kBlurTransitionGrayColor
-                             : kBlurTransitionNormalColor,
+        // AABBGGRR.
+        .GradientColor = 0x3A232323,
     };
 
     WINDOWCOMPOSITIONATTRIBDATA data = {
@@ -10505,52 +10491,7 @@ void StartBackdropRetry(HWND hWnd) {
     SetTimer(hWnd, kBackdropRetryTimerId, 30, BackdropRetryTimerProc);
 }
 
-// AccentBlurBehind has no native inactive-material transition equivalent to
-// SystemBackdrop. Temporarily change only its tint around minimize/restore;
-// normal activation and focus-loss messages never enter this path.
-VOID CALLBACK BlurTransitionTimerProc(HWND hWnd, UINT, UINT_PTR timerId, DWORD) {
-    KillTimer(hWnd, timerId);
-    if (!IsWindow(hWnd)) {
-        return;
-    }
-
-    RemoveProp(hWnd, kBlurTransitionGrayProp);
-    if (GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
-        GetEffectiveBackgroundTranslucentEffect() ==
-            BackgroundTranslucentEffect::kBlur) {
-        ApplyBackgroundTranslucentEffect(hWnd);
-        RedrawWindow(hWnd, nullptr, nullptr,
-                     RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
-    }
-}
-
-void StartBlurTransitionGray(HWND hWnd) {
-    if (!IsWindow(hWnd) ||
-        GetTargetWindowType(hWnd) != TargetWindowType::FileExplorer ||
-        GetEffectiveBackgroundTranslucentEffect() !=
-            BackgroundTranslucentEffect::kBlur) {
-        return;
-    }
-
-    KillTimer(hWnd, kBlurTransitionTimerId);
-    SetProp(hWnd, kBlurTransitionGrayProp, (HANDLE)1);
-    ApplyBackgroundTranslucentEffect(hWnd);
-    RedrawWindow(hWnd, nullptr, nullptr,
-                 RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
-    SetTimer(hWnd, kBlurTransitionTimerId, kBlurTransitionDurationMs,
-             BlurTransitionTimerProc);
-}
-
 LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-
-    // Trigger only for minimize/restore/maximize commands. A simple focus loss
-    // (WM_NCACTIVATE) intentionally leaves Blur's normal tint untouched.
-    if (uMsg == WM_SYSCOMMAND &&
-        ((wParam & 0xFFF0) == SC_MINIMIZE ||
-         (wParam & 0xFFF0) == SC_RESTORE ||
-         (wParam & 0xFFF0) == SC_MAXIMIZE)) {
-        StartBlurTransitionGray(hWnd);
-    }
 
     // Experimental: preserve the active non-client appearance when
     // Explorer loses activation while using a native DWM system backdrop.
