@@ -407,18 +407,16 @@ BOOL WINAPI ShowWindow_Hook(HWND hwnd, int command) {
         Sleep(20);
         RECT rc{};
         HBITMAP bitmap = CaptureWindow(hwnd, &rc, false);
-        if (bitmap) {
-            if (StartAnimation(hwnd, *showSettings, true, bitmap, &rc, hwnd, true)) {
-                return result;
-            }
-        } else {
-            const BOOL cloak = FALSE;
-            DwmSetWindowAttribute(hwnd, DWMWA_CLOAK, &cloak, sizeof(cloak));
-            DwmFlush();
-            SetWindowPos(hwnd, nullptr, 0, 0, 0, 0,
-                         SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER |
-                         SWP_NOACTIVATE | SWP_SHOWWINDOW);
+        if (bitmap &&
+            StartAnimation(hwnd, *showSettings, true, bitmap, &rc, hwnd, true)) {
+            return result;
         }
+        const BOOL cloak = FALSE;
+        DwmSetWindowAttribute(hwnd, DWMWA_CLOAK, &cloak, sizeof(cloak));
+        DwmFlush();
+        SetWindowPos(hwnd, nullptr, 0, 0, 0, 0,
+                     SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER |
+                     SWP_NOACTIVATE | SWP_SHOWWINDOW);
     }
     return result;
 }
@@ -456,19 +454,17 @@ LRESULT WINAPI DefWindowProcW_Hook(HWND hwnd, UINT message, WPARAM wParam, LPARA
                 Sleep(20);
                 RECT rc{};
                 HBITMAP bitmap = CaptureWindow(hwnd, &rc, false);
-                if (bitmap) {
-                    if (StartAnimation(hwnd, g_restore, true, bitmap, &rc,
-                                       hwnd, true)) {
-                        return result;
-                    }
-                } else {
-                    const BOOL cloak = FALSE;
-                    DwmSetWindowAttribute(hwnd, DWMWA_CLOAK, &cloak, sizeof(cloak));
-                    DwmFlush();
-                    SetWindowPos(hwnd, nullptr, 0, 0, 0, 0,
-                                 SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER |
-                                 SWP_NOACTIVATE | SWP_SHOWWINDOW);
+                if (bitmap &&
+                    StartAnimation(hwnd, g_restore, true, bitmap, &rc,
+                                   hwnd, true)) {
+                    return result;
                 }
+                const BOOL cloak = FALSE;
+                DwmSetWindowAttribute(hwnd, DWMWA_CLOAK, &cloak, sizeof(cloak));
+                DwmFlush();
+                SetWindowPos(hwnd, nullptr, 0, 0, 0, 0,
+                             SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER |
+                             SWP_NOACTIVATE | SWP_SHOWWINDOW);
             }
             return result;
         }
