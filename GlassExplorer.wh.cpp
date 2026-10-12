@@ -92,6 +92,10 @@ Le thème et le changement de tâches sont réunis dans ce mod.
 #include <winrt/Windows.UI.Xaml.Controls.h>
 #include <winrt/Windows.UI.Xaml.Input.h>
 
+namespace TaskbarSwitch {
+void OnModuleLoaded(HMODULE module, LPCWSTR lpLibFileName);
+}
+
 #undef GetCurrentTime
 
 #include <winrt/Microsoft.UI.Xaml.h>
@@ -10290,6 +10294,10 @@ HMODULE WINAPI LoadLibraryExW_Hook(LPCWSTR lpLibFileName,
                                    DWORD dwFlags) {
     HMODULE module = LoadLibraryExW_Original(lpLibFileName, hFile, dwFlags);
 
+    if (module) {
+        TaskbarSwitch::OnModuleLoaded(module, lpLibFileName);
+    }
+
     if (module && !InitializeXamlDiagnosticsEx_Original && lpLibFileName) {
         PCWSTR fileName = wcsrchr(lpLibFileName, L'\\');
         fileName = fileName ? fileName + 1 : lpLibFileName;
@@ -12223,18 +12231,9 @@ void HandleLoadedModuleIfExplorerPatcher(HMODULE module) {
     }
 }
 
-using LoadLibraryExW_t = decltype(&LoadLibraryExW);
-LoadLibraryExW_t LoadLibraryExW_Original;
-HMODULE WINAPI LoadLibraryExW_Hook(LPCWSTR lpLibFileName,
-                                   HANDLE hFile,
-                                   DWORD dwFlags) {
-    HMODULE module = LoadLibraryExW_Original(lpLibFileName, hFile, dwFlags);
-    if (module) {
-        HandleLoadedModuleIfExplorerPatcher(module);
-        HandleLoadedModuleIfTaskbarView(module, lpLibFileName);
-    }
-
-    return module;
+void OnModuleLoaded(HMODULE module, LPCWSTR lpLibFileName) {
+    HandleLoadedModuleIfExplorerPatcher(module);
+    HandleLoadedModuleIfTaskbarView(module, lpLibFileName);
 }
 
 BOOL Wh_ModInit() {
@@ -12281,13 +12280,6 @@ BOOL Wh_ModInit() {
         Wh_Log(L"HandleLoadedExplorerPatcher failed");
         return FALSE;
     }
-
-    HMODULE kernelBaseModule = GetModuleHandle(L"kernelbase.dll");
-    auto pKernelBaseLoadLibraryExW = (decltype(&LoadLibraryExW))GetProcAddress(
-        kernelBaseModule, "LoadLibraryExW");
-    WindhawkUtils::Wh_SetFunctionHookT(pKernelBaseLoadLibraryExW,
-                                       LoadLibraryExW_Hook,
-                                       &LoadLibraryExW_Original);
 
     g_initialized = true;
 
