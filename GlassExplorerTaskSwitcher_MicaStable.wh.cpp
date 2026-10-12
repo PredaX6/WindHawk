@@ -10591,13 +10591,18 @@ LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
             GetEffectiveBackgroundTranslucentEffect() ==
                 BackgroundTranslucentEffect::kBlur &&
             GetProp(hWnd, kBlurTransitionProp);
-        if (!blurTransition) {
-            SendMessage(hWnd, WM_NCACTIVATE, TRUE, 0);
-            ApplyBackgroundTranslucentEffect(hWnd);
-            StartBackdropRetry(hWnd);
-            RedrawWindow(hWnd, nullptr, nullptr,
-                         RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
+        if (blurTransition) {
+            // Restore Accent Blur on the actual restored-size notification,
+            // rather than relying solely on the transition timer.
+            KillTimer(hWnd, kBlurTransitionTimerId);
+            RemoveProp(hWnd, kBlurTransitionProp);
         }
+
+        SendMessage(hWnd, WM_NCACTIVATE, TRUE, 0);
+        ApplyBackgroundTranslucentEffect(hWnd);
+        StartBackdropRetry(hWnd);
+        RedrawWindow(hWnd, nullptr, nullptr,
+                     RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
     }
 
     // Applying the mod to an Explorer window that was already open can leave
