@@ -5,7 +5,7 @@
 // @version         0.1.0
 // @author          TeddySlexique
 // @github          https://github.com/PredaX6/WindHawk
-// @include         explorer.exe
+// @include         *
 // @architecture    x86-64
 // @compilerOptions -lcomctl32 -ld2d1 -ldwmapi -lgdi32 -lmsimg32 -lole32 -loleaut32 -lruntimeobject -lshlwapi -luxtheme -lversion -lpsapi
 // ==/WindhawkMod==
@@ -10844,6 +10844,19 @@ void GlassExplorer_ModSettingsChanged() {
 namespace TaskSwitch {
 using namespace winrt::Windows::UI::Xaml;
 
+bool g_taskSwitchEnabled = false;
+
+bool IsExplorerProcess() {
+    WCHAR path[MAX_PATH];
+    DWORD length = GetModuleFileNameW(nullptr, path, ARRAYSIZE(path));
+    if (length == 0 || length >= ARRAYSIZE(path)) {
+        return false;
+    }
+    PCWSTR fileName = wcsrchr(path, L'\\');
+    fileName = fileName ? fileName + 1 : path;
+    return _wcsicmp(fileName, L"explorer.exe") == 0;
+}
+
 struct Region {
     bool isPercentage;
     int start;
@@ -12461,7 +12474,7 @@ void HandleLoadedModuleIfExplorerPatcher(HMODULE module) {
 }
 
 void OnLibraryLoaded(HMODULE module, LPCWSTR lpLibFileName) {
-    if (module) {
+    if (g_taskSwitchEnabled && module) {
         HandleLoadedModuleIfExplorerPatcher(module);
         HandleLoadedModuleIfTaskbarView(module, lpLibFileName);
     }
@@ -12469,6 +12482,14 @@ void OnLibraryLoaded(HMODULE module, LPCWSTR lpLibFileName) {
 
 BOOL Wh_ModInit() {
     Wh_Log(L">");
+
+    // Glass Explorer also runs in ShellExperienceHost/ShellHost. The task
+    // switcher must initialize only inside explorer.exe.
+    if (!IsExplorerProcess()) {
+        g_taskSwitchEnabled = false;
+        return TRUE;
+    }
+    g_taskSwitchEnabled = true;
 
     LoadSettings();
 
@@ -12522,6 +12543,10 @@ BOOL Wh_ModInit() {
 void Wh_ModAfterInit() {
     Wh_Log(L">");
 
+    if (!g_taskSwitchEnabled) {
+        return;
+    }
+
     if (g_winVersion >= WinVersion::Win11 && !g_taskbarViewDllLoaded) {
         if (HMODULE taskbarViewModule = GetTaskbarViewModuleHandle()) {
             if (!g_taskbarViewDllLoaded.exchange(true)) {
@@ -12548,6 +12573,10 @@ void Wh_ModAfterInit() {
 void Wh_ModBeforeUninit() {
     Wh_Log(L">");
 
+    if (!g_taskSwitchEnabled) {
+        return;
+    }
+
     if (HWND hTaskBandWnd = GetTaskBandWnd()) {
         SendMessage(hTaskBandWnd, g_hotkeyRegisteredMsg, HOTKEY_UNREGISTER, 0);
     }
@@ -12555,6 +12584,11 @@ void Wh_ModBeforeUninit() {
 
 BOOL Wh_ModSettingsChanged(BOOL* bReload) {
     Wh_Log(L">");
+
+    if (!g_taskSwitchEnabled) {
+        *bReload = FALSE;
+        return TRUE;
+    }
 
     bool prevOldTaskbarOnWin11 = g_settings.oldTaskbarOnWin11;
 
