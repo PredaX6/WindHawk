@@ -149,154 +149,169 @@ Special thanks to [@Abdullah Masood](https://github.com/Abdullah-Masood-05) for 
 /*
 - minimize_restore:
   - minimize_animation: true
-    $name: Animate minimizing
-    $description: Animate windows as they minimize to the taskbar.
+    $name: Animer la réduction
+    $description: Animer les fenêtres lorsqu’elles sont réduites dans la barre des tâches.
   - restore_animation: true
-    $name: Animate restoring
-    $description: Animate windows as they return from the taskbar.
+    $name: Animer la restauration
+    $description: Animer le retour des fenêtres depuis la barre des tâches.
   - launch_animation: false
-    $name: Animate app launches
+    $name: Animer l’ouverture des applications
     $description: >-
-      Disabled by default. Enable to use the restore animation when an application window first
-      opens. Firefox-family browsers such as Firefox and Waterfox use an alpha-only compatibility
-      path for their startup window that preserves session restore while keeping the launch animation.
-      Some apps that open their window asynchronously show it without a launch animation.
-      Windows hidden to the tray still become visible normally when reopened.
+      Désactivé par défaut. Activez cette option pour utiliser l’animation de restauration lors de la
+      première ouverture d’une fenêtre d’application. Les navigateurs de la famille Firefox, comme
+      Firefox et Waterfox, utilisent une voie de compatibilité limitée à l’alpha pour leur fenêtre
+      de démarrage, afin de préserver la restauration de session tout en conservant l’animation.
+      Certaines applications qui ouvrent leur fenêtre de manière asynchrone peuvent apparaître sans
+      animation de lancement. Les fenêtres masquées dans la zone de notification restent affichées
+      normalement lorsqu’elles sont rouvertes.
   - random_effect: false
-    $name: Shuffle animation styles
+    $name: Mélanger les styles d’animation
     $description: >-
-      Use one session-wide shuffled cycle shared by every app. Play every effect once before
-      starting a new cycle, and never join consecutive cycles on the same effect. Each restore or
-      animated launch selects the next global effect, and the following minimize reuses it. A
-      minimize without an earlier animated restore selects an effect for itself. Rapid reversals
-      keep the same effect. When enabled, the Animation style setting below is ignored.
+      Utilise un cycle aléatoire commun à toutes les applications pendant la session. Chaque effet est
+      joué une fois avant le début d’un nouveau cycle, et deux cycles successifs ne commencent
+      jamais par le même effet. Chaque restauration ou ouverture animée sélectionne le prochain effet
+      global, réutilisé lors de la réduction suivante. Une réduction sans restauration animée préalable
+      choisit son propre effet. Les inversions rapides conservent le même effet. Lorsque cette option
+      est activée, le réglage Style d’animation ci-dessous est ignoré.
   - effect_style: genie
-    $name: Animation style
+    $name: Style d’animation
     $description: >-
-      Choose the effect used for minimizing and restoring windows. Ignored while shuffling is
-      enabled.
+      Choisissez l’effet utilisé pour réduire et restaurer les fenêtres. Ce réglage est ignoré si le
+      mélange des styles est activé.
     $options:
-    - genie: Genie — Taskbar suck
-    - windows10: Windows 10 — Collapse to taskbar
-    - ink_splash: Ink Splash — Organic blot
-    - scorch: Scorch — Corner burn
-    - splinter: Splinter — Center crack
-    - mirage: Mirage — Wavy shimmer
-    - stipple: Stipple — Dotted bloom
-    - swell: Swell — Expand and fade
+    - genie: Génie — Aspiration vers la barre des tâches
+    - windows10: Windows 10 — Réduction vers la barre des tâches
+    - ink_splash: Éclaboussure d’encre — Tache organique
+    - scorch: Brûlure — Combustion depuis un coin
+    - splinter: Éclatement — Fissure centrale
+    - mirage: Mirage — Ondulation chatoyante
+    - stipple: Pointillisme — Expansion en points
+    - swell: Gonflement — Expansion et fondu
   - duration_ms: 360
-    $name: Duration (ms)
+    $name: Durée (ms)
     $description: >-
-      Base animation duration, from 200 to 1400 ms. Non-Genie effects apply a small pacing
-      adjustment. Windows 10 style ignores this setting and uses a fixed system-like timing.
+      Durée de base de l’animation, de 200 à 1 400 ms. Les effets autres que Génie appliquent un léger
+      ajustement du rythme. Le style Windows 10 ignore ce réglage et utilise une durée fixe similaire
+      à celle du système.
   - unhide_taskbar: false
-    $name: Reveal the taskbar during Genie
+    $name: Afficher la barre des tâches pendant l’effet Génie
     $description: >-
-      When taskbar auto-hide is enabled, keep an already visible or hovered taskbar above the
-      Genie effect without changing focus. If it is hidden, briefly reveal it and defer the real
-      minimize until the animation finishes. Off by default. No effect on other animation styles.
+      Lorsque le masquage automatique de la barre des tâches est activé, maintenir au premier plan la
+      barre déjà visible ou survolée pendant l’effet Génie, sans modifier le focus. Si elle est
+      masquée, l’afficher brièvement et différer la réduction réelle jusqu’à la fin de l’animation.
+      Désactivé par défaut. Sans effet sur les autres styles d’animation.
   - unhide_duration_ms: 450
-    $name: Taskbar reveal duration (ms)
+    $name: Durée d’affichage de la barre des tâches (ms)
     $description: >-
-      How long to keep the taskbar revealed before the deferred Genie minimize commits, from 0
-      to 5000 ms.
+      Durée pendant laquelle la barre des tâches reste affichée avant que la réduction différée de
+      l’effet Génie soit appliquée, de 0 à 5 000 ms.
   - show_desktop_top_window_only: false
-    $name: Optimize Show Desktop
+    $name: Optimiser la fonction « Afficher le Bureau »
     $description: >-
-      Disabled keeps the classic behavior and custom-animates eligible windows in sequence during
-      Show Desktop. Enable this to bypass the mod's minimize and restore animations for Show
-      Desktop, including three-finger touchpad gestures, and let Windows animate the entire batch
-      natively. Individual taskbar and title-bar minimize/restore operations remain animated.
-      Operations immediately after Show Desktop can also use native animations for up to 1.5 seconds,
-      or up to 2 seconds when the mod detects Show Desktop through the Win+D keyboard shortcut.
+      Désactivée, cette option conserve le comportement classique et anime successivement les fenêtres
+      compatibles lors de l’utilisation de « Afficher le Bureau ». Activez-la pour ignorer les
+      animations de réduction et de restauration du mod dans ce scénario, y compris avec les gestes
+      du pavé tactile à trois doigts, et laisser Windows animer l’ensemble nativement. Les opérations
+      individuelles depuis la barre des tâches ou la barre de titre restent animées. Les opérations
+      juste après « Afficher le Bureau » peuvent également utiliser les animations natives pendant
+      1,5 seconde, ou 2 secondes si le raccourci Win+D est détecté.
   - gpu_acceleration: true
-    $name: Hybrid GPU acceleration
+    $name: Accélération GPU hybride
     $description: >-
-      Use D3D11 with DirectComposition for warmed, compatible restore and launch animations.
-      Normal minimize animations intentionally use the optimized CPU renderer because it is
-      faster and avoids native taskbar-state flicker. Rapid reversals keep the renderer already
-      in use. Unsupported hardware, Remote Desktop, incompatible processes such as UniKey,
-      initialization failure, or device loss falls back to CPU. Disable this setting to force
-      CPU for the entire group. See the mod README for the full routing details.
-  $name: Minimize, restore, and launch
-  $description: Configure animations for minimizing, restoring, and opening windows.
+      Utilise D3D11 avec DirectComposition pour les animations de restauration et de lancement compatibles
+      dont le moteur a été initialisé. Les réductions normales utilisent volontairement le rendu CPU
+      optimisé, plus rapide et qui évite le scintillement de l’état natif de la barre des tâches. Les
+      inversions rapides conservent le moteur déjà utilisé. En cas de matériel non pris en charge,
+      de Bureau à distance, de processus incompatible comme UniKey, d’échec d’initialisation ou de
+      perte du périphérique, le rendu CPU prend le relais. Désactivez cette option pour forcer le CPU
+      pour tout le groupe. Consultez le README du mod pour les détails du choix du moteur.
+  $name: Réduction, restauration et ouverture
+  $description: Configurez les animations de réduction, de restauration et d’ouverture des fenêtres.
 - close:
   - close_animation: true
-    $name: Animate closing
-    $description: Play a cinematic effect when an application window closes.
+    $name: Animer la fermeture
+    $description: Jouer un effet cinématique lorsqu’une fenêtre d’application se ferme.
   - hide_as_close: false
-    $name: Animate windows hidden to the tray
+    $name: Animer les fenêtres masquées dans la zone de notification
     $description: >-
-      Disabled by default. Enable to animate apps such as Discord, Steam, and Telegram when they
-      hide their window instead of closing it. This can also animate splash screens, such as the
-      Discord updater, or windows hidden automatically by an app, such as the Google Chrome
-      profile picker. Brief Tauri show/hide normalization during startup or tray restoration is
-      excluded from close animation so it doesn't play a false close effect.
+      Désactivé par défaut. Activez cette option pour animer les applications comme Discord, Steam et
+      Telegram lorsqu’elles masquent leur fenêtre au lieu de la fermer. Cela peut également animer
+      les écrans de démarrage, comme celui du programme de mise à jour de Discord, ou les fenêtres
+      masquées automatiquement par une application, comme le sélecteur de profils de Google Chrome.
+      Les changements rapides d’affichage/masquage de Tauri au démarrage ou lors du retour depuis la
+      zone de notification sont exclus afin d’éviter de déclencher à tort une animation de fermeture.
   - random_effect: false
     $name: Shuffle animation styles
     $description: >-
-      Use one session-wide shuffled cycle shared by every app. Play every close effect once before
-      starting a new cycle, and never join consecutive cycles on the same effect. Closing and
-      reopening an app continues the same global cycle. When enabled, the Animation style setting
-      below is ignored.
+      Utilise un cycle aléatoire commun à toutes les applications pendant la session. Chaque effet de
+      fermeture est joué une fois avant le début d’un nouveau cycle, et deux cycles successifs ne
+      commencent jamais par le même effet. La fermeture puis la réouverture d’une application
+      poursuit le même cycle global. Lorsque cette option est activée, le réglage Style d’animation
+      ci-dessous est ignoré.
   - effect_style: thanos
     $name: Animation style
     $description: >-
-      Choose the effect used when closing a window. Ignored while shuffling is enabled.
+      Choisissez l’effet utilisé lors de la fermeture d’une fenêtre. Ce réglage est ignoré si le mélange
+      des styles est activé.
     $options:
-    - shatter: Square Shatter — Explosion
-    - thanos: Thanos Snap — Disintegration wave
-    - perlin: Perlin Dissolve — Acid burn
-    - glitch: Cyber Glitch — Digital teleport
-    - tv_off: Retro TV Off — CRT power-down
-    - pixel_melt: Pixel Melt — Dripping paint
+    - shatter: Éclatement en carrés — Explosion
+    - thanos: Claquement de Thanos — Vague de désintégration
+    - perlin: Dissolution Perlin — Brûlure acide
+    - glitch: Parasitage numérique — Téléportation
+    - tv_off: Téléviseur rétro — Extinction cathodique
+    - pixel_melt: Fonte de pixels — Peinture dégoulinante
   - duration_ms: 630
     $name: Duration (ms)
     $description: >-
-      Base close animation duration, from 50 to 5000 ms. Some effects adjust their pacing.
-      Usually the closing or hiding app's UI thread waits for completion (only sent messages
-      are pumped). Compatible Excel closes with another workbook
-      window open wait only for the first animation frame; the last window still waits for completion.
+      Durée de base de l’animation de fermeture, de 50 à 5 000 ms. Certains effets ajustent leur rythme.
+      En général, le thread d’interface de l’application qui se ferme ou masque sa fenêtre attend la
+      fin de l’animation (seuls les messages envoyés sont traités). Dans Excel, si un autre classeur
+      reste ouvert, les fermetures compatibles n’attendent que la première image de l’animation ; la
+      dernière fenêtre attend toujours la fin complète.
   - shatter_block_size: 5
-    $name: Dust and shatter block size (px)
+    $name: Taille des blocs de poussière et d’éclatement (px)
     $description: >-
-      Particle size, from 1 to 100 px. The 1 px setting uses specialized single-pixel paths on
-      both renderers; values from 2 to 4 use dense quad fields and can be especially demanding
-      on 4K displays.
+      Taille des particules, de 1 à 100 px. Le réglage 1 px utilise des chemins optimisés pour les
+      pixels individuels dans les deux moteurs de rendu ; les valeurs de 2 à 4 px utilisent un grand
+      nombre de quadrilatères et peuvent être particulièrement exigeantes sur les écrans 4K.
   - gpu_acceleration: true
     $name: Hybrid GPU acceleration
     $description: >-
-      Use D3D11 only for very dense Thanos or Perlin closes: 1 px blocks on windows with at least
-      1.5 million source pixels. Other close effects and lighter workloads intentionally use the
-      optimized CPU renderer because layered GPU synchronization costs more. File Explorer and
-      other backdrop-sensitive windows, Remote Desktop, incompatible processes, unavailable
-      hardware, initialization failure, or device loss also use CPU. Disable this setting to
-      force CPU for every close. See the mod README for the full routing details.
-  $name: Close
-  $description: Configure the effects played when windows close or hide (system tray app).
+      Utilise D3D11 uniquement pour les fermetures Thanos ou Perlin très denses : blocs de 1 px sur des
+      fenêtres contenant au moins 1,5 million de pixels source. Les autres effets de fermeture et
+      les charges plus légères utilisent volontairement le rendu CPU optimisé, car la synchronisation
+      du GPU avec les fenêtres superposées coûterait davantage. L’Explorateur de fichiers et les
+      autres fenêtres sensibles à l’arrière-plan, le Bureau à distance, les processus incompatibles,
+      le matériel indisponible, les échecs d’initialisation et les pertes du périphérique utilisent
+      également le CPU. Désactivez cette option pour forcer le CPU pour toutes les fermetures.
+      Consultez le README du mod pour les détails du choix du moteur.
+  $name: Fermeture
+  $description: Configurez les effets joués lorsque les fenêtres se ferment ou sont masquées dans la zone de notification.
 - window_switch:
   - switch_animation: true
-    $name: Animate window switching
+    $name: Animer le changement de fenêtre
     $description: >-
-      Play a scale-and-fade animation when switching windows with Alt+Tab, or through
-      confirmed selections in compatible Simple Window Switcher builds, including touchpad gestures.
+      Jouer une animation de mise à l’échelle et de fondu lors du changement de fenêtre avec Alt+Tab,
+      ou lors de sélections confirmées dans les versions compatibles de Simple Window Switcher,
+      y compris avec les gestes du pavé tactile.
   - duration_ms: 200
     $name: Duration (ms)
-    $description: Window-switch animation duration, from 50 to 1000 ms.
-  $name: Window switch
-  $description: Configure the animation used when selecting a window through Alt+Tab.
+    $description: Durée de l’animation de changement de fenêtre, de 50 à 1 000 ms.
+  $name: Changement de fenêtre
+  $description: Configurez l’animation utilisée lors de la sélection d’une fenêtre avec Alt+Tab.
 - diagnostics:
   - performance_telemetry: false
-    $name: Log performance telemetry
+    $name: Journaliser les mesures de performance
     $description: >-
-      Disabled by default. Write one compact performance summary after each minimize, restore,
-      launch, or close animation and enable supporting animation-start, renderer-routing,
-      taskbar-lookup, reversal, settings, and GPU-lifecycle events. CPU samples split canvas
-      clearing, effect rendering, and layered-window presentation. No per-frame messages are
-      written. Enable this only while collecting measurements, then disable it to keep the log
-      concise.
-  $name: Diagnostics
-  $description: Optional measurements used when diagnosing renderer performance.
+      Désactivé par défaut. Écrit un résumé compact des performances après chaque animation de
+      réduction, de restauration, d’ouverture ou de fermeture, et active les événements associés au
+      démarrage des animations, au choix du moteur de rendu, à la recherche de la barre des tâches,
+      aux inversions, aux paramètres et au cycle de vie du GPU. Les mesures CPU distinguent
+      l’effacement du canevas, le rendu de l’effet et la présentation de la fenêtre superposée.
+      Aucun message n’est écrit pour chaque image. Activez cette option uniquement pendant les
+      mesures, puis désactivez-la pour garder un journal concis.
+  $name: Diagnostic
+  $description: Mesures facultatives utilisées pour diagnostiquer les performances du moteur de rendu.
 */
 // ==/WindhawkModSettings==
 
