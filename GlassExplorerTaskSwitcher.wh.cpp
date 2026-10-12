@@ -102,6 +102,11 @@ Seuls Windows 10 64 bits et Windows 11 sont pris en charge. Pour les versions pl
 #include <winrt/Microsoft.UI.Xaml.Input.h>
 #include <winrt/Microsoft.UI.Input.h>
 
+// Taskbar.View.dll's TaskbarFrame wheel override is based on Windows.UI.Xaml,
+// not Microsoft.UI.Xaml. Keep these types explicitly qualified in the hook.
+#include <winrt/Windows.UI.Xaml.h>
+#include <winrt/Windows.UI.Xaml.Input.h>
+
 struct ThemeTargetStyles {
     PCWSTR target;
     std::vector<PCWSTR> styles;
@@ -12154,12 +12159,13 @@ int TaskbarFrame_OnPointerWheelChanged_Hook(PVOID pThis, PVOID pArgs) {
         return original();
     }
 
-    auto taskbarFrameElement = taskbarFrame.as<winrt::Microsoft::UI::Xaml::UIElement>();
+    auto taskbarFrameElement = taskbarFrame.as<winrt::Windows::UI::Xaml::UIElement>();
 
-    winrt::Microsoft::UI::Xaml::Input::PointerRoutedEventArgs args = nullptr;
+    winrt::Windows::UI::Xaml::Input::PointerRoutedEventArgs args = nullptr;
     ((IUnknown*)pArgs)
-        ->QueryInterface(winrt::guid_of<winrt::Microsoft::UI::Xaml::Input::PointerRoutedEventArgs>(),
-                         winrt::put_abi(args));
+        ->QueryInterface(
+            winrt::guid_of<winrt::Windows::UI::Xaml::Input::PointerRoutedEventArgs>(),
+            winrt::put_abi(args));
     if (!args) {
         return original();
     }
@@ -12187,9 +12193,9 @@ int TaskbarFrame_OnPointerWheelChanged_Hook(PVOID pThis, PVOID pArgs) {
     ZeroMemory(&input, sizeof(INPUT));
     SendInput(1, &input, sizeof(INPUT));
 
-    // Do not traverse undocumented Explorer task-list pointers here: that
-    // path can crash/restart Explorer on current Windows 11 builds.
-    OnTaskbarWheelSafe(static_cast<short>(delta));
+    // Use the original task-switcher implementation after obtaining the
+    // correct Windows.UI.Xaml event arguments from Taskbar.View.dll.
+    OnTaskListScroll(hMMTaskListWnd, static_cast<short>(delta));
 
     args.Handled(true);
     return 0;
