@@ -8674,7 +8674,9 @@ HRESULT WINAPI DwmSetWindowAttribute_Hook(HWND hWnd,
     }
 
     auto backgroundTranslucentEffect =
-        GetEffectiveBackgroundTranslucentEffect();
+        GetProp(hWnd, kTransitionAcrylicProp)
+            ? BackgroundTranslucentEffect::kAcrylic
+            : GetEffectiveBackgroundTranslucentEffect();
 
     int backdropType;
     switch (backgroundTranslucentEffect) {
@@ -9883,12 +9885,10 @@ constexpr int ACCENT_ENABLE_BLURBEHIND = 3;
 // renders Acrylic, not the intended Accent Blur material.
 constexpr bool kTestBlurUsingSystemBackdrop = false;
 
-// Temporarily use Acrylic while Explorer animates a window transition. The
-// legacy Accent Blur is restored after the transition has had time to finish.
-constexpr UINT_PTR kTransitionAcrylicTimerId = 0x47455844;
+// Temporarily use the native Acrylic system backdrop during window transitions.
+// Restore Accent Blur on the first completed restore/maximize size notification.
 constexpr WCHAR kTransitionAcrylicProp[] =
     L"windhawk_transition-acrylic-" WH_MOD_ID;
-constexpr UINT kTransitionAcrylicDurationMs = 800;
 
 BOOL WINAPI SetWindowCompositionAttribute_Hook(
     HWND hWnd, WINDOWCOMPOSITIONATTRIBDATA* data) {
@@ -9896,6 +9896,7 @@ BOOL WINAPI SetWindowCompositionAttribute_Hook(
         GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
         GetEffectiveBackgroundTranslucentEffect() ==
             BackgroundTranslucentEffect::kBlur &&
+        !GetProp(hWnd, kTransitionAcrylicProp) &&
         !kTestBlurUsingSystemBackdrop) {
         ACCENT_POLICY accentPolicy = {
             .AccentState = ACCENT_ENABLE_BLURBEHIND,
@@ -10512,21 +10513,6 @@ void StartBackdropRetry(HWND hWnd) {
     SetTimer(hWnd, kBackdropRetryTimerId, 30, BackdropRetryTimerProc);
 }
 
-VOID CALLBACK TransitionAcrylicTimerProc(HWND hWnd, UINT, UINT_PTR timerId,
-                                         DWORD) {
-    KillTimer(hWnd, timerId);
-    if (!IsWindow(hWnd) ||
-        GetTargetWindowType(hWnd) != TargetWindowType::FileExplorer) {
-        RemoveProp(hWnd, kTransitionAcrylicProp);
-        return;
-    }
-
-    RemoveProp(hWnd, kTransitionAcrylicProp);
-    ApplyBackgroundTranslucentEffect(hWnd);
-    RedrawWindow(hWnd, nullptr, nullptr,
-                 RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
-}
-
 void StartTransitionAcrylic(HWND hWnd) {
     if (!IsWindow(hWnd) ||
         GetTargetWindowType(hWnd) != TargetWindowType::FileExplorer ||
@@ -10535,11 +10521,10 @@ void StartTransitionAcrylic(HWND hWnd) {
         return;
     }
 
+    // No timer: keep native Acrylic for the whole transition. WM_SIZE after
+    // restore/maximize switches back to the configured Accent Blur.
     SetProp(hWnd, kTransitionAcrylicProp, (HANDLE)1);
-    KillTimer(hWnd, kTransitionAcrylicTimerId);
     ApplyBackgroundTranslucentEffect(hWnd);
-    SetTimer(hWnd, kTransitionAcrylicTimerId,
-             kTransitionAcrylicDurationMs, TransitionAcrylicTimerProc);
 }
 
 LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
@@ -10595,6 +10580,12 @@ LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
         (wParam == SIZE_RESTORED || wParam == SIZE_MAXIMIZED) &&
         !IsIconic(hWnd) &&
         GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer) {
+        // End transition Acrylic only once Explorer reports its restored or
+        // maximized size. Do this before WM_NCACTIVATE reapplies the material.
+        if (RemoveProp(hWnd, kTransitionAcrylicProp)) {
+            ApplyBackgroundTranslucentEffect(
+                hWnd, BackgroundTranslucentEffect::kBlur);
+        }
         SendMessage(hWnd, WM_NCACTIVATE, TRUE, 0);
         ApplyBackgroundTranslucentEffect(hWnd);
         StartBackdropRetry(hWnd);
