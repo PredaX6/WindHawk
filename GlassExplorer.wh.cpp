@@ -10441,17 +10441,16 @@ bool IsGlassExplorerShellProcess() {
 using DefWindowProcW_t = decltype(&DefWindowProcW);
 DefWindowProcW_t DefWindowProcW_Original;
 
-// Retry Accent materials briefly after Explorer activation and window-show
-// transitions, because shell menus and DWM animations can reset the material.
+// Diagnostic retry: the legacy Accent blur may be ignored while DWM is
+// animating a newly shown Explorer window. Reapply it briefly during startup.
 constexpr UINT_PTR kBlurRetryTimerId = 0x47455842;
 constexpr WCHAR kBlurRetryCountProp[] = L"windhawk_blur-retry-count-" WH_MOD_ID;
 
 VOID CALLBACK BlurRetryTimerProc(HWND hWnd, UINT, UINT_PTR timerId, DWORD) {
-    auto effect = GetEffectiveBackgroundTranslucentEffect();
     if (!IsWindow(hWnd) ||
         GetTargetWindowType(hWnd) != TargetWindowType::FileExplorer ||
-        (effect != BackgroundTranslucentEffect::kBlur &&
-         effect != BackgroundTranslucentEffect::kAcrylic)) {
+        GetEffectiveBackgroundTranslucentEffect() !=
+            BackgroundTranslucentEffect::kBlur) {
         KillTimer(hWnd, timerId);
         RemoveProp(hWnd, kBlurRetryCountProp);
         return;
@@ -10478,9 +10477,8 @@ LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
         GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer) {
         ApplyBackgroundTranslucentEffect(hWnd);
 
-        auto effect = GetEffectiveBackgroundTranslucentEffect();
-        if (effect == BackgroundTranslucentEffect::kBlur ||
-            effect == BackgroundTranslucentEffect::kAcrylic) {
+        if (GetEffectiveBackgroundTranslucentEffect() ==
+            BackgroundTranslucentEffect::kBlur) {
             RemoveProp(hWnd, kBlurRetryCountProp);
             SetProp(hWnd, kBlurRetryCountProp, (HANDLE)(ULONG_PTR)1);
             SetTimer(hWnd, kBlurRetryTimerId, 15, BlurRetryTimerProc);
@@ -10510,21 +10508,6 @@ LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
         // Keep the legacy Accent blur as the final operation for Blur mode.
         if (isBlur) {
             ApplyBackgroundTranslucentEffect(hWnd);
-        }
-    }
-
-    // Reapply Accent Acrylic/Blur after focus transitions. Explorer and the
-    // shell's window-switching UI can reset the composition policy as focus
-    // changes; retry briefly to let the shell finish its own transition.
-    if ((uMsg == WM_ACTIVATE || uMsg == WM_NCACTIVATE) &&
-        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer) {
-        auto effect = GetEffectiveBackgroundTranslucentEffect();
-        if (effect == BackgroundTranslucentEffect::kBlur ||
-            effect == BackgroundTranslucentEffect::kAcrylic) {
-            ApplyBackgroundTranslucentEffect(hWnd);
-            RemoveProp(hWnd, kBlurRetryCountProp);
-            SetProp(hWnd, kBlurRetryCountProp, (HANDLE)(ULONG_PTR)1);
-            SetTimer(hWnd, kBlurRetryTimerId, 15, BlurRetryTimerProc);
         }
     }
 
