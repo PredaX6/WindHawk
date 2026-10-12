@@ -11339,9 +11339,9 @@ void OnTaskListScroll(HWND hMMTaskListWnd, short delta) {
     }
 
     int clicks = -delta / WHEEL_DELTA;
-    Wh_Log(L"%d clicks (delta=%d)", clicks, delta);
 
     if (clicks != 0) {
+        Wh_Log(L"%d clicks (delta=%d)", clicks, delta);
         if (g_settings.reverseScrollingDirection) {
             clicks = -clicks;
         }
@@ -11977,8 +11977,6 @@ CTaskListWnd__SetActiveItem_t CTaskListWnd__SetActiveItem_Original;
 void WINAPI CTaskListWnd__SetActiveItem_Hook(void* pThis,
                                              void* taskBtnGroup,
                                              int buttonIndex) {
-    Wh_Log(L">");
-
     g_lastTaskListActiveTaskItem[pThis] =
         taskBtnGroup ? CTaskBtnGroup_GetTaskItem(taskBtnGroup, buttonIndex)
                      : nullptr;
@@ -12140,8 +12138,6 @@ using TaskbarFrame_OnPointerWheelChanged_t = int(WINAPI*)(PVOID pThis,
 TaskbarFrame_OnPointerWheelChanged_t
     TaskbarFrame_OnPointerWheelChanged_Original;
 int TaskbarFrame_OnPointerWheelChanged_Hook(PVOID pThis, PVOID pArgs) {
-    Wh_Log(L">");
-
     auto original = [=]() {
         return TaskbarFrame_OnPointerWheelChanged_Original(pThis, pArgs);
     };
@@ -12161,8 +12157,6 @@ int TaskbarFrame_OnPointerWheelChanged_Hook(PVOID pThis, PVOID pArgs) {
     }
 
     auto className = winrt::get_class_name(taskbarFrame);
-    Wh_Log(L"%s", className.c_str());
-
     if (className != L"Taskbar.TaskbarFrame") {
         return original();
     }
