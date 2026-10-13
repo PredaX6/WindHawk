@@ -565,6 +565,8 @@ static constexpr PCWSTR kPropAnimationGhost =
     L"windows-animations.AnimationGhostV1";
 static constexpr PCWSTR kPropClassicShowDesktopOwnerDispatch =
     L"windows-animations.ClassicShowDesktopOwnerDispatchV2";
+static constexpr PCWSTR kPropClassicShowDesktopRestoreZOrder =
+    L"windows-animations.ClassicShowDesktopRestoreZOrderV1";
 static constexpr PCWSTR kPropClassicShowDesktopOwnerPrepared =
     L"windows-animations.ClassicShowDesktopOwnerPreparedV2";
 static constexpr PCWSTR kPropClassicShowDesktopOwnerProtocolLegacy =
@@ -1536,14 +1538,26 @@ static bool GetAnimWantRising(HWND hWnd, bool* wantRisingOut) {
     return true;
 }
 static bool IsClassicShowDesktopOperation();
+static bool PreserveClassicShowDesktopRestoreZOrder(HWND hWnd) {
+    if (!hWnd || !IsWindow(hWnd)) return false;
+    const ULONG_PTR value = reinterpret_cast<ULONG_PTR>(
+        GetPropW(hWnd, kPropClassicShowDesktopRestoreZOrder));
+    if (!value) return false;
+    const DWORD deadline = static_cast<DWORD>(value);
+    if (static_cast<LONG>(deadline - GetTickCount()) > 0) return true;
+    RemovePropW(hWnd, kPropClassicShowDesktopRestoreZOrder);
+    return false;
+}
 static void RestoreZOrderAfterGhost(HWND hWnd, LONG_PTR originalExStyle) {
-    if (!hWnd || !IsWindow(hWnd)) return;
+    if (!hWnd || !IsWindow(hWnd) ||
+        PreserveClassicShowDesktopRestoreZOrder(hWnd)) return;
     SetWindowPos_Original(hWnd,
                           (originalExStyle & WS_EX_TOPMOST) ? HWND_TOPMOST : HWND_NOTOPMOST, 0, 0, 0,
                           0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
 }
 static void RestoreZOrderAfterGhostAsync(HWND hWnd, LONG_PTR originalExStyle) {
-    if (!hWnd || !IsWindow(hWnd)) return;
+    if (!hWnd || !IsWindow(hWnd) ||
+        PreserveClassicShowDesktopRestoreZOrder(hWnd)) return;
     SetWindowPos_Original(
         hWnd, (originalExStyle & WS_EX_TOPMOST) ? HWND_TOPMOST : HWND_NOTOPMOST,
         0, 0, 0, 0,
@@ -10267,6 +10281,7 @@ public:
             }
             FlushDwmOrYield();
         }
+        RemovePropW(data->hRealWnd, kPropClassicShowDesktopRestoreZOrder);
         if (hGhost) ShowWindow_Original(hGhost, SW_HIDE);
         return true;
     }
@@ -10280,6 +10295,7 @@ public:
         }
         UpdateDwmTransitions(data->hRealWnd, TRUE);
         RestoreZOrderAfterGhostAsync(data->hRealWnd, data->originalExStyle);
+        RemovePropW(data->hRealWnd, kPropClassicShowDesktopRestoreZOrder);
         data->deferredMinimize = FALSE;
     }
     void FinishClose() {
@@ -12752,6 +12768,10 @@ static void RestoreClassicShowDesktopBatchBeforeShell() {
                    L"hwnd=%p target_pid=%lu",
                    it->hWnd, it->processId);
         }
+        const DWORD preserveZOrderUntil = GetTickCount() + 15000;
+        SetPropW(it->hWnd, kPropClassicShowDesktopRestoreZOrder,
+                 reinterpret_cast<HANDLE>(
+                     static_cast<ULONG_PTR>(preserveZOrderUntil)));
         bool restoreSubmitted = false;
         if (it->threadId == GetCurrentThreadId()) {
             // A File Explorer window can share CTray's thread. Handle it
@@ -12774,6 +12794,7 @@ static void RestoreClassicShowDesktopBatchBeforeShell() {
                              static_cast<LPARAM>(-1)) != FALSE;
         }
         if (!restoreSubmitted) {
+            RemovePropW(it->hWnd, kPropClassicShowDesktopRestoreZOrder);
             if (it->threadId == GetCurrentThreadId()) {
                 ShowWindow_Original(it->hWnd, SW_RESTORE);
             } else if (!ShowWindowAsync_Original(it->hWnd, SW_RESTORE)) {
