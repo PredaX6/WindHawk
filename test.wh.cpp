@@ -11652,7 +11652,7 @@ bool StartStatsTimer() {
                 Wh_SetBinaryValue(L"statsTimerLastTime", &currentTime,
                                   sizeof(currentTime));
 
-                std::wstring themeNameEscaped = themeName.get();
+                std::wstring themeNameEscaped = L"Translucent_Explorer11";
                 std::replace(themeNameEscaped.begin(), themeNameEscaped.end(),
                              L' ', L'_');
                 std::replace(themeNameEscaped.begin(), themeNameEscaped.end(),
