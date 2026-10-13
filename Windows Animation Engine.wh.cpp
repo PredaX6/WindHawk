@@ -12662,45 +12662,6 @@ static bool IsClassicShowDesktopRestoreBatchCurrent(uint64_t generation) {
            !g_unloading.load(std::memory_order_relaxed);
 }
 
-static bool HasPublishedAnimationForWindow(HWND hWnd) {
-    return GetPropW(hWnd, kPropAnimationSession) != nullptr ||
-           FindAnimationGhostForTarget(hWnd) != nullptr;
-}
-
-static bool WaitForClassicShowDesktopRestoreEndpoint(
-    const ClassicShowDesktopRestoreWindow& window,
-    uint64_t generation, DWORD batchDeadline) {
-    DWORD stableSince = 0;
-    bool observedAnimation = false;
-    while (IsClassicShowDesktopRestoreBatchCurrent(generation) &&
-           IsClassicShowDesktopRestoreWindowCurrent(window) &&
-           static_cast<LONG>(GetTickCount() - batchDeadline) < 0) {
-        const bool publishedAnimation =
-            HasPublishedAnimationForWindow(window.hWnd);
-        observedAnimation = observedAnimation || publishedAnimation;
-        const bool busy = IsIconic(window.hWnd) || publishedAnimation;
-        if (busy) {
-            stableSince = 0;
-        } else {
-            const DWORD now = GetTickCount();
-            if (!stableSince) stableSince = now ? now : 1;
-            if (static_cast<DWORD>(now - stableSince) >= 20) {
-                return observedAnimation;
-            }
-        }
-        // This runs on Explorer's CTray UI thread. Service nonqueued sent
-        // messages while preserving posted input behind the current Win+D
-        // operation, matching the other classic Show Desktop waits.
-        const DWORD now = GetTickCount();
-        const LONG remaining =
-            static_cast<LONG>(batchDeadline - now);
-        if (remaining <= 0) break;
-        WaitWithSentMessagePump(
-            std::min<DWORD>(10, static_cast<DWORD>(remaining)));
-    }
-    return observedAnimation;
-}
-
 static void RestoreClassicShowDesktopBatchBeforeShell() {
     uint64_t generation = 0;
     std::vector<ClassicShowDesktopRestoreWindow> windows;
