@@ -1414,8 +1414,8 @@ std::condition_variable g_imageRetryPendingCallbacksCv;
 constexpr ULONGLONG kImageCacheRefreshIntervalMs = 7ULL * 24 * 60 * 60 * 1000;
 // Guards the globals below it.
 std::mutex g_imageDownloadMutex;
-// The URL of each image to fetch, or an empty string for a cache sweep. The
-// path a URL is cached at follows from the URL, so it isn't carried along.
+// The URL of each image to fetch. The path a URL is cached at follows from
+// the URL, so it isn't carried along.
 std::list<std::wstring> g_imageDownloadQueue;
 // The URL of every queued and in flight job, so that one image isn't fetched
 // twice at once. A job which failed is dropped: the retries of the image it's
