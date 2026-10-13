@@ -351,19 +351,16 @@ Windows](https://windhawk.net/mods/translucent-windows) mod.
 
 // ==WindhawkModSettings==
 /*
-- backgroundTranslucentEffect: ""
+- backgroundTranslucentEffect: acrylicblur
   $name: Translucent background effect
   $description: >-
     The translucent effect to use for the File Explorer background. For
     additional translucent effects, check out the Translucent Windows mod.
   $options:
-  - "": Default for the selected theme
-  - default: Windows default
   - acrylicblur: Acrylique classique — flou AccentBlurBehind
   - acrylic: Acrylique système — matériau Acrylic
   - mica: Mica
   - micaAlt: Mica Alt
-  - none: None
 - styleConstants: [""]
   $name: Style constants
   $description: >-
