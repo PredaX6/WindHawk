@@ -351,6 +351,19 @@ Windows](https://windhawk.net/mods/translucent-windows) mod.
 
 
 
+// ==WindhawkModSettings==
+/*
+- backgroundTranslucentEffect: acrylicblur
+  $name: Translucent background effect
+  $description: Select the translucent effect used for File Explorer.
+  $options:
+  - acrylicblur: Acrylique classique — flou AccentBlurBehind
+  - acrylic: Acrylique système — matériau Acrylic
+  - mica: Mica
+  - micaAlt: Mica Alt
+*/
+// ==/WindhawkModSettings==
+
 #include <xamlom.h>
 
 #include <atomic>
@@ -11661,10 +11674,35 @@ void StopStatsTimer() {
 }
 
 void LoadSettings() {
-    // Settings are fixed in code; no user-configurable options are exposed.
+    // Keep the entire window as the fixed translucent effect region.
     g_settings.backgroundTranslucentEffectRegion =
         BackgroundTranslucentEffectRegion::kEntireWindow;
-    g_settings.backgroundTranslucentEffect = BackgroundTranslucentEffect::kBlur;
+
+    PCWSTR backgroundTranslucentEffect =
+        Wh_GetStringSetting(L"backgroundTranslucentEffect");
+    g_settings.backgroundTranslucentEffect.reset();
+    if (wcscmp(backgroundTranslucentEffect, L"default") == 0) {
+        g_settings.backgroundTranslucentEffect =
+            BackgroundTranslucentEffect::kDefault;
+    } else if (wcscmp(backgroundTranslucentEffect, L"acrylicblur") == 0) {
+        g_settings.backgroundTranslucentEffect =
+            BackgroundTranslucentEffect::kBlur;
+    } else if (wcscmp(backgroundTranslucentEffect, L"acrylic") == 0) {
+        g_settings.backgroundTranslucentEffect =
+            BackgroundTranslucentEffect::kAcrylic;
+    } else if (wcscmp(backgroundTranslucentEffect, L"mica") == 0) {
+        g_settings.backgroundTranslucentEffect =
+            BackgroundTranslucentEffect::kMica;
+    } else if (wcscmp(backgroundTranslucentEffect, L"micaAlt") == 0) {
+        g_settings.backgroundTranslucentEffect =
+            BackgroundTranslucentEffect::kMicaAlt;
+    } else if (wcscmp(backgroundTranslucentEffect, L"none") == 0) {
+        g_settings.backgroundTranslucentEffect =
+            BackgroundTranslucentEffect::kNone;
+    }
+    Wh_FreeStringSetting(backgroundTranslucentEffect);
+
+    // Remaining settings are fixed in code.
     g_settings.explorerFrameContainerHeight = 0;
     g_settings.xamlDiagnosticsHandling = XamlDiagnosticsHandling::kAlert;
 }
