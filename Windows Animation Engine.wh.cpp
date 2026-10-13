@@ -469,16 +469,9 @@ namespace AnimConstants {
 // of snapshot-based effects, but allow ApplicationFrameWindow: packaged app
 // frames can use the regular animation paths once their real surface is ready.
 // These classes can use DefWindowProc's close path without first asking the
-// application whether closing is allowed. Never add an app such as Notepad
-// which can veto the initial WM_CLOSE/SC_CLOSE to show an unsaved-work prompt;
-// those windows must animate only once their confirmed DestroyWindow or hide
-// operation is observed.
-static constexpr std::wstring_view kCloseMessageAnimationClasses[] = {
-    L"ConsoleWindowClass",
-    L"CASCADIA_HOSTING_WINDOW_CLASS",
-    L"TaskManagerWindow",
-    L"WinUIDesktopWin32WindowClass"
-};
+// Close-message animation is applied only to top-level windows whose close
+// request reaches DefWindowProc. Applications that handle WM_CLOSE themselves
+// (for example, to ask about unsaved work) retain their own confirmation flow.
 static constexpr PCWSTR kPropCloseBypass = L"windows-animations.CloseBypass";
 static constexpr PCWSTR kPropClosed = L"windows-animations.Closed";
 static constexpr PCWSTR kPropExcelCloseAlpha =
@@ -3180,9 +3173,23 @@ static bool IsAppMainWindow(HWND hWnd, bool forSwitch = false) {
     bool isMain = GetWindowRect(hWnd, &r) && r.right - r.left >= 300 && r.bottom - r.top >= 300;
     return isMain;
 }
+
+static bool IsCloseAnimationWindow(HWND hWnd) {
+    if (!hWnd || !IsWindow(hWnd) || !IsWindowVisible(hWnd) ||
+        IsIconic(hWnd) || GetAncestor(hWnd, GA_ROOT) != hWnd ||
+        (GetWindowLongPtrW(hWnd, GWL_STYLE) & WS_CHILD)) {
+        return false;
+    }
+
+    // Cover visible top-level application windows, including owned dialogs,
+    // tool windows, and windows smaller than the switcher's main-window limit.
+    RECT rect{};
+    return GetWindowRect(hWnd, &rect) &&
+           rect.right > rect.left && rect.bottom > rect.top;
+}
+static bool IsCloseAnimationWindow(HWND hWnd); 
 static bool CanAnimateCloseMessage(HWND hWnd) {
-    return ContainsClass(GetClassNameStr(hWnd),
-                         kCloseMessageAnimationClasses);
+    return IsCloseAnimationWindow(hWnd);
 }
 static bool NeedsPersistentTrayHideCloak(HWND hWnd) {
     if (!hWnd || !IsWindow(hWnd)) return false;
@@ -3482,14 +3489,28 @@ static void ReleaseTrayHideCloakAfterAsyncShow(HWND hWnd, ULONG_PTR token) {
 }
 
 static bool ShouldAnimateWindow(HWND hWnd) {
-    if (!hWnd || (GetWindowLongPtrW(hWnd, GWL_STYLE) & WS_CHILD)) return false;
-    RECT r{};
+    if (!hWnd || !IsWindow(hWnd) ||
+        (GetWindowLongPtrW(hWnd, GWL_STYLE) & WS_CHILD)) {
+        return false;
+    }
+
+    // Do not exclude small application windows or rely on GetWindowPlacement
+    // succeeding during a transient minimize/restore transition. The actual
+    // animation startup validates the final frame dimensions before capture.
+    RECT rect{};
     if (IsIconic(hWnd)) {
-        WINDOWPLACEMENT wp{}; wp.length = sizeof(wp);
-        if (!GetWindowPlacement(hWnd, &wp)) return false;
-        r = wp.rcNormalPosition;
-    } else if (!GetWindowRect(hWnd, &r)) return false;
-    return r.right - r.left >= 40 && r.bottom - r.top >= 40;
+        WINDOWPLACEMENT placement{};
+        placement.length = sizeof(placement);
+        if (GetWindowPlacement(hWnd, &placement)) {
+            rect = placement.rcNormalPosition;
+        } else if (!GetWindowRect(hWnd, &rect)) {
+            return false;
+        }
+    } else if (!GetWindowRect(hWnd, &rect)) {
+        return false;
+    }
+
+    return rect.right > rect.left && rect.bottom > rect.top;
 }
 static bool IsLaunchWindow(HWND hWnd) {
     if (!hWnd || GetAncestor(hWnd, GA_ROOT) != hWnd) return false;
@@ -13347,7 +13368,7 @@ BOOL WINAPI DestroyWindow_Hook(HWND hWnd) {
     bool animated = false;
     if (GetWindowThreadProcessId(hWnd, NULL) == GetCurrentThreadId() &&
         g_closeAnimation.load(std::memory_order_relaxed) &&
-        IsAppMainWindow(hWnd) &&
+        IsCloseAnimationWindow(hWnd) &&
         !IsAnimating(hWnd) &&
         !GetPropW(hWnd, kPropCloseBypass) &&
         !GetPropW(hWnd, kPropClosed)) {
@@ -13502,7 +13523,7 @@ LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
     const bool closeMessage = msg == WM_CLOSE || (msg == WM_SYSCOMMAND && (wParam & 0xFFF0) == SC_CLOSE);
     if (closeMessage && !IsAnimating(hWnd) && !GetPropW(hWnd, kPropCloseBypass) && !GetPropW(hWnd, kPropClosed) &&
         g_closeAnimation.load(std::memory_order_relaxed) &&
-        IsAppMainWindow(hWnd) && CanAnimateCloseMessage(hWnd)) {
+        IsCloseAnimationWindow(hWnd)) {
         SetPropW(hWnd, kPropClosed, (HANDLE)1);
         const UINT repost = msg == WM_CLOSE ? WM_CLOSE : WM_SYSCOMMAND;
         if (RunCloseAnimation(hWnd, repost)) return 0;
