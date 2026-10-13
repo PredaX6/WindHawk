@@ -12655,16 +12655,16 @@ static void WaitForClassicShowDesktopRestoreAnimationSlot() {
         nullptr, FALSE,
         L"Local\\WindHawk.WindowsAnimationEngine.ShowDesktopRestoreSpacing");
     if (!spacingMutex) {
-        Sleep(500);
+        Sleep(100);
         return;
     }
 
     const DWORD waitResult = WaitForSingleObject(spacingMutex, INFINITE);
     if (waitResult == WAIT_OBJECT_0 || waitResult == WAIT_ABANDONED) {
-        Sleep(500);
+        Sleep(100);
         ReleaseMutex(spacingMutex);
     } else {
-        Sleep(500);
+        Sleep(100);
     }
 }
 
