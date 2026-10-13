@@ -1,265 +1,440 @@
 // ==WindhawkMod==
 // @id              test
 // @name            test
-// @description     Explorateur Windows translucide avec choix des thèmes Mica et Acrylique.
-// @version         0.2.0
-// @author          TeddySlexique
-// @github          https://github.com/PredaX6/WindHawk
-// @include         *
+// @description     Customize the File Explorer with themes contributed by others or create your own
+// @version         1.7
+// @author          m417z
+// @github          https://github.com/m417z
+// @twitter         https://twitter.com/m417z
+// @homepage        https://m417z.com/
+// @include         explorer.exe
 // @architecture    x86-64
-// @compilerOptions -ladvapi32 -lcomctl32 -ld3d11 -ld2d1 -ldcomp -ldwmapi -ldxgi -lgdi32 -lmsimg32 -lole32 -loleaut32 -lruntimeobject -lshlwapi -lshell32 -luuid -luser32 -luxtheme -lversion -lpsapi
+// @compilerOptions -lcomctl32 -ld2d1 -ldwmapi -lgdi32 -lmsimg32 -lole32 -loleaut32 -lruntimeobject -lshlwapi -luxtheme
 // ==/WindhawkMod==
+
+// Source code is published under The GNU General Public License v3.0.
+//
+// For bug reports and feature requests, please open an issue here:
+// https://github.com/ramensoftware/windhawk-mods/issues
+//
+// For pull requests, development takes place here:
+// https://github.com/m417z/my-windhawk-mods
 
 // ==WindhawkModReadme==
 /*
-# test
+# test — Translucent Explorer11
 
-## Thèmes de l’Explorateur Windows
+Customize the File Explorer with themes contributed by others or create your
+own.
 
-Choisissez l’un des deux rendus :
-- **Mica** : matériau natif Windows avec arrière-plan Mica.
-- **Acrylique** : arrière-plan translucide avec flou, associé au style **Translucent Explorer 11**.
+Also check out the **Windows 11 Taskbar Styler**, **Windows 11 Start Menu
+Styler** and **Windows 11 Notification Center Styler** mods.
 
-Le style Translucent Explorer 11 (barre de commandes, barre de navigation, onglets et vues) est intégré au mod et appliqué aux éléments XAML de l’Explorateur. Le matériau sélectionné détermine l’effet de fond de la fenêtre.
+## Themes
 
+Themes are collections of styles. The following themes are integrated into the
+mod and can be selected in the settings:
 
-## Taches Switch
-# Changer de tâche avec la molette dans la barre des tâches
+[![Translucent
+Explorer11](https://raw.githubusercontent.com/ramensoftware/windows-11-file-explorer-styling-guide/main/Themes/Translucent%20Explorer11/screenshot-small.png)
+\
+Translucent
+Explorer11](https://github.com/ramensoftware/windows-11-file-explorer-styling-guide/blob/main/Themes/Translucent%20Explorer11/README.md)
 
-Utilisez la molette de la souris au-dessus de la barre des tâches pour passer d'un bouton de la barre des tâches à l'autre.
+[![MicaBar](https://raw.githubusercontent.com/ramensoftware/windows-11-file-explorer-styling-guide/main/Themes/MicaBar/screenshot-small.png)
+\
+MicaBar](https://github.com/ramensoftware/windows-11-file-explorer-styling-guide/blob/main/Themes/MicaBar/README.md)
 
+[![NoCommandBar](https://raw.githubusercontent.com/ramensoftware/windows-11-file-explorer-styling-guide/main/Themes/NoCommandBar/screenshot-small.png)
+\
+NoCommandBar](https://github.com/ramensoftware/windows-11-file-explorer-styling-guide/blob/main/Themes/NoCommandBar/README.md)
 
+[![Minimal
+Explorer11](https://raw.githubusercontent.com/ramensoftware/windows-11-file-explorer-styling-guide/main/Themes/Minimal%20Explorer11/screenshot-small.png)
+\
+Minimal
+Explorer11](https://github.com/ramensoftware/windows-11-file-explorer-styling-guide/blob/main/Themes/Minimal%20Explorer11/README.md)
 
+[![Tabless](https://raw.githubusercontent.com/ramensoftware/windows-11-file-explorer-styling-guide/main/Themes/Tabless/screenshot-small.png)
+\
+Tabless](https://github.com/ramensoftware/windows-11-file-explorer-styling-guide/blob/main/Themes/Tabless/README.md)
 
-## Moteur d’animations Windows
+[![Matter](https://raw.githubusercontent.com/ramensoftware/windows-11-file-explorer-styling-guide/main/Themes/Matter/screenshot-small.png)
+\
+Matter](https://github.com/ramensoftware/windows-11-file-explorer-styling-guide/blob/main/Themes/Matter/README.md)
 
-Les paramètres ci-dessous ajoutent les animations de réduction, restauration, lancement, fermeture et changement de fenêtre. Les styles, durées, effets aléatoires, options GPU et diagnostics sont configurables séparément. Certaines options peuvent dépendre du type de fenêtre et de la version de Windows.
+[![WindowGlass](https://raw.githubusercontent.com/ramensoftware/windows-11-file-explorer-styling-guide/main/Themes/WindowGlass/screenshot-small.png)
+\
+WindowGlass](https://github.com/ramensoftware/windows-11-file-explorer-styling-guide/blob/main/Themes/WindowGlass/README.md)
+
+[![AddressSearchOnly](https://raw.githubusercontent.com/ramensoftware/windows-11-file-explorer-styling-guide/main/Themes/AddressSearchOnly/screenshot-small.png)
+\
+AddressSearchOnly](https://github.com/ramensoftware/windows-11-file-explorer-styling-guide/blob/main/Themes/AddressSearchOnly/README.md)
+
+[![TintedGlass](https://raw.githubusercontent.com/ramensoftware/windows-11-file-explorer-styling-guide/main/Themes/TintedGlass/screenshot-small.png)
+\
+TintedGlass](https://github.com/ramensoftware/windows-11-file-explorer-styling-guide/blob/main/Themes/TintedGlass/README.md)
+
+[![LiquidGlass](https://raw.githubusercontent.com/ramensoftware/windows-11-file-explorer-styling-guide/main/Themes/LiquidGlass/screenshot-small.png)
+\
+LiquidGlass](https://github.com/ramensoftware/windows-11-file-explorer-styling-guide/blob/main/Themes/LiquidGlass/README.md)
+
+[![MicaTabless](https://raw.githubusercontent.com/ramensoftware/windows-11-file-explorer-styling-guide/main/Themes/MicaTabless/screenshot-small.png)
+\
+MicaTabless](https://github.com/ramensoftware/windows-11-file-explorer-styling-guide/blob/main/Themes/MicaTabless/README.md)
+
+[![OS26 Liquid
+Glass](https://raw.githubusercontent.com/ramensoftware/windows-11-file-explorer-styling-guide/main/Themes/OS26%20Liquid%20Glass/screenshot-small.png)
+\
+OS26 Liquid
+Glass](https://github.com/ramensoftware/windows-11-file-explorer-styling-guide/blob/main/Themes/OS26%20Liquid%20Glass/README.md)
+
+[![ZEUSosX_044](https://raw.githubusercontent.com/ramensoftware/windows-11-file-explorer-styling-guide/main/Themes/ZEUSosX_044/screenshot-small.png)
+\
+ZEUSosX_044](https://github.com/ramensoftware/windows-11-file-explorer-styling-guide/blob/main/Themes/ZEUSosX_044/README.md)
+
+[![Compact
+Explorer11](https://raw.githubusercontent.com/ramensoftware/windows-11-file-explorer-styling-guide/main/Themes/Compact%20Explorer11/screenshot-small.png)
+\
+Compact
+Explorer11](https://github.com/ramensoftware/windows-11-file-explorer-styling-guide/blob/main/Themes/Compact%20Explorer11/README.md)
+
+[![Float](https://raw.githubusercontent.com/ramensoftware/windows-11-file-explorer-styling-guide/main/Themes/Float/screenshot-small.png)
+\
+Float](https://github.com/ramensoftware/windows-11-file-explorer-styling-guide/blob/main/Themes/Float/README.md)
+
+More themes can be found in the **Themes** section of [The Windows 11 file
+explorer styling
+guide](https://github.com/ramensoftware/windows-11-file-explorer-styling-guide/blob/main/README.md#themes).
+Contributions of new themes are welcome!
+
+## Advanced styling
+
+Aside from themes, the settings have two sections: control styles and resource
+variables. Control styles allow to override styles, such as size and color, for
+the target elements. Resource variables allow to override predefined variables.
+For a more detailed explanation and examples, refer to the sections below.
+
+The [UWPSpy](https://ramensoftware.com/uwpspy) tool can be used to inspect the
+file explorer control elements in real time, and experiment with various styles.
+To target file explorer with UWPSpy, select the `explorer.exe` process and the
+WinUI 3 target framework.
+
+For a collection of commonly requested file explorer styling customizations,
+check out [The Windows 11 file explorer styling
+guide](https://github.com/ramensoftware/windows-11-file-explorer-styling-guide/blob/main/README.md).
+
+### Control styles
+
+Each entry has a target control and a list of styles.
+
+The target control is written as `Class` or `Class#Name`, i.e. the target
+control class name (the tag name in XAML resource files), such as
+`FileExplorerExtensions.NavigationBarControl` or `Rectangle`, optionally
+followed by `#` and the target control's name (`x:Name` attribute in XAML
+resource files). The target control can also include:
+* Child control index, for example: `Class#Name[2]` will only match the relevant
+  control that's also the second child among all of its parent's child controls.
+* Control properties, for example:
+  `Class#Name[Property1=Value1][Property2=Value2]`.
+* Parent controls, separated by `>`, for example: `ParentClass#ParentName >
+  Class#Name`.
+* `*` between two `>` separators to match any number of intermediate parent
+  controls, for example: `ParentClass > * > Class#Name` matches `Class#Name`
+  when `ParentClass` is any of its ancestors (with zero or more controls in
+  between). `*` must be in the middle of the target (not the leftmost or
+  rightmost part), and consecutive `*` are not allowed.
+* `:root` as the leftmost target part to require that the next part has no
+  parent, i.e., it's a root element. For example: `:root > Class#Name` matches
+  `Class#Name` only when it has no parent control. `:root` must be followed by a
+  non-`*` target part.
+* Visual state group name, for example: `Class#Name@VisualStateGroupName`. It
+  can be specified for the target control or for a parent control, but can be
+  specified only once per target. The visual state group can be used in styles
+  as specified below.
+
+Several target controls can be specified for the same styles by separating them
+with commas, for example: `ParentClass > Class#Name1, ParentClass >
+Class#Name2`. Commas inside `[...]` are part of the property value and don't
+separate targets, for example: `Class[Margin=0,0,0,1]` is a single target.
+
+**Note**: The target is evaluated only once. If, for example, the index or the
+properties of a control change, the target conditions aren't evaluated again.
+
+Each style is written as `Style=Value`, for example: `Height=5`. The `:=` syntax
+can be used to use XAML syntax, for example: `Fill:=<SolidColorBrush
+Color="Red"/>`. Specifying an empty value with the XAML syntax will clear the
+property value, for example: `Fill:=`. In addition, a visual state can be
+specified as following: `Style@VisualState=Value`, in which case the style will
+only apply when the visual state group specified in the target matches the
+specified visual state.
+
+For the XAML syntax, in addition to the built-in taskbar objects, the mod
+provides a built-in blur brush via the `WindhawkBlur` object, which supports the
+`BlurAmount`, `TintColor`, `TintOpacity`, `TintLuminosityOpacity`,
+`TintSaturation`, `NoiseOpacity`, `NoiseDensity`, and `FallbackColor`
+properties. For example: `Fill:=<WindhawkBlur BlurAmount="10"
+TintColor="#80FF00FF"/>`. Theme resources are also supported for `TintColor` and
+`FallbackColor`, for example: `Fill:=<WindhawkBlur BlurAmount="18"
+TintColor="{ThemeResource SystemAccentColorDark1}" TintOpacity="0.5"/>`. The
+`FallbackColor` is used in place of the blur effect when battery saver is on or
+when transparency effects are disabled in the system settings.
+
+Targets and styles starting with two slashes (`//`) are ignored. This can be
+useful for temporarily disabling a target or style.
+
+#### Style variables
+
+Beyond literal values, XAML values, and style constants, styles can reference
+live property values via *style variables*. A capture rule of the form
+`Property=>VarName` observes a control's property and publishes its value as
+`VarName`; other styles then substitute it with `{{VarName}}`. Whenever the
+captured value changes or the variable becomes undefined, every dependent style
+is recomputed and reapplied.
+
+Capture rules cannot be combined with `:=` or with the per-rule `@VisualState`
+qualifier.
+
+For example, these two styles on the same target keep it square, with the height
+tracking the width:
+
+```
+ActualWidth=>width1
+Height={{width1}}
+```
+
+A capture rule may match several controls at once. A style reading `{{VarName}}`
+gets the value from whichever capturing control is closest to it in the control
+tree, i.e. the one it shares the deepest common parent with; between equally
+close controls, the one that appeared last wins. The variable only becomes
+undefined once the last capturing control is gone.
+
+A substitution can appear anywhere in a value, including alongside literal text:
+
+```
+Margin=0,{{x1}},0,{{x2 + 10}}
+```
+
+Inside `{{ ... }}`, the supported expression syntax is:
+
+* Numbers (e.g. `42`, `3.14`).
+* Backtick-delimited string literals (e.g. `` `Auto` ``, `` `*` ``), where a
+  doubled backtick encodes one literal backtick. Backtick is used rather than a
+  quote so literals don't clash with YAML or XAML quoting.
+* Variable references (a previously captured `VarName`).
+* Arithmetic `+`, `-`, `*`, `/` with standard precedence, and unary `+`, `-`.
+* Comparisons `<`, `<=`, `==`, `>=`, `>`, `!=`, evaluating to `1` or `0`. The
+  relational operators require numbers; `==` and `!=` compare two numbers or two
+  strings by value and treat a number-versus-string mismatch as unequal.
+* The conditional `cond ? a : b`: `a` when `cond` is non-zero, otherwise `b`.
+  The condition must be numeric, but each branch may be a number or a string,
+  e.g. `` {{width > 0 ? `*` : `Auto`}} `` selects a `GridLength` keyword.
+* `min(a, b)` and `max(a, b)`.
+* `skip()`: leaves the style unapplied, so the property keeps (or returns to)
+  its original value, e.g. `{{width > 0 ? width : skip()}}` applies only once
+  `width` is positive.
+* Parentheses for grouping, and nesting such as `{{min(a, b + 1) * 2}}`.
+
+Arithmetic, the unary sign, the relational comparisons, and `min` / `max`
+require numeric operands. A string can only be produced by a literal or a
+string-typed variable, compared with `==` / `!=`, and selected by the
+conditional.
+
+Brace pairs match innermost-first, so `{{{x}}}` is parsed as a literal `{`, the
+substitution `{{x}}`, and a literal `}`, producing `{<value-of-x>}`.
+
+A bare substitution `{{VarName}}` (with no operators) inserts the variable's
+captured value verbatim. This works only for primitive captured types (numeric,
+boolean, string); other types (brushes, thicknesses, etc.) are unsupported, and
+substituting one skips the style, as does a bare reference to an undefined
+variable.
+
+Inside an expression, an undefined variable instead evaluates to the empty
+string, letting a style supply its own default via the conditional, e.g. ```
+{{width == `` ? 80 : width}} ``` yields `80` until `width` is captured. The
+numeric operators above then fail on such a variable, skipping the style rather
+than treating it as `0`.
+
+### Resource variables
+
+Some variables, such as size and padding for various controls, colors, and
+brushes, are defined as resource variables. You can override existing resources
+or define new theme-aware resources.
+
+#### Overriding existing resources
+
+Use `key=value` to override an existing resource.
+
+#### Defining theme-aware resources
+
+Use `Key@Dark=value` and `Key@Light=value` to define new resources with
+different values for dark and light themes. These can then be referenced in
+styles using `{ThemeResource key}`.
+
+For example, to define a custom accent color that automatically adjusts based on
+the system theme:
+
+```
+AutoAccent@Dark={ThemeResource SystemAccentColorDark1}
+AutoAccent@Light={ThemeResource SystemAccentColorLight2}
+```
+
+Then use it in a style:
+
+```
+Background:=<SolidColorBrush Color="{ThemeResource AutoAccent}" />
+```
+
+The value will automatically update when the system accent color changes.
+
+#### Using XAML syntax
+
+The `:=` syntax can be used to set a XAML value as a resource, for example:
+`MyBrush:=<SolidColorBrush Color="Red"/>`. This can be combined with theme
+variants: `MyBrush@Dark:=<SolidColorBrush Color="#FF202020"/>`. Specifying an
+empty value with the XAML syntax will clear the resource value, for example:
+`MyBrush:=`.
+
+### Style constants
+
+Style constants allow defining a value once and referencing it in multiple
+styles. Each entry contains a name and value, separated by `=`, for example:
+
+```
+mainColor=#fafad2
+```
+
+The constant can then be used in style definitions by prepending `$`, for
+example:
+
+```
+Fill=$mainColor
+Background:=<AcrylicBrush TintColor="$mainColor" TintOpacity="0.3" />
+```
+
+Some themes use style constants to allow easy customization. Refer to the theme
+page for details on which constants are available.
+
+## XAML diagnostics consumer handling
+
+This mod uses XAML diagnostics to inspect and customize the File Explorer.
+However, there can only be one XAML diagnostics consumer at a time. If another
+program (such as ExplorerBlurMica) tries to use XAML diagnostics while this mod
+is running, there will be a conflict.
+
+The **XAML diagnostics consumer handling** setting controls how this mod handles
+such conflicts:
+
+* **Alert**: When another program tries to use XAML diagnostics, a message box
+  will appear asking whether to block it. This allows you to decide on a
+  case-by-case basis.
+* **Block**: Automatically block other programs from using XAML diagnostics.
+  This ensures this mod works correctly, but might break the other program.
+* **Allow**: Allow other programs to use XAML diagnostics. This might break this
+  mod's styling, but allows the other program to work.
+
+## Implementation notes
+
+The VisualTreeWatcher implementation is based on the
+[ExplorerTAP](https://github.com/TranslucentTB/TranslucentTB/tree/develop/ExplorerTAP)
+code from the **TranslucentTB** project.
+
+The `WindhawkBlur` brush object implementation is based on
+[XamlBlurBrush](https://github.com/TranslucentTB/TranslucentTB/blob/release/ExplorerTAP/XamlBlurBrush.cpp)
+from the **TranslucentTB** project.
+
+The GDI rendering with alpha and the accent blur behind setup for the entire
+window translucent effect are based on the [Translucent
+Windows](https://windhawk.net/mods/translucent-windows) mod.
 */
 // ==/WindhawkModReadme==
 
 // ==WindhawkModSettings==
 /*
-- transparencyType: acrylic
-  $name: Thème de l’Explorateur
-  $description: Choisissez le thème Mica ou Acrylique avec le style Translucent Explorer 11.
-  $options:
-  - acrylic: Acrylique — style Translucent Explorer 11
-  - mica: Mica — matériau natif Windows
-
-- restartExplorerOnSettingsChange: false
-  $name: Relancer l'Explorateur Windows à chaque changement
-  $description: Relance automatiquement l'Explorateur Windows après chaque changement et sauvegarde des paramètres du mod.
-
-- enableMouseWheelCycling: true
-  $name: Activer le défilement d'applications avec la molette dans la barre des tâches
+- theme: "Translucent Explorer11"
+  $name: Theme
   $description: >-
-    Désactivez cette option pour utiliser uniquement les raccourcis clavier pour changer de tâche.
+    Themes are collections of styles. For details about the themes below, or for
+    information about submitting your own theme, refer to the relevant section
+    in the mod details.
+  $options:
+  - "": None
+  - Translucent Explorer11: Translucent Explorer11
+  - MicaBar: MicaBar
+  - NoCommandBar: NoCommandBar
+  - Minimal Explorer11: Minimal Explorer11
+  - Tabless: Tabless
+  - Matter: Matter
+  - WindowGlass: WindowGlass
+  - AddressSearchOnly: AddressSearchOnly
+  - TintedGlass: TintedGlass
+  - LiquidGlass: LiquidGlass
+  - MicaTabless: MicaTabless
+  - OS26 Liquid Glass: OS26 Liquid Glass
+  - OS26 Liquid Glass_variant_Compact: OS26 Liquid Glass (Compact)
+  - ZEUSosX_044: ZEUSosX_044
+  - Compact Explorer11: Compact Explorer11
+  - Float: Float
+- backgroundTranslucentEffect: ""
+  $name: Translucent background effect
+  $description: >-
+    The translucent effect to use for the File Explorer background. For
+    additional translucent effects, check out the Translucent Windows mod.
+  $options:
+  - "": Default for the selected theme
+  - default: Windows default
+  - acrylicblur: Acrylique classique — flou AccentBlurBehind
+  - acrylic: Acrylique système — matériau Acrylic
+  - mica: Mica
+  - micaAlt: Mica Alt
+  - none: None
+- backgroundTranslucentEffectRegion: ""
+  $name: Translucent background effect region
+  $description: >-
+    The region where the translucent background effect is applied.
+  $options:
+  - "": Entire window
+  - explorerFrame: File Explorer frame only
+- styleConstants: [""]
+  $name: Style constants
+  $description: >-
+    Some themes support style constants for customization, such as colors. Refer
+    to the theme page for available constants. For technical details, refer to
+    the mod description.
+- controlStyles:
+  - - target: ""
+      $name: Target
+    - styles: [""]
+      $name: Styles
+  $name: Control styles
+- themeResourceVariables: [""]
+  $name: Resource variables
+  $description: >-
+    Use "Key=Value" to override an existing resource with a new value.
 
+    Use "Key@Dark=Value" or "Key@Light=Value" to define theme-aware resources
+    that can be referenced with {ThemeResource Key} in styles.
 
-# Animation Engine settings
-- minimize_restore:
-  - minimize_animation: true
-    $name: Animer la réduction
-    $description: Animer les fenêtres lorsqu’elles sont réduites dans la barre des tâches.
-  - restore_animation: true
-    $name: Animer la restauration
-    $description: Animer le retour des fenêtres depuis la barre des tâches.
-  - launch_animation: true
-    $name: Animer l’ouverture des applications
-    $description: >-
-      Active l’animation de restauration lors de la première ouverture d’une fenêtre d’application.
-      Certaines fenêtres système protégées ou hébergées par le shell Windows peuvent rester natives.
-      Les navigateurs de la famille Firefox, comme
-      Firefox et Waterfox, utilisent une voie de compatibilité limitée à l’alpha pour leur fenêtre
-      de démarrage, afin de préserver la restauration de session tout en conservant l’animation.
-      Certaines applications qui ouvrent leur fenêtre de manière asynchrone peuvent apparaître sans
-      animation de lancement. Les fenêtres masquées dans la zone de notification restent affichées
-      normalement lorsqu’elles sont rouvertes.
-  - random_effect: false
-    $name: Mélanger les styles d’animation
-    $description: >-
-      Utilise un cycle aléatoire commun à toutes les applications pendant la session. Chaque effet est
-      joué une fois avant le début d’un nouveau cycle, et deux cycles successifs ne commencent
-      jamais par le même effet. Chaque restauration ou ouverture animée sélectionne le prochain effet
-      global, réutilisé lors de la réduction suivante. Une réduction sans restauration animée préalable
-      choisit son propre effet. Les inversions rapides conservent le même effet. Lorsque cette option
-      est activée, le réglage Style d’animation ci-dessous est ignoré.
-  - effect_style: genie
-    $name: Style d’animation
-    $description: >-
-      Choisissez l’effet utilisé pour réduire et restaurer les fenêtres. Ce réglage est ignoré si le
-      mélange des styles est activé.
-    $options:
-    - genie: Génie — Aspiration vers la barre des tâches
-    - windows10: Windows 10 — Réduction vers la barre des tâches
-    - ink_splash: Éclaboussure d’encre — Tache organique
-    - scorch: Brûlure — Combustion depuis un coin
-    - splinter: Éclatement — Fissure centrale
-    - mirage: Mirage — Ondulation chatoyante
-    - stipple: Pointillisme — Expansion en points
-    - swell: Gonflement — Expansion et fondu
-    - tv_off_on: Téléviseur rétro — Extinction et rallumage CRT
-  - duration_ms: 360
-    $name: Durée (ms)
-    $description: >-
-      Durée de base de l’animation, de 1 à 1 400 ms. Les effets autres que Génie appliquent un léger
-      ajustement du rythme. Le style Windows 10 ignore ce réglage et utilise une durée fixe similaire
-      à celle du système.
-  - unhide_taskbar: false
-    $name: Afficher la barre des tâches pendant l’effet Génie
-    $description: >-
-      Lorsque le masquage automatique de la barre des tâches est activé, maintenir au premier plan la
-      barre déjà visible ou survolée pendant l’effet Génie, sans modifier le focus. Si elle est
-      masquée, l’afficher brièvement et différer la réduction réelle jusqu’à la fin de l’animation.
-      Désactivé par défaut. Sans effet sur les autres styles d’animation.
-  - unhide_duration_ms: 450
-    $name: Durée d’affichage de la barre des tâches (ms)
-    $description: >-
-      Durée pendant laquelle la barre des tâches reste affichée avant que la réduction différée de
-      l’effet Génie soit appliquée, de 0 à 5 000 ms.
-  - show_desktop_top_window_only: false
-    $name: Optimiser la fonction « Afficher le Bureau »
-    $description: >-
-      Désactivée, cette option conserve le comportement classique et anime successivement les fenêtres
-      compatibles lors de l’utilisation de « Afficher le Bureau ». Activez-la pour ignorer les
-      animations de réduction et de restauration du mod dans ce scénario, y compris avec les gestes
-      du pavé tactile à trois doigts, et laisser Windows animer l’ensemble nativement. Les opérations
-      individuelles depuis la barre des tâches ou la barre de titre restent animées. Les opérations
-      juste après « Afficher le Bureau » peuvent également utiliser les animations natives pendant
-      1,5 seconde, ou 2 secondes si le raccourci Win+D est détecté.
-  - gpu_acceleration: true
-    $name: Accélération GPU hybride
-    $description: >-
-      Utilise D3D11 avec DirectComposition pour les animations de restauration et de lancement compatibles
-      dont le moteur a été initialisé. Les réductions normales utilisent volontairement le rendu CPU
-      optimisé, plus rapide et qui évite le scintillement de l’état natif de la barre des tâches. Les
-      inversions rapides conservent le moteur déjà utilisé. En cas de matériel non pris en charge,
-      de Bureau à distance, de processus incompatible comme UniKey, d’échec d’initialisation ou de
-      perte du périphérique, le rendu CPU prend le relais. Désactivez cette option pour forcer le CPU
-      pour tout le groupe. Consultez le README du mod pour les détails du choix du moteur.
-  $name: Réduction, restauration et ouverture
-  $description: Configurez les animations de réduction, de restauration et d’ouverture des fenêtres.
-- close:
-  - close_animation: true
-    $name: Animer la fermeture
-    $description: Jouer un effet cinématique lorsqu’une fenêtre d’application se ferme.
-  - hide_as_close: false
-    $name: Animer les fenêtres masquées dans la zone de notification
-    $description: >-
-      Désactivé par défaut. Activez cette option pour animer les applications comme Discord, Steam et
-      Telegram lorsqu’elles masquent leur fenêtre au lieu de la fermer. Cela peut également animer
-      les écrans de démarrage, comme celui du programme de mise à jour de Discord, ou les fenêtres
-      masquées automatiquement par une application, comme le sélecteur de profils de Google Chrome.
-      Les changements rapides d’affichage/masquage de Tauri au démarrage ou lors du retour depuis la
-      zone de notification sont exclus afin d’éviter de déclencher à tort une animation de fermeture.
-  - random_effect: false
-    $name: Shuffle animation styles
-    $description: >-
-      Utilise un cycle aléatoire commun à toutes les applications pendant la session. Chaque effet de
-      fermeture est joué une fois avant le début d’un nouveau cycle, et deux cycles successifs ne
-      commencent jamais par le même effet. La fermeture puis la réouverture d’une application
-      poursuit le même cycle global. Lorsque cette option est activée, le réglage Style d’animation
-      ci-dessous est ignoré.
-  - effect_style: thanos
-    $name: Animation style
-    $description: >-
-      Choisissez l’effet utilisé lors de la fermeture d’une fenêtre. Ce réglage est ignoré si le mélange
-      des styles est activé.
-    $options:
-    - shatter: Éclatement en carrés — Explosion
-    - thanos: Claquement de Thanos — Vague de désintégration
-    - perlin: Dissolution Perlin — Brûlure acide
-    - glitch: Parasitage numérique — Téléportation
-    - tv_off: Téléviseur rétro — Extinction cathodique
-    - pixel_melt: Fonte de pixels — Peinture dégoulinante
-  - duration_ms: 630
-    $name: Duration (ms)
-    $description: >-
-      Durée de base de l’animation de fermeture, de 1 à 5 000 ms. Certains effets ajustent leur rythme.
-      En général, le thread d’interface de l’application qui se ferme ou masque sa fenêtre attend la
-      fin de l’animation (seuls les messages envoyés sont traités). Dans Excel, si un autre classeur
-      reste ouvert, les fermetures compatibles n’attendent que la première image de l’animation ; la
-      dernière fenêtre attend toujours la fin complète.
-  - shatter_block_size: 5
-    $name: Taille des blocs de poussière et d’éclatement (px)
-    $description: >-
-      Taille des particules, de 1 à 100 px. Le réglage 1 px utilise des chemins optimisés pour les
-      pixels individuels dans les deux moteurs de rendu ; les valeurs de 2 à 4 px utilisent un grand
-      nombre de quadrilatères et peuvent être particulièrement exigeantes sur les écrans 4K.
-  - gpu_acceleration: true
-    $name: Hybrid GPU acceleration
-    $description: >-
-      Utilise D3D11 uniquement pour les fermetures Thanos ou Perlin très denses : blocs de 1 px sur des
-      fenêtres contenant au moins 1,5 million de pixels source. Les autres effets de fermeture et
-      les charges plus légères utilisent volontairement le rendu CPU optimisé, car la synchronisation
-      du GPU avec les fenêtres superposées coûterait davantage. L’Explorateur de fichiers et les
-      autres fenêtres sensibles à l’arrière-plan, le Bureau à distance, les processus incompatibles,
-      le matériel indisponible, les échecs d’initialisation et les pertes du périphérique utilisent
-      également le CPU. Désactivez cette option pour forcer le CPU pour toutes les fermetures.
-      Consultez le README du mod pour les détails du choix du moteur.
-  $name: Fermeture
-  $description: Configurez les effets joués lorsque les fenêtres se ferment ou sont masquées dans la zone de notification.
-- window_switch:
-  - switch_animation: true
-    $name: Animer le changement de fenêtre
-    $description: >-
-      Jouer une animation de mise à l’échelle et de fondu lors du changement de fenêtre avec Alt+Tab,
-      ou lors de sélections confirmées dans les versions compatibles de Simple Window Switcher,
-      y compris avec les gestes du pavé tactile.
-  - duration_ms: 200
-    $name: Duration (ms)
-    $description: Durée de l’animation de changement de fenêtre, de 1 à 1 000 ms.
-  $name: Changement de fenêtre
-  $description: Configurez l’animation utilisée lors de la sélection d’une fenêtre avec Alt+Tab.
-- diagnostics:
-  - performance_telemetry: false
-    $name: Journaliser les mesures de performance
-    $description: >-
-      Désactivé par défaut. Écrit un résumé compact des performances après chaque animation de
-      réduction, de restauration, d’ouverture ou de fermeture, et active les événements associés au
-      démarrage des animations, au choix du moteur de rendu, à la recherche de la barre des tâches,
-      aux inversions, aux paramètres et au cycle de vie du GPU. Les mesures CPU distinguent
-      l’effacement du canevas, le rendu de l’effet et la présentation de la fenêtre superposée.
-      Aucun message n’est écrit pour chaque image. Activez cette option uniquement pendant les
-      mesures, puis désactivez-la pour garder un journal concis.
-  $name: Diagnostic
-  $description: Mesures facultatives utilisées pour diagnostiquer les performances du moteur de rendu.
+    The ":=" syntax can be used to set a XAML value. For details, refer to the
+    mod description.
+- explorerFrameContainerHeight: 0
+  $name: Explorer frame container height
+  $description: >-
+    The height of the explorer frame container which includes the tabs, the
+    address bar, and the command bar, set to zero to use the default height.
+- xamlDiagnosticsHandling: alert
+  $name: XAML diagnostics consumer handling
+  $description: >-
+    How to handle other programs (e.g. ExplorerBlurMica) that try to use XAML
+    diagnostics. There can only be one consumer at a time. Block will prevent
+    other programs from using it, which might break them. Allow will let them
+    use it, which might break this mod.
+  $options:
+  - alert: Alert (prompt before blocking)
+  - block: Block other consumers
+  - allow: Allow other consumers
 */
 // ==/WindhawkModSettings==
-
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-#include <windows.h>
-#include <tlhelp32.h>
-#include <d3d11.h>
-#include <d3dcompiler.h>
-#include <dcomp.h>
-#include <dwmapi.h>
-#include <dxgi1_2.h>
-#include <dxgi1_3.h>
-#include <shellapi.h>
-#include <wrl/client.h>
-#include <math.h>
-#include <cstdint>
-#include <cstring>
-#include <atomic>
-#include <array>
-#include <unordered_map>
-#include <unordered_set>
-#include <mutex>
-#include <string>
-#include <vector>
-#include <algorithm>
-#include <cwctype>
-#include <uiautomation.h>
-#include <sddl.h>
-#include <string_view>
-#include <exception>
-#include <new>
-#include <memory>
-#include <utility>
-#include <windhawk_utils.h>
 
 #include <xamlom.h>
 
@@ -270,14 +445,6 @@ Les paramètres ci-dessous ajoutent les animations de réduction, restauration, 
 #undef GetCurrentTime
 
 #include <winrt/Microsoft.UI.Xaml.h>
-#include <winrt/Microsoft.UI.Xaml.Controls.h>
-#include <winrt/Microsoft.UI.Xaml.Input.h>
-#include <winrt/Microsoft.UI.Input.h>
-
-// Taskbar.View.dll's TaskbarFrame wheel override is based on Windows.UI.Xaml,
-// not Microsoft.UI.Xaml. Keep these types explicitly qualified in the hook.
-#include <winrt/Windows.UI.Xaml.h>
-#include <winrt/Windows.UI.Xaml.Input.h>
 
 struct ThemeTargetStyles {
     PCWSTR target;
@@ -329,6 +496,1213 @@ const Theme g_themeTranslucent_Explorer11 = {{
         L"Background=Transparent"}},
 }, {}, {}, /*explorerFrameContainerHeight=*/0, BackgroundTranslucentEffect::kAcrylic};
 
+const Theme g_themeMicaBar = {{
+    ThemeTargetStyles{L"FileExplorerExtensions.CommandBarControl_Wave1 > Grid, Grid#CommandBarControlRootGrid", {
+        L"Background:=<SolidColorBrush Color=\"{ThemeResource LayerOnMicaBaseAltFillColorDefault}\"/>",
+        L"BorderThickness=0,0,0,1"}},
+    ThemeTargetStyles{L"CommandBar#FileExplorerCommandBar", {
+        L"Background=Transparent"}},
+}};
+
+const Theme g_themeNoCommandBar = {{
+    ThemeTargetStyles{L"FileExplorerExtensions.CommandBarControl_Wave1, FileExplorerExtensions.CommandBarControl", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"FileExplorerExtensions.NavigationBarControl", {
+        L"Grid.RowSpan=2",
+        L"Margin=0,0,0,1"}},
+}, {}, {}, /*explorerFrameContainerHeight=*/87};
+
+const Theme g_themeMinimal_Explorer11 = {{
+    ThemeTargetStyles{L"AppBarButton#backButton > Grid#Root@CommonStates > Border#AppBarButtonInnerBorder", {
+        L"Background@Normal:=<AcrylicBrush TintColor=\"Transparent\" Opacity=\"0.07\"/>",
+        L"Background@PointerOver:=<AcrylicBrush TintColor=\"Transparent\" Opacity=\"0.12\"/>",
+        L"Background@Pressed:=<AcrylicBrush TintColor=\"Transparent\" Opacity=\"0.12\"/>",
+        L"Background@Disabled:=<AcrylicBrush TintColor=\"Transparent\" Opacity=\"0.05\"/>"}},
+    ThemeTargetStyles{L"AppBarButton#forwardButton > Grid#Root@CommonStates > Border#AppBarButtonInnerBorder", {
+        L"Background@Normal:=<AcrylicBrush TintColor=\"Transparent\" Opacity=\"0.05\"/>",
+        L"Background@PointerOver:=<AcrylicBrush TintColor=\"Transparent\" Opacity=\"0.12\"/>",
+        L"Background@Pressed:=<AcrylicBrush TintColor=\"Transparent\" Opacity=\"0.12\"/>",
+        L"Background@Disabled:=<AcrylicBrush TintColor=\"Transparent\" Opacity=\"0.05\"/>"}},
+    ThemeTargetStyles{L"AppBarButton#refreshButton", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"AppBarButton#upButton", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"Border#BottomBorderLine", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"FileExplorerExtensions.CommandBarControl_Wave1, FileExplorerExtensions.CommandBarControl", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"FileExplorerExtensions.AddressBarControl > Grid#PART_LayoutRoot > Grid#NormalModeGrid", {
+        L"BorderThickness=0,0,0,1",
+        L"BorderBrush=#A0A0A0"}},
+    ThemeTargetStyles{L"Grid#DetailsViewControlRootGrid", {
+        L"Background=Transparent"}},
+    ThemeTargetStyles{L"Grid#TabContainerGrid > Border#LeftBottomBorderLine", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"Grid#TabContainerGrid > Border#RightBottomBorderLine", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"StackPanel#DetailsViewThumbnail > Grid", {
+        L"Background=Transparent"}},
+    ThemeTargetStyles{L"TabViewItem", {
+        L"Margin=0,0,3,0"}},
+    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot", {
+        L"CornerRadius=4",
+        L"Margin=0,-3,0,3",
+        L"Height=28"}},
+    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot > Canvas", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot > Grid#TabContainer", {
+        L"Background=Transparent",
+        L"BorderBrush=Transparent"}},
+    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot@CommonStates", {
+        L"Background@Selected:=<SolidColorBrush Color=\"#808080\" Opacity=\"0.35\"/>",
+        L"Background@PointerOverSelected:=<SolidColorBrush Color=\"#808080\" Opacity=\"0.35\"/>",
+        L"Background@PointerOver:=<AcrylicBrush TintColor=\"Transparent\" Opacity=\"0.13\"/>",
+        L"Background@Normal:=<AcrylicBrush TintColor=\"Transparent\" Opacity=\"0.05\"/>",
+        L"Background@PressedSelected:=<SolidColorBrush Color=\"#808080\" Opacity=\"0.35\"/>"}},
+    ThemeTargetStyles{L"Grid#FileExplorerAddressBarGrid", {
+        L"Grid.ColumnSpan=2",
+        L"Margin=0,0,10,0"}},
+    ThemeTargetStyles{L"AutoSuggestBox#FileExplorerSearchBox", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"AppBarButton#backButton > Grid#Root", {
+        L"Padding=2"}},
+    ThemeTargetStyles{L"AppBarButton#forwardButton > Grid#Root", {
+        L"Padding=2"}},
+    ThemeTargetStyles{L"AppBarButton#forwardButton > Grid#Root > Grid#ContentRoot > Viewbox#ContentViewbox", {
+        L"Margin=9"}},
+    ThemeTargetStyles{L"AppBarButton#backButton > Grid#Root > Grid#ContentRoot > Viewbox#ContentViewbox", {
+        L"Margin=9"}},
+    ThemeTargetStyles{L"Grid#PART_LayoutRoot", {
+        L"MinHeight=28",
+        L"Height=28"}},
+    ThemeTargetStyles{L"Grid#TabContainerGrid > Border > Button#AddButton", {
+        L"Margin=0,0,20,4"}},
+    ThemeTargetStyles{L"Border#ScrollIncreaseButtonContainer", {
+        L"Margin=0,0,0,4"}},
+    ThemeTargetStyles{L"Border#ScrollDecreaseButtonContainer", {
+        L"Margin=0,0,0,4"}},
+    ThemeTargetStyles{L"Grid#FileExplorerAddressBarGrid", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"FileExplorerExtensions.NavigationBarControl#NavigationBarControl", {
+        L"Grid.Row=0",
+        L"Grid.RowSpan=2"}},
+    ThemeTargetStyles{L"FileExplorerExtensions.FileExplorerTabControl", {
+        L"Margin=100,0,0,-15",
+        L"Grid.RowSpan=2"}},
+    ThemeTargetStyles{L"FileExplorerExtensions.NavigationBarControl > Grid#NavigationBarControlGrid", {
+        L"Margin=0,0,0,-18",
+        L"Background=Transparent",
+        L"Width=100",
+        L"HorizontalAlignment=0"}},
+}, {}, {}, /*explorerFrameContainerHeight=*/42};
+
+const Theme g_themeTabless = {{
+    ThemeTargetStyles{L"FileExplorerExtensions.CommandBarControl_Wave1 > Grid, Grid#CommandBarControlRootGrid", {
+        L"Background=Transparent"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#ContentRoot", {
+        L"Background=Transparent"}},
+    ThemeTargetStyles{L"FileExplorerExtensions.NavigationBarControl", {
+        L"Grid.Row=$NavigationBarGrid"}},
+    ThemeTargetStyles{L"FileExplorerExtensions.CommandBarControl_Wave1, FileExplorerExtensions.CommandBarControl", {
+        L"Grid.Row=$CommandBarGrid"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#TabContainerGrid > Border", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#TabContainer > Microsoft.UI.Xaml.Controls.Button#CloseButton", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.TabViewItem > Microsoft.UI.Xaml.Controls.Grid#LayoutRoot > Microsoft.UI.Xaml.Controls.Canvas", {
+        L"Opacity=0"}},
+    ThemeTargetStyles{L"Grid#NavigationBarControlGrid", {
+        L"Background:=<SolidColorBrush Color=\"{ThemeResource SystemChromeLowColor}\" />"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#TabContainer", {
+        L"BorderThickness=0"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.ContentPresenter > Microsoft.UI.Xaml.Controls.StackPanel > Microsoft.UI.Xaml.Controls.TextBlock", {
+        L"FontFamily=Segoe UI, Segoe Fluent Icons",
+        L"FontWeight=Normal"}},
+    ThemeTargetStyles{L"FileExplorerExtensions.CommandBarControl_Wave1 > Grid, Grid#CommandBarControlRootGrid", {
+        L"BorderThickness=0,0,0,1"}},
+    ThemeTargetStyles{L"FileExplorerExtensions.FileExplorerTabControl", {
+        L"Height=36"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#TabContainer", {
+        L"Padding=1,0,0,1"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Viewbox#IconBox", {
+        L"Margin=0,0,4,0"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.TabViewItem", {
+        L"Margin=0,-8,0,0"}},
+}, {
+    L"NavigationBarGrid=2",
+    L"CommandBarGrid=1",
+}};
+
+const Theme g_themeMatter = {{
+    ThemeTargetStyles{L"CommandBar#FileExplorerCommandBar", {
+        L"Background=Transparent",
+        L"HorizontalAlignment  = 1"}},
+    ThemeTargetStyles{L"CommandBar#FileExplorerSecondaryCommandBar", {
+        L"Background=Transparent",
+        L"Visibility = 1"}},
+    ThemeTargetStyles{L"Grid#TabContainerGrid > Border#LeftBottomBorderLine", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"Grid#TabContainerGrid > Border#RightBottomBorderLine", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"TabViewItem", {
+        L"Margin=0,0,4,0"}},
+    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot", {
+        L"CornerRadius=5",
+        L"Margin=2,4,0,4",
+        L"Height=29"}},
+    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot > Canvas", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot > Grid#TabContainer", {
+        L"Background = Transparent",
+        L"BorderThickness = 0"}},
+    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot@CommonStates", {
+        L"Background@Selected:= $accentColor2",
+        L"Background@PointerOverSelected:= $accentColor",
+        L"Background@PointerOver:= $accentColor2",
+        L"Background@Normal=$accentColor",
+        L"Background@PressedSelected:=$accentColor2",
+        L"Background@Pressed := $accentColor2"}},
+    ThemeTargetStyles{L"Grid#TabContainerGrid > Border > Button#AddButton", {
+        L"Visibility  = 0",
+        L"Margin = 0,0,0,3"}},
+    ThemeTargetStyles{L"FileExplorerExtensions.CommandBarControl_Wave1 > Grid, Grid#CommandBarControlRootGrid", {
+        L"Background=Transparent",
+        L"BorderThickness = 0"}},
+    ThemeTargetStyles{L"Grid#NavigationBarControlGrid", {
+        L"Background=Transparent"}},
+    ThemeTargetStyles{L"Grid#PART_LayoutRoot", {
+        L"Background :=<SolidColorBrush Color=\"{ThemeResource SystemAccentColorLight1}\" Opacity=\"0.4\" />",
+        L"CornerRadius = 6",
+        L"BorderThickness = 0"}},
+    ThemeTargetStyles{L"FileExplorerExtensions.CommandBarControl_Wave1, FileExplorerExtensions.CommandBarControl", {
+        L"Margin = 0,-5,0,0"}},
+    ThemeTargetStyles{L"AutoSuggestBox#FileExplorerSearchBox > Grid#LayoutRoot > TextBox > Grid@CommonStates > Border#BorderElement", {
+        L"Background :=<SolidColorBrush Color=\"{ThemeResource SystemAccentColorLight1}\" Opacity=\"0.4\" />",
+        L"CornerRadius = 6",
+        L"BorderThickness = 0"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton[ToolTipService.ToolTip = Cut]", {
+        L"Visibility  = 1"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton[ToolTipService.ToolTip = Copy]", {
+        L"Visibility  = 1"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton[ToolTipService.ToolTip = Paste]", {
+        L"Visibility  = 1"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton[ToolTipService.ToolTip = Rename]", {
+        L"Visibility  = 1"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton[ToolTipService.ToolTip = Share]", {
+        L"Visibility  = 1"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarSeparator", {
+        L"Visibility  = 1"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Border#ScrollDecreaseButtonContainer", {
+        L"Margin = 0,0,0,3"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Border#ScrollIncreaseButtonContainer", {
+        L"Margin = 0,0,0,3"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#refreshButton", {
+        L"Visibility  =1"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#upButton", {
+        L"Visibility  =1"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#forwardButton", {
+        L"Visibility  =1"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#backButton", {
+        L"Visibility  =1"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton[ToolTipService.ToolTip = Create a new item in the current location.]", {
+        L"Visibility  = 1"}},
+}, {
+    L"accentColor=<SolidColorBrush Color=\"{ThemeResource SystemAccentColorLight1}\" />",
+    L"accentColor2=<SolidColorBrush Color=\"{ThemeResource SystemAccentColorLight1}\" Opacity=\"0.5\" />",
+}};
+
+const Theme g_themeWindowGlass = {{
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#PART_LayoutRoot", {
+        L"Background=Transparent",
+        L"RenderTransform:=<TranslateTransform X=\"0\"/>"}},
+    ThemeTargetStyles{L"FileExplorerExtensions.FirstCrumbStackPanelControl#FirstCrumbStackPanel", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"Windows.UI.Xaml.Controls.Grid#RootCommandSearchGrid > Windows.UI.Xaml.Controls.Border#BorderElement", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Primitives.NavigationViewItemPresenter#NavigationViewItemPresenter > Microsoft.UI.Xaml.Controls.Grid#LayoutRoot", {
+        L"BorderThickness=$BorderThickness",
+        L"Background:=$ButtonBackground",
+        L"BorderBrush:=$ButtonBorder"}},
+    ThemeTargetStyles{L"FileExplorerExtensions.CommandBarControl_Wave1 > Grid, Grid#CommandBarControlRootGrid", {
+        L"Background=Transparent",
+        L"BorderBrush=Transparent"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.CommandBar#FileExplorerCommandBar", {
+        L"RenderTransform:=<TranslateTransform X=\"0\" Y=\"0\" />",
+        L"HorizontalAlignment=Center",
+        L"Margin=-4",
+        L"Padding=10"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.CommandBar#FileExplorerSecondaryCommandBar", {
+        L"RenderTransform:=<TranslateTransform X=\"Auto\" />",
+        L"HorizontalAlignment=Center",
+        L"Margin=-4",
+        L"Padding=10",
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.CommandBar#FileExplorerCommandBar > Microsoft.UI.Xaml.Controls.Grid#LayoutRoot > Microsoft.UI.Xaml.Controls.Grid#ContentRoot", {
+        L"CornerRadius=$CornerRadius",
+        L"BorderThickness=$BorderThickness",
+        L"BorderBrush=Transparent",
+        L"Background=Transparent"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.CommandBar#FileExplorerSecondaryCommandBar > Microsoft.UI.Xaml.Controls.Grid#LayoutRoot > Microsoft.UI.Xaml.Controls.Grid#ContentRoot", {
+        L"CornerRadius=$CornerRadius",
+        L"BorderThickness=$BorderThickness",
+        L"BorderBrush:=$BorderBrush",
+        L"Background=#10808080",
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#NavigationBarControlGrid", {
+        L"Background=Transparent",
+        L"BorderBrush=Transparent",
+        L"ColumnDefinitions:=<ColumnDefinitionCollection><ColumnDefinition Width=\"Auto\"/><ColumnDefinition Width=\"*\"/><ColumnDefinition Width=\"430\"/></ColumnDefinitionCollection>"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#HomeViewRootGrid", {
+        L"BorderBrush:=$MainContentBG",
+        L"CornerRadius=8",
+        L"BorderThickness=0",
+        L"Margin=0,0,8,8",
+        L"Background:=$MainContentBG"}},
+    ThemeTargetStyles{L"FileExplorerExtensions.GalleryViewControl#GalleryViewControl > Grid", {
+        L"BorderBrush:=$MainContentBG",
+        L"CornerRadius=8",
+        L"BorderThickness=0",
+        L"Margin=0,0,8,8",
+        L"Background:=$MainContentBG"}},
+    ThemeTargetStyles{L"FileExplorerExtensions.GalleryViewControl#GalleryViewControl > Grid > Grid#GalleryRootGrid", {
+        L"Background:=$MainContentBG"}},
+    ThemeTargetStyles{L"ToolTip", {
+        L"Background:=$Background"}},
+    ThemeTargetStyles{L"Grid#TabContainerGrid > Border#LeftBottomBorderLine", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"Grid#TabContainerGrid > Border#RightBottomBorderLine", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot", {
+        L"CornerRadius=8",
+        L"Margin=5",
+        L"Height=35"}},
+    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot > Canvas", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot > Grid#TabContainer", {
+        L"Background=Transparent",
+        L"BorderBrush=Transparent"}},
+    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot@CommonStates", {
+        L"Background@Selected:=<SolidColorBrush Color=\"#808080\" Opacity=\"0.10\"/>",
+        L"Background@PointerOverSelected:=<SolidColorBrush Color=\"#808080\" Opacity=\"0.10\"/>",
+        L"Background@PointerOver:=<AcrylicBrush TintColor=\"Transparent\" Opacity=\"0.13\"/>",
+        L"Background@Normal:=<AcrylicBrush TintColor=\"Transparent\" Opacity=\"0.05\"/>",
+        L"Background@PressedSelected:=<SolidColorBrush Color=\"#808080\" Opacity=\"0.10\"/>"}},
+    ThemeTargetStyles{L"Grid#TabContainerGrid > Border#LeftBottomBorderLine", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"Grid#TabContainerGrid > Border#RightBottomBorderLine", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Border#BottomBorderLine", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Shapes.Path#LeftRadiusRenderArc", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Shapes.Path#RightRadiusRenderArc", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#TabContainer", {
+        L"Visibility=Visible"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Viewbox#IconBox", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Primitives.CommandBarFlyoutCommandBar > Grid#LayoutRoot > Grid#OuterContentRoot > Grid#ContentRoot > Grid#PrimaryItemsRoot", {
+        L"Background:=$Background",
+        L"BorderThickness=$BorderThickness",
+        L"BorderBrush:=$BorderBrush",
+        L"Margin=0,0,0,-5",
+        L"CornerRadius=$CornerRadius"}},
+    ThemeTargetStyles{L"Grid#OuterOverflowContentRootV2 > Grid#OverflowContentRoot > CommandBarOverflowPresenter#SecondaryItemsControl > Grid#LayoutRoot", {
+        L"Background:=$Background",
+        L"BorderThickness=$BorderThickness",
+        L"BorderBrush:=$BorderBrush",
+        L"CornerRadius=$CornerRadius"}},
+    ThemeTargetStyles{L"MenuFlyoutPresenter > Border", {
+        L"Background:=$Background",
+        L"BorderThickness=$BorderThickness",
+        L"BorderBrush:=$BorderBrush",
+        L"CornerRadius=$CornerRadius"}},
+    ThemeTargetStyles{L"CommandBarOverflowPresenter#SecondaryItemsControl > Grid#LayoutRoot", {
+        L"Background:=$Background",
+        L"BorderThickness=$BorderThickness",
+        L"BorderBrush:=$BorderBrush",
+        L"CornerRadius=$CornerRadius"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AutoSuggestBox#FileExplorerSearchBox > Microsoft.UI.Xaml.Controls.Grid#LayoutRoot > Microsoft.UI.Xaml.Controls.TextBox#TextBox", {
+        L"CornerRadius=$CornerRadius",
+        L"Margin=0,0,180,0",
+        L"Background=Transparent",
+        L"BorderBrush=Transparent"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#FileExplorerAddressBarGrid", {
+        L"MaxWidth=750",
+        L"CornerRadius=$CornerRadius"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AutoSuggestBox#PART_AutoSuggestBox > Microsoft.UI.Xaml.Controls.Grid#LayoutRoot > Microsoft.UI.Xaml.Controls.TextBox#TextBox", {
+        L"CornerRadius=$CornerRadius"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.CommandBar#NavigationCommands", {
+        L"Margin=180,0,0,0"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#RootContainer", {
+        L"Background=Transparent"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Border > Microsoft.UI.Xaml.Controls.Button#AddButton", {
+        L"RenderTransform:=<TranslateTransform Y=\"-6\" />"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.TextBlock#TextLabel", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#SubItemChevronPanel > Microsoft.UI.Xaml.Controls.FontIcon#SubItemChevron", {
+        L"RenderTransform:=<TranslateTransform X=\"-5\" Y=\"12\" />"}},
+}, {
+    L"Background=<WindhawkBlur BlurAmount=\"15\" TintColor=\"#15323232\"/>",
+    L"BorderBrush=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"0,1\"><GradientStop Color=\"{ThemeResource SystemChromeHighColor}\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SystemChromeLowColor}\" Offset=\"0.15\" /><GradientStop Color=\"{ThemeResource SystemChromeHighColor}\" Offset=\"0.95\" /></LinearGradientBrush>",
+    L"BorderThickness=0.3,1,0.3,0.3",
+    L"ButtonBackground=<SolidColorBrush Color=\"{ThemeResource SystemAccentColor}\" Opacity=\"1\" />",
+    L"ButtonBorder=<SolidColorBrush Color=\"{ThemeResource SystemAccentColorLight3}\" Opacity=\"1\" />",
+    L"CornerRadius=8",
+    L"Background2=<SolidColorBrush Color=\"{ThemeResource SystemChromeAltHighColor}\" Opacity=\"0\" />",
+    L"MainContentBG=<SolidColorBrush Color=\"{ThemeResource SystemChromeAltHighColor}\" Opacity=\"1\" />",
+}, {}, /*explorerFrameContainerHeight=*/0, BackgroundTranslucentEffect::kAcrylic};
+
+const Theme g_themeAddressSearchOnly = {{
+    ThemeTargetStyles{L"FileExplorerExtensions.NavigationBarControl", {
+        L"Grid.Row=0",
+        L"Background=Transparent",
+        L"MinHeight=48",
+        L"Margin=0,26,0,1"}},
+    ThemeTargetStyles{L"Grid#NavigationBarControlGrid", {
+        L"Background=Transparent"}},
+    ThemeTargetStyles{L"FileExplorerExtensions.FileExplorerTabControl", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"AppBarButton#refreshButton", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"AppBarButton#upButton", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"AppBarButton#backButton", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"AppBarButton#forwardButton", {
+        L"Visibility=Collapsed"}},
+}, {}, {}, /*explorerFrameContainerHeight=*/80};
+
+const Theme g_themeTintedGlass = {{
+    ThemeTargetStyles{L"FileExplorerExtensions.CommandBarControl_Wave1 > Grid, Grid#CommandBarControlRootGrid", {
+        L"Background:=$CommonBgBrush",
+        L"BorderThickness=0,0,0,0",
+        L"BorderBrush=$CommonBgBrush"}},
+    ThemeTargetStyles{L"CommandBar#FileExplorerCommandBar", {
+        L"Background=Transparent"}},
+    ThemeTargetStyles{L"Grid#NavigationBarControlGrid", {
+        L"Background:=$CommonBgBrush"}},
+    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot > Canvas > Microsoft.UI.Xaml.Shapes.Path#SelectedBackgroundPath", {
+        L"Fill:=$CommonBgBrush"}},
+    ThemeTargetStyles{L"Grid#HomeViewRootGrid", {
+        L"Background:=$CommonBgBrush"}},
+    ThemeTargetStyles{L"FileExplorerExtensions.GalleryViewControl#GalleryViewControl > Grid", {
+        L"Background:=$CommonBgBrush"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#GalleryRootGrid", {
+        L"Background:=$CommonBgBrush"}},
+    ThemeTargetStyles{L"ToolTip", {
+        L"Background:=$CommonBgBrush"}},
+    ThemeTargetStyles{L"Grid#DetailsViewControlRootGrid", {
+        L"Background:=$CommonBgBrush"}},
+    ThemeTargetStyles{L"StackPanel#DetailsViewThumbnail > Grid", {
+        L"Background:=$CommonBgBrush"}},
+}, {
+    L"CommonBgBrush=<WindhawkBlur BlurAmount=\"18\" TintColor=\"#80000000\"/>",
+}, {}, /*explorerFrameContainerHeight=*/0, BackgroundTranslucentEffect::kAcrylic};
+
+const Theme g_themeLiquidGlass = {{
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#PART_LayoutRoot", {
+        L"Background=Transparent",
+        L"HorizontalAlignment=Stretch"}},
+    ThemeTargetStyles{L"FileExplorerExtensions.FirstCrumbStackPanelControl#FirstCrumbStackPanel", {
+        L"Visibility=1"}},
+    ThemeTargetStyles{L"Windows.UI.Xaml.Controls.Grid#RootCommandSearchGrid > Windows.UI.Xaml.Controls.Border#BorderElement", {
+        L"Visibility=1"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Primitives.NavigationViewItemPresenter#NavigationViewItemPresenter > Microsoft.UI.Xaml.Controls.Grid#LayoutRoot", {
+        L"BorderThickness=$ElementBorderThickness",
+        L"Background:=$ElementBackground",
+        L"BorderBrush:=$ElementBorder",
+        L"CornerRadius=$ElementCornerRadius"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#NavigationBarControlGrid", {
+        L"Background:=Transparent",
+        L"BorderBrush:=Transparent"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#HomeViewRootGrid", {
+        L"BorderBrush:=$ElementBorderBrush",
+        L"CornerRadius=$ElementCornerRadius",
+        L"BorderThickness=$ElementBorderThickness",
+        L"Margin=4,0"}},
+    ThemeTargetStyles{L"FileExplorerExtensions.GalleryViewControl#GalleryViewControl > Grid", {
+        L"BorderBrush:=$ElementBorderBrush",
+        L"CornerRadius=$ElementCornerRadius",
+        L"BorderThickness=$ElementBorderThickness",
+        L"Margin=4,0"}},
+    ThemeTargetStyles{L"FileExplorerExtensions.GalleryViewControl#GalleryViewControl > Grid > Grid#GalleryRootGrid", {
+        L"Background:=Transparent"}},
+    ThemeTargetStyles{L"ToolTip", {
+        L"BorderBrush:=$ElementBorderBrush",
+        L"BorderThickness=$ElementBorderThickness",
+        L"CornerRadius=$ElementCornerRadius"}},
+    ThemeTargetStyles{L"Grid#TabContainerGrid > Border#LeftBottomBorderLine", {
+        L"Visibility=1"}},
+    ThemeTargetStyles{L"Grid#TabContainerGrid > Border#RightBottomBorderLine", {
+        L"Visibility=1"}},
+    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot", {
+        L"Margin=5",
+        L"Height=35",
+        L"BorderThickness=$ElementBorderThickness",
+        L"CornerRadius=$ElementCornerRadius",
+        L"BorderBrush:=$ElementBorderBrush"}},
+    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot > Canvas", {
+        L"Visibility=1"}},
+    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot > Grid#TabContainer", {
+        L"Background=Transparent",
+        L"BorderBrush=Transparent"}},
+    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot@CommonStates", {
+        L"Background@Selected:=$ElementBackground",
+        L"Background@PointerOverSelected:=$AccentBackground",
+        L"Background@PointerOver:=$AccentBackground",
+        L"Background@Normal:=$ElementBackground",
+        L"Background@PressedSelected:=$ButtonBackground2"}},
+    ThemeTargetStyles{L"Grid#TabContainerGrid > Border#LeftBottomBorderLine", {
+        L"Visibility=1"}},
+    ThemeTargetStyles{L"Grid#TabContainerGrid > Border#RightBottomBorderLine", {
+        L"Visibility=1"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Border#BottomBorderLine", {
+        L"Visibility=1"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Shapes.Path#LeftRadiusRenderArc", {
+        L"Visibility=1"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Shapes.Path#RightRadiusRenderArc", {
+        L"Visibility=1"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#TabContainer", {
+        L"Visibility=0"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Viewbox#IconBox", {
+        L"Visibility=1"}},
+    ThemeTargetStyles{L"CommandBarOverflowPresenter#SecondaryItemsControl > Grid#LayoutRoot", {
+        L"Background:=$ElementBackground",
+        L"BorderThickness=$ElementBorderThickness",
+        L"BorderBrush:=$ElementBorderBrush",
+        L"CornerRadius=$ElementCornerRadius"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AutoSuggestBox#FileExplorerSearchBox > Microsoft.UI.Xaml.Controls.Grid#LayoutRoot > Microsoft.UI.Xaml.Controls.TextBox#TextBox", {
+        L"CornerRadius=$ElementCornerRadius",
+        L"Background:=$ElementBackground",
+        L"BorderBrush:=$ElementBorderBrush",
+        L"BorderThickness=$ElementBorderThickness"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#FileExplorerAddressBarGrid", {
+        L"CornerRadius=$ElementCornerRadius",
+        L"Background:=$ElementBackground",
+        L"BorderBrush:=$ElementBorderBrush",
+        L"BorderThickness=$ElementBorderThickness"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AutoSuggestBox#PART_AutoSuggestBox > Microsoft.UI.Xaml.Controls.Grid#LayoutRoot > Microsoft.UI.Xaml.Controls.TextBox#TextBox", {
+        L"CornerRadius=$ElementCornerRadius"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#RootContainer", {
+        L"Background:=Transparent"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Border > Microsoft.UI.Xaml.Controls.Button#AddButton", {
+        L"RenderTransform:=<TranslateTransform Y=\"-8\" />"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.TextBlock#TextLabel", {
+        L"Visibility=1"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#SubItemChevronPanel > Microsoft.UI.Xaml.Controls.FontIcon#SubItemChevron", {
+        L"RenderTransform:=<TranslateTransform X=\"-5\" Y=\"12\" />"}},
+    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot", {
+        L"Height = 28"}},
+    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot > Canvas", {
+        L"Visibility=1"}},
+    ThemeTargetStyles{L"FileExplorerExtensions.CommandBarControl_Wave1, FileExplorerExtensions.CommandBarControl", {
+        L"Visibility=1"}},
+    ThemeTargetStyles{L"FileExplorerExtensions.NavigationBarControl", {
+        L"Grid.RowSpan=2",
+        L"Margin=0,0,0,1"}},
+    ThemeTargetStyles{L"Grid#DetailsViewControlRootGrid", {
+        L"Background:=Transparent"}},
+    ThemeTargetStyles{L"StackPanel#DetailsViewThumbnail", {
+        L"Background:=Transparent"}},
+}, {
+    L"ContentBG=<SolidColorBrush Color=\"{ThemeResource SystemChromeAltHighColor}\" Opacity=\"1\" />",
+    L"Background=<WindhawkBlur BlurAmount=\"15\" TintColor=\"{ThemeResource SystemAltLowColor}\" TintOpacity=\"0.2\" />",
+    L"ElementBackground=<WindhawkBlur BlurAmount=\"20\" TintColor=\"{ThemeResource SystemAltLowColor}\" TintOpacity=\"0.4\" />",
+    L"ElementBackground2=<WindhawkBlur BlurAmount=\"20\" TintColor=\"{ThemeResource SystemAltLowColor}\" TintOpacity=\"0.2\" />",
+    L"AccentBackground=<WindhawkBlur BlurAmount=\"15\" TintColor=\"{ThemeResource SystemAccentColorLight1}\" TintOpacity=\"0.2\" />",
+    L"BorderBrush=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"0,1\"><GradientStop Color=\"#50808080\" Offset=\"0.0\" /><GradientStop Color=\"#50404040\" Offset=\"0.25\" /><GradientStop Color=\"#50808080\" Offset=\"1\" /></LinearGradientBrush>",
+    L"ElementBorderBrush=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"0,1\"><GradientStop Color=\"#50808080\" Offset=\"1\" /><GradientStop Color=\"#50606060\" Offset=\"0.15\" /></LinearGradientBrush>",
+    L"BorderThickness=0.3,1,0.3,0.3",
+    L"ElementBorderThickness=0.3,0.3,0.3,1",
+    L"CornerRadius=12",
+    L"ElementCornerRadius=8",
+}, {}, /*explorerFrameContainerHeight=*/87};
+
+const Theme g_themeMicaTabless = {{
+    ThemeTargetStyles{L"FileExplorerExtensions.CommandBarControl_Wave1 > Grid, Grid#CommandBarControlRootGrid", {
+        L"Background=Transparent"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#ContentRoot", {
+        L"Background=Transparent"}},
+    ThemeTargetStyles{L"FileExplorerExtensions.NavigationBarControl", {
+        L"Grid.Row=$NavigationBarGrid"}},
+    ThemeTargetStyles{L"FileExplorerExtensions.CommandBarControl_Wave1, FileExplorerExtensions.CommandBarControl", {
+        L"Grid.Row=$CommandBarGrid"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#TabContainerGrid > Border", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#TabContainer > Microsoft.UI.Xaml.Controls.Button#CloseButton", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.TabViewItem > Microsoft.UI.Xaml.Controls.Grid#LayoutRoot > Microsoft.UI.Xaml.Controls.Canvas", {
+        L"Opacity=0"}},
+    ThemeTargetStyles{L"Grid#NavigationBarControlGrid", {
+        L"Background:=<SolidColorBrush Color=\"{ThemeResource SystemChromeLowColor}\" />"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#TabContainer", {
+        L"BorderThickness=0"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.ContentPresenter > Microsoft.UI.Xaml.Controls.StackPanel > Microsoft.UI.Xaml.Controls.TextBlock", {
+        L"FontFamily=Segoe UI, Segoe Fluent Icons",
+        L"FontWeight=Normal"}},
+    ThemeTargetStyles{L"FileExplorerExtensions.CommandBarControl_Wave1 > Grid, Grid#CommandBarControlRootGrid", {
+        L"BorderThickness=0,0,0,1"}},
+    ThemeTargetStyles{L"FileExplorerExtensions.FileExplorerTabControl", {
+        L"Height=36"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#TabContainer", {
+        L"Padding=1,0,0,1"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Viewbox#IconBox", {
+        L"Margin=0,0,4,0"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.TabViewItem", {
+        L"Margin=0,-8,0,0"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#NavigationBarControlGrid", {
+        L"Background=Transparent"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#DetailsViewControlRootGrid", {
+        L"Background=Transparent"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarSeparator", {
+        L"Opacity=0"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#GalleryRootGrid", {
+        L"Background:="}},
+    ThemeTargetStyles{L"FileExplorerExtensions.GalleryViewControl#GalleryViewControl > Microsoft.UI.Xaml.Controls.Grid", {
+        L"Background:="}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#HomeViewRootGrid", {
+        L"Background:="}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.StackPanel#DetailsViewThumbnail > Microsoft.UI.Xaml.Controls.Grid", {
+        L"Background:="}},
+}, {
+    L"NavigationBarGrid=1",
+    L"CommandBarGrid=2",
+}};
+
+const Theme g_themeOS26_Liquid_Glass = {{
+    ThemeTargetStyles{L"Grid#DetailsViewControlRootGrid", {
+        L"Margin=20,20,20,1",
+        L"Background:=<WindhawkBlur BlurAmount=\"30\" TintColor=\"#2D101010\" TintOpacity=\"0.4\"/>",
+        L"CornerRadius=15"}},
+    ThemeTargetStyles{L"StackPanel#DetailsViewThumbnail > Grid", {
+        L"Background=Transparent"}},
+    ThemeTargetStyles{L"Grid#HomeViewRootGrid", {
+        L"Margin=20,20,20,0",
+        L"Background:=<WindhawkBlur BlurAmount=\"30\" TintColor=\"#2D101010\" TintOpacity=\"0.4\"/>",
+        L"CornerRadius=15"}},
+    ThemeTargetStyles{L"FileExplorerExtensions.GalleryViewControl#GalleryViewControl > Grid", {
+        L"Margin=20,20,20,0",
+        L"Background:=<WindhawkBlur BlurAmount=\"30\" TintColor=\"#2D101010\" TintOpacity=\"0.4\"/>",
+        L"CornerRadius=15"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#GalleryRootGrid", {
+        L"Margin=10",
+        L"Background:=transparent",
+        L"CornerRadius=15"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton > Grid@CommonStates", {
+        L"Background@Disabled:=<WindhawkBlur BlurAmount=\"8\" TintColor=\"#25ffffff\"/>",
+        L"CornerRadius@Disabled=12",
+        L"BorderThickness@Disabled=1",
+        L"Margin@Disabled=2,6,2,6",
+        L"Padding@Disabled=0,-7",
+        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#backButton > Grid@CommonStates", {
+        L"Background@Disabled:=<WindhawkBlur BlurAmount=\"8\" TintColor=\"#25ffffff\"/>",
+        L"CornerRadius@Disabled=11",
+        L"BorderThickness@Disabled=1",
+        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>",
+        L"Margin@Disabled=0,0,0,0",
+        L"Height@Disabled=32",
+        L"Width@Disabled=20",
+        L"Padding@Disabled=0,-2,0,2"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#forwardButton > Grid@CommonStates", {
+        L"Background@Disabled:=<WindhawkBlur BlurAmount=\"8\" TintColor=\"#25ffffff\"/>",
+        L"CornerRadius@Disabled=11",
+        L"BorderThickness@Disabled=1",
+        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>",
+        L"Margin@Disabled=0,0,0,0",
+        L"Height@Disabled=32",
+        L"Width@Disabled=20",
+        L"Padding@Disabled=0,-2,0,2"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#upButton > Grid@CommonStates", {
+        L"Background@Disabled:=<WindhawkBlur BlurAmount=\"8\" TintColor=\"#25ffffff\"/>",
+        L"CornerRadius@Disabled=11",
+        L"BorderThickness@Disabled=1",
+        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>",
+        L"Margin@Disabled=0,0,0,0",
+        L"Height@Disabled=32",
+        L"Width@Disabled=20",
+        L"Padding@Disabled=0,-2,0,2"}},
+    ThemeTargetStyles{L"CommandBar#FileExplorerCommandBar", {
+        L"Background=Transparent",
+        L"HorizontalAlignment=1"}},
+    ThemeTargetStyles{L"CommandBar#FileExplorerSecondaryCommandBar", {
+        L"Background=Transparent",
+        L"MinHeight=0"}},
+    ThemeTargetStyles{L"Grid#TabContainerGrid > Border#LeftBottomBorderLine", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"Grid#TabContainerGrid > Border#RightBottomBorderLine", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"TabViewItem", {
+        L"Margin=0,0,8,0"}},
+    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot", {
+        L"CornerRadius=12",
+        L"Margin=2,4,0,4",
+        L"Height=27",
+        L"BorderThickness=1",
+        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>"}},
+    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot > Canvas", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot > Grid#TabContainer", {
+        L"Background=Transparent",
+        L"BorderThickness=0"}},
+    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot@CommonStates", {
+        L"Background@Selected:=<WindhawkBlur BlurAmount=\"15\" TintColor=\"#25ffffff\" />",
+        L"Background@PointerOverSelected:=<WindhawkBlur BlurAmount=\"15\" TintColor=\"#35ffffff\" />",
+        L"Background@Normal:=<WindhawkBlur BlurAmount=\"15\" TintColor=\"#15ffffff\" />"}},
+    ThemeTargetStyles{L"Grid#TabContainerGrid > Border > Button#AddButton", {
+        L"Visibility=Visible",
+        L"Margin=0,0,0,2",
+        L"Background:=<WindhawkBlur BlurAmount=\"15\" TintColor=\"#25ffffff\"/>",
+        L"CornerRadius=10",
+        L"BorderThickness=1",
+        L"BorderBrush:=<LinearGradientBrush EndPoint=\"1,1\" StartPoint=\"0,0\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\"/><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\"/><GradientStop Color=\"#80ffffff\" Offset=\"1\"/></LinearGradientBrush>",
+        L"Width=24",
+        L"Height=24"}},
+    ThemeTargetStyles{L"FileExplorerExtensions.CommandBarControl_Wave1 > Grid, Grid#CommandBarControlRootGrid", {
+        L"Background=Transparent"}},
+    ThemeTargetStyles{L"Grid#NavigationBarControlGrid", {
+        L"Background=Transparent"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#FileExplorerAddressBarGrid", {
+        L"Margin=-6,0,0,0"}},
+    ThemeTargetStyles{L"Grid#PART_LayoutRoot", {
+        L"Background:=<WindhawkBlur BlurAmount=\"15\" TintColor=\"#25ffffff\" />",
+        L"CornerRadius=14",
+        L"BorderThickness=1",
+        L"Margin=2",
+        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>"}},
+    ThemeTargetStyles{L"FileExplorerExtensions.CommandBarControl_Wave1, FileExplorerExtensions.CommandBarControl", {
+        L"Margin=0,0,0,0"}},
+    ThemeTargetStyles{L"AutoSuggestBox#FileExplorerSearchBox > Grid#LayoutRoot > TextBox > Grid@CommonStates > Border#BorderElement", {
+        L"Background:=<WindhawkBlur BlurAmount=\"15\" TintColor=\"#25ffffff\" />",
+        L"CornerRadius=14",
+        L"BorderThickness=1",
+        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton", {
+        L"Background:=<WindhawkBlur BlurAmount=\"15\" TintColor=\"#25ffffff\" />",
+        L"CornerRadius=12",
+        L"BorderThickness=1",
+        L"Margin=3,0,3,1",
+        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarToggleButton", {
+        L"Background:=<WindhawkBlur BlurAmount=\"15\" TintColor=\"#25ffffff\" />",
+        L"CornerRadius=12",
+        L"BorderThickness=1",
+        L"Margin=3,0,3,1",
+        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#OuterOverflowContentRootV2", {
+        L"CornerRadius=20"}},
+    ThemeTargetStyles{L"Button#MoreButton", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarSeparator", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#backButton", {
+        L"Margin=0,9,9,0"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#forwardButton", {
+        L"Margin=0,9,9,0"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#upButton", {
+        L"Margin=0,9,9,0"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#refreshButton", {
+        L"Margin=0,9,9,0"}},
+}};
+
+const Theme g_themeOS26_Liquid_Glass_variant_Compact = {{
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Primitives.SuggestionsPopup", {
+        L"Margin=0,0,0,900"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton > Grid@CommonStates", {
+        L"Background@Disabled:=<LinearGradientBrush StartPoint=\"-0.3,-0.3\" EndPoint=\"1.3,1.3\"><GradientStop Color=\"#55f0f07d\" Offset=\"0.0\"/><GradientStop Color=\"#2AF0F0F0\" Offset=\"0.3\"/><GradientStop Color=\"#00F0F0F0\" Offset=\"0.6\"/></LinearGradientBrush>",
+        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>",
+        L"CornerRadius@Disabled=12",
+        L"BorderThickness@Disabled=1",
+        L"Margin@Disabled=2,6,2,6",
+        L"Padding@Disabled=0,-7"}},
+    ThemeTargetStyles{L"CommandBar#FileExplorerCommandBar > Grid#LayoutRoot > Grid#ContentRoot > Button#MoreButton", {
+        L"Background:=<LinearGradientBrush StartPoint=\"-0.3,-0.3\" EndPoint=\"1.3,1.3\"><GradientStop Color=\"#55f0f07d\" Offset=\"0.0\"/><GradientStop Color=\"#2AF0F0F0\" Offset=\"0.3\"/><GradientStop Color=\"#00F0F0F0\" Offset=\"0.6\"/></LinearGradientBrush>",
+        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>",
+        L"CornerRadius=12",
+        L"BorderThickness=1",
+        L"Margin=3,2,3,2",
+        L"Width=45",
+        L"Height=32"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#backButton > Grid@CommonStates", {
+        L"Background@Disabled:=<LinearGradientBrush StartPoint=\"-0.3,-0.3\" EndPoint=\"1.3,1.3\"><GradientStop Color=\"#55f0f07d\" Offset=\"0.0\"/><GradientStop Color=\"#2AF0F0F0\" Offset=\"0.3\"/><GradientStop Color=\"#00F0F0F0\" Offset=\"0.6\"/></LinearGradientBrush>",
+        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>",
+        L"CornerRadius@Disabled=11",
+        L"BorderThickness@Disabled=1",
+        L"Margin@Disabled=0,0,0,0",
+        L"Height@Disabled=32",
+        L"Width@Disabled=20",
+        L"Padding@Disabled=0,-2,0,2"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#forwardButton > Grid@CommonStates", {
+        L"Background@Disabled:=<LinearGradientBrush StartPoint=\"-0.3,-0.3\" EndPoint=\"1.3,1.3\"><GradientStop Color=\"#55f0f07d\" Offset=\"0.0\"/><GradientStop Color=\"#2AF0F0F0\" Offset=\"0.3\"/><GradientStop Color=\"#00F0F0F0\" Offset=\"0.6\"/></LinearGradientBrush>",
+        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>",
+        L"CornerRadius@Disabled=11",
+        L"BorderThickness@Disabled=1",
+        L"Margin@Disabled=0,0,0,0",
+        L"Height@Disabled=32",
+        L"Width@Disabled=20",
+        L"Padding@Disabled=0,-2,0,2"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#refreshButton > Grid@CommonStates", {
+        L"Background@Disabled:=<LinearGradientBrush StartPoint=\"-0.3,-0.3\" EndPoint=\"1.3,1.3\"><GradientStop Color=\"#55f0f07d\" Offset=\"0.0\"/><GradientStop Color=\"#2AF0F0F0\" Offset=\"0.3\"/><GradientStop Color=\"#00F0F0F0\" Offset=\"0.6\"/></LinearGradientBrush>",
+        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>",
+        L"CornerRadius@Disabled=11",
+        L"BorderThickness@Disabled=1",
+        L"Margin@Disabled=0,0,0,0",
+        L"Height@Disabled=32",
+        L"Width@Disabled=20",
+        L"Padding@Disabled=0,-2,0,2"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarToggleButton > Grid@CommonStates", {
+        L"Background@Disabled:=<WindhawkBlur BlurAmount=\"8\" TintColor=\"#2D101010\"/>"}},
+    ThemeTargetStyles{L"Grid#DetailsViewControlRootGrid", {
+        L"Margin=20,20,20,1",
+        L"Background:=<WindhawkBlur BlurAmount=\"30\" TintColor=\"#2D101010\" TintOpacity=\"0.4\"/>",
+        L"CornerRadius=15"}},
+    ThemeTargetStyles{L"StackPanel#DetailsViewThumbnail > Grid", {
+        L"Background=Transparent"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid > OuterOverflowContentRootV2", {
+        L"CornerRadius=250"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.CommandBarOverflowPresenter > Microsoft.UI.Xaml.Controls.CommandBarOverflowPresenter", {
+        L"Background=transparent"}},
+    ThemeTargetStyles{L"AppBarButton[7]", {
+        L"Visibility=Collapsed",
+        L"Width=0",
+        L"MinWidth=0",
+        L"Margin=0,0,0,0",
+        L"Padding=0,0,0,0"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Viewbox > ContentViewB", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"Grid#HomeViewRootGrid", {
+        L"Margin=20,20,20,0",
+        L"Background:=<WindhawkBlur BlurAmount=\"30\" TintColor=\"#2D101010\" TintOpacity=\"0.4\"/>",
+        L"CornerRadius=15"}},
+    ThemeTargetStyles{L"FileExplorerExtensions.GalleryViewControl#GalleryViewControl > Grid", {
+        L"Margin=20,20,20,0",
+        L"Background:=<WindhawkBlur BlurAmount=\"30\" TintColor=\"#2D101010\" TintOpacity=\"0.4\"/>",
+        L"CornerRadius=15"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#GalleryRootGrid", {
+        L"Margin=10",
+        L"Background:=transparent",
+        L"CornerRadius=15"}},
+    ThemeTargetStyles{L"CommandBar#FileExplorerCommandBar", {
+        L"Grid.Row=0",
+        L"Grid.RowSpan=1",
+        L"CornerRadius:=15",
+        L"Width=400",
+        L"HorizontalAlignment=Left",
+        L"Background:=transparent",
+        L"Padding=0,0,0,0"}},
+    ThemeTargetStyles{L"CommandBar#FileExplorerCommandBar > Grid#LayoutRoot > Grid#ContentRoot > Grid#OverflowSeparator", {
+        L"Visibility=Collapsed",
+        L"Width=0",
+        L"MinWidth=0"}},
+    ThemeTargetStyles{L"CommandBar#FileExplorerCommandBar > Grid#LayoutRoot > Grid#ContentRoot", {
+        L"HorizontalAlignment=Left"}},
+    ThemeTargetStyles{L"CommandBar#FileExplorerCommandBar > Grid#LayoutRoot > Grid#ContentRoot > ItemsControl#PrimaryItemsControl", {
+        L"HorizontalAlignment=Left"}},
+    ThemeTargetStyles{L"CommandBar#FileExplorerSecondaryCommandBar", {
+        L"Visibility=Visible",
+        L"Margin=0,40,0,-20"}},
+    ThemeTargetStyles{L"Grid#TabContainerGrid", {
+        L"Margin=370,1,0,1"}},
+    ThemeTargetStyles{L"Grid#TabContainerGrid > Border#LeftBottomBorderLine", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"Grid#TabContainerGrid > Border#RightBottomBorderLine", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"TabViewItem", {
+        L"Width=150",
+        L"Height=40",
+        L"Margin=0,0,8,0"}},
+    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot", {
+        L"Background:=<WindhawkBlur BlurAmount=\"8\" TintColor=\"#25ffffff\"/>",
+        L"CornerRadius=10",
+        L"BorderThickness=1",
+        L"Margin=2,2,0,2",
+        L"Height=35"}},
+    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot > Canvas", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot > Grid#TabContainer", {
+        L"Background=Transparent",
+        L"BorderThickness=0"}},
+    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot@CommonStates", {
+        L"Background@Selected:=<WindhawkBlur BlurAmount=\"15\" TintColor=\"#20ffffff\"/>",
+        L"Background@PointerOverSelected:=<WindhawkBlur BlurAmount=\"15\" TintColor=\"#25ffffff\"/>",
+        L"Background@Normal:=<WindhawkBlur BlurAmount=\"15\" TintColor=\"#15ffffff\"/>",
+        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>"}},
+    ThemeTargetStyles{L"Grid#TabContainerGrid > Border > Button#AddButton", {
+        L"Visibility=Visible",
+        L"Margin=0,0,0,4",
+        L"Background:=<LinearGradientBrush StartPoint=\"-0.3,-0.3\" EndPoint=\"1.3,1.3\"><GradientStop Color=\"#55f0f07d\" Offset=\"0.0\"/><GradientStop Color=\"#2AF0F0F0\" Offset=\"0.3\"/><GradientStop Color=\"#00F0F0F0\" Offset=\"0.6\"/></LinearGradientBrush>",
+        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>",
+        L"CornerRadius=8",
+        L"BorderThickness=1",
+        L"BorderBrush:=<LinearGradientBrush EndPoint=\"1,1\" StartPoint=\"0,0\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\"/><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\"/><GradientStop Color=\"#80ffffff\" Offset=\"1\"/></LinearGradientBrush>",
+        L"Width=24",
+        L"Height=24"}},
+    ThemeTargetStyles{L"FileExplorerExtensions.CommandBarControl_Wave1 > Grid, Grid#CommandBarControlRootGrid", {
+        L"Background:=",
+        L"BorderBrush:="}},
+    ThemeTargetStyles{L"Grid#NavigationBarControlGrid", {
+        L"Background=Transparent"}},
+    ThemeTargetStyles{L"Grid#PART_LayoutRoot", {
+        L"Background:=<WindhawkBlur BlurAmount=\"8\" TintColor=\"#15ffffff\"/>",
+        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>",
+        L"CornerRadius=10",
+        L"BorderThickness=1",
+        L"Margin=2"}},
+    ThemeTargetStyles{L"FileExplorerExtensions.CommandBarControl_Wave1, FileExplorerExtensions.CommandBarControl", {
+        L"Grid.Row=0",
+        L"Grid.RowSpan=2",
+        L"Margin=0,0,0,0"}},
+    ThemeTargetStyles{L"AutoSuggestBox#FileExplorerSearchBox > Grid#LayoutRoot > TextBox > Grid@CommonStates", {
+        L"BorderThickness=1",
+        L"Background:=<WindhawkBlur BlurAmount=\"8\" TintColor=\"#15ffffff\"/>",
+        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>",
+        L"CornerRadius=10",
+        L"Margin=-90,0,90,0",
+        L"Height=32"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#FileExplorerAddressBarGrid", {
+        L"Margin=-8,0,90,0"}},
+    ThemeTargetStyles{L"CommandBarOverflowPresenter Microsoft.UI.Xaml.Controls.AppBarButton", {
+        L"Background=Transparent",
+        L"CornerRadius=8",
+        L"Margin=2,1,2,1"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton", {
+        L"Background:=<LinearGradientBrush StartPoint=\"-0.3,-0.3\" EndPoint=\"1.3,1.3\"><GradientStop Color=\"#55f0f07d\" Offset=\"0.0\"/><GradientStop Color=\"#2AF0F0F0\" Offset=\"0.3\"/><GradientStop Color=\"#00F0F0F0\" Offset=\"0.6\"/></LinearGradientBrush>",
+        L"BorderBrush:=<LinearGradientBrush StartPoint=\"0,0\" EndPoint=\"1,1\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\" /><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\" /><GradientStop Color=\"#80ffffff\" Offset=\"1\" /></LinearGradientBrush>",
+        L"CornerRadius=12",
+        L"BorderThickness=1",
+        L"Margin=3,2,3,2"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#OuterOverflowContentRootV2", {
+        L"CornerRadius=20"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarToggleButton", {
+        L"Background:=<WindhawkBlur BlurAmount=\"8\" TintColor=\"#2D101010\"/>",
+        L"CornerRadius=8",
+        L"BorderThickness=1",
+        L"Margin=3,0,3,1",
+        L"BorderBrush:=<LinearGradientBrush EndPoint=\"1,1\" StartPoint=\"0,0\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\"/><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\"/><GradientStop Color=\"#80ffffff\" Offset=\"1\"/></LinearGradientBrush>"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarSeparator", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#backButton", {
+        L"Margin=0,9,9,0",
+        L"Visibility=Visible"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#forwardButton", {
+        L"Margin=0,9,9,0",
+        L"Visibility=Visible"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#upButton", {
+        L"Margin=0,9,9,0",
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#refreshButton", {
+        L"Visibility=Visible",
+        L"Margin=0,9,9,0"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#stopButton", {
+        L"Visibility=Collapsed",
+        L"Margin=0,9,9,0"}},
+    ThemeTargetStyles{L"FileExplorerExtensions.NavigationBarControl", {
+        L"Grid.RowSpan=2"}},
+}, {}, {}, /*explorerFrameContainerHeight=*/87};
+
+const Theme g_themeZEUSosX_044 = {{
+    ThemeTargetStyles{L"FileExplorerExtensions.CommandBarControl_Wave1 > Grid, Grid#CommandBarControlRootGrid", {
+        L"Background=Transparent",
+        L"BorderThickness=0",
+        L"Grid.Row=0",
+        L"Grid.RowSpan=2",
+        L"HorizontalAlignment=Left",
+        L"VerticalAlignment=Top",
+        L"Width=155",
+        L"Margin=197,-30,0,0"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.CommandBar#FileExplorerCommandBar", {
+        L"Background=Transparent",
+        L"HorizontalAlignment=Left",
+        L"VerticalAlignment=Top"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Border#BottomBorderLine", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#NavigationBarControlGrid", {
+        L"Background=Transparent",
+        L"BorderBrush=Transparent",
+        L"ColumnDefinitions:=<ColumnDefinitionCollection><ColumnDefinition Width=\"Auto\"/><ColumnDefinition Width=\"*\"/><ColumnDefinition Width=\"380\"/></ColumnDefinitionCollection>",
+        L"Margin=0,-16,0,-21"}},
+    ThemeTargetStyles{L"Grid#TabContainerGrid", {
+        L"Grid.Row=0",
+        L"HorizontalAlignment=Left",
+        L"Margin=100,0,0,0",
+        L"Width=1",
+        L"MaxWidth=1"}},
+    ThemeTargetStyles{L"FileExplorerExtensions.FileExplorerTabControl", {
+        L"HorizontalAlignment=Left",
+        L"Margin=100,0,0,0",
+        L"Width=1",
+        L"MaxWidth=1"}},
+    ThemeTargetStyles{L"TabViewItem", {
+        L"Width=0",
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"Grid#TabContainerGrid > Border > Button#AddButton", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"AutoSuggestBox#FileExplorerSearchBox > Grid#LayoutRoot > TextBox > Grid@CommonStates > Border#BorderElement", {
+        L"Background=Transparent",
+        L"BorderThickness=0"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#FileExplorerAddressBarGrid > Grid#LayoutRoot > TextBox > Grid@CommonStates > Border#BorderElement", {
+        L"Background=Transparent",
+        L"BorderThickness=0"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AutoSuggestBox#FileExplorerSearchBox > Microsoft.UI.Xaml.Controls.Grid#LayoutRoot > Microsoft.UI.Xaml.Controls.TextBox#TextBox", {
+        L"Margin=0,0,140,0",
+        L"Background=Transparent",
+        L"BorderBrush=Transparent",
+        L"TextAlignment=Center",
+        L"HorizontalContentAlignment=Center"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#FileExplorerAddressBarGrid", {
+        L"HorizontalAlignment=Stretch",
+        L"Height=28",
+        L"Margin=155,0,0,0"}},
+    ThemeTargetStyles{L"AutoSuggestBox#FileExplorerSearchBox", {
+        L"HorizontalAlignment=Stretch",
+        L"Height=28",
+        L"Margin=-7,-1,7,0"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.CommandBar#FileExplorerCommandBar Button", {
+        L"FontSize=14"}},
+}, {}, {}, /*explorerFrameContainerHeight=*/44, BackgroundTranslucentEffect::kMica};
+
+const Theme g_themeCompact_Explorer11 = {{
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Primitives.SuggestionsPopup", {
+        L"Margin=0,0,0,900"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton > Grid@CommonStates", {
+        L"Background@Disabled:=<WindhawkBlur BlurAmount=\"8\" TintColor=\"#25ffffff\"/>",
+        L"CornerRadius@Disabled=10",
+        L"BorderThickness@Disabled=1",
+        L"Margin@Disabled=2,6,2,6",
+        L"Padding@Disabled=0,-7"}},
+    ThemeTargetStyles{L"CommandBar#FileExplorerCommandBar > Grid#LayoutRoot > Grid#ContentRoot > Button#MoreButton", {
+        L"Background:=<WindhawkBlur BlurAmount=\"8\" TintColor=\"#25ffffff\"/>",
+        L"CornerRadius=10",
+        L"BorderThickness=1",
+        L"Margin=3,2,3,2",
+        L"Width=45",
+        L"Height=32"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#backButton > Grid@CommonStates", {
+        L"Background@Disabled:=<WindhawkBlur BlurAmount=\"8\" TintColor=\"#25ffffff\"/>",
+        L"CornerRadius@Disabled=11",
+        L"BorderThickness@Disabled=1",
+        L"Margin@Disabled=0,0,0,0",
+        L"Height@Disabled=32",
+        L"Width@Disabled=20",
+        L"Padding@Disabled=0,-2,0,2"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#forwardButton > Grid@CommonStates", {
+        L"Background@Disabled:=<WindhawkBlur BlurAmount=\"8\" TintColor=\"#25ffffff\"/>",
+        L"CornerRadius@Disabled=11",
+        L"BorderThickness@Disabled=1",
+        L"Margin@Disabled=0,0,0,0",
+        L"Height@Disabled=32",
+        L"Width@Disabled=20",
+        L"Padding@Disabled=0,-2,0,2"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#refreshButton > Grid@CommonStates", {
+        L"Background@Disabled:=<WindhawkBlur BlurAmount=\"8\" TintColor=\"#25ffffff\"/>",
+        L"CornerRadius@Disabled=11",
+        L"BorderThickness@Disabled=1",
+        L"Margin@Disabled=0,0,0,0",
+        L"Height@Disabled=32",
+        L"Width@Disabled=20",
+        L"Padding@Disabled=0,-2,0,2"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarToggleButton > Grid@CommonStates", {
+        L"Background@Disabled:=<WindhawkBlur BlurAmount=\"8\" TintColor=\"#2D101010\"/>"}},
+    ThemeTargetStyles{L"Grid#DetailsViewControlRootGrid", {
+        L"Margin=20,20,20,1",
+        L"Background:=<WindhawkBlur BlurAmount=\"30\" TintColor=\"#2D101010\" TintOpacity=\"0.4\"/>",
+        L"CornerRadius=15"}},
+    ThemeTargetStyles{L"StackPanel#DetailsViewThumbnail > Grid", {
+        L"Background=Transparent"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid > OuterOverflowContentRootV2", {
+        L"CornerRadius=250"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.CommandBarOverflowPresenter > Microsoft.UI.Xaml.Controls.CommandBarOverflowPresenter", {
+        L"Background=transparent"}},
+    ThemeTargetStyles{L"AppBarButton[7]", {
+        L"Visibility=Collapsed",
+        L"Width=0",
+        L"MinWidth=0",
+        L"Margin=0,0,0,0",
+        L"Padding=0,0,0,0"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Viewbox > ContentViewB", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"Grid#HomeViewRootGrid", {
+        L"Margin=20,20,20,0",
+        L"Background:=<WindhawkBlur BlurAmount=\"30\" TintColor=\"#2D101010\" TintOpacity=\"0.4\"/>",
+        L"CornerRadius=15"}},
+    ThemeTargetStyles{L"FileExplorerExtensions.GalleryViewControl#GalleryViewControl > Grid", {
+        L"Margin=20,20,20,0",
+        L"Background:=<WindhawkBlur BlurAmount=\"30\" TintColor=\"#2D101010\" TintOpacity=\"0.4\"/>",
+        L"CornerRadius=15"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#GalleryRootGrid", {
+        L"Margin=10",
+        L"Background:=transparent",
+        L"CornerRadius=15"}},
+    ThemeTargetStyles{L"CommandBar#FileExplorerCommandBar", {
+        L"Grid.Row=0",
+        L"Grid.RowSpan=1",
+        L"CornerRadius:=15",
+        L"Width=400",
+        L"HorizontalAlignment=Left",
+        L"Background:=transparent",
+        L"Padding=0,0,0,0"}},
+    ThemeTargetStyles{L"CommandBar#FileExplorerCommandBar > Grid#LayoutRoot > Grid#ContentRoot > Grid#OverflowSeparator", {
+        L"Visibility=Collapsed",
+        L"Width=0",
+        L"MinWidth=0"}},
+    ThemeTargetStyles{L"CommandBar#FileExplorerCommandBar > Grid#LayoutRoot > Grid#ContentRoot", {
+        L"HorizontalAlignment=Left"}},
+    ThemeTargetStyles{L"CommandBar#FileExplorerCommandBar > Grid#LayoutRoot > Grid#ContentRoot > ItemsControl#PrimaryItemsControl", {
+        L"HorizontalAlignment=Left"}},
+    ThemeTargetStyles{L"CommandBar#FileExplorerSecondaryCommandBar", {
+        L"Visibility=Visible",
+        L"Margin=0,40,0,-20"}},
+    ThemeTargetStyles{L"Grid#TabContainerGrid", {
+        L"Margin=370,1,0,1"}},
+    ThemeTargetStyles{L"Grid#TabContainerGrid > Border#LeftBottomBorderLine", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"Grid#TabContainerGrid > Border#RightBottomBorderLine", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"TabViewItem", {
+        L"Width=150",
+        L"Height=40",
+        L"Margin=0,0,8,0"}},
+    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot", {
+        L"Background:=<WindhawkBlur BlurAmount=\"8\" TintColor=\"#25ffffff\"/>",
+        L"CornerRadius=10",
+        L"BorderThickness=1",
+        L"Margin=2,2,0,2",
+        L"Height=35"}},
+    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot > Canvas", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot > Grid#TabContainer", {
+        L"Background=Transparent",
+        L"BorderThickness=0"}},
+    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot@CommonStates", {
+        L"Background@Selected:=<WindhawkBlur BlurAmount=\"15\" TintColor=\"#30ffffff\"/>",
+        L"Background@PointerOverSelected:=<WindhawkBlur BlurAmount=\"15\" TintColor=\"#40ffffff\"/>",
+        L"Background@Normal:=<WindhawkBlur BlurAmount=\"15\" TintColor=\"#20ffffff\"/>"}},
+    ThemeTargetStyles{L"Grid#TabContainerGrid > Border > Button#AddButton", {
+        L"Visibility=Visible",
+        L"Margin=0,0,0,4",
+        L"Background:=<WindhawkBlur BlurAmount=\"15\" TintColor=\"#25ffffff\"/>",
+        L"CornerRadius=10",
+        L"BorderThickness=0",
+        L"BorderBrush:=<LinearGradientBrush EndPoint=\"1,1\" StartPoint=\"0,0\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\"/><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\"/><GradientStop Color=\"#80ffffff\" Offset=\"1\"/></LinearGradientBrush>",
+        L"Width=24",
+        L"Height=24"}},
+    ThemeTargetStyles{L"FileExplorerExtensions.CommandBarControl_Wave1 > Grid, Grid#CommandBarControlRootGrid", {
+        L"Background:=",
+        L"BorderBrush:="}},
+    ThemeTargetStyles{L"Grid#NavigationBarControlGrid", {
+        L"Background=Transparent"}},
+    ThemeTargetStyles{L"Grid#PART_LayoutRoot", {
+        L"Background:=<WindhawkBlur BlurAmount=\"8\" TintColor=\"#25ffffff\"/>",
+        L"CornerRadius=10",
+        L"BorderThickness=1",
+        L"Margin=1"}},
+    ThemeTargetStyles{L"FileExplorerExtensions.CommandBarControl_Wave1, FileExplorerExtensions.CommandBarControl", {
+        L"Grid.Row=0",
+        L"Grid.RowSpan=2",
+        L"Margin=0,0,0,0"}},
+    ThemeTargetStyles{L"AutoSuggestBox#FileExplorerSearchBox > Grid#LayoutRoot > TextBox > Grid@CommonStates", {
+        L"Background:=<WindhawkBlur BlurAmount=\"8\" TintColor=\"#25ffffff\"/>",
+        L"CornerRadius=10",
+        L"Margin=-90,0,90,0",
+        L"Height=30"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#FileExplorerAddressBarGrid", {
+        L"Margin=-8,0,90,0"}},
+    ThemeTargetStyles{L"CommandBarOverflowPresenter#SecondaryItemsControl > Microsoft.UI.Xaml.Controls.AppBarButton", {
+        L"Background=Transparent",
+        L"CornerRadius=4",
+        L"BorderThickness=0",
+        L"Margin=0,0,0,0"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton", {
+        L"Background:=<WindhawkBlur BlurAmount=\"8\" TintColor=\"#25ffffff\"/>",
+        L"CornerRadius=10",
+        L"BorderThickness=1",
+        L"Margin=3,2,3,2"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarToggleButton", {
+        L"Background:=<WindhawkBlur BlurAmount=\"8\" TintColor=\"#2D101010\"/>",
+        L"CornerRadius=8",
+        L"BorderThickness=1",
+        L"Margin=3,0,3,1",
+        L"BorderBrush:=<LinearGradientBrush EndPoint=\"1,1\" StartPoint=\"0,0\"><GradientStop Color=\"#80ffffff\" Offset=\"0.0\"/><GradientStop Color=\"{ThemeResource SurfaceStrokeColorDefault}\" Offset=\"0.55\"/><GradientStop Color=\"#80ffffff\" Offset=\"1\"/></LinearGradientBrush>"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarSeparator", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#backButton", {
+        L"Margin=0,9,9,0",
+        L"Visibility=Visible"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#forwardButton", {
+        L"Margin=0,9,9,0",
+        L"Visibility=Visible"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#upButton", {
+        L"Margin=0,9,9,0",
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#refreshButton", {
+        L"Visibility=Visible",
+        L"Margin=0,9,9,0"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.AppBarButton#stopButton", {
+        L"Visibility=Collapsed",
+        L"Margin=0,9,9,0"}},
+    ThemeTargetStyles{L"FileExplorerExtensions.NavigationBarControl", {
+        L"Grid.RowSpan=2"}},
+}, {}, {}, /*explorerFrameContainerHeight=*/87};
+
+const Theme g_themeFloat = {{
+    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot@CommonStates", {
+        L"Background@Selected:=<AcrylicBrush TintColor=\"{ThemeResource Tab}\" TintOpacity=\"0.9\" Opacity=\"0.6\"/>",
+        L"Background@PointerOverSelected:=<AcrylicBrush TintColor=\"{ThemeResource Tab}\" TintOpacity=\"0.9\" Opacity=\"0.7\"/>",
+        L"Background@PointerOver:=<AcrylicBrush TintColor=\"{ThemeResource Tab}\" TintOpacity=\"0.9\" Opacity=\"0.3\"/>",
+        L"Background@Normal:=<AcrylicBrush TintColor=\"{ThemeResource Tab}\" TintOpacity=\"0.9\" Opacity=\"0\"/>",
+        L"Background@PressedSelected:=<AcrylicBrush TintColor=\"{ThemeResource Tab}\" TintOpacity=\"0.9\" Opacity=\"0.9\"/>",
+        L"CornerRadius=6"}},
+    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot > Grid#TabContainer", {
+        L"Background=Transparent",
+        L"BorderThickness=0"}},
+    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot > Canvas", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"TabViewItem > Grid#LayoutRoot", {
+        L"BorderThickness=1",
+        L"Margin=2,0,0,0",
+        L"Height=35"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Border#BottomBorderLine", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"Grid#TabContainerGrid > Border#LeftBottomBorderLine", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"Grid#TabContainerGrid > Border#RightBottomBorderLine", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"TabViewItem", {
+        L"CornerRadius=4"}},
+    ThemeTargetStyles{L"Grid#TabContainerGrid > Border > Button#AddButton", {
+        L"Visibility=Visible",
+        L"Margin=0,0,0,3",
+        L"CornerRadius=10",
+        L"BorderThickness=0",
+        L"Width=24",
+        L"Height=24"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#TabContainerGrid", {
+        L"Height=44"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Border#RightBottomBorderLine", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Border#LeftBottomBorderLine", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Grid#NavigationBarControlGrid", {
+        L"CornerRadius=6",
+        L"Margin=8,4,8,0",
+        L"Height=54"}},
+    ThemeTargetStyles{L"FileExplorerExtensions.CommandBarControl_Wave1 > Grid, Grid#CommandBarControlRootGrid", {
+        L"Margin=0,8,0,0",
+        L"BorderThickness=0,1,0,1"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Controls.Primitives.TabViewListView#TabListView", {
+        L"Margin=-3,0,0,0"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Shapes.Path#RightRadiusRenderArc", {
+        L"Visibility=Collapsed"}},
+    ThemeTargetStyles{L"Microsoft.UI.Xaml.Shapes.Path#LeftRadiusRenderArc", {
+        L"Visibility=Collapsed"}},
+}, {}, {
+    L"Tab@Light=#ffffffff",
+    L"Tab@Dark=#000000",
+}, /*explorerFrameContainerHeight=*/160};
+
+// clang-format on
+
 enum class BackgroundTranslucentEffectRegion {
     kEntireWindow,
     kExplorerFrame,
@@ -341,14 +1715,10 @@ enum class XamlDiagnosticsHandling {
 };
 
 struct {
-    std::optional<BackgroundTranslucentEffect> backgroundTranslucentEffect =
-        BackgroundTranslucentEffect::kBlur;
-    bool restartExplorerOnSettingsChange = false;
-    BackgroundTranslucentEffectRegion backgroundTranslucentEffectRegion =
-        BackgroundTranslucentEffectRegion::kEntireWindow;
-    int explorerFrameContainerHeight = 0;
-    XamlDiagnosticsHandling xamlDiagnosticsHandling =
-        XamlDiagnosticsHandling::kBlock;
+    std::optional<BackgroundTranslucentEffect> backgroundTranslucentEffect;
+    BackgroundTranslucentEffectRegion backgroundTranslucentEffectRegion;
+    int explorerFrameContainerHeight;
+    XamlDiagnosticsHandling xamlDiagnosticsHandling;
 } g_settings;
 
 BackgroundTranslucentEffect g_themeBackgroundTranslucentEffect;
@@ -370,14 +1740,9 @@ ElementId GetOrCreateElementId(
 ElementId FindElementId(InstanceHandle handle);
 void ForgetElementId(InstanceHandle handle);
 
-void ApplyCustomizations(
-    ElementId elementId,
-    winrt::Microsoft::UI::Xaml::FrameworkElement element,
-    PCWSTR fallbackClassName,
-    bool isKnownThemeTarget = false);
-void HandleVirtualizingRepeater(
-    ElementId elementId,
-    winrt::Microsoft::UI::Xaml::FrameworkElement element);
+void ApplyCustomizations(ElementId elementId,
+                         winrt::Microsoft::UI::Xaml::FrameworkElement element,
+                         PCWSTR fallbackClassName);
 void CleanupCustomizations(ElementId elementId);
 void QueueDiagnosticsRelease(InstanceHandle handle);
 void FlushDiagnosticsReleasesIfQuiet();
@@ -415,7 +1780,6 @@ namespace winrt {
 // alias some long namespaces for convenience
 namespace wf = winrt::Windows::Foundation;
 namespace mux = winrt::Microsoft::UI::Xaml;
-namespace muxc = winrt::Microsoft::UI::Xaml::Controls;
 
 // A weak reference for the object, or an empty one when the object is null or
 // doesn't support weak references: cppwinrt's make_weak dereferences a null
@@ -516,7 +1880,7 @@ VisualTreeWatcher::VisualTreeWatcher(winrt::com_ptr<IUnknown> site) :
     // calling it from there fixes it.
     HANDLE thread = CreateThread(
         nullptr, 0,
-        [](LPVOID lpParam) WINAPI -> DWORD {
+        [](LPVOID lpParam) -> DWORD {
             auto watcher = reinterpret_cast<VisualTreeWatcher*>(lpParam);
             HRESULT hr = watcher->m_XamlDiagnostics.as<IVisualTreeService3>()->AdviseVisualTreeChange(watcher);
             watcher->Release();
@@ -583,17 +1947,30 @@ bool VisualTreeWatcher::ReleaseDiagnosticsReference(InstanceHandle handle)
     return weakElement && !weakElement.get();
 }
 
-// Forward declaration: filter unrelated FrameworkElements before creating per-element state.
-bool IsExplorerThemeTargetElement(
-    mux::FrameworkElement const& element,
-    PCWSTR fallbackClassName);
-
 HRESULT VisualTreeWatcher::OnVisualTreeChange(ParentChildRelation relation, VisualElement element, VisualMutationType mutationType) try
 {
-    // This callback can fire very frequently while Explorer builds or updates
-    // its visual tree. Avoid verbose per-mutation logging on the hot path.
+    Wh_Log(L"========================================");
+
+    switch (mutationType)
+    {
+    case Add:
+        Wh_Log(L"Mutation type: Add %llu", element.Handle);
+        break;
+
+    case Remove:
+        Wh_Log(L"Mutation type: Remove %llu", element.Handle);
+        break;
+
+    default:
+        Wh_Log(L"Mutation type: %d %llu", static_cast<int>(mutationType), element.Handle);
+        break;
+    }
+
+    Wh_Log(L"Element type: %s", element.Type);
+
     if (!g_initializedForThread)
     {
+        Wh_Log(L"Not initialized for thread %u", GetCurrentThreadId());
         return S_OK;
     }
 
@@ -605,28 +1982,23 @@ HRESULT VisualTreeWatcher::OnVisualTreeChange(ParentChildRelation relation, Visu
         if (mutationType == Add)
         {
             const auto inspectable = FromHandle(element.Handle);
+            auto elementId = GetOrCreateElementId(element.Handle, inspectable);
             auto frameworkElement = inspectable.try_as<mux::FrameworkElement>();
             if (frameworkElement)
             {
-                // Preserve repeater tracking while bypassing the style-target
-                // filter for repeaters, which are never theme targets.
-                if (frameworkElement.try_as<muxc::ItemsRepeater>())
+                Wh_Log(L"FrameworkElement name: %s", frameworkElement.Name().c_str());
+                if (elementId == ElementId::None)
                 {
-                    auto elementId = GetOrCreateElementId(element.Handle, inspectable);
-                    if (elementId != ElementId::None)
-                    {
-                        HandleVirtualizingRepeater(elementId, frameworkElement);
-                    }
+                    Wh_Log(L"Skipping element which can't be given an id");
                 }
-                else if (IsExplorerThemeTargetElement(frameworkElement, element.Type))
+                else
                 {
-                    auto elementId = GetOrCreateElementId(element.Handle, inspectable);
-                    if (elementId != ElementId::None)
-                    {
-                        ApplyCustomizations(
-                            elementId, frameworkElement, element.Type, true);
-                    }
+                    ApplyCustomizations(elementId, frameworkElement, element.Type);
                 }
+            }
+            else
+            {
+                Wh_Log(L"Skipping non-FrameworkElement");
             }
         }
         else if (mutationType == Remove)
@@ -947,18 +2319,6 @@ using namespace std::string_view_literals;
 #include <winrt/Windows.Storage.Streams.h>
 #include <winrt/Windows.System.Power.h>
 #include <winrt/Windows.UI.ViewManagement.h>
-
-#include <psapi.h>
-#include <windowsx.h>
-#include <winrt/Windows.UI.Input.h>
-#include <winrt/Windows.UI.Xaml.Controls.h>
-#include <winrt/Windows.UI.Xaml.Input.h>
-#include <string_view>
-
-namespace TaskSwitch {
-void OnLibraryLoaded(HMODULE module, LPCWSTR lpLibFileName);
-}
-
 
 using namespace winrt::Microsoft::UI::Xaml;
 
@@ -1744,8 +3104,12 @@ winrt::Windows::Foundation::IInspectable ReadLocalValueWithWorkaround(
 #endif
     }
 
-    // Avoid per-property logging here: matcher evaluation can call this
-    // frequently while the visual tree is being built or updated.
+    Wh_Log(L"Read property value %s",
+           value ? (value == DependencyProperty::UnsetValue()
+                        ? L"(unset)"
+                        : winrt::get_class_name(value).c_str())
+                 : L"(null)");
+
     return value;
 }
 
@@ -3863,8 +5227,6 @@ void ScheduleImageLoadRetryOnAllUiThreads() {
             return;
         }
 
-        // Read the registry size under its lock; it bounds live dispatchers.
-        dispatchers.reserve(g_imageRetryDispatchers.size());
         for (auto& weakDispatcher : g_imageRetryDispatchers) {
             if (auto dispatcher = weakDispatcher.get()) {
                 dispatchers.push_back(dispatcher);
@@ -4397,15 +5759,6 @@ winrt::Windows::Foundation::IInspectable SetOrClearValue(
 
 // https://stackoverflow.com/a/5665377
 std::wstring EscapeXmlAttribute(std::wstring_view data) {
-    if (data.empty()) {
-        return {};
-    }
-
-    // Most style values contain no XML attribute metacharacters.
-    if (data.find_first_of(L"&\"<>") == std::wstring_view::npos) {
-        return std::wstring(data);
-    }
-
     std::wstring buffer;
     buffer.reserve(data.size());
     for (const auto c : data) {
@@ -4436,9 +5789,6 @@ std::wstring EscapeXmlAttribute(std::wstring_view data) {
 
 // https://stackoverflow.com/a/54364173
 std::wstring_view TrimStringView(std::wstring_view s) {
-    if (s.empty()) {
-        return s;
-    }
     s.remove_prefix(std::min(s.find_first_not_of(L" \t\r\v\n"), s.size()));
     s.remove_suffix(
         std::min(s.size() - s.find_last_not_of(L" \t\r\v\n") - 1, s.size()));
@@ -4448,18 +5798,9 @@ std::wstring_view TrimStringView(std::wstring_view s) {
 // https://stackoverflow.com/a/46931770
 std::vector<std::wstring_view> SplitStringView(std::wstring_view s,
                                                std::wstring_view delimiter) {
-    if (delimiter.empty() ||
-        s.find(delimiter) == std::wstring_view::npos) {
-        return {s};
-    }
-
     size_t pos_start = 0, pos_end, delim_len = delimiter.length();
     std::wstring_view token;
     std::vector<std::wstring_view> res;
-    // Bound the number of non-overlapping tokens to avoid vector growth.
-    if (delim_len > 0) {
-        res.reserve(s.size() / delim_len + 1);
-    }
 
     while ((pos_end = s.find(delimiter, pos_start)) !=
            std::wstring_view::npos) {
@@ -4947,7 +6288,6 @@ const PropertyValues& GetResolvedPropertyValues(
             std::get<PropertyValuesUnresolved>(*propertyValuesMaybeUnresolved);
         if (!propertyValuesStr.empty()) {
             std::wstring xaml;
-            propertyValues.reserve(propertyValuesStr.size());
 
             for (const auto& [property, value] : propertyValuesStr) {
                 xaml += L"        <Setter Property=\"";
@@ -5017,10 +6357,6 @@ std::wstring FormatDoubleInvariant(double d) {
 // by a decimal fraction or exponent. Returns std::nullopt on partial / bad
 // input.
 std::optional<double> ParseDoubleInvariant(std::wstring_view sv) {
-    if (sv.empty()) {
-        return std::nullopt;
-    }
-
     std::string narrow;
     narrow.reserve(sv.size());
     for (auto c : sv) {
@@ -5145,50 +6481,15 @@ std::optional<double> UnboxedPropertyValueAsNumeric(
 bool TestElementMatcher(FrameworkElement element,
                         ElementMatcher& matcher,
                         VisualStateGroup* visualStateGroup,
-                        PCWSTR fallbackClassName,
-                        PCWSTR cachedClassName = nullptr,
-                        PCWSTR cachedElementName = nullptr) {
-    // Avoid querying XAML metadata for matchers that don't constrain the
-    // corresponding field. Parent matchers can run many times for one target.
-    std::wstring_view className;
-    std::wstring_view elementName;
-    winrt::hstring classNameStorage;
-    winrt::hstring elementNameStorage;
-
-    if (!matcher.type.empty()) {
-        if (cachedClassName) {
-            className = cachedClassName;
-        } else {
-            classNameStorage = winrt::get_class_name(element);
-            className = classNameStorage;
-        }
-
-        if (matcher.type != className &&
-            (!fallbackClassName || matcher.type != fallbackClassName)) {
-            return false;
-        }
+                        PCWSTR fallbackClassName) {
+    if (!matcher.type.empty() &&
+        matcher.type != winrt::get_class_name(element) &&
+        (!fallbackClassName || matcher.type != fallbackClassName)) {
+        return false;
     }
 
-    if (!matcher.name.empty()) {
-        if (cachedElementName) {
-            elementName = cachedElementName;
-        } else {
-            elementNameStorage = element.Name();
-            elementName = elementNameStorage;
-        }
-
-        if (matcher.name != elementName) {
-            return false;
-        }
-    }
-
-    // A completely unconstrained matcher matches every FrameworkElement.
-    // This is a common case for wildcard/parent rules, so return before any
-    // property or visual-state processing.
-    if (!matcher.oneBasedIndex &&
-        matcher.propertyValues.index() == 0 &&
-        !matcher.visualStateGroupName) {
-        return true;
+    if (!matcher.name.empty() && matcher.name != element.Name()) {
+        return false;
     }
 
     if (matcher.oneBasedIndex) {
@@ -5205,24 +6506,12 @@ bool TestElementMatcher(FrameworkElement element,
         }
     }
 
-    // Skip resolving property values entirely when this matcher has no
-    // property filters. Empty matchers are common in parent chains, so avoid
-    // the resolver call (and its associated variant handling/logging).
-    const bool hasPropertyValues = std::visit(
-        [](const auto& values) { return !values.empty(); },
-        matcher.propertyValues);
-    if (hasPropertyValues) {
-        const auto& propertyValues =
-            GetResolvedPropertyValues(matcher.type, &matcher.propertyValues);
-        if (propertyValues.empty()) {
-            return true;
-        }
+    auto elementDo = element.as<DependencyObject>();
 
-        auto elementDo = element.as<DependencyObject>();
-
-        for (const auto& propertyValue : propertyValues) {
-            const auto value =
-                ReadLocalValueWithWorkaround(elementDo, propertyValue.first);
+    for (const auto& propertyValue :
+         GetResolvedPropertyValues(matcher.type, &matcher.propertyValues)) {
+        const auto value =
+            ReadLocalValueWithWorkaround(elementDo, propertyValue.first);
         if (!value) {
             Wh_Log(L"Null property value");
             return false;
@@ -5238,9 +6527,8 @@ bool TestElementMatcher(FrameworkElement element,
             return false;
         }
 
-            if (*expectedUnboxed != *valueUnboxed) {
-                return false;
-            }
+        if (*expectedUnboxed != *valueUnboxed) {
+            return false;
         }
     }
 
@@ -5265,42 +6553,8 @@ struct ElementResolvedRules {
 ElementResolvedRules FindElementPropertyOverrides(FrameworkElement element,
                                                   PCWSTR fallbackClassName) {
     ElementResolvedRules result;
-    if (g_elementsCustomizationRules.empty()) {
-        return result;
-    }
-
-    // These values are queried repeatedly while the same element is tested
-    // against multiple rules and parent matchers. Cache them for this apply
-    // pass instead of asking the XAML object for them on every matcher test.
-    const auto elementClassName = winrt::get_class_name(element);
-    const auto elementName = element.Name();
     std::unordered_set<DependencyProperty> propertiesAdded;
     std::unordered_set<std::wstring> capturesAdded;
-
-    // Captures are collected from matching rules and cannot exceed the number
-    // of rules. Reserve once to avoid repeated vector growth in capture-heavy
-    // configurations.
-    result.captures.reserve(g_elementsCustomizationRules.size());
-
-    // The rule list bounds the number of unique properties and captures that
-    // can be inserted. Reserve once to avoid repeated hash-table rehashes when
-    // an element matches many rules.
-    propertiesAdded.reserve(g_elementsCustomizationRules.size());
-    capturesAdded.reserve(g_elementsCustomizationRules.size());
-
-    // Cache the immediate parent lazily. Rules without a parent selector do
-    // not pay for the lookup, while direct-parent fast paths reuse it.
-    FrameworkElement cachedDirectParent{nullptr};
-    bool directParentCached = false;
-    auto getDirectParent = [&]() -> FrameworkElement {
-        if (!directParentCached) {
-            cachedDirectParent =
-                Media::VisualTreeHelper::GetParent(element)
-                    .try_as<FrameworkElement>();
-            directParentCached = true;
-        }
-        return cachedDirectParent;
-    };
 
     for (auto it = g_elementsCustomizationRules.rbegin();
          it != g_elementsCustomizationRules.rend(); ++it) {
@@ -5309,8 +6563,7 @@ ElementResolvedRules FindElementPropertyOverrides(FrameworkElement element,
         VisualStateGroup visualStateGroup = nullptr;
 
         if (!TestElementMatcher(element, override.elementMatcher,
-                                &visualStateGroup, fallbackClassName,
-                                elementClassName.c_str(), elementName.c_str())) {
+                                &visualStateGroup, fallbackClassName)) {
             continue;
         }
 
@@ -5321,98 +6574,60 @@ ElementResolvedRules FindElementPropertyOverrides(FrameworkElement element,
         // for the wildcard's next matcher leads to a failure further up the
         // chain, retry with a farther ancestor.
         auto& parentMatchers = override.parentElementMatchers;
-
-        // Most rules do not have a parent selector at all. Skip the
-        // parent-matching machinery entirely for that common case.
-        if (parentMatchers.empty()) {
-            // The element matcher already matched; there is no parent
-            // constraint to evaluate.
-        // The overwhelmingly common parent selector is a single direct
-        // ancestor. Handle it without creating the recursive matcher lambda;
-        // wildcard/root chains still use the full matcher below.
-        } else if (parentMatchers.size() == 1 &&
-                   parentMatchers[0].kind == ElementMatcher::Kind::Element) {
-            auto parent = getDirectParent();
-            if (!parent ||
-                !TestElementMatcher(parent, parentMatchers[0],
-                                     &visualStateGroup, nullptr)) {
-                continue;
-            }
-        } else if (parentMatchers.size() == 2 &&
-                   parentMatchers[0].kind == ElementMatcher::Kind::Element &&
-                   parentMatchers[1].kind == ElementMatcher::Kind::Element) {
-            // Fast path for a two-level direct parent chain.
-            auto parent = getDirectParent();
-            if (!parent ||
-                !TestElementMatcher(parent, parentMatchers[0],
-                                     &visualStateGroup, nullptr)) {
-                continue;
+        auto matchParents = [&](auto& self, FrameworkElement iter,
+                                size_t mi) -> bool {
+            if (mi >= parentMatchers.size()) {
+                return true;
             }
 
-            auto grandParent =
-                Media::VisualTreeHelper::GetParent(parent)
-                    .try_as<FrameworkElement>();
-            if (!grandParent ||
-                !TestElementMatcher(grandParent, parentMatchers[1],
-                                     &visualStateGroup, nullptr)) {
-                continue;
-            }
-        } else {
-            auto matchParents = [&](auto& self, FrameworkElement iter,
-                                    size_t mi) -> bool {
-                if (mi >= parentMatchers.size()) {
-                    return true;
+            auto& matcher = parentMatchers[mi];
+
+            if (matcher.kind == ElementMatcher::Kind::Root) {
+                if (Media::VisualTreeHelper::GetParent(iter)) {
+                    return false;
                 }
 
-                auto& matcher = parentMatchers[mi];
+                return self(self, iter, mi + 1);
+            }
 
-                if (matcher.kind == ElementMatcher::Kind::Root) {
-                    if (Media::VisualTreeHelper::GetParent(iter)) {
+            if (matcher.kind == ElementMatcher::Kind::Wildcard) {
+                // '*' is always followed by an Element matcher (validated at
+                // parse time). Walk up parents and try recursing for each
+                // ancestor that matches the next matcher.
+                auto& nextMatcher = parentMatchers[mi + 1];
+                auto cur = iter;
+                while (true) {
+                    auto parent = Media::VisualTreeHelper::GetParent(cur)
+                                      .try_as<FrameworkElement>();
+                    if (!parent) {
                         return false;
                     }
 
-                    return self(self, iter, mi + 1);
-                }
-
-                if (matcher.kind == ElementMatcher::Kind::Wildcard) {
-                    // '*' is always followed by an Element matcher (validated
-                    // at parse time). Walk up parents and try recursing for
-                    // each ancestor that matches the next matcher.
-                    auto& nextMatcher = parentMatchers[mi + 1];
-                    auto cur = iter;
-                    while (true) {
-                        auto parent = Media::VisualTreeHelper::GetParent(cur)
-                                          .try_as<FrameworkElement>();
-                        if (!parent) {
-                            return false;
-                        }
-
-                        cur = parent;
-                        if (TestElementMatcher(
-                                cur, nextMatcher, &visualStateGroup, nullptr) &&
-                            self(self, cur, mi + 2)) {
-                            return true;
-                        }
+                    cur = parent;
+                    if (TestElementMatcher(cur, nextMatcher, &visualStateGroup,
+                                           nullptr) &&
+                        self(self, cur, mi + 2)) {
+                        return true;
                     }
                 }
-
-                auto parent = Media::VisualTreeHelper::GetParent(iter)
-                                  .try_as<FrameworkElement>();
-                if (!parent) {
-                    return false;
-                }
-
-                if (!TestElementMatcher(parent, matcher, &visualStateGroup,
-                                         nullptr)) {
-                    return false;
-                }
-
-                return self(self, parent, mi + 1);
-            };
-
-            if (!matchParents(matchParents, element, 0)) {
-                continue;
             }
+
+            auto parent = Media::VisualTreeHelper::GetParent(iter)
+                              .try_as<FrameworkElement>();
+            if (!parent) {
+                return false;
+            }
+
+            if (!TestElementMatcher(parent, matcher, &visualStateGroup,
+                                    nullptr)) {
+                return false;
+            }
+
+            return self(self, parent, mi + 1);
+        };
+
+        if (!matchParents(matchParents, element, 0)) {
+            continue;
         }
 
         const auto& resolvedRules = GetResolvedPropertyOverrides(
@@ -5420,23 +6635,15 @@ ElementResolvedRules FindElementPropertyOverrides(FrameworkElement element,
 
         result.hasDynamicValues |= resolvedRules.hasDynamicValues;
 
-        // A matched rule can legally resolve to no property overrides and no
-        // captures. Avoid creating an empty VSG map entry in that case.
-        if (resolvedRules.propertyOverrides.empty() &&
-            resolvedRules.captures.empty()) {
-            continue;
-        }
-
+        auto& propertyOverridesForVSG =
+            result.overridesPerVSG[visualStateGroup];
         for (const auto& [property, valuesPerVisualState] :
              resolvedRules.propertyOverrides) {
-            if (!propertiesAdded.insert(property).second) {
+            bool propertyInserted = propertiesAdded.insert(property).second;
+            if (!propertyInserted) {
                 continue;
             }
 
-            // Only create the VSG/property maps after confirming that this
-            // rule contributes a property which was not already resolved.
-            auto& propertyOverridesForVSG =
-                result.overridesPerVSG[visualStateGroup];
             auto& propertyOverrides = propertyOverridesForVSG[property];
             for (const auto& [visualState, value] : valuesPerVisualState) {
                 propertyOverrides.insert({visualState, value});
@@ -5914,8 +7121,6 @@ class StyleVariableExpressionEvaluator {
     StyleExpressionValue ParseStringLiteral() {
         m_pos++;  // Skip the opening backtick.
         std::wstring out;
-        // The literal cannot contain more characters than remain in the expression.
-        out.reserve(m_text.size() - m_pos);
         while (m_pos < m_text.size()) {
             wchar_t c = m_text[m_pos];
             if (c == L'`') {
@@ -6139,16 +7344,6 @@ std::optional<std::wstring> EvaluateStyleVariableExpression(
 std::optional<std::wstring> ExpandStyleVariables(
     std::wstring_view input,
     const StyleVariableLookupContext* context) {
-    // Most style values are literals. Avoid copying them into a mutable string
-    // and entering the substitution scanner when no opening token exists.
-    if (input.find(L"{{") == std::wstring_view::npos) {
-        if (input.find(L"}}") != std::wstring_view::npos) {
-            Wh_Log(L"Unmatched '}}' in style value");
-            return std::nullopt;
-        }
-        return std::wstring(input);
-    }
-
     std::wstring result(input);
     size_t scanFrom = 0;
 
@@ -6459,9 +7654,6 @@ std::optional<PropertyOverrideValue> ResolveDynamicStyleValue(
             : nullptr;
 
     std::vector<StyleVariableDependency> newDeps;
-    // Reuse the previous dependency count as a starting capacity; expansion
-    // can still grow normally when the expression now references more names.
-    newDeps.reserve(propertyCustomizationState->variableDependencies.size());
     StyleVariableLookupContext context{state, consumerNode, &newDeps};
     std::optional<std::wstring> expanded;
     bool skipped = false;
@@ -6773,7 +7965,6 @@ void SetUpCapturesForElement(StyleVariableState* state,
     // we only subscribe once and only when needed.
     std::vector<std::pair<DependencyProperty, std::wstring>>
         sizeChangedCaptures;
-    sizeChangedCaptures.reserve(captures.size());
 
     for (const auto& capture : captures) {
         const auto [it, inserted] =
@@ -7230,14 +8421,8 @@ void ReapplyCustomizationsForSubtree(FrameworkElement element) {
         if (auto elementId = ElementIdFromElement(element);
             elementId != ElementId::None) {
             CleanupCustomizations(elementId);
-            if (element.try_as<muxc::ItemsRepeater>()) {
-                // Keep repeater bookkeeping separate from style application.
-                HandleVirtualizingRepeater(elementId, element);
-            } else {
-                // Only non-repeaters need their runtime class name for styling.
-                auto className = winrt::get_class_name(element);
-                ApplyCustomizations(elementId, element, className.c_str(), true);
-            }
+            auto className = winrt::get_class_name(element);
+            ApplyCustomizations(elementId, element, className.c_str());
         }
     } catch (winrt::hresult_error const& ex) {
         Wh_Log(L"Error %08X: %s", ex.code(), ex.message().c_str());
@@ -7248,9 +8433,6 @@ void ReapplyCustomizationsForSubtree(FrameworkElement element) {
     std::vector<FrameworkElement> children;
     try {
         int count = Media::VisualTreeHelper::GetChildrenCount(element);
-        // Reserve once for the snapshot to avoid repeated vector growth while
-        // preserving the child list before customization can mutate the tree.
-        children.reserve(count);
         for (int i = 0; i < count; i++) {
             if (auto child = Media::VisualTreeHelper::GetChild(element, i)
                                  .try_as<FrameworkElement>()) {
@@ -7313,21 +8495,13 @@ bool SameRepeaterItem(RepeaterItem const& a, RepeaterItem const& b) {
 // Treat a cleared element as removed and a prepared one as newly added.
 void HandleVirtualizingRepeater(ElementId elementId, FrameworkElement element) {
     auto repeater = element.try_as<muxc::ItemsRepeater>();
-    if (!repeater) {
-        return;
-    }
-
-    // Avoid a contains() lookup followed by operator[]: try_emplace performs
-    // the membership test and state lookup in one hash-table operation.
-    auto [stateIt, inserted] =
-        g_virtualizingRepeaters.try_emplace(elementId);
-    if (!inserted) {
+    if (!repeater || g_virtualizingRepeaters.contains(elementId)) {
         return;
     }
 
     Wh_Log(L"Tracking recycling of %s", winrt::get_class_name(element).c_str());
 
-    auto& state = stateIt->second;
+    auto& state = g_virtualizingRepeaters[elementId];
 
     state.elementClearingRevoker = repeater.ElementClearing(
         winrt::auto_revoke,
@@ -7416,83 +8590,19 @@ void HandleVirtualizingRepeater(ElementId elementId, FrameworkElement element) {
 
 void MergeResourceVariables();
 
-// The fixed Explorer theme only targets these leaf control types. Avoid
-// repeatedly running the selector engine for the many unrelated
-// FrameworkElements in Explorer. Check both the diagnostics fallback type and
-// the WinRT runtime class so either naming form remains valid.
-bool IsExplorerThemeTargetType(PCWSTR type) noexcept
-{
-    if (!type)
-    {
-        return false;
-    }
-
-    const std::wstring_view typeView{type};
-    constexpr std::wstring_view targetTypes[] = {
-        L"Grid",
-        L"Microsoft.UI.Xaml.Controls.Grid",
-        L"CommandBar",
-        L"Microsoft.UI.Xaml.Controls.CommandBar",
-        L"TabViewItem",
-        L"Microsoft.UI.Xaml.Controls.TabViewItem",
-        L"Microsoft.UI.Xaml.Shapes.Path",
-        L"Path",
-        L"ToolTip",
-        L"Microsoft.UI.Xaml.Controls.ToolTip",
-        L"StackPanel",
-        L"Microsoft.UI.Xaml.Controls.StackPanel",
-    };
-
-    for (std::wstring_view targetType : targetTypes)
-    {
-        if (typeView == targetType)
-        {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-bool IsExplorerThemeTargetElement(
-    FrameworkElement const& element,
-    PCWSTR fallbackClassName)
-{
-    if (IsExplorerThemeTargetType(fallbackClassName))
-    {
-        return true;
-    }
-
-    const auto className = winrt::get_class_name(element);
-    return IsExplorerThemeTargetType(className.c_str());
-}
-
 void ApplyCustomizations(ElementId elementId,
                          FrameworkElement element,
-                         PCWSTR fallbackClassName,
-                         bool isKnownThemeTarget) {
-    // Callers which pass isKnownThemeTarget=true have already established
-    // that this is a non-repeater theme target, so skip the redundant repeater
-    // type check on that hot path.
-    if (!isKnownThemeTarget) {
-        // Repeater bookkeeping must run before filtering unrelated elements:
-        // their descendants can be recycled without ordinary Remove/Add reports.
-        HandleVirtualizingRepeater(elementId, element);
-
-        // The theme's rightmost selector types are fixed; unrelated elements
-        // need no style matching or per-element customization state.
-        if (!IsExplorerThemeTargetElement(element, fallbackClassName)) {
-            return;
-        }
-    }
-
-    // Merge resource dictionary on the first actual styling target. Merging
-    // it earlier on window creation doesn't work, perhaps merged dictionaries
-    // are reset during initialization. Deferring it also avoids loading theme
-    // resources for repeaters and unrelated elements that need no styling.
+                         PCWSTR fallbackClassName) {
+    // Merge resource dictionary on first element add. Merging it earlier on
+    // window creation doesn't work, perhaps merged dictionaries are reset
+    // during initialization.
     if (!g_resourceVariablesThemeDict) {
         MergeResourceVariables();
     }
+
+    // Before the early return below: a repeater rarely has styles of its own,
+    // but its item elements do.
+    HandleVirtualizingRepeater(elementId, element);
 
     auto* state = GetStyleVariableState();
     if (!state) {
@@ -7768,8 +8878,6 @@ void CleanupCustomizations(ElementId elementId) {
     // just-unregistered capture callbacks can't re-seed a variable
     // mid-teardown.
     std::vector<std::wstring> removedVarNames;
-    removedVarNames.reserve(
-        elementCustomizationState.captureCustomizationStates.size());
     if (state) {
         for (const auto& [property, captureState] :
              elementCustomizationState.captureCustomizationStates) {
@@ -7829,16 +8937,7 @@ using StyleConstants = std::vector<StyleConstant>;
 
 std::wstring ApplyStyleConstants(std::wstring_view style,
                                  const StyleConstants& styleConstants) {
-    if (style.empty()) {
-        return {};
-    }
-    if (styleConstants.empty() ||
-        style.find('$') == std::wstring_view::npos) {
-        return std::wstring(style);
-    }
-
     std::wstring result;
-    result.reserve(style.size());
 
     size_t lastPos = 0;
     size_t findPos;
@@ -8101,30 +9200,17 @@ std::wstring AdjustTypeName(std::wstring_view type) {
             return L"Microsoft.UI.Xaml.Shapes.Rectangle";
         }
 
-        constexpr std::wstring_view prefix = L"Microsoft.UI.Xaml.Controls.";
-        std::wstring result;
-        result.reserve(prefix.size() + type.size());
-        result += prefix;
-        result += type;
-        return result;
+        return L"Microsoft.UI.Xaml.Controls." + std::wstring{type};
     }
 
-    // Most fully qualified names do not use the muxc: shorthand.
-    if (!type.starts_with(L"muxc:")) {
-        return std::wstring(type);
-    }
-
-    static constexpr std::pair<std::wstring_view, std::wstring_view>
-        adjustments[] = {
+    static const std::vector<std::pair<std::wstring_view, std::wstring_view>>
+        adjustments = {
             {L"muxc:", L"Microsoft.UI.Xaml.Controls."},
     };
 
     for (const auto& adjustment : adjustments) {
         if (type.starts_with(adjustment.first)) {
-            std::wstring result;
-            result.reserve(adjustment.second.size() +
-                           type.size() - adjustment.first.size());
-            result += adjustment.second;
+            auto result = std::wstring{adjustment.second};
             result += type.substr(adjustment.first.size());
             return result;
         }
@@ -8136,13 +9222,7 @@ std::wstring AdjustTypeName(std::wstring_view type) {
 // Splits a target string on the commas which separate targets, ignoring commas
 // which are part of a `[Property=Value]` clause.
 std::vector<std::wstring_view> SplitTargetString(std::wstring_view target) {
-    if (target.find(L',') == std::wstring_view::npos) {
-        return {target};
-    }
-
     std::vector<std::wstring_view> result;
-    // Every top-level comma creates at most one additional target token.
-    result.reserve(std::count(target.begin(), target.end(), L',') + 1);
 
     size_t partBegin = 0;
     bool inProperty = false;
@@ -8176,8 +9256,6 @@ void AddElementCustomizationRulesForSingleTarget(
     ElementCustomizationRules elementCustomizationRules;
 
     auto targetParts = SplitStringView(target, L" > ");
-    // A target part can add at most one parent matcher.
-    elementCustomizationRules.parentElementMatchers.reserve(targetParts.size());
 
     bool first = true;
     bool hasVisualStateGroup = false;
@@ -8272,10 +9350,6 @@ void AddElementCustomizationRulesForSingleTarget(
 
 void AddElementCustomizationRules(std::wstring_view target,
                                   const std::vector<std::wstring>& styles) {
-    if (styles.empty() || target.empty()) {
-        return;
-    }
-
     auto targets = SplitTargetString(target);
 
     for (const auto& singleTarget : targets) {
@@ -8327,7 +9401,7 @@ bool ProcessSingleTargetStylesFromSettings(
             ApplyStyleConstants(styleSetting.get(), styleConstants));
     }
 
-    if (!styles.empty()) {
+    if (styles.size() > 0) {
         AddElementCustomizationRules(targetStringSetting.get(), styles);
     }
 
@@ -8395,15 +9469,13 @@ std::optional<ResourceVariableEntry> ParseResourceVariable(
 
 winrt::Windows::Foundation::IInspectable ParseXamlValue(
     std::wstring_view xamlValue) {
-    constexpr std::wstring_view prefix = L"        <Setter Property=\"Tag\">\n";
-    constexpr std::wstring_view middle = L"            <Setter.Value>\n";
-    constexpr std::wstring_view suffix = L"\n            </Setter.Value>\n        </Setter>\n";
     std::wstring xaml;
-    xaml.reserve(prefix.size() + middle.size() + xamlValue.size() + suffix.size());
-    xaml += prefix;
-    xaml += middle;
+    xaml += L"        <Setter Property=\"Tag\">\n";
+    xaml += L"            <Setter.Value>\n";
     xaml += xamlValue;
-    xaml += suffix;
+    xaml += L"\n";
+    xaml += L"            </Setter.Value>\n";
+    xaml += L"        </Setter>\n";
 
     auto style = GetStyleFromXamlSetters(L"FrameworkElement", xaml);
     return style.Setters().GetAt(0).as<Setter>().Value();
@@ -8544,9 +9616,6 @@ std::vector<ResourceVariableEntry> ProcessResourceVariablesFromSettings(
     const StyleConstants& styleConstants,
     const std::vector<PCWSTR>& themeResourceVariables) {
     std::vector<ResourceVariableEntry> resourceVariables;
-    // The configured theme entries are a known lower bound; custom settings
-    // can still append more entries without changing behavior.
-    resourceVariables.reserve(themeResourceVariables.size());
 
     for (const auto& themeResourceVariable : themeResourceVariables) {
         Wh_Log(L"Processing theme resource variable %s", themeResourceVariable);
@@ -8629,18 +9698,50 @@ void MergeResourceVariables() {
 }
 
 const Theme* GetSelectedTheme() {
-    return &g_themeTranslucent_Explorer11;
+    PCWSTR themeName = Wh_GetStringSetting(L"theme");
+    const Theme* theme = nullptr;
+    if (wcscmp(themeName, L"Translucent Explorer11") == 0) {
+        theme = &g_themeTranslucent_Explorer11;
+    } else if (wcscmp(themeName, L"MicaBar") == 0) {
+        theme = &g_themeMicaBar;
+    } else if (wcscmp(themeName, L"NoCommandBar") == 0) {
+        theme = &g_themeNoCommandBar;
+    } else if (wcscmp(themeName, L"Minimal Explorer11") == 0) {
+        theme = &g_themeMinimal_Explorer11;
+    } else if (wcscmp(themeName, L"Tabless") == 0) {
+        theme = &g_themeTabless;
+    } else if (wcscmp(themeName, L"Matter") == 0) {
+        theme = &g_themeMatter;
+    } else if (wcscmp(themeName, L"WindowGlass") == 0) {
+        theme = &g_themeWindowGlass;
+    } else if (wcscmp(themeName, L"AddressSearchOnly") == 0) {
+        theme = &g_themeAddressSearchOnly;
+    } else if (wcscmp(themeName, L"TintedGlass") == 0) {
+        theme = &g_themeTintedGlass;
+    } else if (wcscmp(themeName, L"LiquidGlass") == 0) {
+        theme = &g_themeLiquidGlass;
+    } else if (wcscmp(themeName, L"MicaTabless") == 0) {
+        theme = &g_themeMicaTabless;
+    } else if (wcscmp(themeName, L"OS26 Liquid Glass") == 0) {
+        theme = &g_themeOS26_Liquid_Glass;
+    } else if (wcscmp(themeName, L"OS26 Liquid Glass_variant_Compact") == 0) {
+        theme = &g_themeOS26_Liquid_Glass_variant_Compact;
+    } else if (wcscmp(themeName, L"ZEUSosX_044") == 0) {
+        theme = &g_themeZEUSosX_044;
+    } else if (wcscmp(themeName, L"Compact Explorer11") == 0) {
+        theme = &g_themeCompact_Explorer11;
+    } else if (wcscmp(themeName, L"Float") == 0) {
+        theme = &g_themeFloat;
+    }
+    Wh_FreeStringSetting(themeName);
+    return theme;
 }
 
 void ProcessAllStylesFromSettings() {
     const Theme* theme = GetSelectedTheme();
-    const std::vector<PCWSTR> emptySettings;
 
-    // Bind to the selected theme's vectors instead of copying them through a
-    // conditional expression. The empty vector preserves the null-theme path.
-    const auto& themeStyleConstants =
-        theme ? theme->styleConstants : emptySettings;
-    StyleConstants styleConstants = LoadStyleConstants(themeStyleConstants);
+    StyleConstants styleConstants = LoadStyleConstants(
+        theme ? theme->styleConstants : std::vector<PCWSTR>{});
 
     if (theme) {
         for (const auto& themeTargetStyle : theme->targetStyles) {
@@ -8672,10 +9773,9 @@ void ProcessAllStylesFromSettings() {
         }
     }
 
-    const auto& themeResourceVariables =
-        theme ? theme->themeResourceVariables : emptySettings;
     g_resourceVariables = ProcessResourceVariablesFromSettings(
-        styleConstants, themeResourceVariables);
+        styleConstants,
+        theme ? theme->themeResourceVariables : std::vector<PCWSTR>{});
 }
 
 void UninitializeResourceVariables() {
@@ -8855,18 +9955,6 @@ HRESULT WINAPI DwmSetWindowAttribute_Hook(HWND hWnd,
                                               cbAttribute);
     };
 
-    // Keep Explorer from fading into DWM's glass sheet during taskbar Peek.
-    // DWMWA_EXCLUDED_FROM_PEEK is independent of the backdrop material itself.
-    if (dwAttribute == DWMWA_EXCLUDED_FROM_PEEK &&
-        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
-        GetEffectiveBackgroundTranslucentEffect() ==
-            BackgroundTranslucentEffect::kBlur) {
-        const BOOL excludedFromPeek = TRUE;
-        return DwmSetWindowAttribute_Original(
-            hWnd, DWMWA_EXCLUDED_FROM_PEEK, &excludedFromPeek,
-            sizeof(excludedFromPeek));
-    }
-
     if (dwAttribute != DWMWA_SYSTEMBACKDROP_TYPE &&
         dwAttribute != DWMWA_USE_HOSTBACKDROPBRUSH) {
         return original();
@@ -8884,10 +9972,7 @@ HRESULT WINAPI DwmSetWindowAttribute_Hook(HWND hWnd,
         case BackgroundTranslucentEffect::kDefault:
             return original();
         case BackgroundTranslucentEffect::kBlur:
-            // Blur is provided by the legacy Accent policy below, not by a
-            // system backdrop. Keep DWM's system backdrop disabled so Explorer
-            // cannot replace Accent blur with its automatic backdrop on show.
-            backdropType = DWMSBT_NONE;
+            backdropType = DWMSBT_AUTO;
             break;
         case BackgroundTranslucentEffect::kAcrylic:
             backdropType = DWMSBT_TRANSIENTWINDOW;
@@ -10060,72 +11145,6 @@ HRESULT WINAPI DrawThemeBackgroundEx_Hook(HTHEME hTheme,
                                           pOptions);
 }
 
-// Hook the accent-policy API because Explorer/WinUI may set its host-backdrop
-// accent after the window is created, overwriting the requested Blur effect.
-struct ACCENT_POLICY {
-    int AccentState;
-    int AccentFlags;
-    int GradientColor;
-    int AnimationId;
-};
-
-struct WINDOWCOMPOSITIONATTRIBDATA {
-    DWORD Attrib;
-    PVOID pvData;
-    SIZE_T cbData;
-};
-
-using SetWindowCompositionAttribute_t =
-    BOOL(WINAPI*)(HWND, WINDOWCOMPOSITIONATTRIBDATA*);
-SetWindowCompositionAttribute_t SetWindowCompositionAttribute_Original;
-
-constexpr DWORD WCA_ACCENT_POLICY = 19;
-constexpr int ACCENT_ENABLE_BLURBEHIND = 3;
-
-static bool g_animationEngineInitialized = false;
-
-namespace WindowsAnimationEngine {
-struct WindowCompositionAttributeData;
-LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-extern LRESULT (WINAPI *DefWindowProcW_Original)(HWND, UINT, WPARAM, LPARAM);
-static void ObserveTranslucentWindowsAccentPolicyCall(
-    HWND hWnd, DWORD attribute, void* data, size_t dataSize,
-    void* callerAddress, BOOL result);
-} // namespace WindowsAnimationEngine
-
-BOOL WINAPI SetWindowCompositionAttribute_Hook(
-    HWND hWnd, WINDOWCOMPOSITIONATTRIBDATA* data) {
-    // Keep the original caller address for the animation engine's optional
-    // Accent-policy tracking; forwarding through a second API hook would lose it.
-    void* callerAddress = __builtin_return_address(0);
-    BOOL result;
-    if (data && data->Attrib == WCA_ACCENT_POLICY &&
-        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
-        GetEffectiveBackgroundTranslucentEffect() ==
-            BackgroundTranslucentEffect::kBlur) {
-        ACCENT_POLICY accentPolicy = {
-            .AccentState = ACCENT_ENABLE_BLURBEHIND,
-            .GradientColor = 0x3A232323,
-        };
-        WINDOWCOMPOSITIONATTRIBDATA blurData = {
-            .Attrib = WCA_ACCENT_POLICY,
-            .pvData = &accentPolicy,
-            .cbData = sizeof(accentPolicy),
-        };
-        result = SetWindowCompositionAttribute_Original(hWnd, &blurData);
-    } else {
-        result = SetWindowCompositionAttribute_Original(hWnd, data);
-    }
-
-    if (g_animationEngineInitialized) {
-        WindowsAnimationEngine::ObserveTranslucentWindowsAccentPolicyCall(
-            hWnd, data ? static_cast<DWORD>(data->Attrib) : 0,
-            data ? data->pvData : nullptr, data ? data->cbData : 0,
-            callerAddress, result);
-    }
-    return result;
-}
-
 // Based on the Translucent Windows mod.
 void SetAccentBlurBehind(HWND hWnd, bool enable) {
     // Without blur behind, the extended frame is drawn over the accent blur.
@@ -10150,12 +11169,34 @@ void SetAccentBlurBehind(HWND hWnd, bool enable) {
         return;
     }
 
-    if (!SetWindowCompositionAttribute_Original) {
+    constexpr int ACCENT_ENABLE_ACRYLICBLURBEHIND = 4;
+
+    struct ACCENT_POLICY {
+        int AccentState;
+        int AccentFlags;
+        int GradientColor;
+        int AnimationId;
+    };
+
+    constexpr DWORD WCA_ACCENT_POLICY = 19;
+
+    struct WINDOWCOMPOSITIONATTRIBDATA {
+        DWORD Attrib;
+        PVOID pvData;
+        SIZE_T cbData;
+    };
+
+    using SetWindowCompositionAttribute_t =
+        BOOL(WINAPI*)(HWND, WINDOWCOMPOSITIONATTRIBDATA*);
+    static auto pSetWindowCompositionAttribute =
+        (SetWindowCompositionAttribute_t)GetProcAddress(
+            GetModuleHandle(L"user32.dll"), "SetWindowCompositionAttribute");
+    if (!pSetWindowCompositionAttribute) {
         return;
     }
 
     ACCENT_POLICY accentPolicy = {
-        .AccentState = ACCENT_ENABLE_BLURBEHIND,
+        .AccentState = ACCENT_ENABLE_ACRYLICBLURBEHIND,
         // AABBGGRR.
         .GradientColor = 0x3A232323,
     };
@@ -10166,7 +11207,7 @@ void SetAccentBlurBehind(HWND hWnd, bool enable) {
         .cbData = sizeof(accentPolicy),
     };
 
-    SetWindowCompositionAttribute_Original(hWnd, &data);
+    pSetWindowCompositionAttribute(hWnd, &data);
 }
 
 void ApplyBackgroundTranslucentEffect(
@@ -10224,57 +11265,19 @@ void ApplyBackgroundTranslucentEffect(
             break;
     }
 
-    // Use exactly one backdrop mechanism at a time. The Blur mode is
-    // implemented by AccentBlurBehind, while the other modes use the native
-    // Windows 11 SystemBackdrop materials.
-    // Suppress DWM material transitions while switching the backdrop, then
-    // restore normal transitions so Explorer's window animations remain enabled.
-    BOOL disableDwmTransitions = TRUE;
-    DwmSetWindowAttribute_Original(
-        hWnd, DWMWA_TRANSITIONS_FORCEDISABLED,
-        &disableDwmTransitions, sizeof(disableDwmTransitions));
+    DwmSetWindowAttribute_Original(hWnd, DWMWA_SYSTEMBACKDROP_TYPE,
+                                   &backdropType, sizeof(backdropType));
 
-    if (effect == BackgroundTranslucentEffect::kBlur) {
-        // Prevent DWM Peek from fading the Explorer window to a glass sheet.
-        const BOOL excludedFromPeek = TRUE;
-        DwmSetWindowAttribute_Original(
-            hWnd, DWMWA_EXCLUDED_FROM_PEEK, &excludedFromPeek,
-            sizeof(excludedFromPeek));
-
-        int noneBackdrop = DWMSBT_NONE;
-        DwmSetWindowAttribute_Original(
-            hWnd, DWMWA_SYSTEMBACKDROP_TYPE, &noneBackdrop,
-            sizeof(noneBackdrop));
-
-        SetAccentBlurBehind(hWnd, true);
-    } else {
-        SetAccentBlurBehind(hWnd, false);
-
-        DwmSetWindowAttribute_Original(
-            hWnd, DWMWA_SYSTEMBACKDROP_TYPE, &backdropType,
-            sizeof(backdropType));
-    }
-
-    // Re-enable DWM transitions immediately after applying the material.
-    disableDwmTransitions = FALSE;
-    DwmSetWindowAttribute_Original(
-        hWnd, DWMWA_TRANSITIONS_FORCEDISABLED,
-        &disableDwmTransitions, sizeof(disableDwmTransitions));
+    SetAccentBlurBehind(hWnd, effect == BackgroundTranslucentEffect::kBlur);
 }
 
-void TriggerWindowCompositionUpdate(HWND hWnd,
-                                     bool notifyCompositionChange = true) {
+void TriggerWindowCompositionUpdate(HWND hWnd) {
     WINDOWPOS windowPos = {
         .hwnd = hWnd,
         .flags = SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE,
     };
     SendMessage(hWnd, WM_WINDOWPOSCHANGED, 0, (LPARAM)&windowPos);
-
-    // A synthetic composition-change notification can reset the legacy
-    // Accent blur. Callers applying Blur can skip this notification.
-    if (notifyCompositionChange) {
-        SendMessage(hWnd, WM_DWMCOMPOSITIONCHANGED, 0, 0);
-    }
+    SendMessage(hWnd, WM_DWMCOMPOSITIONCHANGED, 0, 0);
 
     // Repaint the content, which is rendered differently with the effect
     // extended to the entire window.
@@ -10509,9 +11512,6 @@ HMODULE WINAPI LoadLibraryExW_Hook(LPCWSTR lpLibFileName,
                                    DWORD dwFlags) {
     HMODULE module = LoadLibraryExW_Original(lpLibFileName, hFile, dwFlags);
 
-    // One LoadLibraryExW hook dispatches to both original modules.
-    TaskSwitch::OnLibraryLoaded(module, lpLibFileName);
-
     if (module && !InitializeXamlDiagnosticsEx_Original && lpLibFileName) {
         PCWSTR fileName = wcsrchr(lpLibFileName, L'\\');
         fileName = fileName ? fileName + 1 : lpLibFileName;
@@ -10551,7 +11551,7 @@ bool RunFromWindowThread(HWND hWnd,
 
     HHOOK hook = SetWindowsHookEx(
         WH_CALLWNDPROC,
-        [](int nCode, WPARAM wParam, LPARAM lParam) WINAPI -> LRESULT {
+        [](int nCode, WPARAM wParam, LPARAM lParam) -> LRESULT {
             if (nCode == HC_ACTION) {
                 const CWPSTRUCT* cwp = (const CWPSTRUCT*)lParam;
                 if (cwp->message == runFromWindowThreadRegisteredMsg) {
@@ -10581,18 +11581,17 @@ bool RunFromWindowThread(HWND hWnd,
 std::vector<HWND> GetTargetWnds() {
     struct ENUM_WINDOWS_PARAM {
         std::vector<HWND>* hWnds;
-        DWORD currentProcessId;
     };
 
     std::vector<HWND> hWnds;
-    ENUM_WINDOWS_PARAM param = {&hWnds, GetCurrentProcessId()};
+    ENUM_WINDOWS_PARAM param = {&hWnds};
     EnumWindows(
-        [](HWND hWnd, LPARAM lParam) WINAPI -> BOOL {
+        [](HWND hWnd, LPARAM lParam) -> BOOL {
             ENUM_WINDOWS_PARAM& param = *(ENUM_WINDOWS_PARAM*)lParam;
 
             DWORD dwProcessId = 0;
             if (!GetWindowThreadProcessId(hWnd, &dwProcessId) ||
-                dwProcessId != param.currentProcessId) {
+                dwProcessId != GetCurrentProcessId()) {
                 return TRUE;
             }
 
@@ -10659,217 +11658,183 @@ bool HookWindowsUIFileExplorerSymbols() {
     return true;
 }
 
-bool IsGlassExplorerShellProcess() {
-    WCHAR path[MAX_PATH];
-    DWORD length = GetModuleFileNameW(nullptr, path, ARRAYSIZE(path));
-    if (length == 0 || length >= ARRAYSIZE(path)) return false;
-    PCWSTR fileName = wcsrchr(path, L'\\');
-    fileName = fileName ? fileName + 1 : path;
-    return _wcsicmp(fileName, L"explorer.exe") == 0 ||
-           _wcsicmp(fileName, L"ShellExperienceHost.exe") == 0 ||
-           _wcsicmp(fileName, L"ShellHost.exe") == 0;
-}
+PTP_TIMER g_statsTimer;
 
-using DefWindowProcW_t = decltype(&DefWindowProcW);
-DefWindowProcW_t DefWindowProcW_Original;
+bool StartStatsTimer() {
+    static constexpr WCHAR kStatsBaseUrl[] =
+        L"https://github.com/ramensoftware/"
+        L"windows-11-file-explorer-styling-guide/"
+        L"releases/download/stats-v6/";
 
-// Diagnostic retry: the legacy Accent blur may be ignored while DWM is
-// animating a newly shown Explorer window. Reapply it briefly during startup.
-constexpr UINT_PTR kBackdropRetryTimerId = 0x47455843;
-constexpr WCHAR kBackdropRetryCountProp[] =
-    L"windhawk_backdrop-retry-count-" WH_MOD_ID;
+    ULONGLONG lastStatsTime = 0;
+    Wh_GetBinaryValue(L"statsTimerLastTime", &lastStatsTime,
+                      sizeof(lastStatsTime));
 
-// DWM can defer or replace a native system backdrop while an existing
-// Explorer window is initializing or being restored. Retry briefly without
-// activating the window or synthesizing focus messages.
-VOID CALLBACK BackdropRetryTimerProc(HWND hWnd, UINT, UINT_PTR timerId, DWORD) {
-    if (!IsWindow(hWnd) ||
-        GetTargetWindowType(hWnd) != TargetWindowType::FileExplorer) {
-        KillTimer(hWnd, timerId);
-        RemoveProp(hWnd, kBackdropRetryCountProp);
-        return;
+    // -1 can be set for disabling the stats timer.
+    if (lastStatsTime == 0xFFFFFFFF'FFFFFFFF) {
+        return false;
     }
 
-    // Explorer can retain a gray inactive backdrop until its non-client
-    // activation state is refreshed. WM_NCACTIVATE does not give the window
-    // foreground focus; the hook preserves the active visual state by design.
-    SendMessage(hWnd, WM_NCACTIVATE, TRUE, 0);
-    ApplyBackgroundTranslucentEffect(hWnd);
-    RedrawWindow(hWnd, nullptr, nullptr,
-                 RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
+    FILETIME currentTimeFt;
+    GetSystemTimeAsFileTime(&currentTimeFt);
 
-    const UINT attempts =
-        (UINT)(ULONG_PTR)GetProp(hWnd, kBackdropRetryCountProp) + 1;
-    if (attempts >= 20) {
-        KillTimer(hWnd, timerId);
-        RemoveProp(hWnd, kBackdropRetryCountProp);
-    } else {
-        SetProp(hWnd, kBackdropRetryCountProp, (HANDLE)(ULONG_PTR)attempts);
-    }
-}
+    ULONGLONG currentTime = ((ULONGLONG)currentTimeFt.dwHighDateTime << 32) |
+                            currentTimeFt.dwLowDateTime;
 
-void StartBackdropRetry(HWND hWnd) {
-    if (!IsWindow(hWnd) ||
-        GetTargetWindowType(hWnd) != TargetWindowType::FileExplorer) {
-        return;
+    constexpr ULONGLONG k10Minutes = 10 * 60 * 10000000LL;
+    constexpr ULONGLONG k24Hours = 24 * 60 * 60 * 10000000LL;
+
+    ULONGLONG minDueTime = currentTime + k10Minutes;
+    ULONGLONG maxDueTime = currentTime + k24Hours;
+
+    ULONGLONG dueTime = lastStatsTime + k24Hours;
+    if (dueTime < minDueTime) {
+        dueTime = minDueTime;
+    } else if (dueTime > maxDueTime) {
+        dueTime = maxDueTime;
     }
 
-    KillTimer(hWnd, kBackdropRetryTimerId);
-    SetProp(hWnd, kBackdropRetryCountProp, (HANDLE)(ULONG_PTR)0);
-    SetTimer(hWnd, kBackdropRetryTimerId, 30, BackdropRetryTimerProc);
-}
+    g_statsTimer = CreateThreadpoolTimer(
+        [](PTP_CALLBACK_INSTANCE, PVOID, PTP_TIMER) {
+            Wh_Log(L">");
 
-LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+            string_setting_unique_ptr themeName(Wh_GetStringSetting(L"theme"));
+            if (!*themeName.get()) {
+                return;
+            }
 
-    // Preserve the active non-client appearance when Explorer loses activation
-    // while using a native DWM system backdrop.
-    if (uMsg == WM_NCACTIVATE &&
-        !wParam &&
-        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer) {
-        const auto effect = GetEffectiveBackgroundTranslucentEffect();
-        if (effect == BackgroundTranslucentEffect::kDefault ||
-            effect == BackgroundTranslucentEffect::kAcrylic ||
-            effect == BackgroundTranslucentEffect::kMica ||
-            effect == BackgroundTranslucentEffect::kMicaAlt) {
-            wParam = TRUE;
-        }
+            HANDLE mutex =
+                CreateMutex(nullptr, FALSE, L"WindhawkStats_" WH_MOD_ID);
+            if (mutex) {
+                WaitForSingleObject(mutex, INFINITE);
+            }
+
+            ULONGLONG lastStatsTime = 0;
+            Wh_GetBinaryValue(L"statsTimerLastTime", &lastStatsTime,
+                              sizeof(lastStatsTime));
+
+            FILETIME currentTimeFt;
+            GetSystemTimeAsFileTime(&currentTimeFt);
+            ULONGLONG currentTime =
+                ((ULONGLONG)currentTimeFt.dwHighDateTime << 32) |
+                currentTimeFt.dwLowDateTime;
+
+            const WH_URL_CONTENT* content = nullptr;
+            if (currentTime - lastStatsTime >= k10Minutes) {
+                Wh_SetBinaryValue(L"statsTimerLastTime", &currentTime,
+                                  sizeof(currentTime));
+
+                std::wstring themeNameEscaped = themeName.get();
+                std::replace(themeNameEscaped.begin(), themeNameEscaped.end(),
+                             L' ', L'_');
+                std::replace(themeNameEscaped.begin(), themeNameEscaped.end(),
+                             L'&', L'_');
+                std::replace(themeNameEscaped.begin(), themeNameEscaped.end(),
+                             L'.', L'_');
+
+                std::wstring statsUrl = kStatsBaseUrl;
+                statsUrl += themeNameEscaped;
+                statsUrl += L".txt";
+
+                Wh_Log(L"Submitting stats to %s", statsUrl.c_str());
+
+                content = Wh_GetUrlContent(statsUrl.c_str(), nullptr);
+            } else {
+                Wh_Log(L"Skipping, last submission %llu seconds ago",
+                       (currentTime - lastStatsTime) / 10000000LL);
+            }
+
+            if (mutex) {
+                ReleaseMutex(mutex);
+                CloseHandle(mutex);
+            }
+
+            if (!content) {
+                Wh_Log(L"Failed to get stats content");
+                return;
+            }
+
+            if (content->statusCode != 200) {
+                Wh_Log(L"Stats content status code: %d", content->statusCode);
+            }
+
+            Wh_FreeUrlContent(content);
+            Wh_Log(L"Stats content submitted");
+        },
+        nullptr, nullptr);
+    if (!g_statsTimer) {
+        Wh_Log(L"Failed to create stats timer");
+        return false;
     }
 
+    constexpr DWORD k24HoursInMs = 24 * 60 * 60 * 1000;
+    constexpr ULONGLONG k10MinutesInMs = 10 * 60 * 1000;
 
-    // WM_SHOWWINDOW is sent before the window is displayed. Apply the
-    // material here as well as during WM_WINDOWPOSCHANGING, because Explorer
-    // can begin its opening animation before the position-change path has
-    // established the legacy Accent blur.
-    if (uMsg == WM_SHOWWINDOW && wParam &&
-        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer) {
-        ApplyBackgroundTranslucentEffect(hWnd);
-
-        StartBackdropRetry(hWnd);
-    }
-
-    // Prepare the selected material before Windows makes the window visible.
-    if (uMsg == WM_WINDOWPOSCHANGING && lParam &&
-        (((const WINDOWPOS*)lParam)->flags & SWP_SHOWWINDOW) &&
-        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer) {
-        ApplyBackgroundTranslucentEffect(hWnd);
-    }
-
-    LRESULT result = g_animationEngineInitialized
-        ? WindowsAnimationEngine::DefWindowProcW_Hook(hWnd, uMsg, wParam, lParam)
-        : DefWindowProcW_Original(hWnd, uMsg, wParam, lParam);
-
-    // Restoring a minimized Explorer window can cause DWM to replace the
-    // selected system backdrop with its gray fallback. Reapply after the
-    // window has processed WM_SIZE, then retry briefly while DWM settles.
-    if (uMsg == WM_SIZE && wParam == SIZE_RESTORED &&
-        !IsIconic(hWnd) &&
-        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer) {
-        SendMessage(hWnd, WM_NCACTIVATE, TRUE, 0);
-        ApplyBackgroundTranslucentEffect(hWnd);
-        StartBackdropRetry(hWnd);
-        RedrawWindow(hWnd, nullptr, nullptr,
-                     RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
-    }
-
-    // Refresh the backdrop after non-client activation changes, including when
-    // the hook above keeps the window's inactive appearance visually active.
-    if (uMsg == WM_NCACTIVATE &&
-        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer) {
-        ApplyBackgroundTranslucentEffect(hWnd);
-        RedrawWindow(hWnd, nullptr, nullptr,
-                     RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
-    }
-
-    // Explorer may reset or defer the backdrop while first showing the window.
-    // Reapply the selected material after the initial show-position update.
-    if (uMsg == WM_WINDOWPOSCHANGED && lParam &&
-        (((const WINDOWPOS*)lParam)->flags & SWP_SHOWWINDOW) &&
-        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer) {
-        const bool isBlur =
-            GetEffectiveBackgroundTranslucentEffect() ==
-            BackgroundTranslucentEffect::kBlur;
-        ApplyBackgroundTranslucentEffect(hWnd);
-        TriggerWindowCompositionUpdate(hWnd, !isBlur);
-
-        // Keep the legacy Accent blur as the final operation for Blur mode.
-        if (isBlur) {
-            ApplyBackgroundTranslucentEffect(hWnd);
-        }
-    }
-
-    return result;
-}
-
-bool IsCurrentProcessExplorer() {
-    WCHAR path[MAX_PATH];
-    DWORD length = GetModuleFileNameW(nullptr, path, ARRAYSIZE(path));
-    if (length == 0 || length >= ARRAYSIZE(path)) return false;
-    PCWSTR fileName = wcsrchr(path, L'\\');
-    fileName = fileName ? fileName + 1 : path;
-    return _wcsicmp(fileName, L"explorer.exe") == 0;
-}
-
-bool RestartExplorerAfterSettingsChange() {
-    std::wstring command =
-        LR"(cmd.exe /c "timeout /t 1 /nobreak >nul & taskkill /f /im explorer.exe >nul 2>&1 & start "" explorer.exe")";
-    STARTUPINFOW si = {};
-    si.cb = sizeof(si);
-    PROCESS_INFORMATION pi = {};
-    if (!CreateProcessW(nullptr, command.data(), nullptr, nullptr, FALSE,
-                        CREATE_NO_WINDOW, nullptr, nullptr, &si, &pi)) return false;
-    CloseHandle(pi.hThread);
-    CloseHandle(pi.hProcess);
+    FILETIME dueTimeFt;
+    dueTimeFt.dwLowDateTime = (DWORD)(dueTime & 0xFFFFFFFF);
+    dueTimeFt.dwHighDateTime = (DWORD)(dueTime >> 32);
+    SetThreadpoolTimer(g_statsTimer, &dueTimeFt, k24HoursInMs, k10MinutesInMs);
     return true;
 }
 
-void RestartExplorerOnActivationIfNeeded() {
-    if (!g_settings.restartExplorerOnSettingsChange || !IsCurrentProcessExplorer()) return;
-    if (Wh_GetIntValue(L"restartExplorerActivationPending", 0) != 0) {
-        Wh_SetIntValue(L"restartExplorerActivationPending", 0);
-        return;
+void StopStatsTimer() {
+    if (g_statsTimer) {
+        SetThreadpoolTimer(g_statsTimer, nullptr, 0, 0);
+        WaitForThreadpoolTimerCallbacks(g_statsTimer, TRUE);
+        CloseThreadpoolTimer(g_statsTimer);
+        g_statsTimer = nullptr;
     }
-    Wh_SetIntValue(L"restartExplorerActivationPending", 1);
-    if (!RestartExplorerAfterSettingsChange())
-        Wh_SetIntValue(L"restartExplorerActivationPending", 0);
 }
 
 void LoadSettings() {
-    g_settings.restartExplorerOnSettingsChange =
-        Wh_GetIntSetting(L"restartExplorerOnSettingsChange") != 0;
-
-    PCWSTR transparencyType = Wh_GetStringSetting(L"transparencyType");
-
-    if (!transparencyType || !*transparencyType ||
-        wcscmp(transparencyType, L"default") == 0) {
-        g_settings.backgroundTranslucentEffect =
-            BackgroundTranslucentEffect::kAcrylic;
-    } else if (wcscmp(transparencyType, L"blur") == 0) {
-        g_settings.backgroundTranslucentEffect =
-            BackgroundTranslucentEffect::kBlur;
-    } else if (wcscmp(transparencyType, L"acrylic") == 0) {
-        g_settings.backgroundTranslucentEffect =
-            BackgroundTranslucentEffect::kAcrylic;
-    } else if (wcscmp(transparencyType, L"mica") == 0) {
-        g_settings.backgroundTranslucentEffect =
-            BackgroundTranslucentEffect::kMica;
-    } else if (wcscmp(transparencyType, L"micaAlt") == 0) {
-        g_settings.backgroundTranslucentEffect =
-            BackgroundTranslucentEffect::kMicaAlt;
-    } else {
-        g_settings.backgroundTranslucentEffect =
-            BackgroundTranslucentEffect::kAcrylic;
-    }
-
-    if (transparencyType) {
-        Wh_FreeStringSetting(transparencyType);
-    }
-
+    PCWSTR backgroundTranslucentEffectRegion =
+        Wh_GetStringSetting(L"backgroundTranslucentEffectRegion");
     g_settings.backgroundTranslucentEffectRegion =
         BackgroundTranslucentEffectRegion::kEntireWindow;
+    if (wcscmp(backgroundTranslucentEffectRegion, L"explorerFrame") == 0) {
+        g_settings.backgroundTranslucentEffectRegion =
+            BackgroundTranslucentEffectRegion::kExplorerFrame;
+    }
+    Wh_FreeStringSetting(backgroundTranslucentEffectRegion);
 
-    g_settings.explorerFrameContainerHeight = 0;
-    g_settings.xamlDiagnosticsHandling = XamlDiagnosticsHandling::kBlock;
+    PCWSTR backgroundTranslucentEffect =
+        Wh_GetStringSetting(L"backgroundTranslucentEffect");
+    g_settings.backgroundTranslucentEffect.reset();
+    if (wcscmp(backgroundTranslucentEffect, L"default") == 0) {
+        g_settings.backgroundTranslucentEffect =
+            BackgroundTranslucentEffect::kDefault;
+    } else if (wcscmp(backgroundTranslucentEffect, L"acrylicblur") == 0) {
+        g_settings.backgroundTranslucentEffect =
+            BackgroundTranslucentEffect::kBlur;
+    } else if (wcscmp(backgroundTranslucentEffect, L"acrylic") == 0) {
+        g_settings.backgroundTranslucentEffect =
+            BackgroundTranslucentEffect::kAcrylic;
+    } else if (wcscmp(backgroundTranslucentEffect, L"mica") == 0) {
+        g_settings.backgroundTranslucentEffect =
+            BackgroundTranslucentEffect::kMica;
+    } else if (wcscmp(backgroundTranslucentEffect, L"micaAlt") == 0) {
+        g_settings.backgroundTranslucentEffect =
+            BackgroundTranslucentEffect::kMicaAlt;
+    } else if (wcscmp(backgroundTranslucentEffect, L"none") == 0) {
+        g_settings.backgroundTranslucentEffect =
+            BackgroundTranslucentEffect::kNone;
+    }
+    Wh_FreeStringSetting(backgroundTranslucentEffect);
+
+    g_settings.explorerFrameContainerHeight =
+        Wh_GetIntSetting(L"explorerFrameContainerHeight");
+
+    PCWSTR xamlDiagnosticsHandling =
+        Wh_GetStringSetting(L"xamlDiagnosticsHandling");
+    g_settings.xamlDiagnosticsHandling = XamlDiagnosticsHandling::kAlert;
+    if (wcscmp(xamlDiagnosticsHandling, L"block") == 0) {
+        g_settings.xamlDiagnosticsHandling = XamlDiagnosticsHandling::kBlock;
+    } else if (wcscmp(xamlDiagnosticsHandling, L"allow") == 0) {
+        g_settings.xamlDiagnosticsHandling = XamlDiagnosticsHandling::kAllow;
+    }
+    Wh_FreeStringSetting(xamlDiagnosticsHandling);
 }
+
 void LoadThemeSettings() {
     const Theme* theme = GetSelectedTheme();
     g_themeBackgroundTranslucentEffect =
@@ -10879,13 +11844,8 @@ void LoadThemeSettings() {
         theme ? theme->explorerFrameContainerHeight : 0;
 }
 
-BOOL GlassExplorer_ModInit() {
+BOOL Wh_ModInit() {
     Wh_Log(L">");
-
-    WindhawkUtils::SetFunctionHook(DefWindowProcW, DefWindowProcW_Hook,
-                                   &DefWindowProcW_Original);
-
-    if (!IsGlassExplorerShellProcess()) return TRUE;
 
     LoadSettings();
     LoadThemeSettings();
@@ -10896,15 +11856,6 @@ BOOL GlassExplorer_ModInit() {
     WindhawkUtils::SetFunctionHook(DwmSetWindowAttribute,
                                    DwmSetWindowAttribute_Hook,
                                    &DwmSetWindowAttribute_Original);
-
-    auto pSetWindowCompositionAttribute =
-        (SetWindowCompositionAttribute_t)GetProcAddress(
-            GetModuleHandle(L"user32.dll"), "SetWindowCompositionAttribute");
-    if (pSetWindowCompositionAttribute) {
-        WindhawkUtils::SetFunctionHook(
-            pSetWindowCompositionAttribute, SetWindowCompositionAttribute_Hook,
-            &SetWindowCompositionAttribute_Original);
-    }
 
     WindhawkUtils::SetFunctionHook(DwmExtendFrameIntoClientArea,
                                    DwmExtendFrameIntoClientArea_Hook,
@@ -10985,10 +11936,12 @@ BOOL GlassExplorer_ModInit() {
 
     HookWindowsUIFileExplorerSymbols();
 
+    StartStatsTimer();
+
     return TRUE;
 }
 
-void GlassExplorer_ModAfterInit() {
+void Wh_ModAfterInit() {
     Wh_Log(L">");
 
     auto hTargetWnds = GetTargetWnds();
@@ -10996,7 +11949,7 @@ void GlassExplorer_ModAfterInit() {
         Wh_Log(L"Initializing for %08X", (DWORD)(ULONG_PTR)hTargetWnd);
         RunFromWindowThread(
             hTargetWnd,
-            [](PVOID param) WINAPI {
+            [](PVOID param) {
                 HWND hTargetWnd = (HWND)param;
 
                 InitializeForCurrentThread();
@@ -11005,24 +11958,21 @@ void GlassExplorer_ModAfterInit() {
                     TargetWindowType::FileExplorer) {
                     ApplyBackgroundTranslucentEffect(hTargetWnd);
                     TriggerWindowCompositionUpdate(hTargetWnd);
-                    SendMessage(hTargetWnd, WM_NCACTIVATE, TRUE, 0);
-                    ApplyBackgroundTranslucentEffect(hTargetWnd);
-                    StartBackdropRetry(hTargetWnd);
                 }
             },
             (PVOID)hTargetWnd);
     }
 
-    if (!hTargetWnds.empty()) {
+    if (hTargetWnds.size() > 0) {
         Wh_Log(L"Initializing - Found target windows");
         InitializeSettingsAndTap();
     }
-
-    RestartExplorerOnActivationIfNeeded();
 }
 
-void GlassExplorer_ModUninit() {
+void Wh_ModUninit() {
     Wh_Log(L">");
+
+    StopStatsTimer();
 
     StopImageDownloads();
 
@@ -11037,7 +11987,7 @@ void GlassExplorer_ModUninit() {
         Wh_Log(L"Uninitializing for %08X", (DWORD)(ULONG_PTR)hTargetWnd);
         RunFromWindowThread(
             hTargetWnd,
-            [](PVOID param) WINAPI {
+            [](PVOID param) {
                 HWND hTargetWnd = (HWND)param;
 
                 UninitializeForCurrentThread();
@@ -11055,7 +12005,7 @@ void GlassExplorer_ModUninit() {
     ClearThemePartCache();
 }
 
-void GlassExplorer_ModSettingsChanged() {
+void Wh_ModSettingsChanged() {
     Wh_Log(L">");
 
     UninitializeSettingsAndTap();
@@ -11068,7 +12018,7 @@ void GlassExplorer_ModSettingsChanged() {
         Wh_Log(L"Reinitializing for %08X", (DWORD)(ULONG_PTR)hTargetWnd);
         RunFromWindowThread(
             hTargetWnd,
-            [](PVOID param) WINAPI {
+            [](PVOID param) {
                 HWND hTargetWnd = (HWND)param;
 
                 UninitializeForCurrentThread();
@@ -11083,15869 +12033,8 @@ void GlassExplorer_ModSettingsChanged() {
             (PVOID)hTargetWnd);
     }
 
-    if (!hTargetWnds.empty()) {
+    if (hTargetWnds.size() > 0) {
         Wh_Log(L"Reinitializing - Found target windows");
         InitializeSettingsAndTap();
     }
-
-    if (g_settings.restartExplorerOnSettingsChange &&
-        IsCurrentProcessExplorer()) {
-        Wh_SetIntValue(L"restartExplorerActivationPending", 1);
-        if (!RestartExplorerAfterSettingsChange())
-            Wh_SetIntValue(L"restartExplorerActivationPending", 0);
-    }
-}
-
-
-// ---- Taches Switch implementation (isolated namespace) ----
-namespace TaskSwitch {
-using namespace winrt::Windows::UI::Xaml;
-
-bool g_taskSwitchEnabled = false;
-
-bool IsExplorerProcess() {
-    WCHAR path[MAX_PATH];
-    DWORD length = GetModuleFileNameW(nullptr, path, ARRAYSIZE(path));
-    if (length == 0 || length >= ARRAYSIZE(path)) {
-        return false;
-    }
-    PCWSTR fileName = wcsrchr(path, L'\\');
-    fileName = fileName ? fileName + 1 : path;
-    return _wcsicmp(fileName, L"explorer.exe") == 0;
-}
-
-struct Region {
-    bool isPercentage;
-    int start;
-    int end;
-};
-
-struct {
-    bool enableMouseWheelCycling;
-    std::vector<Region> customScrollRegions;
-    WindhawkUtils::StringSetting cycleLeftKeyboardShortcut;
-    WindhawkUtils::StringSetting cycleRightKeyboardShortcut;
-} g_settings;
-
-enum class WinVersion {
-    Unsupported,
-    Win10,
-    Win11,
-    Win11_24H2,
-};
-
-WinVersion g_winVersion;
-
-std::atomic<bool> g_taskbarViewDllLoaded;
-std::atomic<bool> g_initialized;
-std::atomic<bool> g_explorerPatcherInitialized;
-
-std::unordered_map<void*, void*> g_lastTaskListActiveTaskItem;
-
-HWND g_lastScrollTarget = nullptr;
-DWORD g_lastScrollTime;
-short g_lastScrollDeltaRemainder;
-
-bool g_hotkeyLeftRegistered = false;
-bool g_hotkeyRightRegistered = false;
-
-enum {
-    kHotkeyIdLeft = 1682530408,  // From epochconverter.com
-    kHotkeyIdRight,
-};
-
-HWND FindCurrentProcessTaskbarWnd() {
-    HWND hTaskbarWnd = nullptr;
-
-    EnumWindows(
-        [](HWND hWnd, LPARAM lParam) -> BOOL {
-            DWORD dwProcessId;
-            WCHAR className[32];
-            if (GetWindowThreadProcessId(hWnd, &dwProcessId) &&
-                dwProcessId == GetCurrentProcessId() &&
-                GetClassName(hWnd, className, ARRAYSIZE(className)) &&
-                _wcsicmp(className, L"Shell_TrayWnd") == 0) {
-                *reinterpret_cast<HWND*>(lParam) = hWnd;
-                return FALSE;
-            }
-            return TRUE;
-        },
-        reinterpret_cast<LPARAM>(&hTaskbarWnd));
-
-    return hTaskbarWnd;
-}
-
-HWND GetTaskBandWnd() {
-    HWND hTaskbarWnd = FindCurrentProcessTaskbarWnd();
-    if (hTaskbarWnd) {
-        return (HWND)GetProp(hTaskbarWnd, L"TaskbandHWND");
-    }
-
-    return nullptr;
-}
-
-void* CTaskListWnd_vftable_ITaskListUI;
-void* CTaskListWnd_vftable_ITaskListSite;
-void* CImmersiveTaskItem_vftable;
-
-using CTaskListWnd_GetButtonGroupCount_t = int(WINAPI*)(void* pThis);
-CTaskListWnd_GetButtonGroupCount_t CTaskListWnd_GetButtonGroupCount;
-
-using CTaskListWnd__GetTBGroupFromGroup_t = void*(WINAPI*)(void* pThis,
-                                                           void* taskGroup,
-                                                           int* index);
-CTaskListWnd__GetTBGroupFromGroup_t CTaskListWnd__GetTBGroupFromGroup;
-
-using CTaskBtnGroup_GetGroupType_t = int(WINAPI*)(void* pThis);
-CTaskBtnGroup_GetGroupType_t CTaskBtnGroup_GetGroupType;
-
-using CTaskBtnGroup_GetNumItems_t = int(WINAPI*)(void* pThis);
-CTaskBtnGroup_GetNumItems_t CTaskBtnGroup_GetNumItems;
-
-using CTaskBtnGroup_GetTaskItem_t = void*(WINAPI*)(void* pThis, int index);
-CTaskBtnGroup_GetTaskItem_t CTaskBtnGroup_GetTaskItem;
-
-using CWindowTaskItem_GetWindow_t = HWND(WINAPI*)(PVOID pThis);
-CWindowTaskItem_GetWindow_t CWindowTaskItem_GetWindow_Original;
-
-using CImmersiveTaskItem_GetWindow_t = HWND(WINAPI*)(PVOID pThis);
-CImmersiveTaskItem_GetWindow_t CImmersiveTaskItem_GetWindow_Original;
-
-using CTaskListWnd_SwitchToItem_t = void(WINAPI*)(void* pThis, void* taskItem);
-CTaskListWnd_SwitchToItem_t CTaskListWnd_SwitchToItem_Original;
-
-void* QueryViaVtable(void* object, void* vtable) {
-    void* ptr = object;
-    while (*(void**)ptr != vtable) {
-        ptr = (void**)ptr + 1;
-    }
-    return ptr;
-}
-
-void* QueryViaVtableBackwards(void* object, void* vtable) {
-    void* ptr = object;
-    while (*(void**)ptr != vtable) {
-        ptr = (void**)ptr - 1;
-    }
-    return ptr;
-}
-
-#pragma region scroll
-
-void SwitchToTaskItem(LONG_PTR lpMMTaskListLongPtr, void* taskItem,
-                       bool minimizeForeground = true) {
-    if (!lpMMTaskListLongPtr || !taskItem ||
-        !CTaskListWnd_vftable_ITaskListSite ||
-        !CTaskListWnd_SwitchToItem_Original) {
-        Wh_Log(L"SwitchToTaskItem skipped: invalid task-list state");
-        return;
-    }
-
-    // Optionally minimize the currently active window before switching.
-    // Wheel-down requests minimization; wheel-up switches without minimizing.
-    if (minimizeForeground) {
-        HWND hForegroundWnd = GetForegroundWindow();
-        if (hForegroundWnd && IsWindow(hForegroundWnd) &&
-            !IsIconic(hForegroundWnd)) {
-            ShowWindowAsync(hForegroundWnd, SW_MINIMIZE);
-        }
-    }
-
-    void* pThis_ITaskListSite = QueryViaVtable(
-        (void*)lpMMTaskListLongPtr,
-        CTaskListWnd_vftable_ITaskListSite);
-
-    if (!pThis_ITaskListSite) {
-        Wh_Log(L"SwitchToTaskItem skipped: ITaskListSite not found");
-        return;
-    }
-
-    CTaskListWnd_SwitchToItem_Original(pThis_ITaskListSite, taskItem);
-}
-
-HWND GetTaskItemWnd(PVOID taskItem) {
-    if (*(void**)taskItem == CImmersiveTaskItem_vftable) {
-        return CImmersiveTaskItem_GetWindow_Original(taskItem);
-    } else {
-        return CWindowTaskItem_GetWindow_Original(taskItem);
-    }
-}
-
-BOOL IsMinimizedTaskItem(LONG_PTR* task_item) {
-    return IsIconic(GetTaskItemWnd(task_item));
-}
-
-BOOL TaskbarScrollRight(int button_groups_count,
-                        LONG_PTR** button_groups,
-                        int* p_button_group_index,
-                        int* p_button_index) {
-    int button_group_index = *p_button_group_index;
-    int button_index = *p_button_index;
-    int button_group_type;
-
-    int buttons_count =
-        button_group_index == -1
-            ? 0
-            : CTaskBtnGroup_GetNumItems(button_groups[button_group_index]);
-    if (++button_index >= buttons_count) {
-        do {
-            button_group_index++;
-            if (button_group_index >= button_groups_count) {
-                return FALSE;
-            }
-
-            button_group_type =
-                CTaskBtnGroup_GetGroupType(button_groups[button_group_index]);
-        } while (button_group_type != 1 && button_group_type != 3);
-
-        button_index = 0;
-    }
-
-    *p_button_group_index = button_group_index;
-    *p_button_index = button_index;
-
-    return TRUE;
-}
-
-BOOL TaskbarScrollLeft(int button_groups_count,
-                       LONG_PTR** button_groups,
-                       int* p_button_group_index,
-                       int* p_button_index) {
-    int button_group_index = *p_button_group_index;
-    int button_index = *p_button_index;
-    int button_group_type;
-
-    if (button_group_index == -1 || --button_index < 0) {
-        if (button_group_index == -1) {
-            button_group_index = button_groups_count;
-        }
-
-        do {
-            button_group_index--;
-            if (button_group_index < 0) {
-                return FALSE;
-            }
-
-            button_group_type =
-                CTaskBtnGroup_GetGroupType(button_groups[button_group_index]);
-        } while (button_group_type != 1 && button_group_type != 3);
-
-        int buttons_count =
-            CTaskBtnGroup_GetNumItems(button_groups[button_group_index]);
-        button_index = buttons_count - 1;
-    }
-
-    *p_button_group_index = button_group_index;
-    *p_button_index = button_index;
-
-    return TRUE;
-}
-
-LONG_PTR* TaskbarScrollHelper(int button_groups_count,
-                              LONG_PTR** button_groups,
-                              int button_group_index_active,
-                              int button_index_active,
-                              int nRotates,
-                              BOOL bSkipMinimized,
-                              BOOL bWarpAround) {
-    int button_group_index, button_index;
-    BOOL bRotateRight;
-    int prev_button_group_index, prev_button_index;
-    BOOL bScrollSucceeded;
-
-    button_group_index = button_group_index_active;
-    button_index = button_index_active;
-
-    bRotateRight = TRUE;
-    if (nRotates < 0) {
-        bRotateRight = FALSE;
-        nRotates = -nRotates;
-    }
-
-    prev_button_group_index = button_group_index;
-    prev_button_index = button_index;
-
-    while (nRotates--) {
-        if (bRotateRight) {
-            bScrollSucceeded =
-                TaskbarScrollRight(button_groups_count, button_groups,
-                                   &button_group_index, &button_index);
-            while (bScrollSucceeded && bSkipMinimized &&
-                   IsMinimizedTaskItem((LONG_PTR*)CTaskBtnGroup_GetTaskItem(
-                       button_groups[button_group_index], button_index))) {
-                bScrollSucceeded =
-                    TaskbarScrollRight(button_groups_count, button_groups,
-                                       &button_group_index, &button_index);
-            }
-        } else {
-            bScrollSucceeded =
-                TaskbarScrollLeft(button_groups_count, button_groups,
-                                  &button_group_index, &button_index);
-            while (bScrollSucceeded && bSkipMinimized &&
-                   IsMinimizedTaskItem((LONG_PTR*)CTaskBtnGroup_GetTaskItem(
-                       button_groups[button_group_index], button_index))) {
-                bScrollSucceeded =
-                    TaskbarScrollLeft(button_groups_count, button_groups,
-                                      &button_group_index, &button_index);
-            }
-        }
-
-        if (!bScrollSucceeded) {
-            // If no results were found in the whole taskbar
-            if (prev_button_group_index == -1) {
-                return nullptr;
-            }
-
-            if (bWarpAround) {
-                // Continue from the beginning
-                button_group_index = -1;
-                button_index = -1;
-                nRotates++;
-            } else {
-                // Use the last successful result and stop
-                button_group_index = prev_button_group_index;
-                button_index = prev_button_index;
-
-                break;
-            }
-        }
-
-        prev_button_group_index = button_group_index;
-        prev_button_index = button_index;
-    }
-
-    if (button_group_index == button_group_index_active &&
-        button_index == button_index_active) {
-        return nullptr;
-    }
-
-    return (LONG_PTR*)CTaskBtnGroup_GetTaskItem(
-        button_groups[button_group_index], button_index);
-}
-
-HDPA GetTaskBtnGroupsArray(void* taskList_ITaskListUI) {
-    // This is a horrible hack, but it's the best way I found to get the array
-    // of task button groups from a task list. It relies on the implementation
-    // of CTaskListWnd::GetButtonGroupCount being just this:
-    //
-    // return DPA_GetPtrCount(this->buttonGroupsArray);
-    //
-    // Or in other words:
-    //
-    // return *(int*)this[buttonGroupsArrayOffset];
-    //
-    // Instead of calling it with a real taskList object, we call it with an
-    // array of pointers to ints. The returned int value is actually the offset
-    // to the array member.
-
-    static size_t offset = []() {
-        constexpr int kIntArraySize = 256;
-        int arrayOfInts[kIntArraySize];
-        int* arrayOfIntPtrs[kIntArraySize];
-        for (int i = 0; i < kIntArraySize; i++) {
-            arrayOfInts[i] = i;
-            arrayOfIntPtrs[i] = &arrayOfInts[i];
-        }
-
-        return CTaskListWnd_GetButtonGroupCount(arrayOfIntPtrs);
-    }();
-
-    return (HDPA)((void**)taskList_ITaskListUI)[offset];
-}
-
-LONG_PTR* TaskbarScroll(LONG_PTR lpMMTaskListLongPtr,
-                        int nRotates,
-                        BOOL bSkipMinimized,
-                        BOOL bWarpAround,
-                        LONG_PTR* src_task_item) {
-    if (nRotates == 0) {
-        return nullptr;
-    }
-
-    void* taskList_ITaskListUI = QueryViaVtable(
-        (void*)lpMMTaskListLongPtr, CTaskListWnd_vftable_ITaskListUI);
-
-    LONG_PTR* plp = (LONG_PTR*)GetTaskBtnGroupsArray(taskList_ITaskListUI);
-    if (!plp) {
-        return nullptr;
-    }
-
-    int button_groups_count = (int)plp[0];
-    LONG_PTR** button_groups = (LONG_PTR**)plp[1];
-
-    int button_group_index_active = -1;
-    int button_index_active = -1;
-
-    LONG_PTR* taskItem = src_task_item;
-    if (!taskItem) {
-        auto it = g_lastTaskListActiveTaskItem.find((void*)lpMMTaskListLongPtr);
-        if (it != g_lastTaskListActiveTaskItem.end()) {
-            taskItem = (LONG_PTR*)it->second;
-        }
-    }
-
-    if (taskItem) {
-        for (int i = 0; i < button_groups_count; i++) {
-            int button_group_type =
-                CTaskBtnGroup_GetGroupType(button_groups[i]);
-            if (button_group_type == 1 || button_group_type == 3) {
-                int buttons_count = CTaskBtnGroup_GetNumItems(button_groups[i]);
-                for (int j = 0; j < buttons_count; j++) {
-                    if ((LONG_PTR*)CTaskBtnGroup_GetTaskItem(button_groups[i],
-                                                             j) == taskItem) {
-                        button_group_index_active = i;
-                        button_index_active = j;
-                        break;
-                    }
-                }
-
-                if (button_group_index_active != -1) {
-                    break;
-                }
-            }
-        }
-    }
-
-    return TaskbarScrollHelper(button_groups_count, button_groups,
-                               button_group_index_active, button_index_active,
-                               nRotates, bSkipMinimized, bWarpAround);
-}
-
-#pragma endregion  // scroll
-
-// Avoid traversing undocumented Explorer task-list objects in the XAML taskbar
-// wheel hook. Enumerate normal top-level windows instead, so a Windows update
-// cannot invalidate the mod's assumptions about Explorer's private memory.
-struct WheelCycleWindows {
-    std::vector<HWND> windows;
-    bool skipMinimized;
-};
-
-BOOL CALLBACK CollectWheelCycleWindows(HWND hwnd, LPARAM lParam) {
-    auto* state = reinterpret_cast<WheelCycleWindows*>(lParam);
-    if (!IsWindow(hwnd) || !IsWindowVisible(hwnd) || GetWindow(hwnd, GW_OWNER)) {
-        return TRUE;
-    }
-
-    LONG_PTR exStyle = GetWindowLongPtr(hwnd, GWL_EXSTYLE);
-    if ((exStyle & WS_EX_TOOLWINDOW) && !(exStyle & WS_EX_APPWINDOW)) {
-        return TRUE;
-    }
-
-    if (state->skipMinimized && IsIconic(hwnd)) {
-        return TRUE;
-    }
-
-    state->windows.push_back(hwnd);
-    return TRUE;
-}
-
-void OnTaskbarWheelSafe(short delta) {
-    int clicks = -delta / WHEEL_DELTA;
-    if (!clicks) {
-        return;
-    }
-
-    WheelCycleWindows state{{}, false};
-    EnumWindows(CollectWheelCycleWindows, reinterpret_cast<LPARAM>(&state));
-    if (state.windows.empty()) {
-        return;
-    }
-
-    HWND foreground = GetForegroundWindow();
-    auto it = std::find(state.windows.begin(), state.windows.end(), foreground);
-    int currentIndex = it == state.windows.end()
-                           ? 0
-                           : static_cast<int>(it - state.windows.begin());
-    int targetIndex = currentIndex + clicks;
-
-    int count = static_cast<int>(state.windows.size());
-    targetIndex = ((targetIndex % count) + count) % count;
-
-    HWND target = state.windows[targetIndex];
-    if (!IsWindow(target)) {
-        return;
-    }
-    if (IsIconic(target)) {
-        ShowWindowAsync(target, SW_RESTORE);
-    }
-    SetForegroundWindow(target);
-}
-
-void OnTaskListScroll(HWND hMMTaskListWnd, short delta) {
-    if (g_lastScrollTarget == hMMTaskListWnd &&
-        GetTickCount() - g_lastScrollTime < 1000 * 5) {
-        delta += g_lastScrollDeltaRemainder;
-    }
-
-    int clicks = -delta / WHEEL_DELTA;
-
-    if (clicks != 0) {
-        Wh_Log(L"%d clicks (delta=%d)", clicks, delta);
-
-        LONG_PTR lpMMTaskListLongPtr = GetWindowLongPtr(hMMTaskListWnd, 0);
-        const int direction = clicks > 0 ? 1 : -1;
-
-        // Process each wheel notch separately. Scrolling down minimizes the
-        // current window before activating the next one; scrolling up only
-        // switches to the previous window without minimizing it.
-        for (int i = 0; i < abs(clicks); i++) {
-            PVOID targetTaskItem = TaskbarScroll(lpMMTaskListLongPtr,
-                                                 direction,
-                                                 false,
-                                                 true, nullptr);
-            if (!targetTaskItem) {
-                break;
-            }
-
-            SwitchToTaskItem(lpMMTaskListLongPtr, targetTaskItem, delta < 0);
-        }
-    }
-
-    g_lastScrollTarget = hMMTaskListWnd;
-    g_lastScrollTime = GetTickCount();
-    g_lastScrollDeltaRemainder = delta % WHEEL_DELTA;
-}
-
-HWND TaskListFromTaskbarWnd(HWND hTaskbarWnd) {
-    HWND hReBarWindow32 =
-        FindWindowEx(hTaskbarWnd, nullptr, L"ReBarWindow32", nullptr);
-    if (!hReBarWindow32) {
-        return nullptr;
-    }
-
-    HWND hMSTaskSwWClass =
-        FindWindowEx(hReBarWindow32, nullptr, L"MSTaskSwWClass", nullptr);
-    if (!hMSTaskSwWClass) {
-        return nullptr;
-    }
-
-    return FindWindowEx(hMSTaskSwWClass, nullptr, L"MSTaskListWClass", nullptr);
-}
-
-HWND TaskListFromSecondaryTaskbarWnd(HWND hSecondaryTaskbarWnd) {
-    HWND hWorkerWWnd =
-        FindWindowEx(hSecondaryTaskbarWnd, nullptr, L"WorkerW", nullptr);
-    if (!hWorkerWWnd) {
-        return nullptr;
-    }
-
-    return FindWindowEx(hWorkerWWnd, nullptr, L"MSTaskListWClass", nullptr);
-}
-
-HWND TaskListFromMMTaskbarWnd(HWND hMMTaskbarWnd) {
-    WCHAR szClassName[32];
-    if (!GetClassName(hMMTaskbarWnd, szClassName, ARRAYSIZE(szClassName))) {
-        return nullptr;
-    }
-
-    if (_wcsicmp(szClassName, L"Shell_TrayWnd") == 0) {
-        return TaskListFromTaskbarWnd(hMMTaskbarWnd);
-    }
-
-    if (_wcsicmp(szClassName, L"Shell_SecondaryTrayWnd") == 0) {
-        return TaskListFromSecondaryTaskbarWnd(hMMTaskbarWnd);
-    }
-
-    return nullptr;
-}
-
-HWND TaskListFromPoint(POINT pt) {
-    HWND hPointWnd = WindowFromPoint(pt);
-    if (!hPointWnd) {
-        return nullptr;
-    }
-
-    HWND hRootWnd = GetAncestor(hPointWnd, GA_ROOT);
-    if (!hRootWnd) {
-        return nullptr;
-    }
-
-    return TaskListFromMMTaskbarWnd(hRootWnd);
-}
-
-#pragma region regions
-
-UINT GetDpiForWindowWithFallback(HWND hWnd) {
-    using GetDpiForWindow_t = UINT(WINAPI*)(HWND hwnd);
-    static GetDpiForWindow_t pGetDpiForWindow = []() {
-        HMODULE hUser32 = GetModuleHandle(L"user32.dll");
-        if (hUser32) {
-            return (GetDpiForWindow_t)GetProcAddress(hUser32,
-                                                     "GetDpiForWindow");
-        }
-
-        return (GetDpiForWindow_t) nullptr;
-    }();
-
-    int iDpi = 96;
-    if (pGetDpiForWindow) {
-        iDpi = pGetDpiForWindow(hWnd);
-    } else {
-        HDC hdc = GetDC(NULL);
-        if (hdc) {
-            iDpi = GetDeviceCaps(hdc, LOGPIXELSX);
-            ReleaseDC(NULL, hdc);
-        }
-    }
-
-    return iDpi;
-}
-
-// https://stackoverflow.com/a/54364173
-std::wstring_view TrimStringView(std::wstring_view s) {
-    s.remove_prefix(std::min(s.find_first_not_of(L" \t\r\v\n"), s.size()));
-    s.remove_suffix(
-        std::min(s.size() - s.find_last_not_of(L" \t\r\v\n") - 1, s.size()));
-    return s;
-}
-
-// https://stackoverflow.com/a/46931770
-std::vector<std::wstring_view> SplitStringView(std::wstring_view s,
-                                               std::wstring_view delimiter) {
-    size_t pos_start = 0, pos_end, delim_len = delimiter.length();
-    std::wstring_view token;
-    std::vector<std::wstring_view> res;
-
-    while ((pos_end = s.find(delimiter, pos_start)) !=
-           std::wstring_view::npos) {
-        token = s.substr(pos_start, pos_end - pos_start);
-        pos_start = pos_end + delim_len;
-        res.push_back(token);
-    }
-
-    res.push_back(s.substr(pos_start));
-    return res;
-}
-
-bool SvToInt(std::wstring_view s, int* result) {
-    if (s.empty()) {
-        return false;
-    }
-
-    int value = 0;
-    for (WCHAR c : s) {
-        if (c < L'0' || c > L'9') {
-            return false;
-        }
-        value = value * 10 + (c - L'0');
-    }
-
-    *result = value;
-    return true;
-}
-
-std::optional<Region> ParseRegion(std::wstring_view regionStr) {
-    auto parts = SplitStringView(regionStr, L"-");
-    if (parts.size() != 2) {
-        Wh_Log(L"Invalid region (expected start-end): %.*s",
-               (int)regionStr.size(), regionStr.data());
-        return std::nullopt;
-    }
-
-    auto startStr = TrimStringView(parts[0]);
-    auto endStr = TrimStringView(parts[1]);
-
-    bool startIsPercentage = !startStr.empty() && startStr.back() == L'%';
-    bool endIsPercentage = !endStr.empty() && endStr.back() == L'%';
-    if (startIsPercentage != endIsPercentage) {
-        Wh_Log(L"Invalid region (mixed percent and pixel): %.*s",
-               (int)regionStr.size(), regionStr.data());
-        return std::nullopt;
-    }
-
-    bool isPercentage = startIsPercentage;
-    if (isPercentage) {
-        startStr.remove_suffix(1);
-        endStr.remove_suffix(1);
-    }
-
-    int start;
-    int end;
-    if (!SvToInt(startStr, &start) || !SvToInt(endStr, &end)) {
-        Wh_Log(L"Invalid region (non-numeric values): %.*s",
-               (int)regionStr.size(), regionStr.data());
-        return std::nullopt;
-    }
-
-    if (start >= end) {
-        Wh_Log(L"Invalid region (start must be less than end): %.*s",
-               (int)regionStr.size(), regionStr.data());
-        return std::nullopt;
-    }
-
-    return Region{isPercentage, start, end};
-}
-
-bool HasCustomScrollRegions() {
-    return !g_settings.customScrollRegions.empty();
-}
-
-bool IsPointInsideCustomRegion(HWND hMMTaskbarWnd, POINT pt) {
-    RECT rc;
-    if (!GetWindowRect(hMMTaskbarWnd, &rc) || !PtInRect(&rc, pt)) {
-        return false;
-    }
-
-    bool isHorizontal = (rc.right - rc.left) >= (rc.bottom - rc.top);
-    int taskbarLength;
-    int cursorOffset;
-    if (isHorizontal) {
-        taskbarLength = rc.right - rc.left;
-        if (GetWindowLong(hMMTaskbarWnd, GWL_EXSTYLE) & WS_EX_LAYOUTRTL) {
-            cursorOffset = rc.right - pt.x;
-        } else {
-            cursorOffset = pt.x - rc.left;
-        }
-    } else {
-        taskbarLength = rc.bottom - rc.top;
-        cursorOffset = pt.y - rc.top;
-    }
-
-    UINT dpi = GetDpiForWindowWithFallback(hMMTaskbarWnd);
-
-    for (const auto& region : g_settings.customScrollRegions) {
-        int start, end;
-        if (region.isPercentage) {
-            start = MulDiv(taskbarLength, region.start, 100);
-            end = MulDiv(taskbarLength, region.end, 100);
-        } else {
-            start = MulDiv(region.start, dpi, 96);
-            end = MulDiv(region.end, dpi, 96);
-        }
-
-        if (cursorOffset >= start && cursorOffset <= end) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-#pragma endregion  // regions
-
-HWND GetTaskbarForMonitor(HWND hTaskbarWnd, HMONITOR monitor) {
-    DWORD taskbarThreadId = 0;
-    DWORD taskbarProcessId = 0;
-    if (!(taskbarThreadId =
-              GetWindowThreadProcessId(hTaskbarWnd, &taskbarProcessId)) ||
-        taskbarProcessId != GetCurrentProcessId()) {
-        return nullptr;
-    }
-
-    HMONITOR taskbarMonitor = (HMONITOR)GetProp(hTaskbarWnd, L"TaskbarMonitor");
-    if (taskbarMonitor == monitor) {
-        return hTaskbarWnd;
-    }
-
-    HWND hResultWnd = nullptr;
-
-    auto enumWindowsProc = [monitor, &hResultWnd](HWND hWnd) -> BOOL {
-        WCHAR szClassName[32];
-        if (GetClassName(hWnd, szClassName, ARRAYSIZE(szClassName)) == 0) {
-            return TRUE;
-        }
-
-        if (_wcsicmp(szClassName, L"Shell_SecondaryTrayWnd") != 0) {
-            return TRUE;
-        }
-
-        HMONITOR taskbarMonitor = (HMONITOR)GetProp(hWnd, L"TaskbarMonitor");
-        if (taskbarMonitor != monitor) {
-            return TRUE;
-        }
-
-        hResultWnd = hWnd;
-        return FALSE;
-    };
-
-    EnumThreadWindows(
-        taskbarThreadId,
-        [](HWND hWnd, LPARAM lParam) -> BOOL {
-            auto& proc = *reinterpret_cast<decltype(enumWindowsProc)*>(lParam);
-            return proc(hWnd);
-        },
-        reinterpret_cast<LPARAM>(&enumWindowsProc));
-
-    return hResultWnd;
-}
-
-bool FromStringHotKey(std::wstring_view hotkeyString,
-                      UINT* modifiersOut,
-                      UINT* vkOut) {
-    static const std::unordered_map<std::wstring_view, UINT> modifiersMap = {
-        {L"ALT", MOD_ALT},           {L"CTRL", MOD_CONTROL},
-        {L"NOREPEAT", MOD_NOREPEAT}, {L"SHIFT", MOD_SHIFT},
-        {L"WIN", MOD_WIN},
-    };
-
-    static const std::unordered_map<std::wstring_view, UINT> vkMap = {
-        {L"VK_LBUTTON", 0x01},
-        {L"VK_RBUTTON", 0x02},
-        {L"VK_CANCEL", 0x03},
-        {L"VK_MBUTTON", 0x04},
-        {L"VK_XBUTTON1", 0x05},
-        {L"VK_XBUTTON2", 0x06},
-        {L"VK_BACK", 0x08},
-        {L"VK_TAB", 0x09},
-        {L"VK_CLEAR", 0x0C},
-        {L"VK_RETURN", 0x0D},
-        {L"VK_SHIFT", 0x10},
-        {L"VK_CONTROL", 0x11},
-        {L"VK_MENU", 0x12},
-        {L"VK_PAUSE", 0x13},
-        {L"VK_CAPITAL", 0x14},
-        {L"VK_KANA", 0x15},
-        {L"VK_HANGUEL", 0x15},
-        {L"VK_HANGUL", 0x15},
-        {L"VK_IME_ON", 0x16},
-        {L"VK_JUNJA", 0x17},
-        {L"VK_FINAL", 0x18},
-        {L"VK_HANJA", 0x19},
-        {L"VK_KANJI", 0x19},
-        {L"VK_IME_OFF", 0x1A},
-        {L"VK_ESCAPE", 0x1B},
-        {L"VK_CONVERT", 0x1C},
-        {L"VK_NONCONVERT", 0x1D},
-        {L"VK_ACCEPT", 0x1E},
-        {L"VK_MODECHANGE", 0x1F},
-        {L"VK_SPACE", 0x20},
-        {L"VK_PRIOR", 0x21},
-        {L"VK_NEXT", 0x22},
-        {L"VK_END", 0x23},
-        {L"VK_HOME", 0x24},
-        {L"VK_LEFT", 0x25},
-        {L"VK_UP", 0x26},
-        {L"VK_RIGHT", 0x27},
-        {L"VK_DOWN", 0x28},
-        {L"VK_SELECT", 0x29},
-        {L"VK_PRINT", 0x2A},
-        {L"VK_EXECUTE", 0x2B},
-        {L"VK_SNAPSHOT", 0x2C},
-        {L"VK_INSERT", 0x2D},
-        {L"VK_DELETE", 0x2E},
-        {L"VK_HELP", 0x2F},
-        {L"0", 0x30},
-        {L"1", 0x31},
-        {L"2", 0x32},
-        {L"3", 0x33},
-        {L"4", 0x34},
-        {L"5", 0x35},
-        {L"6", 0x36},
-        {L"7", 0x37},
-        {L"8", 0x38},
-        {L"9", 0x39},
-        {L"A", 0x41},
-        {L"B", 0x42},
-        {L"C", 0x43},
-        {L"D", 0x44},
-        {L"E", 0x45},
-        {L"F", 0x46},
-        {L"G", 0x47},
-        {L"H", 0x48},
-        {L"I", 0x49},
-        {L"J", 0x4A},
-        {L"K", 0x4B},
-        {L"L", 0x4C},
-        {L"M", 0x4D},
-        {L"N", 0x4E},
-        {L"O", 0x4F},
-        {L"P", 0x50},
-        {L"Q", 0x51},
-        {L"R", 0x52},
-        {L"S", 0x53},
-        {L"T", 0x54},
-        {L"U", 0x55},
-        {L"V", 0x56},
-        {L"W", 0x57},
-        {L"X", 0x58},
-        {L"Y", 0x59},
-        {L"Z", 0x5A},
-        {L"VK_LWIN", 0x5B},
-        {L"VK_RWIN", 0x5C},
-        {L"VK_APPS", 0x5D},
-        {L"VK_SLEEP", 0x5F},
-        {L"VK_NUMPAD0", 0x60},
-        {L"VK_NUMPAD1", 0x61},
-        {L"VK_NUMPAD2", 0x62},
-        {L"VK_NUMPAD3", 0x63},
-        {L"VK_NUMPAD4", 0x64},
-        {L"VK_NUMPAD5", 0x65},
-        {L"VK_NUMPAD6", 0x66},
-        {L"VK_NUMPAD7", 0x67},
-        {L"VK_NUMPAD8", 0x68},
-        {L"VK_NUMPAD9", 0x69},
-        {L"VK_MULTIPLY", 0x6A},
-        {L"VK_ADD", 0x6B},
-        {L"VK_SEPARATOR", 0x6C},
-        {L"VK_SUBTRACT", 0x6D},
-        {L"VK_DECIMAL", 0x6E},
-        {L"VK_DIVIDE", 0x6F},
-        {L"VK_F1", 0x70},
-        {L"VK_F2", 0x71},
-        {L"VK_F3", 0x72},
-        {L"VK_F4", 0x73},
-        {L"VK_F5", 0x74},
-        {L"VK_F6", 0x75},
-        {L"VK_F7", 0x76},
-        {L"VK_F8", 0x77},
-        {L"VK_F9", 0x78},
-        {L"VK_F10", 0x79},
-        {L"VK_F11", 0x7A},
-        {L"VK_F12", 0x7B},
-        {L"VK_F13", 0x7C},
-        {L"VK_F14", 0x7D},
-        {L"VK_F15", 0x7E},
-        {L"VK_F16", 0x7F},
-        {L"VK_F17", 0x80},
-        {L"VK_F18", 0x81},
-        {L"VK_F19", 0x82},
-        {L"VK_F20", 0x83},
-        {L"VK_F21", 0x84},
-        {L"VK_F22", 0x85},
-        {L"VK_F23", 0x86},
-        {L"VK_F24", 0x87},
-        {L"VK_NUMLOCK", 0x90},
-        {L"VK_SCROLL", 0x91},
-        {L"VK_LSHIFT", 0xA0},
-        {L"VK_RSHIFT", 0xA1},
-        {L"VK_LCONTROL", 0xA2},
-        {L"VK_RCONTROL", 0xA3},
-        {L"VK_LMENU", 0xA4},
-        {L"VK_RMENU", 0xA5},
-        {L"VK_BROWSER_BACK", 0xA6},
-        {L"VK_BROWSER_FORWARD", 0xA7},
-        {L"VK_BROWSER_REFRESH", 0xA8},
-        {L"VK_BROWSER_STOP", 0xA9},
-        {L"VK_BROWSER_SEARCH", 0xAA},
-        {L"VK_BROWSER_FAVORITES", 0xAB},
-        {L"VK_BROWSER_HOME", 0xAC},
-        {L"VK_VOLUME_MUTE", 0xAD},
-        {L"VK_VOLUME_DOWN", 0xAE},
-        {L"VK_VOLUME_UP", 0xAF},
-        {L"VK_MEDIA_NEXT_TRACK", 0xB0},
-        {L"VK_MEDIA_PREV_TRACK", 0xB1},
-        {L"VK_MEDIA_STOP", 0xB2},
-        {L"VK_MEDIA_PLAY_PAUSE", 0xB3},
-        {L"VK_LAUNCH_MAIL", 0xB4},
-        {L"VK_LAUNCH_MEDIA_SELECT", 0xB5},
-        {L"VK_LAUNCH_APP1", 0xB6},
-        {L"VK_LAUNCH_APP2", 0xB7},
-        {L"VK_OEM_1", 0xBA},
-        {L"VK_OEM_PLUS", 0xBB},
-        {L"VK_OEM_COMMA", 0xBC},
-        {L"VK_OEM_MINUS", 0xBD},
-        {L"VK_OEM_PERIOD", 0xBE},
-        {L"VK_OEM_2", 0xBF},
-        {L"VK_OEM_3", 0xC0},
-        {L"VK_OEM_4", 0xDB},
-        {L"VK_OEM_5", 0xDC},
-        {L"VK_OEM_6", 0xDD},
-        {L"VK_OEM_7", 0xDE},
-        {L"VK_OEM_8", 0xDF},
-        {L"VK_OEM_102", 0xE2},
-        {L"VK_PROCESSKEY", 0xE5},
-        {L"VK_PACKET", 0xE7},
-        {L"VK_ATTN", 0xF6},
-        {L"VK_CRSEL", 0xF7},
-        {L"VK_EXSEL", 0xF8},
-        {L"VK_EREOF", 0xF9},
-        {L"VK_PLAY", 0xFA},
-        {L"VK_ZOOM", 0xFB},
-        {L"VK_NONAME", 0xFC},
-        {L"VK_PA1", 0xFD},
-        {L"VK_OEM_CLEAR", 0xFE},
-    };
-
-    // https://stackoverflow.com/a/46931770
-    auto splitStringView = [](std::wstring_view s, WCHAR delimiter) {
-        size_t pos_start = 0, pos_end;
-        std::wstring_view token;
-        std::vector<std::wstring_view> res;
-
-        while ((pos_end = s.find(delimiter, pos_start)) !=
-               std::wstring_view::npos) {
-            token = s.substr(pos_start, pos_end - pos_start);
-            pos_start = pos_end + 1;
-            res.push_back(token);
-        }
-
-        res.push_back(s.substr(pos_start));
-        return res;
-    };
-
-    // https://stackoverflow.com/a/54364173
-    auto trimStringView = [](std::wstring_view s) {
-        s.remove_prefix(std::min(s.find_first_not_of(L" \t\r\v\n"), s.size()));
-        s.remove_suffix(std::min(
-            s.size() - s.find_last_not_of(L" \t\r\v\n") - 1, s.size()));
-        return s;
-    };
-
-    UINT modifiers = 0;
-    UINT vk = 0;
-
-    auto hotkeyParts = splitStringView(hotkeyString, '+');
-    for (auto hotkeyPart : hotkeyParts) {
-        hotkeyPart = trimStringView(hotkeyPart);
-        std::wstring hotkeyPartUpper{hotkeyPart};
-        std::transform(hotkeyPartUpper.begin(), hotkeyPartUpper.end(),
-                       hotkeyPartUpper.begin(), ::toupper);
-
-        if (auto it = modifiersMap.find(hotkeyPartUpper);
-            it != modifiersMap.end()) {
-            modifiers |= it->second;
-            continue;
-        }
-
-        if (vk) {
-            // Only one is allowed.
-            return false;
-        }
-
-        if (auto it = vkMap.find(hotkeyPartUpper); it != vkMap.end()) {
-            vk = it->second;
-            continue;
-        }
-
-        size_t pos;
-        try {
-            vk = std::stoi(hotkeyPartUpper, &pos, 0);
-            if (hotkeyPartUpper[pos] != L'\0' || !vk) {
-                return false;
-            }
-        } catch (const std::exception&) {
-            return false;
-        }
-    }
-
-    if (!vk) {
-        return false;
-    }
-
-    *modifiersOut = modifiers;
-    *vkOut = vk;
-    return true;
-}
-
-void UnregisterHotkeys(HWND hWnd) {
-    if (g_hotkeyLeftRegistered) {
-        UnregisterHotKey(hWnd, kHotkeyIdLeft);
-        g_hotkeyLeftRegistered = false;
-    }
-
-    if (g_hotkeyRightRegistered) {
-        UnregisterHotKey(hWnd, kHotkeyIdRight);
-        g_hotkeyRightRegistered = false;
-    }
-}
-
-void RegisterHotkeys(HWND hWnd) {
-    if (!*g_settings.cycleLeftKeyboardShortcut &&
-        !*g_settings.cycleRightKeyboardShortcut) {
-        return;
-    }
-
-    UINT modifiers;
-    UINT vk;
-
-    if (FromStringHotKey(g_settings.cycleLeftKeyboardShortcut.get(), &modifiers,
-                         &vk)) {
-        g_hotkeyLeftRegistered =
-            RegisterHotKey(hWnd, kHotkeyIdLeft, modifiers, vk);
-        if (!g_hotkeyLeftRegistered) {
-            Wh_Log(L"Couldn't register hotkey: %s",
-                   g_settings.cycleLeftKeyboardShortcut.get());
-        }
-    } else {
-        Wh_Log(L"Couldn't parse hotkey: %s",
-               g_settings.cycleLeftKeyboardShortcut.get());
-    }
-
-    if (FromStringHotKey(g_settings.cycleRightKeyboardShortcut.get(),
-                         &modifiers, &vk)) {
-        g_hotkeyRightRegistered =
-            RegisterHotKey(hWnd, kHotkeyIdRight, modifiers, vk);
-        if (!g_hotkeyRightRegistered) {
-            Wh_Log(L"Couldn't register hotkey: %s",
-                   g_settings.cycleRightKeyboardShortcut.get());
-        }
-    } else {
-        Wh_Log(L"Couldn't parse hotkey: %s",
-               g_settings.cycleRightKeyboardShortcut.get());
-    }
-}
-
-bool OnTaskbarHotkey(HWND hWnd, int hotkeyId) {
-    Wh_Log(L">");
-
-    DWORD messagePos = GetMessagePos();
-    POINT pt{
-        GET_X_LPARAM(messagePos),
-        GET_Y_LPARAM(messagePos),
-    };
-
-    HMONITOR monitor = MonitorFromPoint(pt, MONITOR_DEFAULTTONEAREST);
-
-    HWND hTaskbarForMonitor = GetTaskbarForMonitor(hWnd, monitor);
-
-    HWND hMMTaskListWnd = TaskListFromMMTaskbarWnd(
-        hTaskbarForMonitor ? hTaskbarForMonitor : hWnd);
-    if (!hMMTaskListWnd) {
-        return false;
-    }
-
-    int clicks = hotkeyId == kHotkeyIdLeft ? -1 : 1;
-
-    LONG_PTR lpTaskListLongPtr = GetWindowLongPtr(hMMTaskListWnd, 0);
-    PVOID targetTaskItem = TaskbarScroll(lpTaskListLongPtr, clicks,
-                                         true,
-                                         true, nullptr);
-    if (targetTaskItem) {
-        SwitchToTaskItem(lpTaskListLongPtr, targetTaskItem);
-    }
-
-    return true;
-}
-
-UINT g_hotkeyRegisteredMsg =
-    RegisterWindowMessage(L"Windhawk_hotkey_" WH_MOD_ID);
-
-enum {
-    HOTKEY_REGISTER,
-    HOTKEY_UNREGISTER,
-    HOTKEY_UPDATE,
-};
-
-using CTaskListWnd__SetActiveItem_t = void(WINAPI*)(void* pThis,
-                                                    void* taskBtnGroup,
-                                                    int buttonIndex);
-CTaskListWnd__SetActiveItem_t CTaskListWnd__SetActiveItem_Original;
-void WINAPI CTaskListWnd__SetActiveItem_Hook(void* pThis,
-                                             void* taskBtnGroup,
-                                             int buttonIndex) {
-    g_lastTaskListActiveTaskItem[pThis] =
-        taskBtnGroup ? CTaskBtnGroup_GetTaskItem(taskBtnGroup, buttonIndex)
-                     : nullptr;
-
-    CTaskListWnd__SetActiveItem_Original(pThis, taskBtnGroup, buttonIndex);
-}
-
-using CTaskBand_v_WndProc_t = LRESULT(
-    WINAPI*)(void* pThis, HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
-CTaskBand_v_WndProc_t CTaskBand_v_WndProc_Original;
-LRESULT WINAPI CTaskBand_v_WndProc_Hook(void* pThis,
-                                        HWND hWnd,
-                                        UINT Msg,
-                                        WPARAM wParam,
-                                        LPARAM lParam) {
-    LRESULT result = 0;
-
-    auto originalProc = [pThis](HWND hWnd, UINT Msg, WPARAM wParam,
-                                LPARAM lParam) {
-        return CTaskBand_v_WndProc_Original(pThis, hWnd, Msg, wParam, lParam);
-    };
-
-    switch (Msg) {
-        case WM_HOTKEY:
-            switch (wParam) {
-                case kHotkeyIdLeft:
-                case kHotkeyIdRight:
-                    OnTaskbarHotkey(GetAncestor(hWnd, GA_ROOT),
-                                    static_cast<int>(wParam));
-                    break;
-
-                default:
-                    result = originalProc(hWnd, Msg, wParam, lParam);
-                    break;
-            }
-            break;
-
-        case WM_CREATE:
-            result = originalProc(hWnd, Msg, wParam, lParam);
-            RegisterHotkeys(hWnd);
-            break;
-
-        case WM_DESTROY:
-            UnregisterHotkeys(hWnd);
-            result = originalProc(hWnd, Msg, wParam, lParam);
-            break;
-
-        default:
-            if (Msg == g_hotkeyRegisteredMsg) {
-                switch (wParam) {
-                    case HOTKEY_REGISTER:
-                        RegisterHotkeys(hWnd);
-                        break;
-
-                    case HOTKEY_UNREGISTER:
-                        UnregisterHotkeys(hWnd);
-                        break;
-
-                    case HOTKEY_UPDATE:
-                        UnregisterHotkeys(hWnd);
-                        RegisterHotkeys(hWnd);
-                        break;
-                }
-            } else {
-                result = originalProc(hWnd, Msg, wParam, lParam);
-            }
-            break;
-    }
-
-    return result;
-}
-
-using TrayUI_WndProc_t = LRESULT(WINAPI*)(void* pThis,
-                                          HWND hWnd,
-                                          UINT Msg,
-                                          WPARAM wParam,
-                                          LPARAM lParam,
-                                          bool* flag);
-TrayUI_WndProc_t TrayUI_WndProc_Original;
-LRESULT WINAPI TrayUI_WndProc_Hook(void* pThis,
-                                   HWND hWnd,
-                                   UINT Msg,
-                                   WPARAM wParam,
-                                   LPARAM lParam,
-                                   bool* flag) {
-    if (Msg == WM_MOUSEWHEEL && g_settings.enableMouseWheelCycling) {
-        HWND hTaskListWnd = TaskListFromTaskbarWnd(hWnd);
-
-        RECT rc{};
-        GetWindowRect(hTaskListWnd, &rc);
-
-        POINT pt{
-            .x = GET_X_LPARAM(lParam),
-            .y = GET_Y_LPARAM(lParam),
-        };
-
-        if (HasCustomScrollRegions() ? IsPointInsideCustomRegion(hWnd, pt)
-                                     : PtInRect(&rc, pt)) {
-            short delta = GET_WHEEL_DELTA_WPARAM(wParam);
-
-            // Allows to steal focus.
-            INPUT input{};
-            SendInput(1, &input, sizeof(INPUT));
-
-            OnTaskListScroll(hTaskListWnd, delta);
-
-            *flag = false;
-            return 0;
-        }
-    }
-
-    LRESULT ret =
-        TrayUI_WndProc_Original(pThis, hWnd, Msg, wParam, lParam, flag);
-
-    return ret;
-}
-
-using CSecondaryTray_v_WndProc_t = LRESULT(
-    WINAPI*)(void* pThis, HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
-CSecondaryTray_v_WndProc_t CSecondaryTray_v_WndProc_Original;
-LRESULT WINAPI CSecondaryTray_v_WndProc_Hook(void* pThis,
-                                             HWND hWnd,
-                                             UINT Msg,
-                                             WPARAM wParam,
-                                             LPARAM lParam) {
-    if (Msg == WM_MOUSEWHEEL && g_settings.enableMouseWheelCycling) {
-        HWND hSecondaryTaskListWnd = TaskListFromSecondaryTaskbarWnd(hWnd);
-
-        RECT rc{};
-        GetWindowRect(hSecondaryTaskListWnd, &rc);
-
-        POINT pt{
-            .x = GET_X_LPARAM(lParam),
-            .y = GET_Y_LPARAM(lParam),
-        };
-
-        if (HasCustomScrollRegions() ? IsPointInsideCustomRegion(hWnd, pt)
-                                     : PtInRect(&rc, pt)) {
-            short delta = GET_WHEEL_DELTA_WPARAM(wParam);
-
-            // Allows to steal focus.
-            INPUT input{};
-            SendInput(1, &input, sizeof(INPUT));
-
-            OnTaskListScroll(hSecondaryTaskListWnd, delta);
-
-            return 0;
-        }
-    }
-
-    LRESULT ret =
-        CSecondaryTray_v_WndProc_Original(pThis, hWnd, Msg, wParam, lParam);
-
-    return ret;
-}
-
-using TaskbarFrame_OnPointerWheelChanged_t = int(WINAPI*)(PVOID pThis,
-                                                          PVOID pArgs);
-TaskbarFrame_OnPointerWheelChanged_t
-    TaskbarFrame_OnPointerWheelChanged_Original;
-int TaskbarFrame_OnPointerWheelChanged_Hook(PVOID pThis, PVOID pArgs) {
-    auto original = [=]() {
-        return TaskbarFrame_OnPointerWheelChanged_Original(pThis, pArgs);
-    };
-
-    if (!g_settings.enableMouseWheelCycling) {
-        return original();
-    }
-
-    winrt::Windows::Foundation::IInspectable taskbarFrame = nullptr;
-    ((IUnknown*)pThis)
-        ->QueryInterface(
-            winrt::guid_of<winrt::Windows::Foundation::IInspectable>(),
-            winrt::put_abi(taskbarFrame));
-
-    if (!taskbarFrame) {
-        return original();
-    }
-
-    auto className = winrt::get_class_name(taskbarFrame);
-    if (className != L"Taskbar.TaskbarFrame") {
-        return original();
-    }
-
-    auto taskbarFrameElement = taskbarFrame.as<winrt::Windows::UI::Xaml::UIElement>();
-
-    winrt::Windows::UI::Xaml::Input::PointerRoutedEventArgs args = nullptr;
-    ((IUnknown*)pArgs)
-        ->QueryInterface(
-            winrt::guid_of<winrt::Windows::UI::Xaml::Input::PointerRoutedEventArgs>(),
-            winrt::put_abi(args));
-    if (!args) {
-        return original();
-    }
-
-    DWORD messagePos = GetMessagePos();
-    POINT pt = {GET_X_LPARAM(messagePos), GET_Y_LPARAM(messagePos)};
-    HWND hMMTaskListWnd = TaskListFromPoint(pt);
-    if (!hMMTaskListWnd) {
-        return original();
-    }
-
-    if (HasCustomScrollRegions() &&
-        !IsPointInsideCustomRegion(GetAncestor(hMMTaskListWnd, GA_ROOT), pt)) {
-        return original();
-    }
-
-    auto currentPoint = args.GetCurrentPoint(taskbarFrameElement);
-    double delta = currentPoint.Properties().MouseWheelDelta();
-    if (!delta) {
-        return original();
-    }
-
-    // Allows to steal focus.
-    INPUT input;
-    ZeroMemory(&input, sizeof(INPUT));
-    SendInput(1, &input, sizeof(INPUT));
-
-    // Use the original task-switcher implementation after obtaining the
-    // correct Windows.UI.Xaml event arguments from Taskbar.View.dll.
-    OnTaskListScroll(hMMTaskListWnd, static_cast<short>(delta));
-
-    args.Handled(true);
-    return 0;
-}
-
-void LoadSettings() {
-    g_settings.enableMouseWheelCycling =
-        Wh_GetIntSetting(L"enableMouseWheelCycling");
-
-    g_settings.customScrollRegions.clear();
-    PCWSTR customScrollRegions = Wh_GetStringSetting(L"customScrollRegions");
-    for (auto regionStr : SplitStringView(customScrollRegions, L",")) {
-        regionStr = TrimStringView(regionStr);
-        if (regionStr.empty()) {
-            continue;
-        }
-        if (auto region = ParseRegion(regionStr)) {
-            g_settings.customScrollRegions.push_back(*region);
-        }
-    }
-    Wh_FreeStringSetting(customScrollRegions);
-
-    g_settings.cycleLeftKeyboardShortcut =
-        WindhawkUtils::StringSetting::make(L"cycleLeftKeyboardShortcut");
-    g_settings.cycleRightKeyboardShortcut =
-        WindhawkUtils::StringSetting::make(L"cycleRightKeyboardShortcut");
-}
-
-bool HookTaskbarViewDllSymbols(HMODULE module) {
-    // Taskbar.View.dll, ExplorerExtensions.dll
-    WindhawkUtils::SYMBOL_HOOK symbolHooks[] = {
-        {
-            {LR"(public: virtual int __cdecl winrt::impl::produce<struct winrt::Taskbar::implementation::TaskbarFrame,struct winrt::Windows::UI::Xaml::Controls::IControlOverrides>::OnPointerWheelChanged(void *))"},
-            &TaskbarFrame_OnPointerWheelChanged_Original,
-            TaskbarFrame_OnPointerWheelChanged_Hook,
-        },
-    };
-
-    if (!HookSymbols(module, symbolHooks, ARRAYSIZE(symbolHooks))) {
-        Wh_Log(L"HookSymbols failed");
-        return false;
-    }
-
-    return true;
-}
-
-HMODULE GetTaskbarViewModuleHandle() {
-    HMODULE module = GetModuleHandle(L"Taskbar.View.dll");
-    if (!module) {
-        module = GetModuleHandle(L"ExplorerExtensions.dll");
-    }
-
-    return module;
-}
-
-void HandleLoadedModuleIfTaskbarView(HMODULE module, LPCWSTR lpLibFileName) {
-    if (g_winVersion >= WinVersion::Win11 && !g_taskbarViewDllLoaded &&
-        GetTaskbarViewModuleHandle() == module &&
-        !g_taskbarViewDllLoaded.exchange(true)) {
-        Wh_Log(L"Loaded %s", lpLibFileName);
-
-        if (HookTaskbarViewDllSymbols(module)) {
-            Wh_ApplyHookOperations();
-        }
-    }
-}
-
-bool HookTaskbarSymbols() {
-    HMODULE module;
-    if (g_winVersion <= WinVersion::Win10) {
-        module = GetModuleHandle(nullptr);
-    } else {
-        module = LoadLibraryEx(L"taskbar.dll", nullptr,
-                               LOAD_LIBRARY_SEARCH_SYSTEM32);
-        if (!module) {
-            Wh_Log(L"Couldn't load taskbar.dll");
-            return false;
-        }
-    }
-
-    // Taskbar.dll, explorer.exe
-    WindhawkUtils::SYMBOL_HOOK symbolHooks[] = {
-        {
-            {LR"(const CTaskListWnd::`vftable'{for `ITaskListUI'})"},
-            &CTaskListWnd_vftable_ITaskListUI,
-        },
-        {
-            {LR"(const CTaskListWnd::`vftable'{for `ITaskListSite'})"},
-            &CTaskListWnd_vftable_ITaskListSite,
-        },
-        {
-            {LR"(const CImmersiveTaskItem::`vftable'{for `ITaskItem'})"},
-            &CImmersiveTaskItem_vftable,
-        },
-        {
-            {LR"(public: virtual int __cdecl CTaskListWnd::GetButtonGroupCount(void))"},
-            &CTaskListWnd_GetButtonGroupCount,
-        },
-        {
-            {LR"(protected: struct ITaskBtnGroup * __cdecl CTaskListWnd::_GetTBGroupFromGroup(struct ITaskGroup *,int *))"},
-            &CTaskListWnd__GetTBGroupFromGroup,
-        },
-        {
-            {LR"(public: virtual enum eTBGROUPTYPE __cdecl CTaskBtnGroup::GetGroupType(void))"},
-            &CTaskBtnGroup_GetGroupType,
-        },
-        {
-            {LR"(public: virtual int __cdecl CTaskBtnGroup::GetNumItems(void))"},
-            &CTaskBtnGroup_GetNumItems,
-        },
-        {
-            {LR"(public: virtual struct ITaskItem * __cdecl CTaskBtnGroup::GetTaskItem(int))"},
-            &CTaskBtnGroup_GetTaskItem,
-        },
-        {
-            {LR"(public: virtual struct HWND__ * __cdecl CWindowTaskItem::GetWindow(void))"},
-            &CWindowTaskItem_GetWindow_Original,
-        },
-        {
-            {LR"(public: virtual struct HWND__ * __cdecl CImmersiveTaskItem::GetWindow(void))"},
-            &CImmersiveTaskItem_GetWindow_Original,
-        },
-        {
-            {LR"(public: virtual void __cdecl CTaskListWnd::SwitchToItem(struct ITaskItem *))"},
-            &CTaskListWnd_SwitchToItem_Original,
-        },
-        {
-            {LR"(protected: void __cdecl CTaskListWnd::_SetActiveItem(struct ITaskBtnGroup *,int))"},
-            &CTaskListWnd__SetActiveItem_Original,
-            CTaskListWnd__SetActiveItem_Hook,
-        },
-        {
-            {LR"(protected: virtual __int64 __cdecl CTaskBand::v_WndProc(struct HWND__ *,unsigned int,unsigned __int64,__int64))"},
-            &CTaskBand_v_WndProc_Original,
-            CTaskBand_v_WndProc_Hook,
-        },
-        {
-            {LR"(public: virtual __int64 __cdecl TrayUI::WndProc(struct HWND__ *,unsigned int,unsigned __int64,__int64,bool *))"},
-            &TrayUI_WndProc_Original,
-            TrayUI_WndProc_Hook,
-        },
-        {
-            {LR"(private: virtual __int64 __cdecl CSecondaryTray::v_WndProc(struct HWND__ *,unsigned int,unsigned __int64,__int64))"},
-            &CSecondaryTray_v_WndProc_Original,
-            CSecondaryTray_v_WndProc_Hook,
-        },
-    };
-
-    if (!HookSymbols(module, symbolHooks, ARRAYSIZE(symbolHooks))) {
-        Wh_Log(L"HookSymbols failed");
-        return false;
-    }
-
-    return true;
-}
-
-VS_FIXEDFILEINFO* GetModuleVersionInfo(HMODULE hModule, UINT* puPtrLen) {
-    void* pFixedFileInfo = nullptr;
-    UINT uPtrLen = 0;
-
-    HRSRC hResource =
-        FindResource(hModule, MAKEINTRESOURCE(VS_VERSION_INFO), RT_VERSION);
-    if (hResource) {
-        HGLOBAL hGlobal = LoadResource(hModule, hResource);
-        if (hGlobal) {
-            void* pData = LockResource(hGlobal);
-            if (pData) {
-                if (!VerQueryValue(pData, L"\\", &pFixedFileInfo, &uPtrLen) ||
-                    uPtrLen == 0) {
-                    pFixedFileInfo = nullptr;
-                    uPtrLen = 0;
-                }
-            }
-        }
-    }
-
-    if (puPtrLen) {
-        *puPtrLen = uPtrLen;
-    }
-
-    return (VS_FIXEDFILEINFO*)pFixedFileInfo;
-}
-
-WinVersion GetExplorerVersion() {
-    VS_FIXEDFILEINFO* fixedFileInfo = GetModuleVersionInfo(nullptr, nullptr);
-    if (!fixedFileInfo) {
-        return WinVersion::Unsupported;
-    }
-
-    WORD major = HIWORD(fixedFileInfo->dwFileVersionMS);
-    WORD minor = LOWORD(fixedFileInfo->dwFileVersionMS);
-    WORD build = HIWORD(fixedFileInfo->dwFileVersionLS);
-    WORD qfe = LOWORD(fixedFileInfo->dwFileVersionLS);
-
-    Wh_Log(L"Version: %u.%u.%u.%u", major, minor, build, qfe);
-
-    switch (major) {
-        case 10:
-            if (build < 22000) {
-                return WinVersion::Win10;
-            } else if (build < 26100) {
-                return WinVersion::Win11;
-            } else {
-                return WinVersion::Win11_24H2;
-            }
-            break;
-    }
-
-    return WinVersion::Unsupported;
-}
-
-struct EXPLORER_PATCHER_HOOK {
-    PCSTR symbol;
-    void** pOriginalFunction;
-    void* hookFunction = nullptr;
-    bool optional = false;
-
-    template <typename Prototype>
-    EXPLORER_PATCHER_HOOK(
-        PCSTR symbol,
-        Prototype** originalFunction,
-        std::type_identity_t<Prototype*> hookFunction = nullptr,
-        bool optional = false)
-        : symbol(symbol),
-          pOriginalFunction(reinterpret_cast<void**>(originalFunction)),
-          hookFunction(reinterpret_cast<void*>(hookFunction)),
-          optional(optional) {}
-};
-
-bool HookExplorerPatcherSymbols(HMODULE explorerPatcherModule) {
-    if (g_explorerPatcherInitialized.exchange(true)) {
-        return true;
-    }
-
-    if (g_winVersion >= WinVersion::Win11) {
-        g_winVersion = WinVersion::Win10;
-    }
-
-    EXPLORER_PATCHER_HOOK hooks[] = {
-        {R"(??_7CTaskListWnd@@6BITaskListUI@@@)",
-         &CTaskListWnd_vftable_ITaskListUI},
-        {R"(??_7CTaskListWnd@@6BITaskListSite@@@)",
-         &CTaskListWnd_vftable_ITaskListSite},
-        {R"(??_7CImmersiveTaskItem@@6BITaskItem@@@)",
-         &CImmersiveTaskItem_vftable},
-        {R"(?GetButtonGroupCount@CTaskListWnd@@UEAAHXZ)",
-         &CTaskListWnd_GetButtonGroupCount},
-        {R"(?_GetTBGroupFromGroup@CTaskListWnd@@IEAAPEAUITaskBtnGroup@@PEAUITaskGroup@@PEAH@Z)",
-         &CTaskListWnd__GetTBGroupFromGroup},
-        {R"(?GetGroupType@CTaskBtnGroup@@UEAA?AW4eTBGROUPTYPE@@XZ)",
-         &CTaskBtnGroup_GetGroupType},
-        {R"(?GetNumItems@CTaskBtnGroup@@UEAAHXZ)", &CTaskBtnGroup_GetNumItems},
-        {R"(?GetTaskItem@CTaskBtnGroup@@UEAAPEAUITaskItem@@H@Z)",
-         &CTaskBtnGroup_GetTaskItem},
-        {R"(?GetWindow@CWindowTaskItem@@UEAAPEAUHWND__@@XZ)",
-         &CWindowTaskItem_GetWindow_Original},
-        {R"(?GetWindow@CImmersiveTaskItem@@UEAAPEAUHWND__@@XZ)",
-         &CImmersiveTaskItem_GetWindow_Original},
-        {R"(?SwitchToItem@CTaskListWnd@@UEAAXPEAUITaskItem@@@Z)",
-         &CTaskListWnd_SwitchToItem_Original},
-        {R"(?_SetActiveItem@CTaskListWnd@@IEAAXPEAUITaskBtnGroup@@H@Z)",
-         &CTaskListWnd__SetActiveItem_Original,
-         CTaskListWnd__SetActiveItem_Hook},
-        {R"(?v_WndProc@CTaskBand@@MEAA_JPEAUHWND__@@I_K_J@Z)",
-         &CTaskBand_v_WndProc_Original, CTaskBand_v_WndProc_Hook},
-        {R"(?WndProc@TrayUI@@UEAA_JPEAUHWND__@@I_K_JPEA_N@Z)",
-         &TrayUI_WndProc_Original, TrayUI_WndProc_Hook},
-        // Exported after 67.1:
-        {R"(?v_WndProc@CSecondaryTray@@EEAA_JPEAUHWND__@@I_K_J@Z)",
-         &CSecondaryTray_v_WndProc_Original, CSecondaryTray_v_WndProc_Hook,
-         true},
-    };
-
-    bool succeeded = true;
-
-    for (const auto& hook : hooks) {
-        void* ptr = (void*)GetProcAddress(explorerPatcherModule, hook.symbol);
-        if (!ptr) {
-            Wh_Log(L"ExplorerPatcher symbol%s doesn't exist: %S",
-                   hook.optional ? L" (optional)" : L"", hook.symbol);
-            if (!hook.optional) {
-                succeeded = false;
-            }
-            continue;
-        }
-
-        if (hook.hookFunction) {
-            Wh_SetFunctionHook(ptr, hook.hookFunction, hook.pOriginalFunction);
-        } else {
-            *hook.pOriginalFunction = ptr;
-        }
-    }
-
-    if (!succeeded) {
-        Wh_Log(L"HookExplorerPatcherSymbols failed");
-    } else if (g_initialized) {
-        Wh_ApplyHookOperations();
-    }
-
-    return succeeded;
-}
-
-bool IsExplorerPatcherModule(HMODULE module) {
-    WCHAR moduleFilePath[MAX_PATH];
-    switch (
-        GetModuleFileName(module, moduleFilePath, ARRAYSIZE(moduleFilePath))) {
-        case 0:
-        case ARRAYSIZE(moduleFilePath):
-            return false;
-    }
-
-    PCWSTR moduleFileName = wcsrchr(moduleFilePath, L'\\');
-    if (!moduleFileName) {
-        return false;
-    }
-
-    moduleFileName++;
-
-    if (_wcsnicmp(L"ep_taskbar.", moduleFileName, sizeof("ep_taskbar.") - 1) ==
-        0) {
-        Wh_Log(L"ExplorerPatcher taskbar module: %s", moduleFileName);
-        return true;
-    }
-
-    return false;
-}
-
-bool HandleLoadedExplorerPatcher() {
-    HMODULE hMods[1024];
-    DWORD cbNeeded;
-    if (EnumProcessModules(GetCurrentProcess(), hMods, sizeof(hMods),
-                           &cbNeeded)) {
-        for (size_t i = 0; i < cbNeeded / sizeof(HMODULE); i++) {
-            if (IsExplorerPatcherModule(hMods[i])) {
-                return HookExplorerPatcherSymbols(hMods[i]);
-            }
-        }
-    }
-
-    return true;
-}
-
-void HandleLoadedModuleIfExplorerPatcher(HMODULE module) {
-    if (module && !((ULONG_PTR)module & 3) && !g_explorerPatcherInitialized) {
-        if (IsExplorerPatcherModule(module)) {
-            HookExplorerPatcherSymbols(module);
-        }
-    }
-}
-
-void OnLibraryLoaded(HMODULE module, LPCWSTR lpLibFileName) {
-    if (g_taskSwitchEnabled && module) {
-        HandleLoadedModuleIfExplorerPatcher(module);
-        HandleLoadedModuleIfTaskbarView(module, lpLibFileName);
-    }
-}
-
-BOOL Wh_ModInit() {
-    Wh_Log(L">");
-
-    // Glass Explorer also runs in ShellExperienceHost/ShellHost. The task
-    // switcher must initialize only inside explorer.exe.
-    if (!IsExplorerProcess()) {
-        g_taskSwitchEnabled = false;
-        return TRUE;
-    }
-    g_taskSwitchEnabled = true;
-
-    LoadSettings();
-
-    g_winVersion = GetExplorerVersion();
-    if (g_winVersion == WinVersion::Unsupported) {
-        Wh_Log(L"Unsupported Windows version");
-        return FALSE;
-    }
-
-    if (g_winVersion >= WinVersion::Win11) {
-        if (HMODULE taskbarViewModule = GetTaskbarViewModuleHandle()) {
-            g_taskbarViewDllLoaded = true;
-            if (!HookTaskbarViewDllSymbols(taskbarViewModule)) {
-                return FALSE;
-            }
-        } else {
-            Wh_Log(L"Taskbar view module not loaded yet");
-        }
-
-        if (!HookTaskbarSymbols()) {
-            return FALSE;
-        }
-    } else {
-        if (!HookTaskbarSymbols()) {
-            return FALSE;
-        }
-    }
-
-    if (!HandleLoadedExplorerPatcher()) {
-        Wh_Log(L"HandleLoadedExplorerPatcher failed");
-        return FALSE;
-    }
-
-    // LoadLibraryExW is dispatched through Glass Explorer's single shared hook.
-
-    g_initialized = true;
-
-    return TRUE;
-}
-
-void Wh_ModAfterInit() {
-    Wh_Log(L">");
-
-    if (!g_taskSwitchEnabled) {
-        return;
-    }
-
-    if (g_winVersion >= WinVersion::Win11 && !g_taskbarViewDllLoaded) {
-        if (HMODULE taskbarViewModule = GetTaskbarViewModuleHandle()) {
-            if (!g_taskbarViewDllLoaded.exchange(true)) {
-                Wh_Log(L"Got Taskbar.View.dll");
-
-                if (HookTaskbarViewDllSymbols(taskbarViewModule)) {
-                    Wh_ApplyHookOperations();
-                }
-            }
-        }
-    }
-
-    // Try again in case there's a race between the previous attempt and the
-    // LoadLibraryExW hook.
-    if (!g_explorerPatcherInitialized) {
-        HandleLoadedExplorerPatcher();
-    }
-
-    if (HWND hTaskBandWnd = GetTaskBandWnd()) {
-        SendMessage(hTaskBandWnd, g_hotkeyRegisteredMsg, HOTKEY_REGISTER, 0);
-    }
-}
-
-void Wh_ModBeforeUninit() {
-    Wh_Log(L">");
-
-    if (!g_taskSwitchEnabled) {
-        return;
-    }
-
-    if (HWND hTaskBandWnd = GetTaskBandWnd()) {
-        SendMessage(hTaskBandWnd, g_hotkeyRegisteredMsg, HOTKEY_UNREGISTER, 0);
-    }
-}
-
-BOOL Wh_ModSettingsChanged(BOOL* bReload) {
-    Wh_Log(L">");
-
-    if (!g_taskSwitchEnabled) {
-        *bReload = FALSE;
-        return TRUE;
-    }
-
-    LoadSettings();
-
-    *bReload = FALSE;
-
-    if (HWND hTaskBandWnd = GetTaskBandWnd()) {
-        SendMessage(hTaskBandWnd, g_hotkeyRegisteredMsg, HOTKEY_UPDATE, 0);
-    }
-
-    return TRUE;
-}
-
-} // namespace TaskSwitch
-
-
-
-
-// Windows Animation Engine implementation isolated to avoid global symbol collisions.
-namespace WindowsAnimationEngine {
-
-using Microsoft::WRL::ComPtr;
-#ifndef DWMWA_EXTENDED_FRAME_BOUNDS
-#define DWMWA_EXTENDED_FRAME_BOUNDS 9
-#endif
-#ifndef DWMWA_SYSTEMBACKDROP_TYPE
-#define DWMWA_SYSTEMBACKDROP_TYPE 38
-#endif
-#ifndef PW_RENDERFULLCONTENT
-#define PW_RENDERFULLCONTENT 2
-#endif
-#ifndef WS_EX_NOREDIRECTIONBITMAP
-#define WS_EX_NOREDIRECTIONBITMAP 0x00200000L
-#endif
-#ifndef EVENT_OBJECT_HOSTEDOBJECTSINVALIDATED
-#define EVENT_OBJECT_HOSTEDOBJECTSINVALIDATED 0x8020
-#endif
-#ifndef CREATE_WAITABLE_TIMER_HIGH_RESOLUTION
-#define CREATE_WAITABLE_TIMER_HIGH_RESOLUTION 0x00000002
-#endif
-#define ANIM_DEFER_SW_HIDE (WM_APP + 101)
-#define ANIM_CALLER_SW_HIDE (WM_APP + 102)
-using DefWindowProcW_t = LRESULT (WINAPI*)(HWND, UINT, WPARAM, LPARAM);
-using ShowWindow_t = BOOL (WINAPI*)(HWND, int);
-using ShowWindowAsync_t = BOOL (WINAPI*)(HWND, int);
-using SetWindowPlacement_t = BOOL (WINAPI*)(HWND, const WINDOWPLACEMENT*);
-using CloseWindow_t = BOOL (WINAPI*)(HWND);
-using SetWindowPos_t = BOOL (WINAPI*)(HWND, HWND, int, int, int, int, UINT);
-using DestroyWindow_t = BOOL (WINAPI*)(HWND);
-using RaiseDesktop_t = void (__cdecl*)(void*, int);
-DefWindowProcW_t DefWindowProcW_Original;
-ShowWindow_t ShowWindow_Original;
-ShowWindowAsync_t ShowWindowAsync_Original;
-SetWindowPlacement_t SetWindowPlacement_Original;
-CloseWindow_t CloseWindow_Original;
-SetWindowPos_t SetWindowPos_Original;
-DestroyWindow_t DestroyWindow_Original;
-RaiseDesktop_t RaiseDesktop_Original;
-
-enum class NativeMinimizeState : LONG {
-    Pending,
-    Submitting,
-    Cancelled,
-    Failed,
-    SyncCompleted,
-    AsyncSubmitted,
-};
-
-struct NativeMinimizeBarrier {
-    std::atomic<LONG> references{1};
-    HANDLE submitted{};
-    std::atomic<NativeMinimizeState> state{NativeMinimizeState::Pending};
-};
-
-static NativeMinimizeBarrier* CreateNativeMinimizeBarrier() {
-    auto* barrier = new (std::nothrow) NativeMinimizeBarrier{};
-    if (!barrier) return nullptr;
-    barrier->submitted = CreateEventW(nullptr, TRUE, FALSE, nullptr);
-    if (!barrier->submitted) {
-        delete barrier;
-        return nullptr;
-    }
-    return barrier;
-}
-
-static void AddRefNativeMinimizeBarrier(NativeMinimizeBarrier* barrier) {
-    if (barrier) barrier->references.fetch_add(1, std::memory_order_relaxed);
-}
-
-static void ReleaseNativeMinimizeBarrier(NativeMinimizeBarrier* barrier) {
-    if (!barrier || barrier->references.fetch_sub(1, std::memory_order_acq_rel) != 1) return;
-    CloseHandle(barrier->submitted);
-    delete barrier;
-}
-
-static void CompleteNativeMinimizeBarrier(NativeMinimizeBarrier* barrier,
-                                          NativeMinimizeState state) {
-    if (!barrier) return;
-    if (barrier->state.load(std::memory_order_acquire) != NativeMinimizeState::Cancelled) {
-        barrier->state.store(state, std::memory_order_release);
-    }
-    SetEvent(barrier->submitted);
-    ReleaseNativeMinimizeBarrier(barrier);
-}
-
-static bool BeginNativeMinimizeSubmission(NativeMinimizeBarrier* barrier) {
-    if (!barrier) return true;
-    NativeMinimizeState expected = NativeMinimizeState::Pending;
-    return barrier->state.compare_exchange_strong(
-        expected, NativeMinimizeState::Submitting, std::memory_order_acq_rel);
-}
-
-struct NativeMinimizeBarrierOwner {
-    NativeMinimizeBarrier* barrier{};
-    explicit NativeMinimizeBarrierOwner(NativeMinimizeBarrier* value) : barrier(value) {}
-    ~NativeMinimizeBarrierOwner() { ReleaseNativeMinimizeBarrier(barrier); }
-    NativeMinimizeBarrier* release() {
-        NativeMinimizeBarrier* value = barrier;
-        barrier = nullptr;
-        return value;
-    }
-};
-
-struct WindowAnimData {
-    HWND hRealWnd{};
-    HBITMAP hBitmap{};
-    void* pBits{};
-    RECT targetRect{};
-    HMONITOR hMon{};
-    int width{}, height{}, targetDockX{}, targetDockY{};
-    BOOL isRising{};
-    LONG_PTR originalExStyle{};
-    BOOL hiddenByCloak{};
-    HANDLE hFirstFrameShown{};
-    int durationMs{};
-    BOOL isClosing{};
-    UINT closeMsg{};
-    HANDLE hWaitFinish{};
-    BOOL requestedUnhide{};
-    HWND hNextApp{};
-    int unhideDurationMs{};
-    BOOL deferredMinimize{};
-    int deferredShowCmd{};
-    int effectStyle{};
-    BOOL restoreMaximized{};
-    ULONG_PTR pairedEffectToken{};
-    ULONG_PTR launchAnimationToken{};
-    BOOL taskbarFocusBorrowed{};
-    BOOL nativeAsyncMinimizeObserved{};
-    BOOL nativeStateTimedOut{};
-    NativeMinimizeBarrier* nativeMinimizeBarrier{};
-    ULONG_PTR animationSessionToken{};
-    BOOL alphaOnlyCloseCompatibility{};
-};
-struct LaunchAnimData {
-    HWND hWnd;
-    LONG_PTR originalExStyle;
-    ULONG_PTR snapshotToken;
-    BOOL hiddenByCloak;
-    BOOL alphaOnlyCompatibility;
-};
-struct AsyncRestoreAnimData {
-    HWND hWnd;
-    LONG_PTR originalExStyle;
-    uint64_t reservationGeneration;
-    BOOL restoreMaximized;
-};
-struct SwitchAnimData {
-    HWND hWnd;
-    int durationMs;
-    DWORD preparedTick;
-};
-struct SnapCache {
-    HBITMAP hBmp;
-    void* pBits;
-    int w;
-    int h;
-    size_t bytes;
-    uint64_t lastUsed;
-    ULONG_PTR windowToken;
-};
-struct ShatterBlock { int srcX, srcY; float dirX, dirY, force, noiseX, noiseY; int bw = 0, bh = 0; };
-struct CloseShatterParticle {
-    float dirX;
-    float dirY;
-    float force;
-    float noiseX;
-    float noiseY;
-    uint32_t nextActive;
-};
-struct CloseThanosParticle {
-    float windX;
-    float windY;
-    float curveX;
-    float curveY;
-    float startTime;
-    uint32_t nextActive;
-};
-namespace AnimConstants {
-    constexpr float SwitchStartScale = 0.94f;
-    constexpr float MinimizeSpread = 0.65f;
-    constexpr float PerlinNoiseScale = 150.0f;
-    constexpr float PerlinLifeSpan = 0.15f;
-    constexpr float ThanosBaseStartMax = 0.6f;
-    constexpr float ThanosWaveNoiseMult = 0.15f;
-    constexpr float ThanosLifeSpan = 0.4f;
-    constexpr float ShatterTravelBase = 200.0f;
-    constexpr float ShatterTravelMult = 1000.0f;
-    constexpr float CrtSquashEnd = 0.42f;
-    constexpr float CrtZipEnd = 0.78f;
-    constexpr int WaitTimeoutMs = 2500;
-    constexpr int WaitSlackMs = 500;
-    constexpr int NativeStateWaitMs = 2500;
-    constexpr int EndpointAsyncSettleMs = 50;
-    // Tauri/WRY can synchronously show, hide, and show the same HWND while
-    // normalizing startup or tray-restored state. A user cannot meaningfully
-    // request a tray close inside this first-frame interval.
-    constexpr DWORD TransientTauriShowHideMs = 250;
-    constexpr int PackagedLaunchMinimumHeightDip = 64;
-    constexpr int MaximizedRestoreGuardMs = 3000;
-    constexpr int AltTabPollMs = 16;
-    constexpr int AltTabSessionMs = 500;
-    constexpr DWORD SwsSelectionMaxAgeMs = 1500;
-    // A cold lookup follows a taskbar layout invalidation. Win11's XAML UIA
-    // tree can take longer than 150 ms while reflowing; returning earlier is
-    // what caused the first post-reflow animation to aim at a generic/stale
-    // position.
-    // Valid hot HWND cache hits return before this wait.
-    constexpr int UiaLookupWaitMs = 400;
-    constexpr int UiaLookupInFlightMs = 3000;
-    constexpr int UiaNegativeCacheMs = 10000;
-    constexpr int UiaColdNegativeCacheMs = 500;
-    constexpr int UiaPositiveFallbackCacheMs = 10000;
-    // UIPI can prevent Explorer from attaching the lifetime property to an
-    // elevated HWND. PID/TID/monitor is a useful but weaker identity, so cache
-    // it only briefly before requiring another UIA confirmation.
-    constexpr int UiaWeakIdentityCacheMs = 1500;
-    constexpr int UiaMinAcceptScore = 400;
-    constexpr int TaskbarExpandWaitMs = 250;
-    constexpr int GpuFrameLatencyWaitMs = 250;
-    // Minimize/restore durations are clamped to 1400 ms. Leave enough slack
-    // for endpoint cleanup, but fall back to Windows instead of holding a
-    // shell UI thread for the former eight-second ceiling.
-    constexpr int ClassicShowDesktopWaitMs = 2500;
-    constexpr int ClassicShowDesktopCollectionFirstMs = 1000;
-    constexpr int ClassicShowDesktopCollectionQuietMs = 75;
-    constexpr int ClassicShowDesktopCollectionMaxMs = 1500;
-    constexpr int ClassicShowDesktopOwnerPrepareMs = 2000;
-    constexpr int ClassicShowDesktopOwnerProbeMs = 1000;
-    constexpr int ShowDesktopHookScopeMs = 5000;
-    constexpr int ShowDesktopKeyFallbackScopeMs = 2000;
-    constexpr int ShowDesktopPostedWorkTailMs = 1500;
-    constexpr int ShowDesktopNativeSettleMs = 250;
-    constexpr int ShowDesktopSwitchGhostWaitMs = 1100;
-    constexpr int Win10MinRestoreMs = 280;
-    constexpr size_t SnapshotCacheMaxEntries = 3;
-    constexpr size_t SnapshotCacheMaxBytes = 64ull * 1024ull * 1024ull;
-}
-// CoreWindow and XAML island hosts may represent child/content or shell-owned
-// surfaces rather than a stable, capturable top-level app frame. Keep them out
-// of snapshot-based effects, but allow ApplicationFrameWindow: packaged app
-// frames can use the regular animation paths once their real surface is ready.
-// These classes can use DefWindowProc's close path without first asking the
-// application whether closing is allowed. Never add an app such as Notepad
-// which can veto the initial WM_CLOSE/SC_CLOSE to show an unsaved-work prompt;
-// those windows must animate only once their confirmed DestroyWindow or hide
-// operation is observed.
-static constexpr std::wstring_view kCloseMessageAnimationClasses[] = {
-    L"ConsoleWindowClass",
-    L"CASCADIA_HOSTING_WINDOW_CLASS",
-    L"TaskManagerWindow",
-    L"WinUIDesktopWin32WindowClass"
-};
-static constexpr PCWSTR kPropCloseBypass = L"glass-explorer-test.windows-animations.CloseBypass";
-static constexpr PCWSTR kPropClosed = L"glass-explorer-test.windows-animations.Closed";
-static constexpr PCWSTR kPropExcelCloseAlpha =
-    L"glass-explorer-test.windows-animations.ExcelCloseAlphaV1";
-static constexpr PCWSTR kPropTrayHideCloak =
-    L"glass-explorer-test.windows-animations.TrayHideCloakV1";
-static constexpr PCWSTR kPropTrayHideShowHandoff =
-    L"glass-explorer-test.windows-animations.TrayHideShowHandoffV1";
-static constexpr PCWSTR kPropTransientTauriShowTick =
-    L"glass-explorer-test.windows-animations.TransientTauriShowTickV1";
-static constexpr PCWSTR kPropMinRestorePair =
-    L"glass-explorer-test.windows-animations.MinRestorePairV1";
-static constexpr PCWSTR kPropMaximizedRestoreGuard =
-    L"glass-explorer-test.windows-animations.MaximizedRestoreGuardV1";
-static constexpr PCWSTR kPropSnapshotCache =
-    L"glass-explorer-test.windows-animations.SnapshotCacheV1";
-static constexpr PCWSTR kPropLaunchAnimation =
-    L"glass-explorer-test.windows-animations.LaunchAnimationV1";
-static constexpr PCWSTR kPropTaskbarDockIdentity =
-    L"glass-explorer-test.windows-animations.TaskbarDockIdentityV1";
-static constexpr PCWSTR kPropSwitchAnimationGhost =
-    L"glass-explorer-test.windows-animations.SwitchAnimationGhostV1";
-static constexpr PCWSTR kPropSwitchAnimationActive =
-    L"glass-explorer-test.windows-animations.SwitchAnimationActiveV1";
-// SWS publishes a committed destination on its own input endpoint. Keeping
-// the notification off the target HWND also works across UIPI boundaries.
-namespace SwsSelectionProtocol {
-    constexpr PCWSTR ClassName = L"WindhawkSWS_Switcher";
-    constexpr PCWSTR WindowTitle = L"WindhawkSWS_InputEndpoint";
-    constexpr PCWSTR VersionProp = L"WindhawkSWS.SelectionProtocolV1";
-    constexpr PCWSTR TokenProp = L"WindhawkSWS.SelectionTokenV1";
-    constexpr PCWSTR TargetProp = L"WindhawkSWS.SelectionTargetV1";
-    constexpr PCWSTR SourceProp = L"WindhawkSWS.SelectionSourceV1";
-    constexpr PCWSTR TickProp = L"WindhawkSWS.SelectionTickV1";
-    constexpr PCWSTR ProcessProp = L"WindhawkSWS.SelectionProcessV1";
-    constexpr PCWSTR ThreadProp = L"WindhawkSWS.SelectionThreadV1";
-    constexpr PCWSTR RestoreProp = L"WindhawkSWS.SelectionRestoreV1";
-    constexpr PCWSTR OwnerRestoreMessageProp =
-        L"windows-animations.SwsRestoreMessageV1";
-    constexpr PCWSTR OwnerRestoreActiveProp =
-        L"windows-animations.SwsRestoreActiveV1";
-    constexpr PCWSTR OwnerAnimationProp =
-        L"glass-explorer-test.windows-animations.AnimationSessionV1";
-    constexpr ULONG_PTR Version = 1;
-}
-UINT g_swsOwnerRestoreMessage = 0;
-struct SwsSelectionIdentity {
-    HWND endpoint{};
-    DWORD endpointProcessId{};
-    DWORD token{};
-    DWORD tick{};
-};
-std::mutex g_SwsSelectionMutex;
-SwsSelectionIdentity g_lastSwsSelection{};
-static constexpr PCWSTR kPropAnimationSession =
-    SwsSelectionProtocol::OwnerAnimationProp;
-static constexpr PCWSTR kPropAnimationGhost =
-    L"glass-explorer-test.windows-animations.AnimationGhostV1";
-static constexpr PCWSTR kPropClassicShowDesktopOwnerDispatch =
-    L"glass-explorer-test.windows-animations.ClassicShowDesktopOwnerDispatchV2";
-static constexpr PCWSTR kPropClassicShowDesktopRestoreZOrder =
-    L"glass-explorer-test.windows-animations.ClassicShowDesktopRestoreZOrderV1";
-static constexpr PCWSTR kPropClassicShowDesktopRestoreForeground =
-    L"glass-explorer-test.windows-animations.ClassicShowDesktopRestoreForegroundV1";
-static constexpr PCWSTR kPropClassicShowDesktopOwnerPrepared =
-    L"glass-explorer-test.windows-animations.ClassicShowDesktopOwnerPreparedV2";
-static constexpr PCWSTR kPropClassicShowDesktopOwnerProtocolLegacy =
-    L"glass-explorer-test.windows-animations.ClassicShowDesktopOwnerProtocolV1";
-static constexpr PCWSTR kPropClassicShowDesktopOwnerProtocol =
-    L"glass-explorer-test.windows-animations.ClassicShowDesktopOwnerProtocolV2";
-static constexpr PCWSTR kPropClassicShowDesktopOwnerProbePending =
-    L"glass-explorer-test.windows-animations.ClassicShowDesktopOwnerProbePendingV2";
-static constexpr ULONG_PTR kClassicShowDesktopOwnerProtocolVersion = 2;
-static constexpr LPARAM kClassicShowDesktopOwnerProbe = 0x57415052;
-UINT g_classicShowDesktopOwnerDispatchMessage = 0;
-// The HWND properties bridge taskbar-side Explorer hooks and the target app's
-// hooks. The pair token's low nibble stores style+1; the remaining bits are a
-// nonce so an old worker can't clear a newer pair.
-std::atomic<ULONG_PTR> g_NextMinRestorePairToken{0};
-std::atomic<ULONG_PTR> g_NextSnapshotCacheToken{0};
-std::atomic<ULONG_PTR> g_NextTaskbarDockIdentityToken{0};
-std::atomic<ULONG_PTR> g_NextAnimationSessionToken{0};
-std::atomic<ULONG_PTR> g_NextTrayHideCloakToken{0};
-struct TaskbarDockWindowIdentity {
-    DWORD processId = 0;
-    DWORD threadId = 0;
-    HMONITOR monitor = nullptr;
-    ULONG_PTR windowToken = 0;
-};
-enum class TaskbarEdge : uint32_t {
-    Bottom = 0,
-    Top = 1,
-    Left = 2,
-    Right = 3,
-};
-struct TaskbarDockCacheValue {
-    POINT position{};
-    TaskbarEdge edge{TaskbarEdge::Bottom};
-    TaskbarDockWindowIdentity identity;
-    DWORD observedTick = 0;
-};
-struct ProcessNameCacheValue {
-    DWORD processId = 0;
-    DWORD threadId = 0;
-    ULONG_PTR windowToken = 0;
-    std::wstring name;
-};
-std::unordered_map<HWND, SnapCache> g_WndSnapshots;
-size_t g_WndSnapshotBytes = 0;
-uint64_t g_NextSnapshotCacheSerial = 0;
-std::unordered_map<HWND, TaskbarDockCacheValue> g_TaskbarDockPositions;
-// Last successfully observed button position for the same HWND. Layout
-// invalidation keeps this only as a timeout fallback; it is never trusted as a
-// current hot value.
-std::unordered_map<HWND, TaskbarDockCacheValue>
-    g_TaskbarDockFallbackPositions;
-std::unordered_map<std::wstring, POINT> g_ProcessDockPositions;
-std::unordered_map<HWND, uint64_t> g_TaskbarDockLookupGenerations;
-std::unordered_map<HWND, TaskbarDockWindowIdentity>
-    g_TaskbarDockLookupIdentities;
-std::unordered_map<HWND, DWORD> g_TaskbarDockLookupStartedTicks;
-std::unordered_map<HWND, DWORD> g_TaskbarDockNegativeUntilTicks;
-std::unordered_map<HWND, DWORD> g_TaskbarDockPositiveUntilTicks;
-uint64_t g_NextTaskbarDockLookupGeneration = 0;
-uint64_t g_TaskbarWindowSetSignature = 0;
-bool g_TaskbarWindowSetSignatureInitialized = false;
-LONG g_seenTaskbarLayoutEpoch = 0;
-DWORD g_seenTaskbarExplorerPid = 0;
-std::unordered_map<HWND, ProcessNameCacheValue> g_ProcessNameCache;
-std::unordered_set<HWND> g_LaunchSeen;
-std::unordered_set<HWND> g_AnimActive;
-std::unordered_map<HWND, bool> g_AnimWantRising;
-std::unordered_map<HWND, HWND> g_AnimRestoreRequestForeground;
-std::unordered_map<HWND, uint64_t> g_AsyncRestoreReservations;
-uint64_t g_NextAsyncRestoreReservation = 0;
-std::mutex g_StateMutex;
-std::mutex g_TrayHideCloakMutex;
-std::atomic<HWINEVENTHOOK> g_hForegroundHook{NULL};
-std::atomic<HWINEVENTHOOK> g_hExplorerFgHook{NULL};
-HANDLE g_hAltTabSessionThread = NULL;
-HANDLE g_hExplorerFgThread = NULL;
-HANDLE g_hWinEventThread = NULL;
-std::mutex g_AltTabSessionMutex;
-std::mutex g_ExplorerFgThreadMutex;
-std::atomic<bool> g_winEventThreadStarted{false};
-std::atomic<bool> g_explorerAltTabTrackerEnabled{false};
-std::atomic<bool> g_altTabSessionPollRunning{false};
-std::atomic<HWND> g_lastAppForeground{nullptr};
-DWORD WINAPI WinEventHookThread(LPVOID lpParam);
-DWORD WINAPI AltTabSessionPollThread(LPVOID lpParam);
-static void EnsureExplorerForegroundThreadStarted();
-struct alignas(8) SharedAnimState {
-    volatile LONG magic;
-    volatile LONG sessionEpoch;
-    volatile LONG heartbeatTick;
-    volatile LONG lastAltTabTick;
-    volatile LONG altTabSourceWindow;
-    volatile LONG altTabStartTick;
-    volatile LONG altTabGeneration;
-    volatile LONG taskbarLayoutEpoch;
-    volatile LONG taskbarObserverPid;
-    // The shell publishes a short native Show Desktop scope so target-process
-    // hooks don't replace gesture/Win+D transitions with custom animations.
-    volatile LONG nativeShowDesktopUntilTick;
-};
-static_assert(sizeof(SharedAnimState) == sizeof(LONG) * 10);
-// Keep incompatible shared-memory layouts isolated from older injected
-// processes which may still be unloading.
-static constexpr PCWSTR kSharedStateName = L"Local\\Windhawk_GlassExplorerTest_Anim_State_124";
-static constexpr LONG kSharedStateMagic = 0x5741533C;
-static constexpr LONG kSharedHeartbeatStaleMs = 2500;
-HANDLE g_hMapFile = NULL;
-SharedAnimState* g_pSharedState = nullptr;
-bool g_sharedStateWritable = false;
-// Shell ownership can be established after injection. Serialize every shared
-// view access so promotion can't unmap a view while a hook reads it.
-std::mutex g_SharedStateMutex;
-std::atomic<LONG> g_consumedGeneration{0};
-std::atomic<LONG> g_seenSessionEpoch{0};
-std::atomic<int> g_durationMs{360};
-std::atomic<int> g_closeDurationMs{630};
-std::atomic<int> g_closeEffectStyle{1};
-std::atomic<int> g_minRestoreEffectStyle{0};
-std::atomic<bool> g_closeShuffleEffect{false};
-std::atomic<bool> g_minRestoreShuffleEffect{false};
-std::atomic<int> g_shatterBlockSize{5};
-std::atomic<bool> g_minimizeAnimation{true};
-std::atomic<bool> g_restoreAnimation{true};
-std::atomic<bool> g_closeAnimation{true};
-std::atomic<bool> g_hideAsClose{false};
-std::atomic<bool> g_launchAnimation{false};
-std::atomic<bool> g_switchAnimation{true};
-std::atomic<int> g_switchDurationMs{200};
-std::atomic<bool> g_unhideEnabled{false};
-std::atomic<int> g_unhideDurationMs{450};
-std::atomic<bool> g_unloading{false};
-std::atomic<bool> g_nativeShowDesktopAnimations{false};
-std::atomic<bool> g_gpuAcceleration{true};
-std::atomic<bool> g_closeGpuAcceleration{true};
-std::atomic<bool> g_performanceTelemetry{false};
-std::atomic<DWORD> g_localNativeShowDesktopUntilTick{0};
-std::atomic<DWORD> g_localShowDesktopOperationUntilTick{0};
-std::atomic<LONG> g_animationGhostCount{0};
-// Registered before thread creation and held through complete worker cleanup.
-// The final Excel close drains earlier workbook animations before native exit.
-std::atomic<LONG> g_closeAnimationWorkerCount{0};
-bool g_classicShowDesktopCaptureClaimed = false;
-std::mutex g_WorkerThreadsMutex;
-std::vector<HANDLE> g_WorkerThreads;
-template <typename T> static T Clamp(T value, T min, T max) {
-    return value < min ? min : (value > max ? max : value);
-}
-
-static bool IsDiagnosticLoggingEnabled() {
-    return g_performanceTelemetry.load(std::memory_order_relaxed);
-}
-
-template <size_t EffectCount>
-struct EffectShuffleBag {
-    static_assert(EffectCount > 1);
-    std::array<int, EffectCount> effects{};
-    size_t cursor = EffectCount;
-    int lastEffect = -1;
-    unsigned randomState = 0;
-};
-
-// The visible shuffle order belongs to the desktop session, not to whichever
-// application happens to run an animation. Keep a small process-local bag only
-// as a compatibility fallback for targets which can't open the shared mapping.
-// Fixed-width fields keep the mapping layout identical in 32-bit and 64-bit
-// injected processes.
-struct SharedEffectShuffleState {
-    volatile LONG initializationState;
-    volatile LONG magic;
-    volatile LONG minRestoreNextOrdinal;
-    volatile LONG closeNextOrdinal;
-    volatile LONG minRestoreSeed;
-    volatile LONG closeSeed;
-};
-static_assert(sizeof(SharedEffectShuffleState) == sizeof(LONG) * 6);
-
-static constexpr PCWSTR kSharedEffectShuffleStateName =
-    L"Local\\Windhawk_GlassExplorerTest_Anim_Shuffle_131_1";
-static constexpr LONG kSharedEffectShuffleStateMagic = 0x57415351;
-HANDLE g_hSharedEffectShuffleMap = NULL;
-SharedEffectShuffleState* g_pSharedEffectShuffleState = nullptr;
-std::mutex g_SharedEffectShuffleStateMutex;
-
-static SharedEffectShuffleState* EnsureSharedEffectShuffleState();
-
-std::mutex g_EffectShuffleMutex;
-EffectShuffleBag<6> g_CloseEffectShuffle;
-EffectShuffleBag<9> g_MinRestoreEffectShuffle;
-
-static uint32_t MixGlobalShuffleValue(uint32_t value) {
-    value ^= value >> 16;
-    value *= 0x7FEB352Du;
-    value ^= value >> 15;
-    value *= 0x846CA68Bu;
-    value ^= value >> 16;
-    return value ? value : 1u;
-}
-
-static uint32_t NextGlobalShuffleRandom(uint32_t& state) {
-    uint32_t value = state;
-    value ^= value << 13;
-    value ^= value >> 17;
-    value ^= value << 5;
-    state = value ? value : 1u;
-    return state;
-}
-
-static size_t GlobalShuffleIndexBelow(uint32_t& randomState,
-                                      size_t upperExclusive) {
-    const uint32_t bound = static_cast<uint32_t>(upperExclusive);
-    const uint32_t rejectionThreshold = (0u - bound) % bound;
-    uint32_t randomValue = 0;
-    do {
-        randomValue = NextGlobalShuffleRandom(randomState);
-    } while (randomValue < rejectionThreshold);
-    return static_cast<size_t>(randomValue % bound);
-}
-
-template <size_t EffectCount>
-static std::array<int, EffectCount> BuildGlobalEffectShuffleCycle(
-    uint32_t seed, uint32_t cycle, uint32_t seedSalt) {
-    std::array<int, EffectCount> effects{};
-    for (size_t i = 0; i < EffectCount; ++i) {
-        effects[i] = static_cast<int>(i);
-    }
-
-    uint32_t randomState = MixGlobalShuffleValue(
-        seed ^ seedSalt ^ MixGlobalShuffleValue(cycle + 0x9E3779B9u));
-    for (size_t remaining = EffectCount; remaining > 1; --remaining) {
-        const size_t swapIndex =
-            GlobalShuffleIndexBelow(randomState, remaining);
-        std::swap(effects[remaining - 1], effects[swapIndex]);
-    }
-    return effects;
-}
-
-template <size_t EffectCount>
-static int GlobalEffectAtOrdinal(uint32_t seed, uint32_t ordinal,
-                                 uint32_t seedSalt) {
-    static_assert(EffectCount > 2);
-    const uint32_t cycle = ordinal / static_cast<uint32_t>(EffectCount);
-    const size_t slot = ordinal % static_cast<uint32_t>(EffectCount);
-    auto effects = BuildGlobalEffectShuffleCycle<EffectCount>(
-        seed, cycle, seedSalt);
-
-    if (cycle > 0) {
-        // Boundary correction only swaps the first two entries, so the last
-        // entry remains the raw permutation's last entry. That lets every
-        // process derive the preceding cycle's final effect independently,
-        // without recursive history or another shared mutable bag.
-        const auto previousEffects =
-            BuildGlobalEffectShuffleCycle<EffectCount>(
-                seed, cycle - 1, seedSalt);
-        if (effects[0] == previousEffects[EffectCount - 1]) {
-            std::swap(effects[0], effects[1]);
-        }
-    }
-    return effects[slot];
-}
-
-template <size_t EffectCount>
-static int ConsumeGlobalEffectShuffle(volatile LONG* nextOrdinal,
-                                      volatile LONG* seed,
-                                      uint32_t seedSalt) {
-    const uint32_t ordinal = static_cast<uint32_t>(
-        InterlockedIncrement(nextOrdinal)) - 1u;
-    const uint32_t sharedSeed = static_cast<uint32_t>(
-        InterlockedCompareExchange(seed, 0, 0));
-    return GlobalEffectAtOrdinal<EffectCount>(sharedSeed, ordinal,
-                                               seedSalt);
-}
-
-template <size_t EffectCount>
-static int PeekGlobalEffectShuffle(volatile LONG* nextOrdinal,
-                                   volatile LONG* seed,
-                                   uint32_t seedSalt) {
-    const uint32_t ordinal = static_cast<uint32_t>(
-        InterlockedCompareExchange(nextOrdinal, 0, 0));
-    const uint32_t sharedSeed = static_cast<uint32_t>(
-        InterlockedCompareExchange(seed, 0, 0));
-    return GlobalEffectAtOrdinal<EffectCount>(sharedSeed, ordinal,
-                                               seedSalt);
-}
-
-template <size_t EffectCount>
-static unsigned NextShuffleRandomLocked(
-    EffectShuffleBag<EffectCount>& bag, unsigned seedSalt) {
-    unsigned x = bag.randomState;
-    if (!x) {
-        LARGE_INTEGER counter{};
-        QueryPerformanceCounter(&counter);
-        x = static_cast<unsigned>(counter.LowPart) ^
-            static_cast<unsigned>(GetTickCount64()) ^
-            (static_cast<unsigned>(GetCurrentProcessId()) * 0x9E3779B9u) ^
-            seedSalt;
-        if (!x) x = 0xA5A5A5A5u ^ seedSalt;
-    }
-    x ^= x << 13;
-    x ^= x >> 17;
-    x ^= x << 5;
-    if (!x) x = 1;
-    bag.randomState = x;
-    return x;
-}
-
-template <size_t EffectCount>
-static size_t ShuffleIndexBelowLocked(EffectShuffleBag<EffectCount>& bag,
-                                      size_t upperExclusive,
-                                      unsigned seedSalt) {
-    const unsigned bound = static_cast<unsigned>(upperExclusive);
-    const unsigned rejectionThreshold = (0u - bound) % bound;
-    unsigned randomValue = 0;
-    do {
-        randomValue = NextShuffleRandomLocked(bag, seedSalt);
-    } while (randomValue < rejectionThreshold);
-    return static_cast<size_t>(randomValue % bound);
-}
-
-template <size_t EffectCount>
-static void RefillEffectShuffleLocked(EffectShuffleBag<EffectCount>& bag,
-                                      unsigned seedSalt) {
-    for (size_t i = 0; i < EffectCount; ++i) {
-        bag.effects[i] = static_cast<int>(i);
-    }
-    for (size_t remaining = EffectCount; remaining > 1; --remaining) {
-        const size_t swapIndex = ShuffleIndexBelowLocked(
-            bag, remaining, seedSalt);
-        std::swap(bag.effects[remaining - 1], bag.effects[swapIndex]);
-    }
-    if (bag.lastEffect >= 0 && bag.effects[0] == bag.lastEffect) {
-        const size_t swapIndex = 1 + ShuffleIndexBelowLocked(
-            bag, EffectCount - 1, seedSalt);
-        std::swap(bag.effects[0], bag.effects[swapIndex]);
-    }
-    bag.cursor = 0;
-}
-
-template <size_t EffectCount>
-static int ConsumeEffectShuffleLocked(EffectShuffleBag<EffectCount>& bag,
-                                      unsigned seedSalt) {
-    if (bag.cursor >= EffectCount) {
-        RefillEffectShuffleLocked(bag, seedSalt);
-    }
-    const int effect = bag.effects[bag.cursor++];
-    bag.lastEffect = effect;
-    return effect;
-}
-
-template <size_t EffectCount>
-static int PeekEffectShuffleLocked(EffectShuffleBag<EffectCount>& bag,
-                                   unsigned seedSalt) {
-    if (bag.cursor >= EffectCount) {
-        RefillEffectShuffleLocked(bag, seedSalt);
-    }
-    return bag.effects[bag.cursor];
-}
-
-template <size_t EffectCount>
-static void InvalidateEffectShuffleLocked(EffectShuffleBag<EffectCount>& bag) {
-    // Preserve lastEffect so disabling and re-enabling shuffle can't create an
-    // immediate repeat at the new cycle boundary.
-    bag.cursor = EffectCount;
-}
-
-static int ResolveMinRestoreEffectStyle() {
-    if (g_minRestoreShuffleEffect.load(std::memory_order_relaxed)) {
-        if (auto* sharedState = EnsureSharedEffectShuffleState()) {
-            return ConsumeGlobalEffectShuffle<9>(
-                &sharedState->minRestoreNextOrdinal,
-                &sharedState->minRestoreSeed, 0x4D525354u);
-        }
-        std::lock_guard<std::mutex> lock(g_EffectShuffleMutex);
-        return ConsumeEffectShuffleLocked(g_MinRestoreEffectShuffle,
-                                          0x4D525354u);
-    }
-    return g_minRestoreEffectStyle.load(std::memory_order_relaxed);
-}
-static int ResolveCloseEffectStyle() {
-    if (g_closeShuffleEffect.load(std::memory_order_relaxed)) {
-        if (auto* sharedState = EnsureSharedEffectShuffleState()) {
-            return ConsumeGlobalEffectShuffle<6>(
-                &sharedState->closeNextOrdinal,
-                &sharedState->closeSeed, 0x434C4F53u);
-        }
-        std::lock_guard<std::mutex> lock(g_EffectShuffleMutex);
-        return ConsumeEffectShuffleLocked(g_CloseEffectShuffle,
-                                          0x434C4F53u);
-    }
-    return g_closeEffectStyle.load(std::memory_order_relaxed);
-}
-
-static ULONG_PTR ReadMinRestorePairToken(HWND hWnd, int* effectStyleOut);
-static int PeekMinRestoreEffectStyle(HWND hWnd) {
-    if (hWnd &&
-        g_minRestoreShuffleEffect.load(std::memory_order_relaxed)) {
-        int pairedEffectStyle = -1;
-        if (ReadMinRestorePairToken(hWnd, &pairedEffectStyle)) {
-            return pairedEffectStyle;
-        }
-    }
-    if (g_minRestoreShuffleEffect.load(std::memory_order_relaxed)) {
-        if (auto* sharedState = EnsureSharedEffectShuffleState()) {
-            return PeekGlobalEffectShuffle<9>(
-                &sharedState->minRestoreNextOrdinal,
-                &sharedState->minRestoreSeed, 0x4D525354u);
-        }
-        std::lock_guard<std::mutex> lock(g_EffectShuffleMutex);
-        return PeekEffectShuffleLocked(g_MinRestoreEffectShuffle,
-                                       0x4D525354u);
-    }
-    return g_minRestoreEffectStyle.load(std::memory_order_relaxed);
-}
-
-static int PeekCloseEffectStyle() {
-    if (g_closeShuffleEffect.load(std::memory_order_relaxed)) {
-        if (auto* sharedState = EnsureSharedEffectShuffleState()) {
-            return PeekGlobalEffectShuffle<6>(
-                &sharedState->closeNextOrdinal,
-                &sharedState->closeSeed, 0x434C4F53u);
-        }
-        std::lock_guard<std::mutex> lock(g_EffectShuffleMutex);
-        return PeekEffectShuffleLocked(g_CloseEffectShuffle,
-                                       0x434C4F53u);
-    }
-    return g_closeEffectStyle.load(std::memory_order_relaxed);
-}
-static bool StartWorkerThread(LPTHREAD_START_ROUTINE proc, void* param) {
-    std::lock_guard<std::mutex> lock(g_WorkerThreadsMutex);
-    if (g_unloading.load(std::memory_order_relaxed)) return false;
-    for (size_t i = g_WorkerThreads.size(); i-- > 0;) {
-        if (WaitForSingleObject(g_WorkerThreads[i], 0) == WAIT_OBJECT_0) {
-            CloseHandle(g_WorkerThreads[i]);
-            g_WorkerThreads.erase(g_WorkerThreads.begin() + i);
-        }
-    }
-    try {
-        g_WorkerThreads.reserve(g_WorkerThreads.size() + 1);
-    } catch (const std::exception&) {
-        return false;
-    }
-    HANDLE hThread = CreateThread(NULL, 0, proc, param, 0, NULL);
-    if (!hThread) return false;
-    g_WorkerThreads.push_back(hThread);
-    return true;
-}
-
-// Some animation entry points execute on an application's UI thread or on
-// Explorer's taskbar thread. Wait only for nonqueued sent messages here: that
-// keeps cross-thread window calls responsive without dispatching posted input
-// reentrantly in the middle of a minimize/restore transaction.
-static DWORD WaitForHandleWithSentMessagePump(HANDLE handle,
-                                              DWORD timeoutMs) {
-    if (!handle) return WAIT_FAILED;
-    const DWORD deadline = GetTickCount() + timeoutMs;
-    for (;;) {
-        const DWORD now = GetTickCount();
-        if (static_cast<LONG>(now - deadline) >= 0) return WAIT_TIMEOUT;
-        const DWORD wait = MsgWaitForMultipleObjectsEx(
-            1, &handle, deadline - now, QS_SENDMESSAGE,
-            MWMO_INPUTAVAILABLE);
-        if (wait == WAIT_OBJECT_0) return WAIT_OBJECT_0;
-        if (wait != WAIT_OBJECT_0 + 1) return wait;
-        MSG message{};
-        PeekMessageW(&message, nullptr, 0, 0,
-                     PM_NOREMOVE | PM_QS_SENDMESSAGE);
-    }
-}
-
-static void WaitWithSentMessagePump(DWORD timeoutMs) {
-    const DWORD deadline = GetTickCount() + timeoutMs;
-    for (;;) {
-        const DWORD now = GetTickCount();
-        if (static_cast<LONG>(now - deadline) >= 0) return;
-        const DWORD wait = MsgWaitForMultipleObjectsEx(
-            0, nullptr, deadline - now, QS_SENDMESSAGE,
-            MWMO_INPUTAVAILABLE);
-        if (wait != WAIT_OBJECT_0) return;
-        MSG message{};
-        PeekMessageW(&message, nullptr, 0, 0,
-                     PM_NOREMOVE | PM_QS_SENDMESSAGE);
-    }
-}
-
-static bool HasClassicShowDesktopOwnerProtocol(HWND hWnd) {
-    return reinterpret_cast<ULONG_PTR>(GetPropW(
-               hWnd, kPropClassicShowDesktopOwnerProtocol)) ==
-           kClassicShowDesktopOwnerProtocolVersion;
-}
-
-static void PublishClassicShowDesktopOwnerProtocol(HWND hWnd) {
-    if (!hWnd || !IsWindow(hWnd)) return;
-    DWORD processId = 0;
-    GetWindowThreadProcessId(hWnd, &processId);
-    if (processId != GetCurrentProcessId()) return;
-    // A property written directly from an API hook only proves that this DLL
-    // is loaded. It doesn't prove that the window procedure forwards private
-    // messages to DefWindowProc; waiting on such a window held Win+D for the
-    // full owner timeout. Publish support only after this probe comes back
-    // through DefWindowProcW_Hook on the owning UI thread.
-    if (HasClassicShowDesktopOwnerProtocol(hWnd)) return;
-    RemovePropW(hWnd, kPropClassicShowDesktopOwnerProtocolLegacy);
-    if (!g_classicShowDesktopOwnerDispatchMessage) return;
-    const DWORD now = GetTickCount();
-    const DWORD pendingDeadline = static_cast<DWORD>(
-        reinterpret_cast<ULONG_PTR>(GetPropW(
-            hWnd, kPropClassicShowDesktopOwnerProbePending)));
-    if (pendingDeadline &&
-        static_cast<LONG>(pendingDeadline - now) > 0) {
-        return;
-    }
-    if (pendingDeadline) {
-        RemovePropW(hWnd, kPropClassicShowDesktopOwnerProbePending);
-    }
-    DWORD probeDeadline =
-        now + AnimConstants::ClassicShowDesktopOwnerProbeMs;
-    if (!probeDeadline) probeDeadline = 1;
-    if (!SetPropW(hWnd, kPropClassicShowDesktopOwnerProbePending,
-                  reinterpret_cast<HANDLE>(
-                      static_cast<ULONG_PTR>(probeDeadline)))) {
-        return;
-    }
-    if (!PostMessageW(hWnd, g_classicShowDesktopOwnerDispatchMessage, 0,
-                      kClassicShowDesktopOwnerProbe)) {
-        RemovePropW(hWnd, kPropClassicShowDesktopOwnerProbePending);
-    }
-}
-
-static BOOL CALLBACK PublishClassicShowDesktopOwnerProtocolEnumProc(
-    HWND hWnd, LPARAM) {
-    PublishClassicShowDesktopOwnerProtocol(hWnd);
-    return TRUE;
-}
-
-static void JoinWorkerThreads() {
-    std::vector<HANDLE> threads;
-    {
-        std::lock_guard<std::mutex> lock(g_WorkerThreadsMutex);
-        threads.swap(g_WorkerThreads);
-    }
-    for (size_t i = 0; i < threads.size(); i += MAXIMUM_WAIT_OBJECTS) {
-        const DWORD count = (DWORD)std::min<size_t>(MAXIMUM_WAIT_OBJECTS, threads.size() - i);
-        WaitForMultipleObjects(count, threads.data() + i, TRUE, INFINITE);
-    }
-    for (HANDLE h : threads) CloseHandle(h);
-}
-static LONG HwndToShared(HWND hWnd) {
-    return (LONG)(LONG_PTR)hWnd;
-}
-static LONG NonZeroTick() {
-    const LONG tick = (LONG)GetTickCount();
-    return tick ? tick : 1;
-}
-static void FlushDwmOrYield() {
-    if (FAILED(DwmFlush())) Sleep(1);
-}
-static void PulseSharedHeartbeatLocked() {
-    if (!g_pSharedState || !g_sharedStateWritable) return;
-    InterlockedExchange(&g_pSharedState->heartbeatTick, NonZeroTick());
-}
-static void PulseSharedHeartbeat() {
-    std::lock_guard<std::mutex> lock(g_SharedStateMutex);
-    PulseSharedHeartbeatLocked();
-}
-static void ResetSharedStateLocked() {
-    if (!g_pSharedState || !g_sharedStateWritable) return;
-    InterlockedExchange(&g_pSharedState->magic, kSharedStateMagic);
-    InterlockedIncrement(&g_pSharedState->sessionEpoch);
-    if (g_pSharedState->sessionEpoch == 0) InterlockedIncrement(&g_pSharedState->sessionEpoch);
-    InterlockedExchange(&g_pSharedState->lastAltTabTick, 0);
-    InterlockedExchange(&g_pSharedState->altTabSourceWindow, 0);
-    InterlockedExchange(&g_pSharedState->altTabStartTick, 0);
-    InterlockedExchange(&g_pSharedState->altTabGeneration, 0);
-    LONG taskbarEpoch = InterlockedIncrement(&g_pSharedState->taskbarLayoutEpoch);
-    if (taskbarEpoch == 0) InterlockedIncrement(&g_pSharedState->taskbarLayoutEpoch);
-    InterlockedExchange(&g_pSharedState->taskbarObserverPid, 0);
-    InterlockedExchange(&g_pSharedState->nativeShowDesktopUntilTick, 0);
-    PulseSharedHeartbeatLocked();
-}
-static void BeginAltTabSession(HWND source) {
-    std::lock_guard<std::mutex> lock(g_SharedStateMutex);
-    if (!g_pSharedState || !g_sharedStateWritable) return;
-    InterlockedExchange(&g_pSharedState->altTabSourceWindow, HwndToShared(source));
-    InterlockedExchange(&g_pSharedState->altTabStartTick, (LONG)GetTickCount());
-    LONG generation = InterlockedIncrement(&g_pSharedState->altTabGeneration);
-    if (generation == 0) InterlockedIncrement(&g_pSharedState->altTabGeneration);
-    InterlockedExchange(&g_pSharedState->lastAltTabTick, NonZeroTick());
-    PulseSharedHeartbeatLocked();
-}
-static void TouchAltTabSession() {
-    std::lock_guard<std::mutex> lock(g_SharedStateMutex);
-    if (g_pSharedState && g_sharedStateWritable) {
-        InterlockedExchange(&g_pSharedState->lastAltTabTick, NonZeroTick());
-        PulseSharedHeartbeatLocked();
-    }
-}
-static bool EnsureSharedStateMapped();
-static bool ConsumeAltTabIntent(HWND target, DWORD eventTime) {
-    if (!EnsureSharedStateMapped()) return false;
-    LONG epoch = 0;
-    LONG heartbeat = 0;
-    LONG stamp = 0;
-    LONG generation = 0;
-    DWORD startTick = 0;
-    LONG source = 0;
-    {
-        std::lock_guard<std::mutex> lock(g_SharedStateMutex);
-        if (!g_pSharedState || g_pSharedState->magic != kSharedStateMagic) return false;
-        epoch = g_pSharedState->sessionEpoch;
-        heartbeat = g_pSharedState->heartbeatTick;
-        stamp = g_pSharedState->lastAltTabTick;
-        generation = g_pSharedState->altTabGeneration;
-        startTick = static_cast<DWORD>(g_pSharedState->altTabStartTick);
-        source = g_pSharedState->altTabSourceWindow;
-        if (generation != g_pSharedState->altTabGeneration) return false;
-    }
-    LONG seen = g_seenSessionEpoch.load(std::memory_order_relaxed);
-    if (epoch != seen) {
-        g_seenSessionEpoch.store(epoch, std::memory_order_relaxed);
-        g_consumedGeneration.store(0, std::memory_order_relaxed);
-    }
-    if (!heartbeat ||
-        (LONG)(GetTickCount() - (DWORD)heartbeat) > kSharedHeartbeatStaleMs) {
-        return false;
-    }
-    if (!stamp || (LONG)(GetTickCount() - (DWORD)stamp) > AnimConstants::AltTabSessionMs) return false;
-    if (!generation) return false;
-    // Returning to the source is cancellation, not a destination. Don't let
-    // that callback consume the generation before the real destination does.
-    if (!source || source == HwndToShared(target)) return false;
-    if (eventTime && startTick &&
-        (LONG)(eventTime - startTick) < -(40 + AnimConstants::AltTabPollMs)) {
-        return false;
-    }
-    LONG consumed = g_consumedGeneration.load(std::memory_order_relaxed);
-    if (consumed == generation ||
-        !g_consumedGeneration.compare_exchange_strong(consumed, generation, std::memory_order_relaxed)) {
-        return false;
-    }
-    return true;
-}
-static bool IsAltTabSourceCandidate(HWND hWnd) {
-    if (!hWnd || !IsWindow(hWnd)) return false;
-    if (GetWindow(hWnd, GW_OWNER)) return false;
-    const LONG_PTR exStyle = GetWindowLongPtrW(hWnd, GWL_EXSTYLE);
-    if (exStyle & WS_EX_TOOLWINDOW) return false;
-    WCHAR cls[256];
-    if (!GetClassNameW(hWnd, cls, ARRAYSIZE(cls))) return false;
-    return true;
-}
-static bool IsExplorerProcess() {
-    static const bool isExplorer = [] {
-        WCHAR path[MAX_PATH]{};
-        if (!GetModuleFileNameW(NULL, path, ARRAYSIZE(path))) return false;
-        const WCHAR* name = wcsrchr(path, L'\\');
-        return _wcsicmp(name ? name + 1 : path, L"explorer.exe") == 0;
-    }();
-    return isExplorer;
-}
-static bool RequiresCpuAnimationRendererProcess() {
-    // The renderer is initialized inside every process into which this mod is
-    // injected. UniKey's small 32-bit UI process becomes unresponsive while a
-    // D3D device and the effect shaders are initialized there, and may abort
-    // its dialog show sequence. Keep all animations enabled, but never start
-    // the GPU service in that process.
-    static const bool requiresCpuRenderer = [] {
-        WCHAR path[MAX_PATH]{};
-        if (!GetModuleFileNameW(nullptr, path, ARRAYSIZE(path))) return false;
-        const WCHAR* name = wcsrchr(path, L'\\');
-        return _wcsicmp(name ? name + 1 : path, L"UniKeyNT.exe") == 0;
-    }();
-    return requiresCpuRenderer;
-}
-static DWORD GetShellExplorerProcessId() {
-    DWORD shellPid = 0;
-    if (HWND hShell = GetShellWindow()) {
-        GetWindowThreadProcessId(hShell, &shellPid);
-    }
-    if (!shellPid) {
-        if (HWND hTray = FindWindowW(L"Shell_TrayWnd", nullptr)) {
-            GetWindowThreadProcessId(hTray, &shellPid);
-        }
-    }
-    return shellPid;
-}
-static bool IsShellExplorerProcess() {
-    return IsExplorerProcess() &&
-           GetShellExplorerProcessId() == GetCurrentProcessId();
-}
-static bool IsNonInteractiveSessionProcess() {
-    DWORD sessionId = 0;
-    return ProcessIdToSessionId(GetCurrentProcessId(), &sessionId) &&
-           sessionId == 0;
-}
-static bool IsNonWindowHostingHelperProcess() {
-    // Chromium and Electron reuse the application's executable for their
-    // renderer, GPU, utility, crash-handler, and Node helper processes. Those
-    // children don't own the application's top-level window, so installing
-    // this mod's hooks in each of them only adds initialization work. The
-    // browser/main process deliberately has no --type role and stays enabled.
-    int argc = 0;
-    LPWSTR* argv = CommandLineToArgvW(GetCommandLineW(), &argc);
-    if (!argv) return false;
-
-    bool helperProcess = false;
-    for (int i = 1; i < argc && !helperProcess; ++i) {
-        const wchar_t* argument = argv[i];
-        const wchar_t* role = nullptr;
-        if (_wcsnicmp(argument, L"--type=", 7) == 0) {
-            role = argument + 7;
-        } else if (_wcsicmp(argument, L"--type") == 0 && i + 1 < argc) {
-            role = argv[++i];
-        }
-
-        if (role) {
-            constexpr const wchar_t* kNonWindowHostingRoles[] = {
-                L"renderer",        L"gpu-process", L"utility",
-                L"crashpad-handler", L"plugin",      L"ppapi",
-                L"zygote",          L"nacl-loader", L"nacl-broker",
-            };
-            for (const wchar_t* helperRole : kNonWindowHostingRoles) {
-                if (_wcsicmp(role, helperRole) == 0) {
-                    helperProcess = true;
-                    break;
-                }
-            }
-        }
-
-        if (_wcsicmp(argument, L"--node-ipc") == 0 ||
-            _wcsicmp(argument, L"--headless") == 0 ||
-            _wcsicmp(argument, L"--headless=new") == 0 ||
-            _wcsicmp(argument, L"--embedded-browser-webview=1") == 0 ||
-            _wcsicmp(argument, L"--embedded-browser-edgeview=1") == 0) {
-            helperProcess = true;
-        }
-    }
-
-    LocalFree(argv);
-    return helperProcess;
-}
-
-// UI Automation and DWM extended-frame bounds use physical screen pixels,
-// while GetWindowRect is DPI-virtualized for the process running this hook.
-// Use an HWND owned by this process as the transform reference. Taskbar-side
-// calls animate foreign HWNDs from per-monitor-aware Explorer, whose animation
-// space is already physical, so those coordinates deliberately stay unchanged.
-static HWND GetAnimationCoordinateWindow(HWND hTarget) {
-    DWORD targetPid = 0;
-    if (hTarget) GetWindowThreadProcessId(hTarget, &targetPid);
-    if (targetPid == GetCurrentProcessId()) return hTarget;
-    // Foreign animations are normally created by Explorer, whose coordinate
-    // space is already physical. Don't transform with the foreign app's DPI.
-    return nullptr;
-}
-
-static bool PhysicalPointToAnimationSpace(HWND hTarget, POINT* point) {
-    if (!point) return false;
-    if (HWND hTransform = GetAnimationCoordinateWindow(hTarget)) {
-        return PhysicalToLogicalPointForPerMonitorDPI(hTransform, point) != FALSE;
-    }
-    return true;
-}
-
-static bool PhysicalRectToAnimationSpace(HWND hTarget, RECT* rect) {
-    if (!rect) return false;
-    POINT topLeft{rect->left, rect->top};
-    POINT bottomRight{rect->right, rect->bottom};
-    if (!PhysicalPointToAnimationSpace(hTarget, &topLeft) ||
-        !PhysicalPointToAnimationSpace(hTarget, &bottomRight)) {
-        return false;
-    }
-    rect->left = topLeft.x;
-    rect->top = topLeft.y;
-    rect->right = bottomRight.x;
-    rect->bottom = bottomRight.y;
-    return true;
-}
-
-static bool GetAnimationWindowRects(HWND hWnd, RECT* windowRectOut,
-                                    RECT* animationRectOut) {
-    if (!hWnd || !windowRectOut || !animationRectOut ||
-        !GetWindowRect(hWnd, windowRectOut)) {
-        return false;
-    }
-
-    *animationRectOut = *windowRectOut;
-    RECT extendedFrame{};
-    if (SUCCEEDED(DwmGetWindowAttribute(
-            hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, &extendedFrame,
-            sizeof(extendedFrame))) &&
-        PhysicalRectToAnimationSpace(hWnd, &extendedFrame)) {
-        *animationRectOut = extendedFrame;
-    }
-    return true;
-}
-
-struct TaskbarCoordinateTransform {
-    RECT physical{};
-    RECT animation{};
-    bool valid{};
-};
-
-static bool GetWindowRectInDpiContext(HWND hWnd,
-                                      DPI_AWARENESS_CONTEXT context,
-                                      RECT* rect) {
-    if (!hWnd || !context || !rect) return false;
-    DPI_AWARENESS_CONTEXT previous = SetThreadDpiAwarenessContext(context);
-    if (!previous) return false;
-    const BOOL result = GetWindowRect(hWnd, rect);
-    SetThreadDpiAwarenessContext(previous);
-    return result != FALSE;
-}
-
-static TaskbarCoordinateTransform BuildTaskbarCoordinateTransform(
-    HWND hTarget, HWND hTray) {
-    TaskbarCoordinateTransform transform;
-    if (!GetWindowRectInDpiContext(
-            hTray, DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2,
-            &transform.physical)) {
-        return transform;
-    }
-    if (HWND hCoordinate = GetAnimationCoordinateWindow(hTarget)) {
-        DPI_AWARENESS_CONTEXT targetContext =
-            GetWindowDpiAwarenessContext(hCoordinate);
-        if (!GetWindowRectInDpiContext(hTray, targetContext,
-                                       &transform.animation)) {
-            return transform;
-        }
-    } else {
-        // Foreign taskbar animations are prepared by per-monitor-aware
-        // Explorer and therefore use physical screen coordinates.
-        transform.animation = transform.physical;
-    }
-    transform.valid = transform.physical.right != transform.physical.left &&
-                      transform.physical.bottom != transform.physical.top;
-    return transform;
-}
-
-static bool MapPhysicalTaskbarRectToAnimationSpace(
-    const TaskbarCoordinateTransform& transform, RECT* rect) {
-    if (!transform.valid || !rect) return false;
-    const int physicalWidth =
-        transform.physical.right - transform.physical.left;
-    const int physicalHeight =
-        transform.physical.bottom - transform.physical.top;
-    const int animationWidth =
-        transform.animation.right - transform.animation.left;
-    const int animationHeight =
-        transform.animation.bottom - transform.animation.top;
-    auto mapX = [&](LONG value) {
-        return transform.animation.left +
-               MulDiv(value - transform.physical.left, animationWidth,
-                      physicalWidth);
-    };
-    auto mapY = [&](LONG value) {
-        return transform.animation.top +
-               MulDiv(value - transform.physical.top, animationHeight,
-                      physicalHeight);
-    };
-    rect->left = mapX(rect->left);
-    rect->right = mapX(rect->right);
-    rect->top = mapY(rect->top);
-    rect->bottom = mapY(rect->bottom);
-    return true;
-}
-static std::wstring GetClassNameStr(HWND hWnd) {
-    WCHAR name[256];
-    return GetClassNameW(hWnd, name, ARRAYSIZE(name)) ? std::wstring(name) : L"";
-}
-template <size_t N> static bool ContainsClass(const std::wstring& cls, const std::wstring_view (&items)[N]) {
-    for (auto item : items) if (cls.find(item) != std::wstring::npos) return true;
-    return false;
-}
-static HBITMAP CreateDib32(HDC dc, int width, int height, void** bits) {
-    BITMAPINFO bmi{};
-    bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-    bmi.bmiHeader.biWidth = width;
-    bmi.bmiHeader.biHeight = -height;
-    bmi.bmiHeader.biPlanes = 1;
-    bmi.bmiHeader.biBitCount = 32;
-    bmi.bmiHeader.biCompression = BI_RGB;
-    return CreateDIBSection(dc, &bmi, DIB_RGB_COLORS, bits, nullptr, 0);
-}
-static bool IsAnimating(HWND hWnd) {
-    std::lock_guard<std::mutex> lock(g_StateMutex);
-    return g_AnimActive.count(hWnd) != 0;
-}
-static ULONG_PTR GetOrCreateTaskbarDockIdentityToken(HWND hWnd) {
-    if (!hWnd || !IsWindow(hWnd)) return 0;
-    ULONG_PTR token = reinterpret_cast<ULONG_PTR>(
-        GetPropW(hWnd, kPropTaskbarDockIdentity));
-    if (token) return token;
-    ULONG_PTR serial = g_NextTaskbarDockIdentityToken.fetch_add(
-                           1, std::memory_order_relaxed) +
-                       1;
-    token = serial ^
-            (static_cast<ULONG_PTR>(GetCurrentProcessId()) *
-             static_cast<ULONG_PTR>(0x9E3779B1u)) ^
-            static_cast<ULONG_PTR>(GetTickCount());
-    if (!token) token = 1;
-    if (!SetPropW(hWnd, kPropTaskbarDockIdentity,
-                  reinterpret_cast<HANDLE>(token))) {
-        return 0;
-    }
-    // Another injected process can race to establish the shared lifetime
-    // token. Use whichever value is actually attached to the HWND.
-    return reinterpret_cast<ULONG_PTR>(
-        GetPropW(hWnd, kPropTaskbarDockIdentity));
-}
-static TaskbarDockWindowIdentity CaptureTaskbarDockWindowIdentity(
-    HWND hWnd) {
-    TaskbarDockWindowIdentity identity;
-    identity.threadId = GetWindowThreadProcessId(hWnd, &identity.processId);
-    if (!identity.threadId || !identity.processId) return {};
-    identity.monitor = MonitorFromWindow(hWnd, MONITOR_DEFAULTTONEAREST);
-    identity.windowToken = reinterpret_cast<ULONG_PTR>(
-        GetPropW(hWnd, kPropTaskbarDockIdentity));
-    if (!identity.windowToken) {
-        identity.windowToken = GetOrCreateTaskbarDockIdentityToken(hWnd);
-    }
-    return identity;
-}
-static bool TaskbarDockIdentityMatches(
-    const TaskbarDockWindowIdentity& lhs,
-    const TaskbarDockWindowIdentity& rhs) {
-    return lhs.processId && lhs.processId == rhs.processId &&
-           lhs.threadId == rhs.threadId && lhs.monitor == rhs.monitor &&
-           lhs.windowToken == rhs.windowToken;
-}
-static bool IsTaskbarDockCacheValueUsable(
-    const TaskbarDockCacheValue& value,
-    const TaskbarDockWindowIdentity& currentIdentity, HMONITOR monitor,
-    TaskbarEdge edge, DWORD now) {
-    if (value.edge != edge || value.identity.monitor != monitor ||
-        !TaskbarDockIdentityMatches(value.identity, currentIdentity)) {
-        return false;
-    }
-    // A property-backed identity lasts for the HWND lifetime. A tokenless
-    // identity can be reused by another HWND on the same UI thread, so it is
-    // deliberately useful only for a short burst of repeated operations.
-    return value.identity.windowToken ||
-           static_cast<DWORD>(now - value.observedTick) <
-               static_cast<DWORD>(AnimConstants::UiaWeakIdentityCacheMs);
-}
-static bool IsTaskbarDockWindowIdentityCurrent(
-    HWND hWnd, const TaskbarDockWindowIdentity& expected) {
-    if (!hWnd || !IsWindow(hWnd) || !expected.processId ||
-        !expected.threadId || !expected.monitor) {
-        return false;
-    }
-    DWORD processId = 0;
-    const DWORD threadId = GetWindowThreadProcessId(hWnd, &processId);
-    if (processId != expected.processId || threadId != expected.threadId ||
-        MonitorFromWindow(hWnd, MONITOR_DEFAULTTONEAREST) !=
-            expected.monitor) {
-        return false;
-    }
-    return reinterpret_cast<ULONG_PTR>(
-               GetPropW(hWnd, kPropTaskbarDockIdentity)) ==
-           expected.windowToken;
-}
-static bool GetAnimWantRising(HWND hWnd, bool* wantRisingOut) {
-    std::lock_guard<std::mutex> lock(g_StateMutex);
-    auto it = g_AnimWantRising.find(hWnd);
-    if (it == g_AnimWantRising.end()) return false;
-    if (wantRisingOut) *wantRisingOut = it->second;
-    return true;
-}
-static bool IsClassicShowDesktopOperation();
-static bool PreserveClassicShowDesktopRestoreZOrder(HWND hWnd) {
-    if (!hWnd || !IsWindow(hWnd)) return false;
-    const ULONG_PTR value = reinterpret_cast<ULONG_PTR>(
-        GetPropW(hWnd, kPropClassicShowDesktopRestoreZOrder));
-    if (!value) return false;
-    const DWORD deadline = static_cast<DWORD>(value);
-    if (static_cast<LONG>(deadline - GetTickCount()) > 0) return true;
-    RemovePropW(hWnd, kPropClassicShowDesktopRestoreZOrder);
-    return false;
-}
-static void RestoreZOrderAfterGhost(HWND hWnd, LONG_PTR originalExStyle) {
-    if (!hWnd || !IsWindow(hWnd) ||
-        PreserveClassicShowDesktopRestoreZOrder(hWnd)) return;
-    SetWindowPos_Original(hWnd,
-                          (originalExStyle & WS_EX_TOPMOST) ? HWND_TOPMOST : HWND_NOTOPMOST, 0, 0, 0,
-                          0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
-}
-static void RestoreZOrderAfterGhostAsync(HWND hWnd, LONG_PTR originalExStyle) {
-    if (!hWnd || !IsWindow(hWnd) ||
-        PreserveClassicShowDesktopRestoreZOrder(hWnd)) return;
-    SetWindowPos_Original(
-        hWnd, (originalExStyle & WS_EX_TOPMOST) ? HWND_TOPMOST : HWND_NOTOPMOST,
-        0, 0, 0, 0,
-        SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE | SWP_ASYNCWINDOWPOS);
-}
-static BOOL WindowRestoresMaximized(HWND hWnd) {
-    if (!hWnd || !IsWindow(hWnd)) return FALSE;
-    if (IsZoomed(hWnd)) return TRUE;
-    WINDOWPLACEMENT placement{};
-    placement.length = sizeof(placement);
-    return GetWindowPlacement(hWnd, &placement) &&
-           ((placement.flags & WPF_RESTORETOMAXIMIZED) != 0 ||
-            placement.showCmd == SW_SHOWMAXIMIZED);
-}
-static int StableRestoreShowCmd(HWND hWnd, BOOL restoreMaximized) {
-    if (restoreMaximized) return SW_SHOWMAXIMIZED;
-    using IsWindowArranged_t = BOOL(WINAPI*)(HWND);
-    static const auto isWindowArranged = []() -> IsWindowArranged_t {
-        HMODULE user32 = GetModuleHandleW(L"user32.dll");
-        return user32 ? reinterpret_cast<IsWindowArranged_t>(
-                            GetProcAddress(user32, "IsWindowArranged"))
-                      : nullptr;
-    }();
-    // SW_SHOWNOACTIVATE is similar to SW_SHOWNORMAL and can turn an already
-    // restored snapped window back into its unsnapped normal rectangle.
-    // SW_SHOWNA still queues the latest show intent without changing its layout.
-    return isWindowArranged && isWindowArranged(hWnd)
-               ? SW_SHOWNA
-               : SW_SHOWNOACTIVATE;
-}
-static bool HasReachedNativeShowState(HWND hWnd, bool rising,
-                                      BOOL restoreMaximized) {
-    if (!IsWindow(hWnd)) return false;
-    if (!rising) return IsIconic(hWnd) != FALSE;
-    return !IsIconic(hWnd) && (!restoreMaximized || IsZoomed(hWnd));
-}
-static void RestoreWindowUnderGhost(HWND hWnd, LONG_PTR originalExStyle,
-                                    BOOL restoreMaximized) {
-    if (!hWnd || !IsWindow(hWnd)) return;
-    if (restoreMaximized) {
-        // SW_SHOWNOACTIVATE consumes WPF_RESTORETOMAXIMIZED into the normal
-        // rectangle. Use an idempotent maximized command for this state.
-        if (IsIconic(hWnd) || !IsZoomed(hWnd)) {
-            ShowWindow_Original(hWnd, SW_SHOWMAXIMIZED);
-        }
-        RestoreZOrderAfterGhost(hWnd, originalExStyle);
-        return;
-    }
-    if (!IsIconic(hWnd)) {
-        return;
-    }
-    WINDOWPLACEMENT wp{};
-    wp.length = sizeof(wp);
-    if (GetWindowPlacement(hWnd, &wp)) {
-        wp.showCmd = SW_SHOWNOACTIVATE;
-        SetWindowPlacement_Original(hWnd, &wp);
-    }
-    if (IsIconic(hWnd)) ShowWindow_Original(hWnd, SW_SHOWNOACTIVATE);
-    if (IsIconic(hWnd)) ShowWindow_Original(hWnd, SW_RESTORE);
-    RestoreZOrderAfterGhost(hWnd, originalExStyle);
-}
-static void RestoreWindowUnderGhostAsync(HWND hWnd, LONG_PTR originalExStyle,
-                                         BOOL restoreMaximized) {
-    if (!hWnd || !IsWindow(hWnd)) return;
-    // Always enqueue the final state. During rapid reversals an earlier async
-    // minimize can still be ahead of the current thread in the queue even when the sampled state currently
-    // looks restored; the idempotent command makes the newest intent win.
-    ShowWindowAsync_Original(hWnd,
-                             StableRestoreShowCmd(hWnd, restoreMaximized));
-    RestoreZOrderAfterGhostAsync(hWnd, originalExStyle);
-}
-
-static ULONG_PTR CreateMinRestorePairToken(int effectStyle) {
-    ULONG_PTR serial =
-        g_NextMinRestorePairToken.fetch_add(1, std::memory_order_relaxed) + 1;
-    ULONG_PTR nonce = serial ^
-                       (static_cast<ULONG_PTR>(GetCurrentProcessId()) *
-                        static_cast<ULONG_PTR>(0x9E3779B1u)) ^
-                       static_cast<ULONG_PTR>(GetTickCount());
-    return (nonce << 4) | static_cast<ULONG_PTR>(effectStyle + 1);
-}
-static ULONG_PTR ReadMinRestorePairToken(HWND hWnd, int* effectStyleOut) {
-    const ULONG_PTR token = reinterpret_cast<ULONG_PTR>(
-        GetPropW(hWnd, kPropMinRestorePair));
-    const int encodedStyle = static_cast<int>(token & 0xF);
-    if (!token || encodedStyle < 1 || encodedStyle > 8) return 0;
-    if (effectStyleOut) *effectStyleOut = encodedStyle - 1;
-    return token;
-}
-static bool PublishMinRestorePairToken(HWND hWnd, ULONG_PTR token) {
-    return hWnd && token &&
-           SetPropW(hWnd, kPropMinRestorePair,
-                    reinterpret_cast<HANDLE>(token));
-}
-static void ClearMinRestorePairIfCurrent(HWND hWnd, ULONG_PTR token) {
-    if (!hWnd || !token) return;
-    if (reinterpret_cast<ULONG_PTR>(GetPropW(hWnd, kPropMinRestorePair)) == token) {
-        RemovePropW(hWnd, kPropMinRestorePair);
-    }
-}
-static void ClearMinRestorePair(HWND hWnd) {
-    if (hWnd) RemovePropW(hWnd, kPropMinRestorePair);
-}
-
-static ULONG_PTR PublishAnimationSession(HWND hWnd,
-                                         bool* publicationFailed = nullptr) {
-    if (publicationFailed) *publicationFailed = false;
-    if (!hWnd || !IsWindow(hWnd)) return 0;
-
-    const ULONG_PTR serial =
-        g_NextAnimationSessionToken.fetch_add(1, std::memory_order_relaxed) + 1;
-    ULONG_PTR token =
-        serial ^ reinterpret_cast<ULONG_PTR>(hWnd) ^
-        (static_cast<ULONG_PTR>(GetCurrentProcessId()) *
-         static_cast<ULONG_PTR>(0x85EBCA6Bu)) ^
-        static_cast<ULONG_PTR>(GetTickCount());
-    if (!token) token = 1;
-    if (!SetPropW(hWnd, kPropAnimationSession,
-                  reinterpret_cast<HANDLE>(token))) {
-        if (publicationFailed) *publicationFailed = true;
-        return 0;
-    }
-    return token;
-}
-
-static void ClearAnimationSessionIfCurrent(HWND hWnd, ULONG_PTR token) {
-    if (!hWnd || !token) return;
-    if (reinterpret_cast<ULONG_PTR>(GetPropW(hWnd, kPropAnimationSession)) ==
-        token) {
-        RemovePropW(hWnd, kPropAnimationSession);
-    }
-}
-
-static void ArmMaximizedRestoreGuard(HWND hWnd, DWORD durationMs) {
-    if (!hWnd || !IsWindow(hWnd)) return;
-    DWORD expires = GetTickCount() + std::max<DWORD>(durationMs, 1);
-    if (!expires) expires = 1;
-    SetPropW(hWnd, kPropMaximizedRestoreGuard,
-             reinterpret_cast<HANDLE>(static_cast<ULONG_PTR>(expires)));
-}
-static bool IsMaximizedRestoreGuardActive(HWND hWnd) {
-    const ULONG_PTR value = reinterpret_cast<ULONG_PTR>(
-        GetPropW(hWnd, kPropMaximizedRestoreGuard));
-    if (!value) return false;
-    const DWORD expires = static_cast<DWORD>(value);
-    if (static_cast<LONG>(GetTickCount() - expires) < 0) return true;
-    if (reinterpret_cast<ULONG_PTR>(GetPropW(hWnd,
-                                             kPropMaximizedRestoreGuard)) == value) {
-        RemovePropW(hWnd, kPropMaximizedRestoreGuard);
-    }
-    return false;
-}
-static bool ShouldSuppressRedundantMaximizedRestore(HWND hWnd) {
-    return hWnd && IsWindow(hWnd) && !IsIconic(hWnd) && IsZoomed(hWnd) &&
-           IsMaximizedRestoreGuardActive(hWnd);
-}
-static void ClearMaximizedRestoreGuard(HWND hWnd) {
-    if (hWnd) RemovePropW(hWnd, kPropMaximizedRestoreGuard);
-}
-static ULONG_PTR CreateSnapshotCacheToken() {
-    ULONG_PTR serial =
-        g_NextSnapshotCacheToken.fetch_add(1, std::memory_order_relaxed) + 1;
-    ULONG_PTR token = serial ^
-                      (static_cast<ULONG_PTR>(GetCurrentProcessId()) *
-                       static_cast<ULONG_PTR>(0x85EBCA6Bu)) ^
-                      static_cast<ULONG_PTR>(GetTickCount());
-    return token ? token : 1;
-}
-static void ClearSnapshotCachePropertyIfCurrent(HWND hWnd, ULONG_PTR token) {
-    if (!hWnd || !token) return;
-    if (reinterpret_cast<ULONG_PTR>(GetPropW(hWnd, kPropSnapshotCache)) == token) {
-        RemovePropW(hWnd, kPropSnapshotCache);
-    }
-}
-static bool IsLaunchAnimationCurrent(HWND hWnd, ULONG_PTR token) {
-    return hWnd && token &&
-           reinterpret_cast<ULONG_PTR>(
-               GetPropW(hWnd, kPropLaunchAnimation)) == token;
-}
-static void ClearLaunchAnimationIfCurrent(HWND hWnd, ULONG_PTR token) {
-    if (IsLaunchAnimationCurrent(hWnd, token)) {
-        RemovePropW(hWnd, kPropLaunchAnimation);
-    }
-}
-static void EraseSnapshotLocked(
-    std::unordered_map<HWND, SnapCache>::iterator it) {
-    if (it == g_WndSnapshots.end()) return;
-    ClearSnapshotCachePropertyIfCurrent(it->first, it->second.windowToken);
-    if (it->second.hBmp) DeleteObject(it->second.hBmp);
-    g_WndSnapshotBytes = it->second.bytes <= g_WndSnapshotBytes
-                             ? g_WndSnapshotBytes - it->second.bytes
-                             : 0;
-    g_WndSnapshots.erase(it);
-}
-static void EraseSnapshotLocked(HWND hWnd) {
-    EraseSnapshotLocked(g_WndSnapshots.find(hWnd));
-}
-static void EraseSnapshotIfCurrentLocked(HWND hWnd, ULONG_PTR token) {
-    auto it = g_WndSnapshots.find(hWnd);
-    if (it != g_WndSnapshots.end() && it->second.windowToken == token) {
-        EraseSnapshotLocked(it);
-    }
-}
-static bool ConsumeSnapshotLocked(HWND hWnd, void* destination,
-                                  int width, int height,
-                                  bool logFailure = false) {
-    auto it = g_WndSnapshots.find(hWnd);
-    if (it == g_WndSnapshots.end()) {
-        if (logFailure && IsDiagnosticLoggingEnabled()) {
-            Wh_Log(L"Restore snapshot cache miss hwnd=%p requested=%dx%d",
-                   hWnd, width, height);
-        }
-        return false;
-    }
-    const SnapCache& cache = it->second;
-    const ULONG_PTR publishedToken = reinterpret_cast<ULONG_PTR>(
-        GetPropW(hWnd, kPropSnapshotCache));
-    const bool valid = destination && cache.pBits && width > 0 && height > 0 &&
-                       cache.w > 0 && cache.h > 0 && cache.windowToken &&
-                       publishedToken == cache.windowToken;
-    const bool dimensionsCompatible =
-        valid && static_cast<int64_t>(width) * 4 >= cache.w &&
-        static_cast<int64_t>(cache.w) * 4 >= width &&
-        static_cast<int64_t>(height) * 4 >= cache.h &&
-        static_cast<int64_t>(cache.h) * 4 >= height;
-    if (valid && cache.w == width && cache.h == height) {
-        memcpy(destination, cache.pBits, cache.bytes);
-    } else if (dimensionsCompatible) {
-        // DWM can report slightly different extended-frame dimensions after a
-        // minimized window is restored (especially after a display/DPI state
-        // change). Preserve the known-good source instead of discarding it and
-        // attempting an impossible screen capture while the window is cloaked.
-        const auto* source = static_cast<const DWORD*>(cache.pBits);
-        auto* target = static_cast<DWORD*>(destination);
-        for (int y = 0; y < height; ++y) {
-            const int sourceY = std::min(
-                cache.h - 1,
-                static_cast<int>((static_cast<int64_t>(y) * cache.h) /
-                                 height));
-            const DWORD* sourceRow =
-                source + static_cast<size_t>(sourceY) * cache.w;
-            DWORD* targetRow = target + static_cast<size_t>(y) * width;
-            for (int x = 0; x < width; ++x) {
-                const int sourceX = std::min(
-                    cache.w - 1,
-                    static_cast<int>((static_cast<int64_t>(x) * cache.w) /
-                                     width));
-                targetRow[x] = sourceRow[sourceX];
-            }
-        }
-        if (logFailure && IsDiagnosticLoggingEnabled()) {
-            Wh_Log(
-                L"Restore snapshot resized hwnd=%p cached=%dx%d requested=%dx%d",
-                hWnd, cache.w, cache.h, width, height);
-        }
-    } else if (logFailure && IsDiagnosticLoggingEnabled()) {
-        Wh_Log(
-            L"Restore snapshot cache invalid/incompatible hwnd=%p "
-            L"cached=%dx%d requested=%dx%d token=%p published=%p bits=%d",
-            hWnd, cache.w, cache.h, width, height,
-            reinterpret_cast<void*>(cache.windowToken),
-            reinterpret_cast<void*>(publishedToken), cache.pBits != nullptr);
-    }
-    EraseSnapshotLocked(it);
-    return valid && dimensionsCompatible;
-}
-static bool StoreSnapshotLocked(HWND hWnd, HBITMAP hBitmap, void* bits,
-                                 int width, int height,
-                                 ULONG_PTR* tokenOut = nullptr) {
-    if (!hWnd || !hBitmap || !bits || width <= 0 || height <= 0 ||
-        static_cast<size_t>(width) >
-            SIZE_MAX / 4u / static_cast<size_t>(height)) {
-        return false;
-    }
-    const size_t bytes =
-        static_cast<size_t>(width) * static_cast<size_t>(height) * 4u;
-    if (bytes > AnimConstants::SnapshotCacheMaxBytes) {
-        if (IsDiagnosticLoggingEnabled()) {
-            Wh_Log(L"Snapshot cache rejected hwnd=%p size=%dx%d bytes=%zu",
-                   hWnd, width, height, bytes);
-        }
-        return false;
-    }
-
-    EraseSnapshotLocked(hWnd);
-    const ULONG_PTR token = CreateSnapshotCacheToken();
-    if (!SetPropW(hWnd, kPropSnapshotCache,
-                  reinterpret_cast<HANDLE>(token))) {
-        if (IsDiagnosticLoggingEnabled()) {
-            Wh_Log(L"Snapshot cache property failed hwnd=%p err=%lu",
-                   hWnd, GetLastError());
-        }
-        return false;
-    }
-    while (!g_WndSnapshots.empty() &&
-           (g_WndSnapshots.size() >= AnimConstants::SnapshotCacheMaxEntries ||
-            g_WndSnapshotBytes >
-                AnimConstants::SnapshotCacheMaxBytes - bytes)) {
-        auto oldest = std::min_element(
-            g_WndSnapshots.begin(), g_WndSnapshots.end(),
-            [](const auto& left, const auto& right) {
-                return left.second.lastUsed < right.second.lastUsed;
-            });
-        EraseSnapshotLocked(oldest);
-    }
-
-    uint64_t serial = ++g_NextSnapshotCacheSerial;
-    if (!serial) serial = ++g_NextSnapshotCacheSerial;
-    try {
-        g_WndSnapshots.emplace(
-            hWnd, SnapCache{hBitmap, bits, width, height, bytes, serial, token});
-    } catch (const std::exception&) {
-        ClearSnapshotCachePropertyIfCurrent(hWnd, token);
-        if (IsDiagnosticLoggingEnabled()) {
-            Wh_Log(L"Snapshot cache allocation failed hwnd=%p size=%dx%d",
-                   hWnd, width, height);
-        }
-        return false;
-    }
-    g_WndSnapshotBytes += bytes;
-    if (tokenOut) *tokenOut = token;
-    return true;
-}
-enum class MinRestoreRetarget { None, Accepted, BusyOther };
-static MinRestoreRetarget RetargetLiveMinRestore(HWND hWnd, bool wantRising) {
-    const HWND hRequestForeground = wantRising ? GetForegroundWindow() : NULL;
-    std::lock_guard<std::mutex> lock(g_StateMutex);
-    auto it = g_AnimWantRising.find(hWnd);
-    if (!g_AnimActive.count(hWnd)) return MinRestoreRetarget::None;
-    if (it == g_AnimWantRising.end()) return MinRestoreRetarget::BusyOther;
-    it->second = wantRising;
-    if (wantRising) {
-        g_AnimRestoreRequestForeground[hWnd] = hRequestForeground;
-    } else {
-        g_AnimRestoreRequestForeground.erase(hWnd);
-    }
-    return MinRestoreRetarget::Accepted;
-}
-static bool ReserveAsyncRestore(HWND hWnd, uint64_t* generationOut) {
-    const HWND hRequestForeground = GetForegroundWindow();
-    std::lock_guard<std::mutex> lock(g_StateMutex);
-    if (g_unloading.load(std::memory_order_relaxed) || g_AnimActive.count(hWnd)) return false;
-    uint64_t generation = ++g_NextAsyncRestoreReservation;
-    if (!generation) generation = ++g_NextAsyncRestoreReservation;
-    g_AnimActive.insert(hWnd);
-    g_AnimWantRising[hWnd] = true;
-    g_AnimRestoreRequestForeground[hWnd] = hRequestForeground;
-    g_AsyncRestoreReservations[hWnd] = generation;
-    if (generationOut) *generationOut = generation;
-    return true;
-}
-static bool GetAsyncRestoreReservation(HWND hWnd, uint64_t generation,
-                                       bool* wantRisingOut) {
-    std::lock_guard<std::mutex> lock(g_StateMutex);
-    auto reservationIt = g_AsyncRestoreReservations.find(hWnd);
-    auto directionIt = g_AnimWantRising.find(hWnd);
-    if (reservationIt == g_AsyncRestoreReservations.end() ||
-        reservationIt->second != generation || directionIt == g_AnimWantRising.end() ||
-        !g_AnimActive.count(hWnd)) {
-        return false;
-    }
-    if (wantRisingOut) *wantRisingOut = directionIt->second;
-    return true;
-}
-static void CleanupTranslucentWindowsAccentPolicy(HWND hWnd);
-static void SweepTranslucentWindowsAccentPolicies();
-static void CleanupWindowData(HWND hWnd) {
-    CleanupTranslucentWindowsAccentPolicy(hWnd);
-    ClearMinRestorePair(hWnd);
-    ClearMaximizedRestoreGuard(hWnd);
-    RemovePropW(hWnd, kPropTrayHideCloak);
-    RemovePropW(hWnd, kPropTrayHideShowHandoff);
-    RemovePropW(hWnd, kPropTransientTauriShowTick);
-    RemovePropW(hWnd, kPropClassicShowDesktopOwnerDispatch);
-    RemovePropW(hWnd, kPropClassicShowDesktopOwnerPrepared);
-    RemovePropW(hWnd, kPropAnimationSession);
-    RemovePropW(hWnd, SwsSelectionProtocol::OwnerRestoreMessageProp);
-    RemovePropW(hWnd, SwsSelectionProtocol::OwnerRestoreActiveProp);
-    std::lock_guard<std::mutex> lock(g_StateMutex);
-    EraseSnapshotLocked(hWnd);
-    g_TaskbarDockPositions.erase(hWnd);
-    g_TaskbarDockFallbackPositions.erase(hWnd);
-    g_TaskbarDockLookupGenerations.erase(hWnd);
-    g_TaskbarDockLookupIdentities.erase(hWnd);
-    g_TaskbarDockLookupStartedTicks.erase(hWnd);
-    g_TaskbarDockNegativeUntilTicks.erase(hWnd);
-    g_TaskbarDockPositiveUntilTicks.erase(hWnd);
-    g_ProcessNameCache.erase(hWnd);
-    g_LaunchSeen.erase(hWnd);
-    g_AnimWantRising.erase(hWnd);
-    g_AnimRestoreRequestForeground.erase(hWnd);
-    if (g_AsyncRestoreReservations.erase(hWnd)) {
-        g_AnimActive.erase(hWnd);
-    }
-}
-static void SweepStaleData() {
-    SweepTranslucentWindowsAccentPolicies();
-    std::lock_guard<std::mutex> lock(g_StateMutex);
-    for (auto it = g_WndSnapshots.begin(); it != g_WndSnapshots.end();) {
-        if (!IsWindow(it->first)) {
-            auto stale = it++;
-            EraseSnapshotLocked(stale);
-        } else {
-            ++it;
-        }
-    }
-    for (auto it = g_TaskbarDockPositions.begin();
-         it != g_TaskbarDockPositions.end();) {
-        if (!IsWindow(it->first)) it = g_TaskbarDockPositions.erase(it);
-        else ++it;
-    }
-    for (auto it = g_TaskbarDockFallbackPositions.begin();
-         it != g_TaskbarDockFallbackPositions.end();) {
-        if (!IsWindow(it->first)) {
-            it = g_TaskbarDockFallbackPositions.erase(it);
-        }
-        else ++it;
-    }
-    for (auto it = g_TaskbarDockLookupGenerations.begin();
-         it != g_TaskbarDockLookupGenerations.end();) {
-        if (!IsWindow(it->first)) it = g_TaskbarDockLookupGenerations.erase(it);
-        else ++it;
-    }
-    for (auto it = g_TaskbarDockLookupIdentities.begin();
-         it != g_TaskbarDockLookupIdentities.end();) {
-        if (!IsWindow(it->first)) it = g_TaskbarDockLookupIdentities.erase(it);
-        else ++it;
-    }
-    for (auto it = g_TaskbarDockLookupStartedTicks.begin();
-         it != g_TaskbarDockLookupStartedTicks.end();) {
-        if (!IsWindow(it->first)) it = g_TaskbarDockLookupStartedTicks.erase(it);
-        else ++it;
-    }
-    for (auto it = g_TaskbarDockNegativeUntilTicks.begin();
-         it != g_TaskbarDockNegativeUntilTicks.end();) {
-        if (!IsWindow(it->first)) it = g_TaskbarDockNegativeUntilTicks.erase(it);
-        else ++it;
-    }
-    for (auto it = g_TaskbarDockPositiveUntilTicks.begin();
-         it != g_TaskbarDockPositiveUntilTicks.end();) {
-        if (!IsWindow(it->first)) it = g_TaskbarDockPositiveUntilTicks.erase(it);
-        else ++it;
-    }
-    for (auto it = g_ProcessNameCache.begin(); it != g_ProcessNameCache.end();) {
-        if (!IsWindow(it->first)) it = g_ProcessNameCache.erase(it);
-        else ++it;
-    }
-    for (auto it = g_LaunchSeen.begin(); it != g_LaunchSeen.end();) {
-        if (!IsWindow(*it)) it = g_LaunchSeen.erase(it);
-        else ++it;
-    }
-    for (auto it = g_AnimActive.begin(); it != g_AnimActive.end();) {
-        if (!IsWindow(*it)) it = g_AnimActive.erase(it);
-        else ++it;
-    }
-    for (auto it = g_AnimWantRising.begin(); it != g_AnimWantRising.end();) {
-        if (!IsWindow(it->first)) it = g_AnimWantRising.erase(it);
-        else ++it;
-    }
-    for (auto it = g_AnimRestoreRequestForeground.begin();
-         it != g_AnimRestoreRequestForeground.end();) {
-        if (!IsWindow(it->first)) it = g_AnimRestoreRequestForeground.erase(it);
-        else ++it;
-    }
-    for (auto it = g_AsyncRestoreReservations.begin();
-         it != g_AsyncRestoreReservations.end();) {
-        if (!IsWindow(it->first)) it = g_AsyncRestoreReservations.erase(it);
-        else ++it;
-    }
-}
-static bool RequiresScreenCapture(HWND hWnd) {
-    const auto cls = GetClassNameStr(hWnd);
-    return cls.find(L"CASCADIA") != std::wstring::npos ||
-           cls.find(L"ConsoleWindowClass") != std::wstring::npos;
-}
-static bool ShouldUseBitBlt(HWND hWnd, bool isClosing) {
-    return isClosing &&
-           (GetForegroundWindow() == hWnd || RequiresScreenCapture(hWnd));
-}
-static bool IsTransparentXamlExplorerHostIsland(HWND hWnd,
-                                                LONG_PTR exStyle) {
-    // Explorer keeps this composition-island host visible with a large
-    // bookkeeping rectangle even after the shell surface it hosted has become
-    // fully transparent. Treat only the transparent, per-pixel-composited
-    // tool-window form as non-occluding; an ordinary XAML host can still be a
-    // real visible window and must continue to reject a screen snapshot.
-    constexpr LONG_PTR requiredExStyle =
-        WS_EX_LAYERED | WS_EX_NOREDIRECTIONBITMAP | WS_EX_TOOLWINDOW |
-        WS_EX_TRANSPARENT;
-    if ((exStyle & requiredExStyle) != requiredExStyle) return false;
-    WCHAR className[64]{};
-    return GetClassNameW(hWnd, className, ARRAYSIZE(className)) &&
-           _wcsicmp(className, L"XamlExplorerHostIslandWindow") == 0;
-}
-struct ScreenCaptureEligibility {
-    enum class FailureReason {
-        None,
-        TargetUnavailable,
-        TargetCloaked,
-        OverlappingWindow,
-        UnstableZOrder,
-    } failureReason{FailureReason::None};
-    bool taskbarAboveAndOverlapping = false;
-    RECT taskbarRect{};
-    HWND blockingSwitchAnimationGhost = nullptr;
-    HWND blockingWindow = nullptr;
-};
-
-static bool CanCaptureWindowFromScreen(
-    HWND hWnd, const RECT& captureRect, HWND hTaskbar,
-    ScreenCaptureEligibility* eligibilityOut = nullptr) {
-    ScreenCaptureEligibility eligibility;
-    if (!hWnd || !IsWindowVisible(hWnd) || IsIconic(hWnd)) {
-        eligibility.failureReason =
-            ScreenCaptureEligibility::FailureReason::TargetUnavailable;
-        if (eligibilityOut) *eligibilityOut = eligibility;
-        return false;
-    }
-    BOOL targetCloaked = FALSE;
-    if (SUCCEEDED(DwmGetWindowAttribute(hWnd, DWMWA_CLOAKED, &targetCloaked,
-                                        sizeof(targetCloaked))) &&
-        targetCloaked) {
-        eligibility.failureReason =
-            ScreenCaptureEligibility::FailureReason::TargetCloaked;
-        if (eligibilityOut) *eligibilityOut = eligibility;
-        return false;
-    }
-
-    // Walk only windows above the target instead of sweeping the desktop. A
-    // finite bound keeps a concurrently mutating Z-order from trapping the
-    // shell hook; hitting the bound conservatively rejects the capture.
-    HWND candidate = GetWindow(hWnd, GW_HWNDPREV);
-    for (int remaining = 512; candidate && remaining > 0; --remaining) {
-        const HWND next = GetWindow(candidate, GW_HWNDPREV);
-        // IsWindowVisible remains true for many minimized Chromium/Electron
-        // HWNDs, and DWM can retain their old full-size extended-frame bounds.
-        // They don't contribute pixels to the composed desktop and therefore
-        // can't occlude this screen snapshot.
-        if (IsWindowVisible(candidate) && !IsIconic(candidate)) {
-            BOOL cloaked = FALSE;
-            const bool isCloaked =
-                SUCCEEDED(DwmGetWindowAttribute(candidate, DWMWA_CLOAKED,
-                                                &cloaked,
-                                                sizeof(cloaked))) &&
-                cloaked;
-            const LONG_PTR candidateExStyle =
-                GetWindowLongPtrW(candidate, GWL_EXSTYLE);
-            if (!isCloaked && IsTransparentXamlExplorerHostIsland(
-                                  candidate, candidateExStyle)) {
-                candidate = next;
-                continue;
-            }
-            bool fullyTransparent = false;
-            if (!isCloaked &&
-                (candidateExStyle & WS_EX_LAYERED)) {
-                COLORREF colorKey = 0;
-                BYTE alpha = 255;
-                DWORD flags = 0;
-                // GetLayeredWindowAttributes fails for per-pixel-alpha windows
-                // created with UpdateLayeredWindow; those remain occluders.
-                fullyTransparent =
-                    GetLayeredWindowAttributes(candidate, &colorKey, &alpha,
-                                               &flags) &&
-                    (flags & LWA_ALPHA) && alpha == 0;
-            }
-            RECT candidateRect{};
-            RECT overlap{};
-            if (!isCloaked && !fullyTransparent) {
-                if (candidate == hTaskbar) {
-                    if (GetWindowRect(candidate, &candidateRect) &&
-                        IntersectRect(&overlap, &captureRect,
-                                      &candidateRect)) {
-                        eligibility.taskbarAboveAndOverlapping = true;
-                        eligibility.taskbarRect = candidateRect;
-                    }
-                } else {
-                    if (FAILED(DwmGetWindowAttribute(
-                            candidate, DWMWA_EXTENDED_FRAME_BOUNDS,
-                            &candidateRect, sizeof(candidateRect))) ||
-                        !PhysicalRectToAnimationSpace(hWnd,
-                                                      &candidateRect)) {
-                        if (!GetWindowRect(candidate, &candidateRect)) {
-                            candidate = next;
-                            continue;
-                        }
-                    }
-                    if (IntersectRect(&overlap, &captureRect,
-                                      &candidateRect)) {
-                        eligibility.failureReason =
-                            ScreenCaptureEligibility::FailureReason::
-                                OverlappingWindow;
-                        eligibility.blockingWindow = candidate;
-                        if (GetPropW(candidate, kPropSwitchAnimationGhost)) {
-                            eligibility.blockingSwitchAnimationGhost = candidate;
-                        }
-                        if (eligibilityOut) *eligibilityOut = eligibility;
-                        return false;
-                    }
-                }
-            }
-        }
-        candidate = next;
-    }
-    if (candidate) {
-        eligibility.failureReason =
-            ScreenCaptureEligibility::FailureReason::UnstableZOrder;
-        eligibility.blockingWindow = candidate;
-        if (eligibilityOut) *eligibilityOut = eligibility;
-        return false;
-    }
-    if (eligibilityOut) *eligibilityOut = eligibility;
-    return true;
-}
-static PSECURITY_DESCRIPTOR BuildSharedStateSd() {
-    HANDLE hToken = NULL;
-    if (!OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &hToken)) return nullptr;
-    DWORD len = 0;
-    GetTokenInformation(hToken, TokenUser, NULL, 0, &len);
-    std::vector<BYTE> buffer(len);
-    LPWSTR userSid = NULL;
-    const bool haveSid =
-        len && GetTokenInformation(hToken, TokenUser, buffer.data(), len, &len) &&
-        ConvertSidToStringSidW(((TOKEN_USER*)buffer.data())->User.Sid, &userSid) && userSid;
-    CloseHandle(hToken);
-    if (!haveSid) return nullptr;
-    std::wstring sddl = L"D:(A;;GA;;;SY)(A;;GA;;;BA)(A;;GA;;;";
-    sddl += userSid;
-    sddl += L")(A;;GR;;;WD)(A;;GR;;;AC)S:(ML;;NW;;;LW)";
-    LocalFree(userSid);
-    PSECURITY_DESCRIPTOR pSd = nullptr;
-    if (!ConvertStringSecurityDescriptorToSecurityDescriptorW(sddl.c_str(), SDDL_REVISION_1, &pSd, NULL)) {
-        return nullptr;
-    }
-    return pSd;
-}
-
-static PSECURITY_DESCRIPTOR BuildSharedEffectShuffleStateSd() {
-    HANDLE hToken = NULL;
-    if (!OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &hToken)) {
-        return nullptr;
-    }
-    DWORD len = 0;
-    GetTokenInformation(hToken, TokenUser, NULL, 0, &len);
-    std::vector<BYTE> buffer(len);
-    LPWSTR userSid = NULL;
-    const bool haveSid =
-        len && GetTokenInformation(hToken, TokenUser, buffer.data(), len,
-                                   &len) &&
-        ConvertSidToStringSidW(
-            reinterpret_cast<TOKEN_USER*>(buffer.data())->User.Sid,
-            &userSid) &&
-        userSid;
-    CloseHandle(hToken);
-    if (!haveSid) return nullptr;
-
-    // The mapping contains only shuffle seeds and counters. App-container
-    // targets need write access so packaged and classic apps can participate
-    // in the same session-wide order; no HWNDs or control state are exposed.
-    std::wstring sddl = L"D:(A;;GA;;;SY)(A;;GA;;;BA)(A;;GA;;;";
-    sddl += userSid;
-    sddl += L")(A;;GRGW;;;AC)S:(ML;;NW;;;LW)";
-    LocalFree(userSid);
-    PSECURITY_DESCRIPTOR pSd = nullptr;
-    if (!ConvertStringSecurityDescriptorToSecurityDescriptorW(
-            sddl.c_str(), SDDL_REVISION_1, &pSd, NULL)) {
-        return nullptr;
-    }
-    return pSd;
-}
-
-static uint32_t CreateSharedEffectShuffleSeed(uint32_t seedSalt) {
-    LARGE_INTEGER counter{};
-    QueryPerformanceCounter(&counter);
-    uint32_t value = static_cast<uint32_t>(counter.LowPart) ^
-                     static_cast<uint32_t>(counter.HighPart) ^
-                     static_cast<uint32_t>(GetTickCount64()) ^
-                     static_cast<uint32_t>(GetTickCount64() >> 32) ^
-                     (static_cast<uint32_t>(GetCurrentProcessId()) *
-                      0x9E3779B9u) ^
-                     (static_cast<uint32_t>(GetCurrentThreadId()) *
-                      0x85EBCA6Bu) ^
-                     seedSalt;
-    return MixGlobalShuffleValue(value);
-}
-
-static bool InitializeSharedEffectShuffleState(
-    SharedEffectShuffleState* state) {
-    if (!state) return false;
-    if (InterlockedCompareExchange(&state->magic, 0, 0) ==
-        kSharedEffectShuffleStateMagic) {
-        return true;
-    }
-
-    const LONG previousInitializationState = InterlockedCompareExchange(
-        &state->initializationState, 1, 0);
-    if (previousInitializationState == 0) {
-        InterlockedExchange(&state->minRestoreNextOrdinal, 0);
-        InterlockedExchange(&state->closeNextOrdinal, 0);
-        InterlockedExchange(
-            &state->minRestoreSeed,
-            static_cast<LONG>(CreateSharedEffectShuffleSeed(0x4D525354u)));
-        InterlockedExchange(
-            &state->closeSeed,
-            static_cast<LONG>(CreateSharedEffectShuffleSeed(0x434C4F53u)));
-        MemoryBarrier();
-        InterlockedExchange(&state->magic,
-                            kSharedEffectShuffleStateMagic);
-        InterlockedExchange(&state->initializationState, 2);
-        return true;
-    }
-
-    const DWORD deadline = GetTickCount() + 100;
-    do {
-        if (InterlockedCompareExchange(&state->magic, 0, 0) ==
-            kSharedEffectShuffleStateMagic) {
-            return true;
-        }
-        Sleep(0);
-    } while (static_cast<LONG>(GetTickCount() - deadline) < 0);
-
-    return false;
-}
-
-static void CloseSharedEffectShuffleStateLocked() {
-    if (g_pSharedEffectShuffleState) {
-        UnmapViewOfFile(g_pSharedEffectShuffleState);
-        g_pSharedEffectShuffleState = nullptr;
-    }
-    if (g_hSharedEffectShuffleMap) {
-        CloseHandle(g_hSharedEffectShuffleMap);
-        g_hSharedEffectShuffleMap = NULL;
-    }
-}
-
-static SharedEffectShuffleState* EnsureSharedEffectShuffleState() {
-    std::lock_guard<std::mutex> lock(g_SharedEffectShuffleStateMutex);
-    if (g_pSharedEffectShuffleState &&
-        InterlockedCompareExchange(&g_pSharedEffectShuffleState->magic,
-                                   0, 0) ==
-            kSharedEffectShuffleStateMagic) {
-        return g_pSharedEffectShuffleState;
-    }
-    CloseSharedEffectShuffleStateLocked();
-
-    PSECURITY_DESCRIPTOR pSd = BuildSharedEffectShuffleStateSd();
-    SECURITY_ATTRIBUTES sa{sizeof(sa), pSd, FALSE};
-    HANDLE hMap = CreateFileMappingW(
-        INVALID_HANDLE_VALUE, pSd ? &sa : NULL, PAGE_READWRITE, 0,
-        sizeof(SharedEffectShuffleState), kSharedEffectShuffleStateName);
-    if (pSd) LocalFree(pSd);
-    if (!hMap) {
-        hMap = OpenFileMappingW(FILE_MAP_READ | FILE_MAP_WRITE, FALSE,
-                                kSharedEffectShuffleStateName);
-    }
-    if (!hMap) return nullptr;
-
-    auto* state = reinterpret_cast<SharedEffectShuffleState*>(MapViewOfFile(
-        hMap, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0,
-        sizeof(SharedEffectShuffleState)));
-    if (!state || !InitializeSharedEffectShuffleState(state)) {
-        if (state) UnmapViewOfFile(state);
-        CloseHandle(hMap);
-        return nullptr;
-    }
-
-    g_hSharedEffectShuffleMap = hMap;
-    g_pSharedEffectShuffleState = state;
-    return state;
-}
-
-static void CloseSharedEffectShuffleState() {
-    std::lock_guard<std::mutex> lock(g_SharedEffectShuffleStateMutex);
-    CloseSharedEffectShuffleStateLocked();
-}
-
-static void CloseSharedStateLocked() {
-    if (g_pSharedState) {
-        UnmapViewOfFile(g_pSharedState);
-        g_pSharedState = nullptr;
-    }
-    if (g_hMapFile) {
-        CloseHandle(g_hMapFile);
-        g_hMapFile = NULL;
-    }
-    g_sharedStateWritable = false;
-}
-static void CloseSharedState() {
-    std::lock_guard<std::mutex> lock(g_SharedStateMutex);
-    CloseSharedStateLocked();
-}
-static void InitSharedMemoryLocked() {
-    CloseSharedStateLocked();
-    const bool explorer = IsShellExplorerProcess();
-    if (explorer) {
-        PSECURITY_DESCRIPTOR pSd = BuildSharedStateSd();
-        SECURITY_ATTRIBUTES sa{sizeof(sa), pSd, FALSE};
-        g_hMapFile = CreateFileMappingW(INVALID_HANDLE_VALUE, pSd ? &sa : NULL, PAGE_READWRITE, 0,
-                                        sizeof(SharedAnimState), kSharedStateName);
-        const DWORD createErr = GetLastError();
-        if (pSd) LocalFree(pSd);
-        if (!g_hMapFile) {
-            g_hMapFile = OpenFileMappingW(FILE_MAP_READ | FILE_MAP_WRITE, FALSE, kSharedStateName);
-        }
-        if (!g_hMapFile) {
-            Wh_Log(L"Explorer shared animation state unavailable err=%lu "
-                   L"(cross-process coordination offline)",
-                   createErr);
-            return;
-        }
-        g_pSharedState = (SharedAnimState*)MapViewOfFile(
-            g_hMapFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, sizeof(SharedAnimState));
-        if (!g_pSharedState) {
-            Wh_Log(L"Explorer failed to map shared animation state for "
-                   L"write err=%lu",
-                   GetLastError());
-            CloseSharedStateLocked();
-            return;
-        }
-        g_sharedStateWritable = true;
-        ResetSharedStateLocked();
-        if (IsDiagnosticLoggingEnabled()) {
-            Wh_Log(L"Explorer claimed shared animation state epoch=%ld "
-                   L"existing=%d",
-                   g_pSharedState->sessionEpoch,
-                   createErr == ERROR_ALREADY_EXISTS ? 1 : 0);
-        }
-        return;
-    }
-    g_hMapFile = OpenFileMappingW(FILE_MAP_READ, FALSE, kSharedStateName);
-    if (!g_hMapFile) {
-        if (IsDiagnosticLoggingEnabled()) {
-            Wh_Log(L"Shared animation state not open yet; will retry lazily");
-        }
-        return;
-    }
-    g_pSharedState = (SharedAnimState*)MapViewOfFile(g_hMapFile, FILE_MAP_READ, 0, 0,
-                                                     sizeof(SharedAnimState));
-    if (!g_pSharedState) {
-        Wh_Log(L"Failed to map shared animation state err=%lu",
-               GetLastError());
-        CloseSharedStateLocked();
-    }
-}
-void InitSharedMemory() {
-    std::lock_guard<std::mutex> lock(g_SharedStateMutex);
-    InitSharedMemoryLocked();
-}
-static bool EnsureSharedStateMapped() {
-    std::lock_guard<std::mutex> lock(g_SharedStateMutex);
-    if (IsShellExplorerProcess() && !g_sharedStateWritable) {
-        InitSharedMemoryLocked();
-        return g_pSharedState && g_sharedStateWritable &&
-               g_pSharedState->magic == kSharedStateMagic;
-    }
-    if (g_pSharedState) {
-        if (g_pSharedState->magic == kSharedStateMagic) return true;
-        if (!g_sharedStateWritable) CloseSharedStateLocked();
-        else return false;
-    }
-    if (g_sharedStateWritable) return false;
-    HANDLE h = OpenFileMappingW(FILE_MAP_READ, FALSE, kSharedStateName);
-    if (!h) return false;
-    auto* view = (SharedAnimState*)MapViewOfFile(h, FILE_MAP_READ, 0, 0, sizeof(SharedAnimState));
-    if (!view || view->magic != kSharedStateMagic) {
-        if (view) UnmapViewOfFile(view);
-        CloseHandle(h);
-        return false;
-    }
-    g_hMapFile = h;
-    g_pSharedState = view;
-    return true;
-}
-void LoadAnimSettings() {
-    g_durationMs.store(Clamp(Wh_GetIntSetting(L"minimize_restore.duration_ms"), 1, 1400), std::memory_order_relaxed);
-    g_closeDurationMs.store(Clamp(Wh_GetIntSetting(L"close.duration_ms"), 1, 5000), std::memory_order_relaxed);
-    g_shatterBlockSize.store(Clamp(Wh_GetIntSetting(L"close.shatter_block_size"), 1, 100), std::memory_order_relaxed);
-    {
-        auto style = WindhawkUtils::StringSetting::make(L"close.effect_style");
-        const int value = wcscmp(style, L"shatter") == 0 ? 0
-                          : wcscmp(style, L"perlin") == 0 ? 2
-                          : wcscmp(style, L"glitch") == 0 ? 3
-                          : wcscmp(style, L"tv_off") == 0 ? 4
-                          : wcscmp(style, L"pixel_melt") == 0 ? 5
-                                                         : 1;
-        g_closeEffectStyle.store(value, std::memory_order_relaxed);
-    }
-    {
-        auto style = WindhawkUtils::StringSetting::make(L"minimize_restore.effect_style");
-        const int value = wcscmp(style, L"windows10") == 0  ? 7
-                          : wcscmp(style, L"ink_splash") == 0 ? 1
-                          : wcscmp(style, L"scorch") == 0   ? 2
-                          : wcscmp(style, L"splinter") == 0 ? 3
-                          : wcscmp(style, L"mirage") == 0   ? 4
-                          : wcscmp(style, L"stipple") == 0  ? 5
-                          : wcscmp(style, L"swell") == 0    ? 6
-                          : wcscmp(style, L"tv_off_on") == 0 ? 8
-                                                            : 0;
-        g_minRestoreEffectStyle.store(value, std::memory_order_relaxed);
-    }
-    const bool closeShuffleEnabled =
-        Wh_GetIntSetting(L"close.random_effect") != 0;
-    const bool minRestoreShuffleEnabled =
-        Wh_GetIntSetting(L"minimize_restore.random_effect") != 0;
-    {
-        std::lock_guard<std::mutex> lock(g_EffectShuffleMutex);
-        if (g_closeShuffleEffect.load(std::memory_order_relaxed) !=
-            closeShuffleEnabled) {
-            InvalidateEffectShuffleLocked(g_CloseEffectShuffle);
-        }
-        if (g_minRestoreShuffleEffect.load(std::memory_order_relaxed) !=
-            minRestoreShuffleEnabled) {
-            InvalidateEffectShuffleLocked(g_MinRestoreEffectShuffle);
-        }
-        g_closeShuffleEffect.store(closeShuffleEnabled,
-                                   std::memory_order_relaxed);
-        g_minRestoreShuffleEffect.store(minRestoreShuffleEnabled,
-                                        std::memory_order_relaxed);
-    }
-    g_minimizeAnimation.store(Wh_GetIntSetting(L"minimize_restore.minimize_animation") != 0, std::memory_order_relaxed);
-    g_restoreAnimation.store(Wh_GetIntSetting(L"minimize_restore.restore_animation") != 0, std::memory_order_relaxed);
-    g_closeAnimation.store(Wh_GetIntSetting(L"close.close_animation") != 0, std::memory_order_relaxed);
-    g_hideAsClose.store(Wh_GetIntSetting(L"close.hide_as_close") != 0, std::memory_order_relaxed);
-    g_launchAnimation.store(Wh_GetIntSetting(L"minimize_restore.launch_animation") != 0, std::memory_order_relaxed);
-    g_switchAnimation.store(Wh_GetIntSetting(L"window_switch.switch_animation") != 0, std::memory_order_relaxed);
-    g_switchDurationMs.store(Clamp(Wh_GetIntSetting(L"window_switch.duration_ms"), 1, 1000), std::memory_order_relaxed);
-    g_unhideEnabled.store(Wh_GetIntSetting(L"minimize_restore.unhide_taskbar") != 0, std::memory_order_relaxed);
-    g_unhideDurationMs.store(Clamp(Wh_GetIntSetting(L"minimize_restore.unhide_duration_ms"), 0, 5000), std::memory_order_relaxed);
-    g_gpuAcceleration.store(
-        Wh_GetIntSetting(L"minimize_restore.gpu_acceleration") != 0,
-        std::memory_order_relaxed);
-    g_closeGpuAcceleration.store(
-        Wh_GetIntSetting(L"close.gpu_acceleration") != 0,
-        std::memory_order_relaxed);
-    g_performanceTelemetry.store(
-        Wh_GetIntSetting(L"diagnostics.performance_telemetry") != 0,
-        std::memory_order_relaxed);
-    // Keep the existing key so users retain their preference across this
-    // change from a single custom leader to an entirely native batch.
-    const bool nativeShowDesktopAnimations =
-        Wh_GetIntSetting(
-            L"minimize_restore.show_desktop_top_window_only") != 0;
-    g_nativeShowDesktopAnimations.store(nativeShowDesktopAnimations,
-                                        std::memory_order_relaxed);
-    if (!nativeShowDesktopAnimations) {
-        g_localNativeShowDesktopUntilTick.store(0,
-                                                std::memory_order_relaxed);
-    }
-}
-static void UpdateDwmTransitions(HWND hWnd, BOOL enable) {
-    BOOL disable = !enable;
-    DwmSetWindowAttribute(hWnd, DWMWA_TRANSITIONS_FORCEDISABLED, &disable, sizeof(disable));
-}
-static void SetWindowCloak(HWND hWnd, BOOL cloak) {
-    DwmSetWindowAttribute(hWnd, DWMWA_CLOAK, &cloak, sizeof(cloak));
-}
-struct WindowCompositionAttributeData {
-    DWORD attribute;
-    void* data;
-    SIZE_T dataSize;
-};
-using GetWindowCompositionAttribute_t =
-    BOOL(WINAPI*)(HWND, WindowCompositionAttributeData*);
-using SetWindowCompositionAttribute_t =
-    BOOL(WINAPI*)(HWND, WindowCompositionAttributeData*);
-SetWindowCompositionAttribute_t SetWindowCompositionAttribute_Original;
-
-struct WindowAccentPolicy {
-    int accentState;
-    int accentFlags;
-    DWORD gradientColor;
-    int animationId;
-};
-static_assert(sizeof(WindowAccentPolicy) == 16);
-struct TranslucentWindowsAccentPolicySnapshot {
-    WindowAccentPolicy policy;
-    ULONG_PTR windowToken;
-};
-std::mutex g_AccentPolicyMutex;
-std::unordered_map<HWND, TranslucentWindowsAccentPolicySnapshot>
-    g_TranslucentWindowsAccentPolicies;
-
-static bool IsTranslucentWindowsModuleName(PCWSTR name) {
-    constexpr PCWSTR prefixes[] = {
-        L"translucent-windows_",
-        L"local@translucent-windows_",
-    };
-    for (PCWSTR prefix : prefixes) {
-        if (_wcsnicmp(name, prefix, wcslen(prefix)) == 0) return true;
-    }
-    return false;
-}
-
-static bool IsTranslucentWindowsAccentPolicyCaller(
-    const void* returnAddress) {
-    HMODULE module = nullptr;
-    if (!GetModuleHandleExW(
-            GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
-                GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
-            reinterpret_cast<PCWSTR>(returnAddress), &module)) {
-        return false;
-    }
-    WCHAR path[MAX_PATH]{};
-    if (!GetModuleFileNameW(module, path, ARRAYSIZE(path))) return false;
-    const WCHAR* name = wcsrchr(path, L'\\');
-    return IsTranslucentWindowsModuleName(name ? name + 1 : path);
-}
-
-static bool RememberTranslucentWindowsAccentPolicy(
-    HWND hWnd, const WindowAccentPolicy& policy) {
-    DWORD processId = 0;
-    if (!GetWindowThreadProcessId(hWnd, &processId) ||
-        processId != GetCurrentProcessId()) {
-        return false;
-    }
-    const bool blurPolicy = policy.accentState == 3 || policy.accentState == 4;
-    const ULONG_PTR token = blurPolicy
-        ? GetOrCreateTaskbarDockIdentityToken(hWnd) : 0;
-    std::lock_guard<std::mutex> lock(g_AccentPolicyMutex);
-    if (!blurPolicy || !token) {
-        g_TranslucentWindowsAccentPolicies.erase(hWnd);
-        return false;
-    }
-    try {
-        g_TranslucentWindowsAccentPolicies[hWnd] = {policy, token};
-    } catch (const std::exception&) {
-        g_TranslucentWindowsAccentPolicies.erase(hWnd);
-        return false;
-    }
-    return true;
-}
-
-static bool GetCachedTranslucentWindowsAccentPolicy(
-    HWND hWnd, WindowAccentPolicy* policyOut = nullptr) {
-    std::lock_guard<std::mutex> lock(g_AccentPolicyMutex);
-    auto it = g_TranslucentWindowsAccentPolicies.find(hWnd);
-    if (it == g_TranslucentWindowsAccentPolicies.end()) return false;
-    if (!IsWindow(hWnd) || reinterpret_cast<ULONG_PTR>(
-            GetPropW(hWnd, kPropTaskbarDockIdentity)) != it->second.windowToken) {
-        g_TranslucentWindowsAccentPolicies.erase(it);
-        return false;
-    }
-    if (policyOut) *policyOut = it->second.policy;
-    return true;
-}
-
-static void CleanupTranslucentWindowsAccentPolicy(HWND hWnd) {
-    std::lock_guard<std::mutex> lock(g_AccentPolicyMutex);
-    g_TranslucentWindowsAccentPolicies.erase(hWnd);
-}
-
-static void SweepTranslucentWindowsAccentPolicies() {
-    std::lock_guard<std::mutex> lock(g_AccentPolicyMutex);
-    for (auto it = g_TranslucentWindowsAccentPolicies.begin();
-         it != g_TranslucentWindowsAccentPolicies.end();) {
-        if (!IsWindow(it->first) || reinterpret_cast<ULONG_PTR>(
-                GetPropW(it->first, kPropTaskbarDockIdentity)) !=
-                it->second.windowToken) {
-            it = g_TranslucentWindowsAccentPolicies.erase(it);
-        } else {
-            ++it;
-        }
-    }
-}
-
-static void ObserveTranslucentWindowsAccentPolicyCall(
-    HWND hWnd, DWORD attribute, void* data, size_t dataSize,
-    void* callerAddress, BOOL result) {
-    const DWORD savedError = GetLastError();
-    // WCA_ACCENT_POLICY isn't readable with GetWindowCompositionAttribute on
-    // current Windows builds. Track only policies written by the owning mod.
-    const bool capture = attribute == 19 && data &&
-        dataSize >= sizeof(WindowAccentPolicy) &&
-        IsTranslucentWindowsAccentPolicyCaller(callerAddress);
-    if (result && capture) {
-        WindowAccentPolicy policy{};
-        memcpy(&policy, data, sizeof(policy));
-        const bool remembered = RememberTranslucentWindowsAccentPolicy(
-            hWnd, policy);
-        if (IsDiagnosticLoggingEnabled()) {
-            Wh_Log(L"AccentBlur owner policy hwnd=%p state=%d remembered=%d",
-                   hWnd, policy.accentState, remembered);
-        }
-    }
-    SetLastError(savedError);
-}
-
-BOOL WINAPI SetWindowCompositionAttribute_Hook(
-    HWND hWnd, WindowCompositionAttributeData* data) {
-    const DWORD entryError = GetLastError();
-    const DWORD attribute = data ? data->attribute : 0;
-    void* policyData = data ? data->data : nullptr;
-    const size_t dataSize = data ? data->dataSize : 0;
-    void* callerAddress = __builtin_return_address(0);
-    SetLastError(entryError);
-    const BOOL result = SetWindowCompositionAttribute_Original(hWnd, data);
-    ObserveTranslucentWindowsAccentPolicyCall(
-        hWnd, attribute, policyData, dataSize, callerAddress, result);
-    return result;
-}
-
-static bool RestoreCachedTranslucentWindowsAccentPolicy(HWND hWnd) {
-    WindowAccentPolicy policy{};
-    if (!SetWindowCompositionAttribute_Original ||
-        !GetCachedTranslucentWindowsAccentPolicy(hWnd, &policy)) {
-        return false;
-    }
-    WindowCompositionAttributeData data{19, &policy, sizeof(policy)};
-    return SetWindowCompositionAttribute_Original(hWnd, &data) != FALSE;
-}
-
-static bool HasActiveWindowAccentPolicy(HWND hWnd) {
-    if (!hWnd) return false;
-    static const auto getWindowCompositionAttribute =
-        reinterpret_cast<GetWindowCompositionAttribute_t>(GetProcAddress(
-            GetModuleHandleW(L"user32.dll"),
-            "GetWindowCompositionAttribute"));
-    if (!getWindowCompositionAttribute) return false;
-
-    BOOL hasAccentPolicy = FALSE;
-    WindowCompositionAttributeData data{
-        34, &hasAccentPolicy,
-        sizeof(hasAccentPolicy)};  // WCA_HAS_ACCENT_POLICY
-    return getWindowCompositionAttribute(hWnd, &data) != FALSE &&
-           hasAccentPolicy;
-}
-static bool IsTranslucentWindowsModLoaded() {
-    HANDLE snapshot = CreateToolhelp32Snapshot(
-        TH32CS_SNAPMODULE | TH32CS_SNAPMODULE32, GetCurrentProcessId());
-    if (snapshot == INVALID_HANDLE_VALUE) return false;
-
-    MODULEENTRY32W module{};
-    module.dwSize = sizeof(module);
-    bool found = false;
-    if (Module32FirstW(snapshot, &module)) {
-        do {
-            found = IsTranslucentWindowsModuleName(module.szModule);
-        } while (!found && Module32NextW(snapshot, &module));
-    }
-    CloseHandle(snapshot);
-    return found;
-}
-static bool IsExplorerFrameWindow(HWND hWnd) {
-    WCHAR cls[64]{};
-    return GetClassNameW(hWnd, cls, ARRAYSIZE(cls)) &&
-           (_wcsicmp(cls, L"CabinetWClass") == 0 ||
-            _wcsicmp(cls, L"ExploreWClass") == 0);
-}
-static bool HasModernExplorerTitleFrame(HWND hWnd) {
-    if (!IsExplorerFrameWindow(hWnd)) return false;
-
-    // Control Panel and modern File Explorer share CabinetWClass. Detect the
-    // latter by its WinUI title-bar children instead of its DWM backdrop:
-    // translucency mods can replace or clear the backdrop attribute while the
-    // Explorer frame still requires full-client extension after an uncloak.
-    return FindWindowExW(hWnd, nullptr,
-                         L"TITLE_BAR_SCAFFOLDING_WINDOW_CLASS", nullptr) ||
-           FindWindowExW(hWnd, nullptr,
-                         L"Microsoft.UI.Content.DesktopChildSiteBridge",
-                         nullptr);
-}
-static bool IsFullscreenExplorerFrame(HWND hWnd) {
-    if (!IsExplorerFrameWindow(hWnd) || IsIconic(hWnd) ||
-        (GetWindowLongPtrW(hWnd, GWL_STYLE) & WS_CAPTION)) {
-        return false;
-    }
-
-    // F11 removes the caption, but leaves WS_MAXIMIZE and the modern title
-    // scaffold in place. Neither IsZoomed nor child existence distinguishes
-    // it from the windowed frame. Confirm monitor coverage in one DPI context.
-    const DPI_AWARENESS_CONTEXT previous = SetThreadDpiAwarenessContext(
-        DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
-    if (!previous) return false;
-    RECT windowRect{};
-    MONITORINFO monitorInfo{};
-    monitorInfo.cbSize = sizeof(monitorInfo);
-    const bool fullscreen =
-        GetWindowRect(hWnd, &windowRect) &&
-        GetMonitorInfoW(MonitorFromWindow(hWnd, MONITOR_DEFAULTTONEAREST),
-                        &monitorInfo) &&
-        EqualRect(&windowRect, &monitorInfo.rcMonitor);
-    SetThreadDpiAwarenessContext(previous);
-    return fullscreen;
-}
-static bool HasExplicitSystemBackdrop(HWND hWnd, UINT* backdropOut = nullptr) {
-    UINT backdrop = 0;
-    const bool present =
-        SUCCEEDED(DwmGetWindowAttribute(
-            hWnd, DWMWA_SYSTEMBACKDROP_TYPE, &backdrop,
-            sizeof(backdrop))) &&
-        backdrop >= 2;
-    if (backdropOut) *backdropOut = backdrop;
-    return present;
-}
-static bool IsTranslucentWindowsAccentBlurActive(HWND hWnd) {
-    // Reject ordinary windows before enumerating process modules. Keep the
-    // loaded-mod check dynamic so an old cached policy cannot revive an
-    // unloaded mod, and a mod enabled after injection can still be detected.
-    if (!GetCachedTranslucentWindowsAccentPolicy(hWnd) &&
-        !HasActiveWindowAccentPolicy(hWnd)) {
-        return false;
-    }
-
-    UINT backdrop = 0;
-    if (FAILED(DwmGetWindowAttribute(
-            hWnd, DWMWA_SYSTEMBACKDROP_TYPE, &backdrop,
-            sizeof(backdrop))) || backdrop >= 2) {
-        return false;
-    }
-    return IsTranslucentWindowsModLoaded();
-}
-static bool RequiresCpuClosePresentation(HWND hWnd) {
-    // Explorer and explicit system-backdrop windows use the stable layered
-    // CPU path to avoid unnecessary DWM chrome repair after an uncloak.
-    return IsExplorerFrameWindow(hWnd) || HasExplicitSystemBackdrop(hWnd);
-}
-static bool RequiresCpuLaunchPresentation(HWND hWnd) {
-    WCHAR cls[64]{};
-    // UniKey changes this dialog's utility-window state during ShowWindow.
-    // Its established layered-window launch path is stable, but placing a
-    // DirectComposition host into that transition can make the dialog abort
-    // its show sequence. Keep the animation and only change its renderer.
-    return GetClassNameW(hWnd, cls, ARRAYSIZE(cls)) &&
-           _wcsicmp(cls, L"UniKey MainWnd") == 0;
-}
-static bool RefreshDwmChromeAfterUncloak(HWND hWnd,
-                                         bool nonBlocking = false,
-                                         bool lightweight = false) {
-    if (!hWnd || !IsWindow(hWnd)) return false;
-    const bool explorerFrame = IsExplorerFrameWindow(hWnd);
-    const bool modernExplorerFrame =
-        explorerFrame && HasModernExplorerTitleFrame(hWnd);
-    UINT backdrop = 0;
-    const bool explicitBackdrop =
-        HasExplicitSystemBackdrop(hWnd, &backdrop);
-    const bool accentBlur =
-        !explicitBackdrop && IsTranslucentWindowsAccentBlurActive(hWnd);
-    if (!explorerFrame && !explicitBackdrop && !accentBlur) {
-        if (IsDiagnosticLoggingEnabled()) {
-            Wh_Log(L"DWM repair skipped hwnd=%p backdrop=%u accent_active=%d "
-                   L"accent_cached=%d", hWnd, backdrop,
-                   HasActiveWindowAccentPolicy(hWnd),
-                   GetCachedTranslucentWindowsAccentPolicy(hWnd));
-        }
-        return false;
-    }
-    if (accentBlur) {
-        // The startup sequence can clear the policy as well as its DWM blur
-        // support. Rebuild both from the owning mod's settings, not a guessed
-        // accent color; a still-active policy needs only the region refresh.
-        lightweight = false;
-        HRESULT blurResult = E_OUTOFMEMORY;
-        if (HRGN region = CreateRectRgn(0, 0, -1, -1)) {
-            DWM_BLURBEHIND blurBehind{};
-            blurBehind.dwFlags = DWM_BB_ENABLE | DWM_BB_BLURREGION |
-                                 DWM_BB_TRANSITIONONMAXIMIZED;
-            blurBehind.fEnable = TRUE;
-            blurBehind.hRgnBlur = region;
-            blurBehind.fTransitionOnMaximized = TRUE;
-            blurResult = DwmEnableBlurBehindWindow(hWnd, &blurBehind);
-            DeleteObject(region);
-        }
-        const bool restoredPolicy =
-            RestoreCachedTranslucentWindowsAccentPolicy(hWnd);
-        if (IsDiagnosticLoggingEnabled()) {
-            Wh_Log(L"AccentBlur repair hwnd=%p policy_cached=%d "
-                   L"policy_restored=%d blur_hr=0x%08X",
-                   hWnd, GetCachedTranslucentWindowsAccentPolicy(hWnd),
-                   restoredPolicy, static_cast<unsigned>(blurResult));
-        }
-    }
-    if (explicitBackdrop) {
-        DwmSetWindowAttribute(hWnd, DWMWA_SYSTEMBACKDROP_TYPE, &backdrop, sizeof(backdrop));
-        if (lightweight && modernExplorerFrame && backdrop >= 2) {
-            UINT reappliedBackdrop = backdrop;
-            if (SUCCEEDED(DwmGetWindowAttribute(
-                    hWnd, DWMWA_SYSTEMBACKDROP_TYPE, &reappliedBackdrop,
-                    sizeof(reappliedBackdrop))) &&
-                reappliedBackdrop < 2 &&
-                HasActiveWindowAccentPolicy(hWnd)) {
-                // AccentBlur compatibility mods can intercept the native
-                // Explorer backdrop reassertion and replace it with AUTO.
-                // That transition needs the complete frame repair below;
-                // returning through the lightweight path leaves the title
-                // surface black.
-                lightweight = false;
-                if (IsDiagnosticLoggingEnabled()) {
-                    Wh_Log(L"Explorer backdrop reassertion overridden "
-                           L"hwnd=%p requested=%u actual=%u",
-                           hWnd, backdrop, reappliedBackdrop);
-                }
-            }
-        }
-    }
-    if ((explorerFrame || accentBlur) && !lightweight) {
-        // CabinetWClass also hosts classic shell surfaces such as Control
-        // Panel. Keep their normal zero client-area extension, but preserve
-        // full-client extension for windowed modern File Explorer even if
-        // another mod changed its backdrop. F11's native solid client needs
-        // zero margins; forcing full-client glass there exposes the backdrop
-        // after restore. Intentional AccentBlur retains its full extension.
-        MARGINS margins{};
-        if (accentBlur ||
-            ((modernExplorerFrame || explicitBackdrop) &&
-             (!IsFullscreenExplorerFrame(hWnd) ||
-              (explicitBackdrop &&
-               IsTranslucentWindowsAccentBlurActive(hWnd))))) {
-            margins = {-1, -1, -1, -1};
-        }
-        DwmExtendFrameIntoClientArea(hWnd, &margins);
-    }
-    if (lightweight) {
-        // Alt+Tab only needs an explicit backdrop value reasserted after its
-        // short cloak. Extending Explorer's frame across the full client here
-        // can leave the default Explorer UI participating in Mica because this
-        // lightweight path intentionally skips the later frame/composition
-        // rebuild. A full SWP_FRAMECHANGED can also stall heavily styled XAML
-        // content, so leave Explorer's existing frame margins untouched.
-        return true;
-    }
-    SetWindowPos_Original(
-        hWnd, nullptr, 0, 0, 0, 0,
-        SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE |
-            SWP_FRAMECHANGED | (nonBlocking ? SWP_ASYNCWINDOWPOS : 0));
-    if (nonBlocking) {
-        // RedrawWindow can synchronously marshal to the owner. Let the queued
-        // frame change and composition notification repaint a foreign window.
-        PostMessageW(hWnd, WM_DWMCOMPOSITIONCHANGED, 0, 0);
-    } else {
-        RedrawWindow(hWnd, nullptr, nullptr,
-                     RDW_INVALIDATE | RDW_ERASE | RDW_FRAME |
-                         RDW_ALLCHILDREN);
-        SendMessageTimeoutW(hWnd, WM_DWMCOMPOSITIONCHANGED, 0, 0,
-                            SMTO_ABORTIFHUNG | SMTO_NORMAL, 50, nullptr);
-    }
-    return true;
-}
-static void RestoreSwitchTargetAfterUncloak(HWND hWnd,
-                                             BOOL needsFullExplorerRepair) {
-    if (!hWnd || !IsWindow(hWnd)) return;
-
-    SetWindowCloak(hWnd, FALSE);
-    // Accent-policy acrylic can retain its policy while its visual becomes
-    // stale across a cloak. The repair helper rebuilds Translucent Windows'
-    // active AccentBlur path even when lightweight cleanup was requested.
-    // Default Explorer keeps the lightweight cleanup.
-    RefreshDwmChromeAfterUncloak(
-        hWnd, /*nonBlocking=*/true,
-        /*lightweight=*/!needsFullExplorerRepair);
-}
-static void RestoreLayeredOpacity(HWND hWnd, LONG_PTR originalExStyle) {
-    SetLayeredWindowAttributes(hWnd, 0, 255, LWA_ALPHA);
-    if (!(originalExStyle & WS_EX_LAYERED)) {
-        SetWindowLongPtrW(hWnd, GWL_EXSTYLE, GetWindowLongPtrW(hWnd, GWL_EXSTYLE) & ~WS_EX_LAYERED);
-    }
-}
-static void UndoRisingHide(HWND hWnd, LONG_PTR originalExStyle, BOOL cloakHidden) {
-    if (cloakHidden) SetWindowCloak(hWnd, FALSE);
-    else RestoreLayeredOpacity(hWnd, originalExStyle);
-    UpdateDwmTransitions(hWnd, TRUE);
-    RestoreZOrderAfterGhost(hWnd, originalExStyle);
-    if (cloakHidden) RefreshDwmChromeAfterUncloak(hWnd);
-}
-static void UndoRisingHideNonBlocking(HWND hWnd, LONG_PTR originalExStyle,
-                                     BOOL cloakHidden) {
-    if (!hWnd || !IsWindow(hWnd)) return;
-    if (cloakHidden) SetWindowCloak(hWnd, FALSE);
-    else RestoreLayeredOpacity(hWnd, originalExStyle);
-    UpdateDwmTransitions(hWnd, TRUE);
-    RestoreZOrderAfterGhostAsync(hWnd, originalExStyle);
-}
-static void FailAnimationStart(HWND hWnd, BOOL rising, LONG_PTR originalExStyle, BOOL cloakHidden,
-                               bool skipDwmIfOwned = false) {
-    if (rising || cloakHidden) {
-        const DWORD targetThreadId = GetWindowThreadProcessId(hWnd, nullptr);
-        if (targetThreadId && targetThreadId == GetCurrentThreadId()) {
-            UndoRisingHide(hWnd, originalExStyle, cloakHidden);
-        } else {
-            // Failure cleanup must not synchronously enter a foreign/hung UI
-            // thread. The asynchronous z-order repair is sufficient here.
-            UndoRisingHideNonBlocking(hWnd, originalExStyle, cloakHidden);
-        }
-        return;
-    }
-    if (skipDwmIfOwned) {
-        bool owned = false;
-        { std::lock_guard<std::mutex> lock(g_StateMutex); owned = g_AnimActive.count(hWnd) != 0; }
-        if (owned) return;
-    }
-    UpdateDwmTransitions(hWnd, TRUE);
-}
-
-static void FinalizeAsyncRestoreReservation(HWND hWnd, uint64_t generation,
-                                             LONG_PTR originalExStyle,
-                                             bool initialRestoreSubmitted,
-                                             BOOL restoreMaximized) {
-    const ULONG_PTR pairedEffectToken =
-        ReadMinRestorePairToken(hWnd, nullptr);
-    bool haveLastSubmission = initialRestoreSubmitted;
-    bool lastSubmittedRising = true;
-    bool lastSubmissionObserved = false;
-    bool timedOutRecovery = false;
-
-    for (;;) {
-        bool wantRising = true;
-        {
-            std::lock_guard<std::mutex> lock(g_StateMutex);
-            auto reservationIt = g_AsyncRestoreReservations.find(hWnd);
-            auto directionIt = g_AnimWantRising.find(hWnd);
-            if (reservationIt == g_AsyncRestoreReservations.end() ||
-                reservationIt->second != generation ||
-                directionIt == g_AnimWantRising.end() || !g_AnimActive.count(hWnd)) {
-                return;
-            }
-            wantRising = directionIt->second;
-        }
-
-        if (!IsWindow(hWnd)) {
-            std::lock_guard<std::mutex> lock(g_StateMutex);
-            auto reservationIt = g_AsyncRestoreReservations.find(hWnd);
-            if (reservationIt != g_AsyncRestoreReservations.end() &&
-                reservationIt->second == generation) {
-                g_AsyncRestoreReservations.erase(reservationIt);
-                g_AnimActive.erase(hWnd);
-                g_AnimWantRising.erase(hWnd);
-                g_AnimRestoreRequestForeground.erase(hWnd);
-            }
-            return;
-        }
-
-        if (haveLastSubmission && !lastSubmissionObserved) {
-            const DWORD deadline = GetTickCount() + AnimConstants::NativeStateWaitMs;
-            while (IsWindow(hWnd) && !g_unloading.load(std::memory_order_relaxed) &&
-                   !HasReachedNativeShowState(hWnd, lastSubmittedRising,
-                                              restoreMaximized) &&
-                   (LONG)(GetTickCount() - deadline) < 0) {
-                // Do not wait for a pending native transition after the user
-                // has already requested the opposite direction. Let the next
-                // loop submit the newest state immediately; the animation can
-                // then start/reverse from that direction instead of timing out.
-                bool latestWantRising = lastSubmittedRising;
-                if (GetAsyncRestoreReservation(hWnd, generation,
-                                              &latestWantRising) &&
-                    latestWantRising != lastSubmittedRising) {
-                    break;
-                }
-                Sleep(10);
-            }
-            if (!IsWindow(hWnd)) continue;
-            bool latestWantRising = lastSubmittedRising;
-            if (GetAsyncRestoreReservation(hWnd, generation,
-                                           &latestWantRising) &&
-                latestWantRising != lastSubmittedRising) {
-                haveLastSubmission = false;
-                lastSubmissionObserved = false;
-                continue;
-            }
-            if (!g_unloading.load(std::memory_order_relaxed) &&
-                HasReachedNativeShowState(hWnd, lastSubmittedRising,
-                                          restoreMaximized)) {
-                lastSubmissionObserved = true;
-                continue;
-            }
-            if (!g_unloading.load(std::memory_order_relaxed)) {
-                Wh_Log(L"Async restore state timeout hwnd=%p rising=%d", hWnd,
-                       lastSubmittedRising);
-            }
-            timedOutRecovery = true;
-            haveLastSubmission = false;
-            lastSubmissionObserved = false;
-            continue;
-        }
-        if (!haveLastSubmission || wantRising != lastSubmittedRising) {
-            const BOOL submitted = g_unloading.load(std::memory_order_relaxed)
-                                       ? FALSE
-                                       : ShowWindowAsync_Original(
-                                             hWnd,
-                                             wantRising
-                                                 ? StableRestoreShowCmd(hWnd, restoreMaximized)
-                                                 : SW_MINIMIZE);
-            haveLastSubmission = true;
-            lastSubmittedRising = wantRising;
-            if (!submitted) timedOutRecovery = true;
-            lastSubmissionObserved = timedOutRecovery;
-            continue;
-        }
-        const DWORD targetThreadId = GetWindowThreadProcessId(hWnd, nullptr);
-        if (timedOutRecovery ||
-            !targetThreadId || targetThreadId != GetCurrentThreadId()) {
-            UndoRisingHideNonBlocking(hWnd, originalExStyle, TRUE);
-        } else {
-            UndoRisingHide(hWnd, originalExStyle, TRUE);
-        }
-        bool directionChanged = false;
-        bool completed = false;
-        {
-            std::lock_guard<std::mutex> lock(g_StateMutex);
-            auto reservationIt = g_AsyncRestoreReservations.find(hWnd);
-            auto directionIt = g_AnimWantRising.find(hWnd);
-            if (reservationIt == g_AsyncRestoreReservations.end() ||
-                reservationIt->second != generation ||
-                directionIt == g_AnimWantRising.end() || !g_AnimActive.count(hWnd)) {
-                return;
-            }
-            directionChanged = directionIt->second != wantRising;
-            if (!directionChanged) {
-                if (wantRising) EraseSnapshotLocked(hWnd);
-                g_AsyncRestoreReservations.erase(reservationIt);
-                g_AnimActive.erase(hWnd);
-                g_AnimWantRising.erase(hWnd);
-                g_AnimRestoreRequestForeground.erase(hWnd);
-                completed = true;
-            }
-        }
-        if (completed) {
-            // No custom animation session owns this token. A native fallback
-            // must end the pending pair so it can't leak into a later cycle.
-            ClearMinRestorePairIfCurrent(hWnd, pairedEffectToken);
-            if (wantRising) {
-                if (restoreMaximized) {
-                    ArmMaximizedRestoreGuard(
-                        hWnd,
-                        static_cast<DWORD>(GetDoubleClickTime() + 100));
-                }
-            }
-            return;
-        }
-
-        UpdateDwmTransitions(hWnd, FALSE);
-        SetWindowCloak(hWnd, TRUE);
-    }
-}
-
-static void AbortAsyncRestoreReservation(HWND hWnd, uint64_t generation,
-                                         LONG_PTR originalExStyle,
-                                         bool initialRestoreSubmitted,
-                                         BOOL restoreMaximized) {
-    const ULONG_PTR pairedEffectToken =
-        ReadMinRestorePairToken(hWnd, nullptr);
-    bool wantRising = true;
-    {
-        std::lock_guard<std::mutex> lock(g_StateMutex);
-        auto reservationIt = g_AsyncRestoreReservations.find(hWnd);
-        auto directionIt = g_AnimWantRising.find(hWnd);
-        if (reservationIt == g_AsyncRestoreReservations.end() ||
-            reservationIt->second != generation ||
-            directionIt == g_AnimWantRising.end() || !g_AnimActive.count(hWnd)) {
-            return;
-        }
-        wantRising = directionIt->second;
-        if (IsWindow(hWnd) && !g_unloading.load(std::memory_order_relaxed) &&
-            (initialRestoreSubmitted || !wantRising)) {
-            ShowWindowAsync_Original(
-                hWnd, wantRising ? StableRestoreShowCmd(hWnd, restoreMaximized)
-                                 : SW_MINIMIZE);
-        }
-        if (wantRising) EraseSnapshotLocked(hWnd);
-        g_AnimWantRising.erase(directionIt);
-        g_AnimRestoreRequestForeground.erase(hWnd);
-        g_AsyncRestoreReservations.erase(reservationIt);
-    }
-
-    UndoRisingHideNonBlocking(hWnd, originalExStyle, TRUE);
-    ClearMinRestorePairIfCurrent(hWnd, pairedEffectToken);
-    if (wantRising) {
-        if (initialRestoreSubmitted && restoreMaximized) {
-            ArmMaximizedRestoreGuard(
-                hWnd,
-                static_cast<DWORD>(GetDoubleClickTime() + 100));
-        }
-    }
-    std::lock_guard<std::mutex> lock(g_StateMutex);
-    g_AnimActive.erase(hWnd);
-}
-static bool IsShowCmdForWinEvent(int cmd) {
-    return cmd == SW_SHOW || cmd == SW_SHOWNORMAL || cmd == SW_SHOWMAXIMIZED || cmd == SW_RESTORE ||
-           cmd == SW_SHOWDEFAULT || cmd == SW_SHOWMINIMIZED || cmd == SW_SHOWMINNOACTIVE ||
-           cmd == SW_SHOWNA || cmd == SW_SHOWNOACTIVATE;
-}
-std::wstring GetProcessNameCached(HWND hWnd) {
-    DWORD ownerPid = 0;
-    const DWORD ownerTid = GetWindowThreadProcessId(hWnd, &ownerPid);
-    const ULONG_PTR windowToken = reinterpret_cast<ULONG_PTR>(
-        GetPropW(hWnd, kPropTaskbarDockIdentity));
-    {
-        std::lock_guard<std::mutex> lock(g_StateMutex);
-        auto it = g_ProcessNameCache.find(hWnd);
-        if (it != g_ProcessNameCache.end() &&
-            it->second.processId == ownerPid &&
-            it->second.threadId == ownerTid &&
-            it->second.windowToken == windowToken) {
-            return it->second.name;
-        }
-        if (it != g_ProcessNameCache.end()) g_ProcessNameCache.erase(it);
-    }
-    std::wstring procNameLower = L"";
-    if (ownerPid) {
-        HANDLE hProc = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, ownerPid);
-        if (hProc) {
-            WCHAR exePath[MAX_PATH] = {0};
-            DWORD exePathLen = MAX_PATH;
-            if (QueryFullProcessImageNameW(hProc, 0, exePath, &exePathLen)) {
-                WCHAR* name = wcsrchr(exePath, L'\\');
-                if (name) {
-                    procNameLower = (name + 1);
-                    size_t dotPos = procNameLower.find(L'.');
-                    if (dotPos != std::wstring::npos) procNameLower = procNameLower.substr(0, dotPos);
-                    std::transform(procNameLower.begin(), procNameLower.end(), procNameLower.begin(), ::towlower);
-                }
-            }
-            CloseHandle(hProc);
-        }
-    }
-    {
-        std::lock_guard<std::mutex> lock(g_StateMutex);
-        // A transient OpenProcess/QueryFullProcessImageName failure must not
-        // permanently remove the process-name hint for this HWND. In
-        // particular, "explorer" is often the only stable UIA match for a
-        // File Explorer taskbar button whose caption is the current folder.
-        if (!procNameLower.empty()) {
-            g_ProcessNameCache[hWnd] =
-                ProcessNameCacheValue{ownerPid, ownerTid, windowToken,
-                                      procNameLower};
-        }
-    }
-    return procNameLower;
-}
-static bool NeedsLocalWinEventThread() {
-    const bool needTaskbarObserver =
-        IsShellExplorerProcess() &&
-        (g_minimizeAnimation.load(std::memory_order_relaxed) ||
-         g_restoreAnimation.load(std::memory_order_relaxed));
-    const bool needTrayHideVisibilityObserver =
-        g_closeAnimation.load(std::memory_order_relaxed) &&
-        g_hideAsClose.load(std::memory_order_relaxed);
-    return g_switchAnimation.load(std::memory_order_relaxed) ||
-           needTaskbarObserver || needTrayHideVisibilityObserver;
-}
-
-void EnsureWinEventThreadStarted() {
-    // This is also a lazy recovery path for a shell that became ready after
-    // the ownership probe's initial fast-poll period.
-    if (g_switchAnimation.load(std::memory_order_relaxed)) {
-        EnsureExplorerForegroundThreadStarted();
-    }
-    if (g_winEventThreadStarted.load(std::memory_order_relaxed)) return;
-    if (g_unloading.load(std::memory_order_relaxed)) return;
-    if (!NeedsLocalWinEventThread()) return;
-    std::lock_guard<std::mutex> lock(g_StateMutex);
-    if (g_unloading.load(std::memory_order_relaxed)) return;
-    if (!NeedsLocalWinEventThread()) return;
-    if (IsShellExplorerProcess()) EnsureSharedStateMapped();
-    if (g_hWinEventThread &&
-        WaitForSingleObject(g_hWinEventThread, 0) == WAIT_OBJECT_0) {
-        CloseHandle(g_hWinEventThread);
-        g_hWinEventThread = NULL;
-        g_winEventThreadStarted.store(false, std::memory_order_relaxed);
-    }
-    if (g_hWinEventThread || g_winEventThreadStarted.load(std::memory_order_relaxed)) return;
-    g_winEventThreadStarted.store(true, std::memory_order_relaxed);
-    HANDLE hThread = CreateThread(NULL, 0, WinEventHookThread, NULL, 0, NULL);
-    if (!hThread) {
-        g_winEventThreadStarted.store(false, std::memory_order_relaxed);
-        return;
-    }
-    g_hWinEventThread = hThread;
-}
-static bool IsAppMainWindow(HWND hWnd, bool forSwitch = false) {
-    if (!hWnd || !IsWindow(hWnd) || !IsWindowVisible(hWnd) || IsIconic(hWnd) || GetAncestor(hWnd, GA_ROOT) != hWnd) return false;
-    const LONG_PTR style = GetWindowLongPtrW(hWnd, GWL_STYLE);
-    const LONG_PTR exStyle = GetWindowLongPtrW(hWnd, GWL_EXSTYLE);
-    if ((style & WS_CHILD) || (exStyle & WS_EX_TOOLWINDOW) || GetWindow(hWnd, GW_OWNER)) return false;
-    const auto cls = GetClassNameStr(hWnd);
-    RECT r{};
-    bool isMain = GetWindowRect(hWnd, &r) && r.right - r.left >= 300 && r.bottom - r.top >= 300;
-    return isMain;
-}
-static bool CanAnimateCloseMessage(HWND hWnd) {
-    return ContainsClass(GetClassNameStr(hWnd),
-                         kCloseMessageAnimationClasses);
-}
-static bool NeedsPersistentTrayHideCloak(HWND hWnd) {
-    if (!hWnd || !IsWindow(hWnd)) return false;
-    WCHAR className[64]{};
-    if (GetClassNameW(hWnd, className, ARRAYSIZE(className)) &&
-        _wcsicmp(className, L"Tauri Window") == 0) {
-        return true;
-    }
-    // Tauri normally uses the class above, but checking its WRY child keeps
-    // the workaround valid for applications that customize the root class.
-    return FindWindowExW(hWnd, nullptr, L"WRY_WEBVIEW", nullptr) != nullptr;
-}
-
-static bool RequiresExcelScreenOnlyCloseCapture(HWND hWnd, bool isClosing) {
-    if (!isClosing) return false;
-    WCHAR className[64]{};
-    // Never send WM_PRINT into Office while workbook UI objects are being
-    // torn down. A clean composed-screen snapshot is safe to attempt; when
-    // obscured/unavailable, let the original close proceed without animation.
-    return GetClassNameW(hWnd, className, ARRAYSIZE(className)) &&
-           _wcsicmp(className, L"XLMAIN") == 0 &&
-           GetProcessNameCached(hWnd) == L"excel";
-}
-
-static bool RequiresExcelAlphaOnlyCloseConcealment(
-    HWND hWnd, LONG_PTR originalExStyle) {
-    // Change only Excel's close concealment for compatibility.
-    // Never replace opacity owned by an already-layered application window.
-    if (originalExStyle & WS_EX_LAYERED) return false;
-    WCHAR className[64]{};
-    return GetClassNameW(hWnd, className, ARRAYSIZE(className)) &&
-           _wcsicmp(className, L"XLMAIN") == 0 &&
-           GetProcessNameCached(hWnd) == L"excel";
-}
-
-static void SetExcelCloseTransparency(HWND hWnd, BOOL hide) {
-    if (!hWnd || !IsWindow(hWnd)) return;
-    if (!hide) {
-        // Remove ownership before restoring opacity. A delayed first frame
-        // must not make a window transparent after its native hide completed
-        // or failed while the caller's bounded wait was expiring.
-        if (RemovePropW(hWnd, kPropExcelCloseAlpha)) {
-            RestoreLayeredOpacity(hWnd, 0);  // Only non-layered HWNDs qualify.
-        }
-        return;
-    }
-    if (!GetPropW(hWnd, kPropExcelCloseAlpha)) return;
-    SetWindowLongPtrW(hWnd, GWL_EXSTYLE,
-                      GetWindowLongPtrW(hWnd, GWL_EXSTYLE) | WS_EX_LAYERED);
-    SetLayeredWindowAttributes(hWnd, 0, 0, LWA_ALPHA);
-    // Style notifications can enter the owning thread. If it completed the
-    // native hide during that call, undo this late transparency immediately.
-    if (!GetPropW(hWnd, kPropExcelCloseAlpha)) {
-        RestoreLayeredOpacity(hWnd, 0);
-    }
-}
-
-static constexpr bool IsWithinTransientTauriShowHideWindow(
-    DWORD shownAt, DWORD now) {
-    return static_cast<DWORD>(now - shownAt) <=
-           AnimConstants::TransientTauriShowHideMs;
-}
-static_assert(IsWithinTransientTauriShowHideWindow(100, 350));
-static_assert(!IsWithinTransientTauriShowHideWindow(100, 351));
-static_assert(IsWithinTransientTauriShowHideWindow(0xFFFFFFF0u, 0x20u));
-
-static void ArmTransientTauriShowHideGuard(HWND hWnd) {
-    const DWORD savedError = GetLastError();
-    if (!NeedsPersistentTrayHideCloak(hWnd) || !IsWindowVisible(hWnd)) {
-        SetLastError(savedError);
-        return;
-    }
-
-    DWORD shownAt = GetTickCount();
-    if (!shownAt) shownAt = 1;
-    SetPropW(hWnd, kPropTransientTauriShowTick,
-             reinterpret_cast<HANDLE>(static_cast<ULONG_PTR>(shownAt)));
-    SetLastError(savedError);
-}
-
-static bool ConsumeTransientTauriShowHideGuard(HWND hWnd) {
-    const DWORD savedError = GetLastError();
-    const DWORD shownAt = static_cast<DWORD>(reinterpret_cast<ULONG_PTR>(
-        GetPropW(hWnd, kPropTransientTauriShowTick)));
-    if (!shownAt) {
-        SetLastError(savedError);
-        return false;
-    }
-
-    RemovePropW(hWnd, kPropTransientTauriShowTick);
-    const DWORD now = GetTickCount();
-    const bool transient =
-        IsWithinTransientTauriShowHideWindow(shownAt, now);
-    if (transient && IsDiagnosticLoggingEnabled()) {
-        Wh_Log(L"Close animation bypassed for transient Tauri show/hide "
-               L"hwnd=%p elapsed=%lu ms",
-               hWnd, static_cast<unsigned long>(now - shownAt));
-    }
-    SetLastError(savedError);
-    return transient;
-}
-
-static bool ShouldTreatHideAsClose(HWND hWnd) {
-    if (!g_hideAsClose.load(std::memory_order_relaxed) ||
-        !g_closeAnimation.load(std::memory_order_relaxed) ||
-        !IsAppMainWindow(hWnd) || CanAnimateCloseMessage(hWnd)) {
-        return false;
-    }
-    return !ConsumeTransientTauriShowHideGuard(hWnd);
-}
-
-static ULONG_PTR ReadTrayHideCloakToken(HWND hWnd) {
-    if (!hWnd) return 0;
-    const DWORD savedError = GetLastError();
-    ULONG_PTR token = 0;
-    {
-        std::lock_guard<std::mutex> lock(g_TrayHideCloakMutex);
-        token = reinterpret_cast<ULONG_PTR>(
-            GetPropW(hWnd, kPropTrayHideCloak));
-    }
-    // A missing property sets ERROR_FILE_NOT_FOUND. This compatibility query
-    // must not change the error state passed into the native show operation.
-    SetLastError(savedError);
-    return token;
-}
-
-static ULONG_PTR RetainTrayHideCloak(HWND hWnd) {
-    if (!hWnd || !IsWindow(hWnd)) return 0;
-
-    // A retained cloak must have an actual-state observer even when this
-    // process had no qualifying window when the mod finished initializing.
-    EnsureWinEventThreadStarted();
-
-    ULONG_PTR serial =
-        g_NextTrayHideCloakToken.fetch_add(1, std::memory_order_relaxed) + 1;
-    ULONG_PTR token =
-        serial ^ reinterpret_cast<ULONG_PTR>(hWnd) ^
-        (static_cast<ULONG_PTR>(GetCurrentProcessId()) *
-         static_cast<ULONG_PTR>(0x27D4EB2Du)) ^
-        static_cast<ULONG_PTR>(GetTickCount());
-    if (!token) token = 1;
-
-    bool becameVisible = false;
-    {
-        std::lock_guard<std::mutex> lock(g_TrayHideCloakMutex);
-        if (!IsWindow(hWnd) || IsWindowVisible(hWnd)) return 0;
-
-        RemovePropW(hWnd, kPropTrayHideShowHandoff);
-        const BOOL cloak = TRUE;
-        if (FAILED(DwmSetWindowAttribute(hWnd, DWMWA_CLOAK, &cloak,
-                                         sizeof(cloak)))) {
-            return 0;
-        }
-        if (!SetPropW(hWnd, kPropTrayHideCloak,
-                      reinterpret_cast<HANDLE>(token))) {
-            const BOOL uncloak = FALSE;
-            DwmSetWindowAttribute(hWnd, DWMWA_CLOAK, &uncloak,
-                                  sizeof(uncloak));
-            return 0;
-        }
-
-        // The app can race the animation thread after FinishClose observes
-        // the native hide. Never publish a retained cloak on an HWND which
-        // has already become visible again. Visibility observers cover a show
-        // which lands immediately after this final check.
-        becameVisible = IsWindowVisible(hWnd) != FALSE;
-        if (becameVisible) {
-            RemovePropW(hWnd, kPropTrayHideCloak);
-            const BOOL uncloak = FALSE;
-            DwmSetWindowAttribute(hWnd, DWMWA_CLOAK, &uncloak,
-                                  sizeof(uncloak));
-        }
-    }
-    if (becameVisible) {
-        UpdateDwmTransitions(hWnd, TRUE);
-        ArmTransientTauriShowHideGuard(hWnd);
-        return 0;
-    }
-    return token;
-}
-
-static bool BeginTrayHideShowHandoff(HWND hWnd, ULONG_PTR token) {
-    if (!hWnd || !token) return false;
-    std::lock_guard<std::mutex> lock(g_TrayHideCloakMutex);
-    if (reinterpret_cast<ULONG_PTR>(
-            GetPropW(hWnd, kPropTrayHideCloak)) != token) {
-        return false;
-    }
-    return SetPropW(hWnd, kPropTrayHideShowHandoff,
-                    reinterpret_cast<HANDLE>(token)) != FALSE;
-}
-
-static void EndTrayHideShowHandoffIfCurrent(HWND hWnd, ULONG_PTR token) {
-    if (!hWnd || !token) return;
-    std::lock_guard<std::mutex> lock(g_TrayHideCloakMutex);
-    if (reinterpret_cast<ULONG_PTR>(
-            GetPropW(hWnd, kPropTrayHideShowHandoff)) == token) {
-        RemovePropW(hWnd, kPropTrayHideShowHandoff);
-    }
-}
-
-static bool TransferTrayHideCloakToLaunch(HWND hWnd, ULONG_PTR token) {
-    if (!hWnd || !token) return false;
-    {
-        std::lock_guard<std::mutex> lock(g_TrayHideCloakMutex);
-        if (reinterpret_cast<ULONG_PTR>(
-                GetPropW(hWnd, kPropTrayHideCloak)) != token) {
-            return false;
-        }
-        RemovePropW(hWnd, kPropTrayHideCloak);
-        if (reinterpret_cast<ULONG_PTR>(
-                GetPropW(hWnd, kPropTrayHideShowHandoff)) == token) {
-            RemovePropW(hWnd, kPropTrayHideShowHandoff);
-        }
-    }
-    return true;
-}
-
-static bool ReleaseTrayHideCloakIfCurrent(HWND hWnd, ULONG_PTR token) {
-    if (!hWnd || !token || !IsWindow(hWnd)) return false;
-    {
-        std::lock_guard<std::mutex> lock(g_TrayHideCloakMutex);
-        if (reinterpret_cast<ULONG_PTR>(
-                GetPropW(hWnd, kPropTrayHideCloak)) != token) {
-            return false;
-        }
-        // A hooked show can intentionally transfer the retained cloak to a
-        // launch animation after the native visibility change. The generic
-        // state observers must not release it in the middle of that handoff.
-        if (reinterpret_cast<ULONG_PTR>(
-                GetPropW(hWnd, kPropTrayHideShowHandoff)) == token) {
-            return false;
-        }
-        // The native show has restored WS_VISIBLE while the stale surface is
-        // still protected. Commit that visible state before removing the
-        // retained cloak so WebView-backed windows resume from a real frame.
-        FlushDwmOrYield();
-        const BOOL cloak = FALSE;
-        if (FAILED(DwmSetWindowAttribute(hWnd, DWMWA_CLOAK, &cloak,
-                                         sizeof(cloak)))) {
-            return false;
-        }
-        RemovePropW(hWnd, kPropTrayHideCloak);
-    }
-    UpdateDwmTransitions(hWnd, TRUE);
-    if (IsWindowVisible(hWnd)) {
-        ArmTransientTauriShowHideGuard(hWnd);
-    }
-    return true;
-}
-
-static bool ReleaseVisibleTrayHideCloak(HWND hWnd) {
-    if (!hWnd || !IsWindow(hWnd) || !IsWindowVisible(hWnd)) return false;
-    const ULONG_PTR token = ReadTrayHideCloakToken(hWnd);
-    return token && ReleaseTrayHideCloakIfCurrent(hWnd, token);
-}
-
-struct TrayHideCloakReleaseData {
-    HWND hWnd;
-    ULONG_PTR token;
-};
-
-static DWORD WINAPI TrayHideCloakReleaseThread(LPVOID lpParam) {
-    std::unique_ptr<TrayHideCloakReleaseData> releaseData(
-        static_cast<TrayHideCloakReleaseData*>(lpParam));
-    const DWORD deadline = GetTickCount() + 5000;
-    while (!g_unloading.load(std::memory_order_relaxed) &&
-           IsWindow(releaseData->hWnd) &&
-           ReadTrayHideCloakToken(releaseData->hWnd) ==
-               releaseData->token &&
-           static_cast<LONG>(GetTickCount() - deadline) < 0) {
-        if (IsWindowVisible(releaseData->hWnd)) {
-            ReleaseTrayHideCloakIfCurrent(releaseData->hWnd,
-                                          releaseData->token);
-            break;
-        }
-        Sleep(10);
-    }
-    return 0;
-}
-
-static void ReleaseTrayHideCloakAfterAsyncShow(HWND hWnd, ULONG_PTR token) {
-    if (!hWnd || !token) return;
-    if (IsWindowVisible(hWnd)) {
-        ReleaseTrayHideCloakIfCurrent(hWnd, token);
-        return;
-    }
-    auto* releaseData = new (std::nothrow)
-        TrayHideCloakReleaseData{hWnd, token};
-    if (!releaseData ||
-        !StartWorkerThread(TrayHideCloakReleaseThread, releaseData)) {
-        delete releaseData;
-        // A submitted show must not leave the application permanently
-        // invisible just because the short-lived observer couldn't start.
-        ReleaseTrayHideCloakIfCurrent(hWnd, token);
-    }
-}
-
-static bool ShouldAnimateWindow(HWND hWnd) {
-    if (!hWnd || (GetWindowLongPtrW(hWnd, GWL_STYLE) & WS_CHILD)) return false;
-    RECT r{};
-    if (IsIconic(hWnd)) {
-        WINDOWPLACEMENT wp{}; wp.length = sizeof(wp);
-        if (!GetWindowPlacement(hWnd, &wp)) return false;
-        r = wp.rcNormalPosition;
-    } else if (!GetWindowRect(hWnd, &r)) return false;
-    return r.right - r.left >= 40 && r.bottom - r.top >= 40;
-}
-static bool IsLaunchWindow(HWND hWnd) {
-    if (!hWnd || GetAncestor(hWnd, GA_ROOT) != hWnd) return false;
-    const LONG_PTR style = GetWindowLongPtrW(hWnd, GWL_STYLE);
-    const LONG_PTR exStyle = GetWindowLongPtrW(hWnd, GWL_EXSTYLE);
-    return (style & WS_CAPTION) && !(exStyle & WS_EX_TOOLWINDOW) &&
-           ShouldAnimateWindow(hWnd);
-}
-struct MozillaBrowserWindowSearch {
-    HWND excludedWindow;
-    DWORD processId;
-    bool found;
-};
-static BOOL CALLBACK FindOtherMozillaBrowserWindowProc(HWND hWnd,
-                                                        LPARAM lParam) {
-    auto* search =
-        reinterpret_cast<MozillaBrowserWindowSearch*>(lParam);
-    if (hWnd == search->excludedWindow ||
-        (!IsWindowVisible(hWnd) && !IsIconic(hWnd)) ||
-        GetAncestor(hWnd, GA_ROOT) != hWnd) {
-        return TRUE;
-    }
-    DWORD processId = 0;
-    GetWindowThreadProcessId(hWnd, &processId);
-    if (processId != search->processId) return TRUE;
-
-    WCHAR className[64]{};
-    if (GetClassNameW(hWnd, className, ARRAYSIZE(className)) &&
-        _wcsicmp(className, L"MozillaWindowClass") == 0) {
-        search->found = true;
-        return FALSE;
-    }
-    return TRUE;
-}
-static bool RequiresMozillaAlphaOnlyLaunchConcealment(HWND hWnd) {
-    WCHAR className[64]{};
-    if (!GetClassNameW(hWnd, className, ARRAYSIZE(className)) ||
-        _wcsicmp(className, L"MozillaWindowClass") != 0) {
-        return false;
-    }
-
-    MozillaBrowserWindowSearch search{
-        hWnd, GetCurrentProcessId(), false};
-    EnumWindows(FindOtherMozillaBrowserWindowProc,
-                reinterpret_cast<LPARAM>(&search));
-    return !search.found;
-}
-HWND FindTaskbarForMonitor(HMONITOR hMon) {
-    HWND hMainTray = FindWindowW(L"Shell_TrayWnd", NULL);
-    HMONITOR mainMon = MonitorFromWindow(hMainTray, MONITOR_DEFAULTTOPRIMARY);
-    if (hMon == mainMon || !hMon) return hMainTray;
-    HWND hSecTray = NULL;
-    while ((hSecTray = FindWindowExW(NULL, hSecTray, L"Shell_SecondaryTrayWnd", NULL)) != NULL) {
-        if (MonitorFromWindow(hSecTray, MONITOR_DEFAULTTONULL) == hMon) {
-            return hSecTray;
-        }
-    }
-    return hMainTray;
-}
-static UINT GetWindowDpiCompat(HWND hWnd) {
-    using GetDpiForWindow_t = UINT(WINAPI*)(HWND);
-    static const auto getDpiForWindow = reinterpret_cast<GetDpiForWindow_t>(
-        GetProcAddress(GetModuleHandleW(L"user32.dll"), "GetDpiForWindow"));
-    const UINT dpi = getDpiForWindow && hWnd ? getDpiForWindow(hWnd) : 0;
-    return dpi ? dpi : 96;
-}
-static bool IsLaunchSurfaceSizeReady(HWND hWnd, int width, int height) {
-    WCHAR className[64]{};
-    if (!GetClassNameW(hWnd, className, ARRAYSIZE(className)) ||
-        _wcsicmp(className, L"ApplicationFrameWindow") != 0) {
-        return true;
-    }
-
-    // ApplicationFrameHost can first show a caption-sized shell frame (for
-    // example 150x39) with SW_SHOWNOACTIVATE, then attach the packaged app's
-    // real surface and resize the same HWND. Capturing that temporary frame
-    // produces a blank launch ghost which appears to fly out of nowhere. The
-    // show hook cannot wait for the resize because it owns the UI thread that
-    // must attach the content, so this provisional frame falls back to native.
-    const int minimumFrameHeight =
-        std::max(1, MulDiv(AnimConstants::PackagedLaunchMinimumHeightDip,
-                           static_cast<int>(GetWindowDpiCompat(hWnd)), 96));
-    return width > 0 && height >= minimumFrameHeight;
-}
-static bool IsLaunchSurfaceReadyForCapture(HWND hWnd, int* widthOut,
-                                           int* heightOut) {
-    RECT windowRect{};
-    RECT animationRect{};
-    if (!GetAnimationWindowRects(hWnd, &windowRect, &animationRect)) {
-        return true;
-    }
-
-    const int width = animationRect.right - animationRect.left;
-    const int height = animationRect.bottom - animationRect.top;
-    if (widthOut) *widthOut = width;
-    if (heightOut) *heightOut = height;
-    return IsLaunchSurfaceSizeReady(hWnd, width, height);
-}
-static UINT GetAnimationSpaceDpi(HWND hTarget, HWND hTray) {
-    if (HWND hCoordinate = GetAnimationCoordinateWindow(hTarget)) {
-        return GetWindowDpiCompat(hCoordinate);
-    }
-    return GetWindowDpiCompat(hTray);
-}
-static int ScaleTaskbarPx(HWND hTarget, HWND hTray, int value) {
-    return MulDiv(value,
-                  static_cast<int>(GetAnimationSpaceDpi(hTarget, hTray)), 96);
-}
-
-static int GetAnimatedWindowCornerRadius(HWND hWnd, BOOL maximized,
-                                         LONG_PTR originalExStyle) {
-    if (!hWnd || maximized) return 0;
-
-    DWM_WINDOW_CORNER_PREFERENCE preference = DWMWCP_DEFAULT;
-    if (FAILED(DwmGetWindowAttribute(
-            hWnd, DWMWA_WINDOW_CORNER_PREFERENCE, &preference,
-            sizeof(preference))) ||
-        preference == DWMWCP_DONOTROUND) {
-        // The attribute isn't available before Windows 11. In that case the
-        // native window has no system-managed rounded silhouette to preserve.
-        return 0;
-    }
-
-    if (preference == DWMWCP_DEFAULT) {
-        const LONG_PTR style = GetWindowLongPtrW(hWnd, GWL_STYLE);
-        if (!(style & WS_CAPTION) || (originalExStyle & WS_EX_LAYERED)) {
-            // DWM doesn't apply its default rounding to these window forms.
-            // An explicit DWMWCP_ROUND/ROUNDSMALL request still takes effect.
-            return 0;
-        }
-    }
-
-    const int logicalRadius =
-        preference == DWMWCP_ROUNDSMALL ? 4 : 8;
-    return std::max(
-        1, MulDiv(logicalRadius,
-                  static_cast<int>(GetWindowDpiCompat(hWnd)), 96));
-}
-
-static void ApplyRoundedCornerMask(void* bitmapBits, int width, int height,
-                                   int radius) {
-    if (!bitmapBits || width <= 0 || height <= 0 || radius <= 0) return;
-    radius = std::min(radius, std::min(width, height) / 2);
-    if (radius <= 0) return;
-
-    auto* pixels = static_cast<DWORD*>(bitmapBits);
-    auto limitAlpha = [](DWORD& pixel, BYTE maskAlpha) {
-        const BYTE oldAlpha = static_cast<BYTE>(pixel >> 24);
-        if (maskAlpha >= oldAlpha) return;
-        if (!maskAlpha || !oldAlpha) {
-            pixel = 0;
-            return;
-        }
-
-        // The layered and composition presenters both consume premultiplied
-        // BGRA. Scaling RGB by the alpha ratio keeps the edge free of dark
-        // halos, and making the operation a clamp keeps it idempotent when a
-        // cached minimize snapshot is consumed by restore.
-        const DWORD blue = pixel & 0xFFu;
-        const DWORD green = (pixel >> 8) & 0xFFu;
-        const DWORD red = (pixel >> 16) & 0xFFu;
-        const auto scale = [oldAlpha, maskAlpha](DWORD channel) {
-            return (channel * maskAlpha + oldAlpha / 2u) / oldAlpha;
-        };
-        pixel = static_cast<DWORD>(maskAlpha) << 24 |
-                scale(red) << 16 | scale(green) << 8 | scale(blue);
-    };
-
-    constexpr int samplesPerAxis = 4;
-    constexpr int sampleCount = samplesPerAxis * samplesPerAxis;
-    const float circleRadius = static_cast<float>(radius);
-    const float radiusSquared = circleRadius * circleRadius;
-    for (int y = 0; y < radius; ++y) {
-        for (int x = 0; x < radius; ++x) {
-            int insideSamples = 0;
-            for (int sampleY = 0; sampleY < samplesPerAxis; ++sampleY) {
-                const float py = static_cast<float>(y) +
-                                 (sampleY + 0.5f) / samplesPerAxis;
-                const float dy = py - circleRadius;
-                for (int sampleX = 0; sampleX < samplesPerAxis; ++sampleX) {
-                    const float px = static_cast<float>(x) +
-                                     (sampleX + 0.5f) / samplesPerAxis;
-                    const float dx = px - circleRadius;
-                    if (dx * dx + dy * dy <= radiusSquared) {
-                        ++insideSamples;
-                    }
-                }
-            }
-
-            const BYTE maskAlpha = static_cast<BYTE>(
-                (insideSamples * 255 + sampleCount / 2) / sampleCount);
-            limitAlpha(pixels[static_cast<size_t>(y) * width + x],
-                       maskAlpha);
-            limitAlpha(pixels[static_cast<size_t>(y) * width +
-                              (width - 1 - x)], maskAlpha);
-            limitAlpha(pixels[static_cast<size_t>(height - 1 - y) * width + x],
-                       maskAlpha);
-            limitAlpha(pixels[static_cast<size_t>(height - 1 - y) * width +
-                              (width - 1 - x)], maskAlpha);
-        }
-    }
-}
-
-struct TaskbarGeometry {
-    TaskbarEdge edge{TaskbarEdge::Bottom};
-    RECT rect{};
-    bool valid{};
-    bool expanded{};
-    float innerEdge{};
-};
-
-static bool IsHorizontalTaskbar(TaskbarEdge edge) {
-    return edge == TaskbarEdge::Bottom || edge == TaskbarEdge::Top;
-}
-
-static TaskbarEdge DetectTaskbarEdge(const RECT& taskbarRect,
-                                     const RECT& monitorRect) {
-    const int width = taskbarRect.right - taskbarRect.left;
-    const int height = taskbarRect.bottom - taskbarRect.top;
-    if (width >= height) {
-        const LONG centerY = taskbarRect.top + height / 2;
-        const LONG monitorCenterY =
-            monitorRect.top + (monitorRect.bottom - monitorRect.top) / 2;
-        return centerY <= monitorCenterY ? TaskbarEdge::Top
-                                         : TaskbarEdge::Bottom;
-    }
-    const LONG centerX = taskbarRect.left + width / 2;
-    const LONG monitorCenterX =
-        monitorRect.left + (monitorRect.right - monitorRect.left) / 2;
-    return centerX <= monitorCenterX ? TaskbarEdge::Left
-                                     : TaskbarEdge::Right;
-}
-
-static TaskbarGeometry GetTaskbarGeometry(
-    HWND hTarget, HWND hTray, const MONITORINFO& mi,
-    bool aimAtExpandedTaskbar = false) {
-    TaskbarGeometry geometry;
-    geometry.innerEdge = static_cast<float>(mi.rcMonitor.bottom);
-    if (!hTray) return geometry;
-
-    const TaskbarCoordinateTransform transform =
-        BuildTaskbarCoordinateTransform(hTarget, hTray);
-    RECT tr{};
-    if (transform.valid) {
-        tr = transform.animation;
-    } else if (!GetWindowRect(hTray, &tr)) {
-        return geometry;
-    }
-
-    const int width = tr.right - tr.left;
-    const int height = tr.bottom - tr.top;
-    if (width <= 0 || height <= 0) return geometry;
-
-    geometry.valid = true;
-    geometry.rect = tr;
-    geometry.edge = DetectTaskbarEdge(tr, mi.rcMonitor);
-    const bool horizontal = IsHorizontalTaskbar(geometry.edge);
-    const int thickness = horizontal ? height : width;
-    const int monitorThickness =
-        horizontal ? mi.rcMonitor.bottom - mi.rcMonitor.top
-                   : mi.rcMonitor.right - mi.rcMonitor.left;
-    const int minThickness = ScaleTaskbarPx(hTarget, hTray, 24);
-    const int edgeTolerance =
-        std::max(1, ScaleTaskbarPx(hTarget, hTray, 2));
-
-    if (thickness >= minThickness && thickness < monitorThickness / 2) {
-        switch (geometry.edge) {
-            case TaskbarEdge::Bottom:
-                geometry.expanded =
-                    tr.bottom >= mi.rcMonitor.bottom - edgeTolerance &&
-                    tr.top <= mi.rcMonitor.bottom - minThickness;
-                break;
-            case TaskbarEdge::Top:
-                geometry.expanded =
-                    tr.top <= mi.rcMonitor.top + edgeTolerance &&
-                    tr.bottom >= mi.rcMonitor.top + minThickness;
-                break;
-            case TaskbarEdge::Left:
-                geometry.expanded =
-                    tr.left <= mi.rcMonitor.left + edgeTolerance &&
-                    tr.right >= mi.rcMonitor.left + minThickness;
-                break;
-            case TaskbarEdge::Right:
-                geometry.expanded =
-                    tr.right >= mi.rcMonitor.right - edgeTolerance &&
-                    tr.left <= mi.rcMonitor.right - minThickness;
-                break;
-        }
-    }
-
-    switch (geometry.edge) {
-        case TaskbarEdge::Bottom:
-            geometry.innerEdge = geometry.expanded
-                                     ? static_cast<float>(tr.top)
-                                     : static_cast<float>(
-                                           aimAtExpandedTaskbar
-                                               ? mi.rcMonitor.bottom - thickness
-                                               : mi.rcMonitor.bottom);
-            break;
-        case TaskbarEdge::Top:
-            geometry.innerEdge = geometry.expanded
-                                     ? static_cast<float>(tr.bottom)
-                                     : static_cast<float>(
-                                           aimAtExpandedTaskbar
-                                               ? mi.rcMonitor.top + thickness
-                                               : mi.rcMonitor.top);
-            break;
-        case TaskbarEdge::Left:
-            geometry.innerEdge = geometry.expanded
-                                     ? static_cast<float>(tr.right)
-                                     : static_cast<float>(
-                                           aimAtExpandedTaskbar
-                                               ? mi.rcMonitor.left + thickness
-                                               : mi.rcMonitor.left);
-            break;
-        case TaskbarEdge::Right:
-            geometry.innerEdge = geometry.expanded
-                                     ? static_cast<float>(tr.left)
-                                     : static_cast<float>(
-                                           aimAtExpandedTaskbar
-                                               ? mi.rcMonitor.right - thickness
-                                               : mi.rcMonitor.right);
-            break;
-    }
-    return geometry;
-}
-
-static bool IsTaskbarExpanded(HWND hTarget, HWND hTray, HMONITOR hMon) {
-    if (!hTray) return false;
-    MONITORINFO mi{};
-    mi.cbSize = sizeof(mi);
-    if (!hMon) hMon = MonitorFromWindow(hTray, MONITOR_DEFAULTTONEAREST);
-    return GetMonitorInfoW(hMon, &mi) &&
-           GetTaskbarGeometry(hTarget, hTray, mi).expanded;
-}
-static bool IsCursorOverTaskbar(HWND hTray) {
-    POINT cursor{};
-    if (!hTray || !GetCursorPos(&cursor)) return false;
-    HWND hit = WindowFromPoint(cursor);
-    return hit && GetAncestor(hit, GA_ROOT) == hTray;
-}
-static bool RestoreForegroundAfterTaskbarReveal(HWND hTray, HWND hRealWnd, HWND hNextApp,
-                                                bool rising) {
-    if (!hTray || GetForegroundWindow() != hTray) {
-        return false;
-    }
-    HWND hTarget = NULL;
-    if (rising && hRealWnd && IsWindow(hRealWnd) && IsWindowVisible(hRealWnd)) {
-        hTarget = hRealWnd;
-    } else if (hNextApp && IsWindow(hNextApp) && IsWindowVisible(hNextApp)) {
-        hTarget = hNextApp;
-    } else {
-        hTarget = FindWindowW(L"Progman", NULL);
-    }
-    return hTarget && SetForegroundWindow(hTarget);
-}
-static void WaitForTaskbarExpanded(HWND hTarget, HWND hTray, HMONITOR hMon) {
-    if (!hTray) return;
-    MONITORINFO mi{};
-    mi.cbSize = sizeof(mi);
-    if (!hMon) hMon = MonitorFromWindow(hTray, MONITOR_DEFAULTTONEAREST);
-    if (!GetMonitorInfoW(hMon, &mi)) return;
-    const DWORD start = GetTickCount();
-    while ((int)(GetTickCount() - start) < AnimConstants::TaskbarExpandWaitMs) {
-        if (g_unloading.load(std::memory_order_relaxed)) return;
-        if (GetTaskbarGeometry(hTarget, hTray, mi).expanded) return;
-        WaitWithSentMessagePump(10);
-    }
-}
-
-static POINT GetFallbackTaskbarButtonPosition(
-    HWND hTarget, HWND hTray, const MONITORINFO& mi,
-    const TaskbarGeometry& geometry, DWORD horizontalAlignment) {
-    const int dpi = static_cast<int>(
-        GetAnimationSpaceDpi(hTarget, hTray));
-    const int leadingOffset = MulDiv(160, dpi, 96);
-    const int inset = MulDiv(2, dpi, 96);
-    const int horizontalButtonHeight = MulDiv(40, dpi, 96);
-    const int verticalButtonWidth = horizontalButtonHeight;
-    const int monitorCenterX =
-        mi.rcMonitor.left +
-        (mi.rcMonitor.right - mi.rcMonitor.left) / 2;
-
-    POINT position{monitorCenterX, mi.rcMonitor.top + leadingOffset};
-    switch (geometry.edge) {
-        case TaskbarEdge::Bottom:
-            position.x = horizontalAlignment == 0
-                             ? mi.rcMonitor.left + leadingOffset
-                             : monitorCenterX;
-            position.y = static_cast<LONG>(geometry.innerEdge) + inset +
-                         horizontalButtonHeight / 2;
-            break;
-        case TaskbarEdge::Top:
-            position.x = horizontalAlignment == 0
-                             ? mi.rcMonitor.left + leadingOffset
-                             : monitorCenterX;
-            position.y = static_cast<LONG>(geometry.innerEdge) - inset -
-                         horizontalButtonHeight / 2;
-            break;
-        case TaskbarEdge::Left:
-            position.x = static_cast<LONG>(geometry.innerEdge) - inset -
-                         verticalButtonWidth / 2;
-            break;
-        case TaskbarEdge::Right:
-            position.x = static_cast<LONG>(geometry.innerEdge) + inset +
-                         verticalButtonWidth / 2;
-            break;
-    }
-    position.x = Clamp(position.x, mi.rcMonitor.left, mi.rcMonitor.right);
-    position.y = Clamp(position.y, mi.rcMonitor.top, mi.rcMonitor.bottom);
-    return position;
-}
-static HWND FindNextAppWindow(HWND hWnd, HWND hTray) {
-    HWND hwndIter = GetWindow(hWnd, GW_HWNDNEXT);
-    while (hwndIter) {
-        if (IsWindowVisible(hwndIter) && !IsIconic(hwndIter) &&
-            GetAncestor(hwndIter, GA_ROOT) == hwndIter &&
-            GetWindowTextLengthW(hwndIter) > 0 &&
-            hwndIter != hWnd && hwndIter != hTray) {
-            const LONG_PTR exStyle = GetWindowLongPtrW(hwndIter, GWL_EXSTYLE);
-            if (!(exStyle & WS_EX_TOOLWINDOW)) return hwndIter;
-        }
-        hwndIter = GetWindow(hwndIter, GW_HWNDNEXT);
-    }
-    return NULL;
-}
-struct UiaPending {
-    std::atomic<LONG> refs{2};
-    HANDLE done = nullptr;
-    POINT targetPosition{};
-    bool found = false;
-    void Release() {
-        if (refs.fetch_sub(1, std::memory_order_acq_rel) == 1) {
-            if (done) CloseHandle(done);
-            delete this;
-        }
-    }
-};
-struct UiaTask {
-    HWND hWndApp;
-    std::wstring titleLower;
-    std::wstring procNameLower;
-    std::wstring procHintLower;
-    std::wstring processKey;
-    HMONITOR hMon;
-    TaskbarEdge taskbarEdge;
-    TaskbarDockWindowIdentity identity;
-    POINT fallbackPosition;
-    bool hasLearnedFallback;
-    uint64_t generation;
-    UiaPending* pending = nullptr;
-};
-static std::wstring MakeProcessDockKey(const std::wstring& procNameLower,
-                                       HMONITOR hMon, TaskbarEdge edge) {
-    if (procNameLower.empty()) return L"";
-    return procNameLower + L"_" +
-           std::to_wstring(reinterpret_cast<size_t>(hMon)) + L"_" +
-           std::to_wstring(static_cast<uint32_t>(edge));
-}
-static std::wstring ProcHintForUia(const std::wstring& procNameLower) {
-    if (procNameLower == L"chrome") return L"google chrome";
-    if (procNameLower == L"msedge") return L"microsoft edge";
-    if (procNameLower == L"firefox") return L"firefox";
-    if (procNameLower == L"brave") return L"brave";
-    if (procNameLower == L"opera") return L"opera";
-    if (procNameLower == L"vivaldi") return L"vivaldi";
-    if (procNameLower == L"discord") return L"discord";
-    if (procNameLower == L"spotify") return L"spotify";
-    if (procNameLower == L"code") return L"visual studio code";
-    if (procNameLower == L"devenv") return L"visual studio";
-    if (procNameLower == L"windowsterminal") return L"terminal";
-    return procNameLower;
-}
-
-struct TaskbarWindowSetSignatureContext {
-    uint64_t xorHash = 0;
-    uint64_t count = 0;
-};
-
-static void InvalidateTaskbarDockCachesLocked(
-    bool preserveProcessFallback = false) {
-    g_TaskbarDockPositions.clear();
-    if (!preserveProcessFallback) {
-        g_TaskbarDockFallbackPositions.clear();
-        g_ProcessDockPositions.clear();
-    }
-    g_TaskbarDockLookupGenerations.clear();
-    g_TaskbarDockLookupIdentities.clear();
-    g_TaskbarDockLookupStartedTicks.clear();
-    g_TaskbarDockNegativeUntilTicks.clear();
-    g_TaskbarDockPositiveUntilTicks.clear();
-}
-
-static DWORD GetTaskbarExplorerPid() {
-    DWORD explorerPid = 0;
-    if (HWND hTray = FindWindowW(L"Shell_TrayWnd", nullptr)) {
-        GetWindowThreadProcessId(hTray, &explorerPid);
-    }
-    return explorerPid;
-}
-
-static bool ReadSharedTaskbarState(LONG* epochOut, LONG* observerPidOut) {
-    if (!EnsureSharedStateMapped()) return false;
-    std::lock_guard<std::mutex> lock(g_SharedStateMutex);
-    if (!g_pSharedState || g_pSharedState->magic != kSharedStateMagic) return false;
-    if (epochOut) *epochOut = g_pSharedState->taskbarLayoutEpoch;
-    if (observerPidOut) *observerPidOut = g_pSharedState->taskbarObserverPid;
-    return true;
-}
-
-static LONG GetSharedTaskbarLayoutEpoch() {
-    std::lock_guard<std::mutex> lock(g_SharedStateMutex);
-    return g_pSharedState && g_pSharedState->magic == kSharedStateMagic
-               ? g_pSharedState->taskbarLayoutEpoch
-               : 0;
-}
-
-static bool SyncTaskbarLayoutEpoch() {
-    const DWORD explorerPid = GetTaskbarExplorerPid();
-    {
-        std::lock_guard<std::mutex> lock(g_StateMutex);
-        if (explorerPid != g_seenTaskbarExplorerPid) {
-            InvalidateTaskbarDockCachesLocked();
-            g_seenTaskbarExplorerPid = explorerPid;
-            g_seenTaskbarLayoutEpoch = 0;
-        }
-    }
-    LONG epoch = 0;
-    LONG observerPid = 0;
-    if (!explorerPid || !ReadSharedTaskbarState(&epoch, &observerPid)) {
-        return false;
-    }
-    {
-        std::lock_guard<std::mutex> lock(g_StateMutex);
-        if (epoch != g_seenTaskbarLayoutEpoch) {
-            // The HWND result is stale after a reflow, but the process-level
-            // value remains a much better timeout fallback than monitor
-            // center. It is never hot-returned as a current result.
-            InvalidateTaskbarDockCachesLocked(
-                /*preserveProcessFallback=*/true);
-            g_seenTaskbarLayoutEpoch = epoch;
-        }
-    }
-    return epoch != 0 && observerPid == static_cast<LONG>(explorerPid);
-}
-
-static BOOL CALLBACK HashTaskbarWindowProc(HWND hWnd, LPARAM lParam) {
-    if (!IsWindowVisible(hWnd) || GetAncestor(hWnd, GA_ROOT) != hWnd) return TRUE;
-    const LONG_PTR style = GetWindowLongPtrW(hWnd, GWL_STYLE);
-    const LONG_PTR exStyle = GetWindowLongPtrW(hWnd, GWL_EXSTYLE);
-    if ((style & WS_CHILD) ||
-        ((exStyle & WS_EX_TOOLWINDOW) && !(exStyle & WS_EX_APPWINDOW)) ||
-        (GetWindow(hWnd, GW_OWNER) && !(exStyle & WS_EX_APPWINDOW))) {
-        return TRUE;
-    }
-
-    DWORD processId = 0;
-    GetWindowThreadProcessId(hWnd, &processId);
-    const uint64_t hwndValue = static_cast<uint64_t>(reinterpret_cast<uintptr_t>(hWnd));
-    const uint64_t monitorValue = static_cast<uint64_t>(reinterpret_cast<uintptr_t>(
-        MonitorFromWindow(hWnd, MONITOR_DEFAULTTONEAREST)));
-    uint64_t value = hwndValue ^ (static_cast<uint64_t>(processId) << 32) ^ monitorValue;
-    value ^= value >> 30;
-    value *= 0xbf58476d1ce4e5b9ULL;
-    value ^= value >> 27;
-    value *= 0x94d049bb133111ebULL;
-    value ^= value >> 31;
-
-    auto* context = reinterpret_cast<TaskbarWindowSetSignatureContext*>(lParam);
-    context->xorHash ^= value;
-    ++context->count;
-    return TRUE;
-}
-
-static void RefreshTaskbarWindowSetSignature() {
-    TaskbarWindowSetSignatureContext context;
-    EnumWindows(HashTaskbarWindowProc, reinterpret_cast<LPARAM>(&context));
-    const uint64_t signature = context.xorHash ^
-                               (context.count * 0x9e3779b97f4a7c15ULL);
-
-    std::lock_guard<std::mutex> lock(g_StateMutex);
-    if (g_TaskbarWindowSetSignatureInitialized &&
-        signature != g_TaskbarWindowSetSignature) {
-        // A fresh UIA lookup is still mandatory, but retain the old process
-        // position strictly as a timeout fallback instead of aiming at the
-        // generic edge fallback. Process entries are never hot-returned.
-        InvalidateTaskbarDockCachesLocked(/*preserveProcessFallback=*/true);
-    }
-    g_TaskbarWindowSetSignature = signature;
-    g_TaskbarWindowSetSignatureInitialized = true;
-}
-
-DWORD WINAPI UiaWorkerThread(LPVOID lpParam) {
-    UiaTask* t = (UiaTask*)lpParam;
-    UiaPending* pending = t->pending;
-    struct UiaCleanupGuard {
-        UiaTask* task;
-        UiaPending* pending;
-        ~UiaCleanupGuard() {
-            if (pending) {
-                if (pending->done) SetEvent(pending->done);
-                pending->Release();
-            }
-            delete task;
-        }
-    } guard{ t, pending };
-    if (g_unloading.load(std::memory_order_relaxed)) {
-        return 0;
-    }
-    POINT targetPosition = t->fallbackPosition;
-    bool uiaFound = false;
-    HRESULT hr = CoInitializeEx(NULL, COINIT_MULTITHREADED);
-    bool coInit = (hr == S_OK || hr == S_FALSE);
-    if (hr == S_OK || hr == S_FALSE || hr == RPC_E_CHANGED_MODE) {
-        IUIAutomation2* pAutomation = nullptr;
-        HRESULT hrUia = CoCreateInstance(__uuidof(CUIAutomation8), NULL, CLSCTX_INPROC_SERVER,
-                                         __uuidof(IUIAutomation2), (void**)&pAutomation);
-        if (SUCCEEDED(hrUia) && pAutomation) {
-            pAutomation->put_ConnectionTimeout(1000);
-            pAutomation->put_TransactionTimeout(2000);
-            HWND hTray = FindTaskbarForMonitor(t->hMon);
-            if (hTray) {
-                const TaskbarCoordinateTransform taskbarTransform =
-                    BuildTaskbarCoordinateTransform(t->hWndApp, hTray);
-                IUIAutomationElement* pTrayElement = nullptr;
-                if (SUCCEEDED(pAutomation->ElementFromHandle(hTray, &pTrayElement)) && pTrayElement) {
-                    if (g_unloading.load(std::memory_order_relaxed)) {
-                        pTrayElement->Release();
-                        pAutomation->Release();
-                        if (coInit) CoUninitialize();
-                        return 0;
-                    }
-                    IUIAutomationCondition* pButtonCond = nullptr;
-                    IUIAutomationCondition* pListItemCond = nullptr;
-                    IUIAutomationCondition* pOrCond = nullptr;
-                    VARIANT varBtn{}; varBtn.vt = VT_I4; varBtn.lVal = UIA_ButtonControlTypeId;
-                    pAutomation->CreatePropertyCondition(UIA_ControlTypePropertyId, varBtn, &pButtonCond);
-                    VARIANT varList{}; varList.vt = VT_I4; varList.lVal = UIA_ListItemControlTypeId;
-                    pAutomation->CreatePropertyCondition(UIA_ControlTypePropertyId, varList, &pListItemCond);
-                    if (pButtonCond && pListItemCond) pAutomation->CreateOrCondition(pButtonCond, pListItemCond, &pOrCond);
-                    IUIAutomationElementArray* pArray = nullptr;
-                    if (pOrCond && SUCCEEDED(pTrayElement->FindAll(TreeScope_Descendants, pOrCond, &pArray)) && pArray) {
-                        int length = 0;
-                        pArray->get_Length(&length);
-                        MONITORINFO mi{};
-                        mi.cbSize = sizeof(MONITORINFO);
-                        if (!GetMonitorInfoW(t->hMon, &mi)) {
-                            mi.rcMonitor.left = 0;
-                            mi.rcMonitor.top = 0;
-                            mi.rcMonitor.right = GetSystemMetrics(SM_CXSCREEN);
-                            mi.rcMonitor.bottom = GetSystemMetrics(SM_CYSCREEN);
-                            mi.rcWork = mi.rcMonitor;
-                        }
-                        RECT taskbarRect{};
-                        bool haveTaskbarRect = taskbarTransform.valid;
-                        if (haveTaskbarRect) {
-                            taskbarRect = taskbarTransform.animation;
-                        } else if (GetWindowRect(hTray, &taskbarRect)) {
-                            haveTaskbarRect =
-                                PhysicalRectToAnimationSpace(
-                                    t->hWndApp, &taskbarRect);
-                        }
-                        const TaskbarEdge taskbarEdge = haveTaskbarRect
-                            ? DetectTaskbarEdge(taskbarRect, mi.rcMonitor)
-                            : TaskbarEdge::Bottom;
-                        const bool horizontalTaskbar =
-                            IsHorizontalTaskbar(taskbarEdge);
-                        const int monRight = mi.rcMonitor.right;
-                        const int monBottom = mi.rcMonitor.bottom;
-                        int bestScore = 0;
-                        for (int i = 0; i < length; i++) {
-                            if (g_unloading.load(std::memory_order_relaxed)) break;
-                            IUIAutomationElement* pItem = nullptr;
-                            if (SUCCEEDED(pArray->GetElement(i, &pItem)) && pItem) {
-                                BSTR name;
-                                if (SUCCEEDED(pItem->get_CurrentName(&name)) && name) {
-                                    std::wstring uiaNameLower = name;
-                                    std::transform(uiaNameLower.begin(), uiaNameLower.end(), uiaNameLower.begin(), ::towlower);
-                                    if (!uiaNameLower.empty()) {
-                                        int score = 0;
-                                        if (t->titleLower == uiaNameLower) score += 1000;
-                                        if (!t->titleLower.empty() && t->titleLower.find(uiaNameLower) != std::wstring::npos) score += 500;
-                                        if (!t->titleLower.empty() && uiaNameLower.find(t->titleLower) != std::wstring::npos) score += 500;
-                                        if (!t->procNameLower.empty() && uiaNameLower.find(t->procNameLower) != std::wstring::npos) score += 400;
-                                        if (!t->procHintLower.empty() && t->procHintLower != t->procNameLower &&
-                                            uiaNameLower.find(t->procHintLower) != std::wstring::npos) {
-                                            score += 900;
-                                        }
-                                        std::wstring currentWord;
-                                        for (wchar_t c : t->titleLower) {
-                                            if (iswalnum(c)) currentWord += c;
-                                            else {
-                                                if (currentWord.length() >= 4 &&
-                                                    uiaNameLower.find(currentWord) != std::wstring::npos) {
-                                                    score += 50;
-                                                }
-                                                currentWord.clear();
-                                            }
-                                        }
-                                        if (currentWord.length() >= 4 &&
-                                            uiaNameLower.find(currentWord) != std::wstring::npos) {
-                                            score += 50;
-                                        }
-                                        if (uiaNameLower.find(L"start") != std::wstring::npos) score -= 500;
-                                        if (uiaNameLower.find(L"search") != std::wstring::npos) score -= 500;
-                                        if (uiaNameLower.find(L"task view") != std::wstring::npos) score -= 500;
-                                        if (uiaNameLower.find(L"widgets") != std::wstring::npos) score -= 500;
-                                        if (score >= AnimConstants::UiaMinAcceptScore && score > bestScore) {
-                                            RECT bRect{};
-                                            if (SUCCEEDED(pItem->get_CurrentBoundingRectangle(&bRect)) &&
-                                                MapPhysicalTaskbarRectToAnimationSpace(
-                                                    taskbarTransform, &bRect)) {
-                                                const bool beforeNotificationArea =
-                                                    horizontalTaskbar
-                                                        ? bRect.left < monRight - 50
-                                                        : bRect.top < monBottom - 50;
-                                                if (bRect.right > bRect.left &&
-                                                    bRect.bottom > bRect.top &&
-                                                    beforeNotificationArea) {
-                                                    bestScore = score;
-                                                    targetPosition = {
-                                                        bRect.left +
-                                                            (bRect.right - bRect.left) / 2,
-                                                        bRect.top +
-                                                            (bRect.bottom - bRect.top) / 2};
-                                                    uiaFound = true;
-                                                }
-                                            }
-                                        }
-                                    }
-                                    SysFreeString(name);
-                                }
-                                pItem->Release();
-                            }
-                        }
-                        pArray->Release();
-                    }
-                    if (pButtonCond) pButtonCond->Release();
-                    if (pListItemCond) pListItemCond->Release();
-                    if (pOrCond) pOrCond->Release();
-                    pTrayElement->Release();
-                }
-            }
-            pAutomation->Release();
-        }
-        if (coInit) CoUninitialize();
-    }
-    if (g_unloading.load(std::memory_order_relaxed)) {
-        return 0;
-    }
-    SyncTaskbarLayoutEpoch();
-    const bool targetIdentityCurrent =
-        IsTaskbarDockWindowIdentityCurrent(t->hWndApp, t->identity);
-    if (uiaFound) {
-        bool accepted = false;
-        {
-            std::lock_guard<std::mutex> lock(g_StateMutex);
-            auto generationIt = g_TaskbarDockLookupGenerations.find(t->hWndApp);
-            if (targetIdentityCurrent &&
-                generationIt != g_TaskbarDockLookupGenerations.end() &&
-                generationIt->second == t->generation) {
-                const TaskbarDockCacheValue value{
-                    targetPosition, t->taskbarEdge, t->identity,
-                    GetTickCount()};
-                g_TaskbarDockPositions[t->hWndApp] = value;
-                g_TaskbarDockFallbackPositions[t->hWndApp] = value;
-                if (!t->processKey.empty()) {
-                    g_ProcessDockPositions[t->processKey] = targetPosition;
-                }
-                g_TaskbarDockLookupStartedTicks.erase(t->hWndApp);
-                g_TaskbarDockNegativeUntilTicks.erase(t->hWndApp);
-                g_TaskbarDockPositiveUntilTicks[t->hWndApp] =
-                    GetTickCount() +
-                    (t->identity.windowToken
-                         ? AnimConstants::UiaPositiveFallbackCacheMs
-                         : AnimConstants::UiaWeakIdentityCacheMs);
-                if (pending) {
-                    pending->targetPosition = targetPosition;
-                    pending->found = true;
-                }
-                accepted = true;
-            }
-        }
-        if (accepted && IsDiagnosticLoggingEnabled()) {
-            Wh_Log(L"UIA dock match hwnd=%p x=%ld y=%ld", t->hWndApp,
-                   targetPosition.x, targetPosition.y);
-        }
-    } else {
-        {
-            std::lock_guard<std::mutex> lock(g_StateMutex);
-            auto generationIt = g_TaskbarDockLookupGenerations.find(t->hWndApp);
-            if (targetIdentityCurrent &&
-                generationIt != g_TaskbarDockLookupGenerations.end() &&
-                generationIt->second == t->generation) {
-                g_TaskbarDockLookupStartedTicks.erase(t->hWndApp);
-                g_TaskbarDockPositions.erase(t->hWndApp);
-                g_TaskbarDockPositiveUntilTicks.erase(t->hWndApp);
-                g_TaskbarDockNegativeUntilTicks[t->hWndApp] =
-                    GetTickCount() +
-                    (t->identity.windowToken && t->hasLearnedFallback
-                         ? AnimConstants::UiaNegativeCacheMs
-                         : AnimConstants::UiaColdNegativeCacheMs);
-            }
-        }
-        if (IsDiagnosticLoggingEnabled()) {
-            Wh_Log(L"UIA dock miss hwnd=%p fallback=(%ld,%ld)",
-                   t->hWndApp, t->fallbackPosition.x,
-                   t->fallbackPosition.y);
-        }
-    }
-    return 0;
-}
-POINT GetTaskbarButtonPositionAsync(
-    HWND hWndApp, const WCHAR* windowTitle, POINT fallbackPosition,
-    HMONITOR hMon, TaskbarEdge taskbarEdge) {
-    const bool sharedLayoutTracking = SyncTaskbarLayoutEpoch();
-    // Win11's XAML taskbar doesn't reliably surface every button removal or
-    // reflow through the HWND WinEvent bridge. Keep the shared epoch for
-    // taskbar-only layout changes, but also verify the top-level app set before
-    // trusting a hot per-window position. This intentionally runs on every
-    // Genie/Windows 10 lookup so the first animation after a close is correct.
-    RefreshTaskbarWindowSetSignature();
-    const TaskbarDockWindowIdentity currentIdentity =
-        CaptureTaskbarDockWindowIdentity(hWndApp);
-    std::wstring procNameLower = GetProcessNameCached(hWndApp);
-    std::wstring processKey =
-        MakeProcessDockKey(procNameLower, hMon, taskbarEdge);
-    POINT hwndCachedPosition{};
-    POINT hwndFallbackPosition{};
-    POINT processCachedPosition{};
-    bool haveHwndCache = false;
-    bool haveHwndFallback = false;
-    bool haveProcessCache = false;
-    bool lookupInFlight = false;
-    bool negativeCacheActive = false;
-    bool positiveFallbackCacheActive = false;
-    uint64_t generation = 0;
-    LONG layoutEpochAtRead = 0;
-    const DWORD now = GetTickCount();
-    {
-        std::lock_guard<std::mutex> lock(g_StateMutex);
-        auto lookupIdentityIt = g_TaskbarDockLookupIdentities.find(hWndApp);
-        const bool transientIdentityCurrent =
-            lookupIdentityIt != g_TaskbarDockLookupIdentities.end() &&
-            lookupIdentityIt->second.monitor == hMon &&
-            TaskbarDockIdentityMatches(lookupIdentityIt->second,
-                                       currentIdentity);
-        if (!transientIdentityCurrent) {
-            g_TaskbarDockLookupGenerations.erase(hWndApp);
-            g_TaskbarDockLookupIdentities.erase(hWndApp);
-            g_TaskbarDockLookupStartedTicks.erase(hWndApp);
-            g_TaskbarDockNegativeUntilTicks.erase(hWndApp);
-            g_TaskbarDockPositiveUntilTicks.erase(hWndApp);
-            g_TaskbarDockPositions.erase(hWndApp);
-        }
-        auto it = g_TaskbarDockPositions.find(hWndApp);
-        if (it != g_TaskbarDockPositions.end() &&
-            IsTaskbarDockCacheValueUsable(it->second, currentIdentity, hMon,
-                                          taskbarEdge, now)) {
-            hwndCachedPosition = it->second.position;
-            haveHwndCache = true;
-        }
-        auto fallbackIt = g_TaskbarDockFallbackPositions.find(hWndApp);
-        if (fallbackIt != g_TaskbarDockFallbackPositions.end() &&
-            IsTaskbarDockCacheValueUsable(fallbackIt->second,
-                                          currentIdentity, hMon,
-                                          taskbarEdge, now)) {
-            hwndFallbackPosition = fallbackIt->second.position;
-            haveHwndFallback = true;
-        }
-        if (!processKey.empty()) {
-            auto pit = g_ProcessDockPositions.find(processKey);
-            if (pit != g_ProcessDockPositions.end()) {
-                processCachedPosition = pit->second;
-                haveProcessCache = true;
-            }
-        }
-        auto lookupIt = g_TaskbarDockLookupStartedTicks.find(hWndApp);
-        lookupInFlight = lookupIt != g_TaskbarDockLookupStartedTicks.end() &&
-                         (LONG)(now - lookupIt->second) <
-                             AnimConstants::UiaLookupInFlightMs;
-        auto negativeIt = g_TaskbarDockNegativeUntilTicks.find(hWndApp);
-        negativeCacheActive = negativeIt != g_TaskbarDockNegativeUntilTicks.end() &&
-                              (LONG)(now - negativeIt->second) < 0;
-        auto positiveIt = g_TaskbarDockPositiveUntilTicks.find(hWndApp);
-        positiveFallbackCacheActive =
-            positiveIt != g_TaskbarDockPositiveUntilTicks.end() &&
-            (LONG)(now - positiveIt->second) < 0;
-        layoutEpochAtRead = g_seenTaskbarLayoutEpoch;
-    }
-    const bool layoutEpochStillCurrent = !sharedLayoutTracking ||
-                                         GetSharedTaskbarLayoutEpoch() ==
-                                             layoutEpochAtRead;
-    const bool strongWindowIdentity = currentIdentity.windowToken != 0;
-    if (haveHwndCache && layoutEpochStillCurrent &&
-        ((strongWindowIdentity && sharedLayoutTracking) ||
-         positiveFallbackCacheActive)) {
-        return hwndCachedPosition;
-    }
-    if (!layoutEpochStillCurrent) {
-        SyncTaskbarLayoutEpoch();
-        haveHwndCache = false;
-        lookupInFlight = false;
-        negativeCacheActive = false;
-        // Sync may have preserved the process fallback for a same-Explorer
-        // reflow, or cleared all fallbacks for an Explorer restart. Reload the
-        // actual post-sync state instead of retaining stale local copies.
-        haveHwndFallback = false;
-        haveProcessCache = false;
-        {
-            std::lock_guard<std::mutex> lock(g_StateMutex);
-            auto fallbackIt = g_TaskbarDockFallbackPositions.find(hWndApp);
-            if (fallbackIt != g_TaskbarDockFallbackPositions.end() &&
-                IsTaskbarDockCacheValueUsable(fallbackIt->second,
-                                              currentIdentity, hMon,
-                                              taskbarEdge, now)) {
-                hwndFallbackPosition = fallbackIt->second.position;
-                haveHwndFallback = true;
-            }
-            if (!processKey.empty()) {
-                auto processIt = g_ProcessDockPositions.find(processKey);
-                if (processIt != g_ProcessDockPositions.end()) {
-                    processCachedPosition = processIt->second;
-                    haveProcessCache = true;
-                }
-            }
-        }
-    }
-    const POINT softFallback = haveHwndCache ? hwndCachedPosition
-                               : haveHwndFallback ? hwndFallbackPosition
-                               : haveProcessCache ? processCachedPosition
-                                                  : fallbackPosition;
-    const bool hasLearnedFallback =
-        haveHwndCache || haveHwndFallback || haveProcessCache;
-    if (lookupInFlight || negativeCacheActive) return softFallback;
-
-    {
-        std::lock_guard<std::mutex> lock(g_StateMutex);
-        generation = ++g_NextTaskbarDockLookupGeneration;
-        if (!generation) generation = ++g_NextTaskbarDockLookupGeneration;
-        g_TaskbarDockLookupGenerations[hWndApp] = generation;
-        g_TaskbarDockLookupIdentities[hWndApp] = currentIdentity;
-        g_TaskbarDockLookupStartedTicks[hWndApp] = now;
-        g_TaskbarDockNegativeUntilTicks.erase(hWndApp);
-    }
-    std::wstring titleLower = windowTitle ? windowTitle : L"";
-    std::transform(titleLower.begin(), titleLower.end(), titleLower.begin(), ::towlower);
-    const std::wstring procHintLower = ProcHintForUia(procNameLower);
-    auto cancelLookup = [&]() {
-        std::lock_guard<std::mutex> lock(g_StateMutex);
-        auto generationIt = g_TaskbarDockLookupGenerations.find(hWndApp);
-        if (generationIt != g_TaskbarDockLookupGenerations.end() &&
-            generationIt->second == generation) {
-            g_TaskbarDockLookupStartedTicks.erase(hWndApp);
-            g_TaskbarDockNegativeUntilTicks[hWndApp] =
-                GetTickCount() +
-                (currentIdentity.windowToken && hasLearnedFallback
-                     ? AnimConstants::UiaNegativeCacheMs
-                     : AnimConstants::UiaColdNegativeCacheMs);
-        }
-    };
-    auto* pending = new (std::nothrow) UiaPending{};
-    if (!pending) {
-        cancelLookup();
-        return softFallback;
-    }
-    pending->done = CreateEventW(nullptr, TRUE, FALSE, nullptr);
-    pending->targetPosition = softFallback;
-    if (!pending->done) {
-        cancelLookup();
-        pending->Release();
-        pending->Release();
-        return softFallback;
-    }
-    UiaTask* task = nullptr;
-    try {
-        task = new (std::nothrow) UiaTask{
-            hWndApp, std::move(titleLower), std::move(procNameLower),
-            procHintLower, std::move(processKey), hMon, taskbarEdge,
-            currentIdentity, softFallback, hasLearnedFallback, generation,
-            pending};
-    } catch (const std::exception&) {
-        task = nullptr;
-    }
-    if (!task) {
-        cancelLookup();
-        pending->Release();
-        pending->Release();
-        return softFallback;
-    }
-    if (!StartWorkerThread(UiaWorkerThread, task)) {
-        delete task;
-        cancelLookup();
-        pending->Release();
-        pending->Release();
-        return softFallback;
-    }
-    POINT result = softFallback;
-    // A learned HWND/process position is accurate enough for the current
-    // animation. Let this worker refresh the cache without holding the app or
-    // taskbar UI thread; only a never-located window pays the bounded lookup.
-    const DWORD effectiveWaitMs =
-        hasLearnedFallback ? 0 : AnimConstants::UiaLookupWaitMs;
-    if (effectiveWaitMs > 0) {
-        const DWORD wait =
-            WaitForHandleWithSentMessagePump(pending->done,
-                                             effectiveWaitMs);
-        if (wait == WAIT_OBJECT_0 && pending->found) {
-            result = pending->targetPosition;
-        }
-    }
-    pending->Release();
-    return result;
-}
-enum class SwsSelectionIntent { Unavailable, Rejected, Accepted, Restoring };
-
-static bool IsSwsSelectionEndpoint(HWND hWnd) {
-    WCHAR className[64]{};
-    return hWnd && GetClassNameW(hWnd, className, ARRAYSIZE(className)) &&
-           wcscmp(className, SwsSelectionProtocol::ClassName) == 0 &&
-           reinterpret_cast<ULONG_PTR>(GetPropW(
-               hWnd, SwsSelectionProtocol::VersionProp)) ==
-               SwsSelectionProtocol::Version;
-}
-
-static HWND FindSwsSelectionEndpoint() {
-    HWND endpoint = FindWindowW(SwsSelectionProtocol::ClassName,
-                                SwsSelectionProtocol::WindowTitle);
-    return IsSwsSelectionEndpoint(endpoint) ? endpoint : nullptr;
-}
-
-static bool IsSwsSelectionSessionActive(HWND endpoint) {
-    if (!endpoint) return false;
-    if (IsWindowVisible(endpoint)) return true;
-    const DWORD token = static_cast<DWORD>(reinterpret_cast<ULONG_PTR>(
-        GetPropW(endpoint, SwsSelectionProtocol::TokenProp)));
-    const DWORD tick = static_cast<DWORD>(reinterpret_cast<ULONG_PTR>(
-        GetPropW(endpoint, SwsSelectionProtocol::TickProp)));
-    return token && static_cast<DWORD>(GetTickCount() - tick) <=
-                        AnimConstants::SwsSelectionMaxAgeMs;
-}
-
-static SwsSelectionIntent ConsumeSwsSelectionIntent(HWND target,
-                                                    DWORD eventTime) {
-    const HWND endpoint = FindSwsSelectionEndpoint();
-    if (!endpoint) return SwsSelectionIntent::Unavailable;
-    const DWORD token = static_cast<DWORD>(reinterpret_cast<ULONG_PTR>(
-        GetPropW(endpoint, SwsSelectionProtocol::TokenProp)));
-    if (!token) {
-        return IsWindowVisible(endpoint) ? SwsSelectionIntent::Rejected
-                                         : SwsSelectionIntent::Unavailable;
-    }
-    const HWND publishedTarget = static_cast<HWND>(
-        GetPropW(endpoint, SwsSelectionProtocol::TargetProp));
-    const HWND source = static_cast<HWND>(
-        GetPropW(endpoint, SwsSelectionProtocol::SourceProp));
-    const DWORD tick = static_cast<DWORD>(reinterpret_cast<ULONG_PTR>(
-        GetPropW(endpoint, SwsSelectionProtocol::TickProp)));
-    const DWORD processId = static_cast<DWORD>(reinterpret_cast<ULONG_PTR>(
-        GetPropW(endpoint, SwsSelectionProtocol::ProcessProp)));
-    const DWORD threadId = static_cast<DWORD>(reinterpret_cast<ULONG_PTR>(
-        GetPropW(endpoint, SwsSelectionProtocol::ThreadProp)));
-    const bool restoring = GetPropW(
-        endpoint, SwsSelectionProtocol::RestoreProp) != nullptr;
-    if (static_cast<DWORD>(GetTickCount() - tick) >
-        AnimConstants::SwsSelectionMaxAgeMs) {
-        return IsWindowVisible(endpoint) ? SwsSelectionIntent::Rejected
-                                         : SwsSelectionIntent::Unavailable;
-    }
-    DWORD currentProcessId = 0;
-    const DWORD currentThreadId =
-        GetWindowThreadProcessId(target, &currentProcessId);
-    DWORD endpointProcessId = 0;
-    GetWindowThreadProcessId(endpoint, &endpointProcessId);
-    if (!source || source == target || publishedTarget != target ||
-        GetForegroundWindow() != target || !processId || !threadId ||
-        processId != currentProcessId || threadId != currentThreadId ||
-        !endpointProcessId ||
-        (eventTime && static_cast<LONG>(eventTime - tick) < 0) ||
-        static_cast<DWORD>(reinterpret_cast<ULONG_PTR>(GetPropW(
-            endpoint, SwsSelectionProtocol::TokenProp))) != token) {
-        return SwsSelectionIntent::Rejected;
-    }
-    {
-        std::lock_guard<std::mutex> lock(g_SwsSelectionMutex);
-        if (g_lastSwsSelection.endpoint == endpoint &&
-            g_lastSwsSelection.endpointProcessId == endpointProcessId &&
-            g_lastSwsSelection.token == token &&
-            g_lastSwsSelection.tick == tick) {
-            return SwsSelectionIntent::Rejected;
-        }
-        g_lastSwsSelection = {endpoint, endpointProcessId, token, tick};
-    }
-    if (IsDiagnosticLoggingEnabled()) {
-        Wh_Log(L"SWS selection intent hwnd=%p source=%p token=%lu restore=%d",
-               target, source, static_cast<unsigned long>(token), restoring);
-    }
-    // A minimized selection belongs to the restore path even if its native
-    // show produces a foreground event before the restore session is claimed.
-    // Consume the notification, but never fall through to a second switch FX.
-    if (restoring && g_restoreAnimation.load(std::memory_order_relaxed)) {
-        return SwsSelectionIntent::Restoring;
-    }
-    return SwsSelectionIntent::Accepted;
-}
-
-static bool IsSwsOwnerRestoreRequestCurrent(HWND hWnd, HWND endpoint,
-                                            DWORD token) {
-    if (!token || endpoint != FindSwsSelectionEndpoint()) return false;
-    if (static_cast<DWORD>(reinterpret_cast<ULONG_PTR>(GetPropW(
-            endpoint, SwsSelectionProtocol::TokenProp))) != token ||
-        !GetPropW(endpoint, SwsSelectionProtocol::RestoreProp)) {
-        return false;
-    }
-    const DWORD tick = static_cast<DWORD>(reinterpret_cast<ULONG_PTR>(
-        GetPropW(endpoint, SwsSelectionProtocol::TickProp)));
-    if (static_cast<DWORD>(GetTickCount() - tick) >
-        AnimConstants::SwsSelectionMaxAgeMs) return false;
-    const HWND target = static_cast<HWND>(
-        GetPropW(endpoint, SwsSelectionProtocol::TargetProp));
-    const HWND source = static_cast<HWND>(
-        GetPropW(endpoint, SwsSelectionProtocol::SourceProp));
-    DWORD processId = 0;
-    const DWORD threadId = GetWindowThreadProcessId(target, &processId);
-    if (!source || source == target || !threadId || !processId ||
-        (hWnd != target && GetAncestor(target, GA_ROOTOWNER) != hWnd) ||
-        processId != static_cast<DWORD>(reinterpret_cast<ULONG_PTR>(
-            GetPropW(endpoint, SwsSelectionProtocol::ProcessProp))) ||
-        threadId != static_cast<DWORD>(reinterpret_cast<ULONG_PTR>(
-            GetPropW(endpoint, SwsSelectionProtocol::ThreadProp)))) {
-        return false;
-    }
-    return static_cast<DWORD>(reinterpret_cast<ULONG_PTR>(GetPropW(
-               endpoint, SwsSelectionProtocol::TokenProp))) == token;
-}
-
-static void StartAltTabSessionPoll() {
-    if (g_unloading.load(std::memory_order_relaxed) ||
-        !g_explorerAltTabTrackerEnabled.load(std::memory_order_relaxed) ||
-        !g_switchAnimation.load(std::memory_order_relaxed)) {
-        return;
-    }
-    std::lock_guard<std::mutex> lock(g_AltTabSessionMutex);
-    if (g_unloading.load(std::memory_order_relaxed) ||
-        !g_explorerAltTabTrackerEnabled.load(std::memory_order_relaxed) ||
-        g_altTabSessionPollRunning.load(std::memory_order_relaxed)) {
-        return;
-    }
-    if (g_hAltTabSessionThread) {
-        if (WaitForSingleObject(g_hAltTabSessionThread, 0) == WAIT_OBJECT_0) {
-            CloseHandle(g_hAltTabSessionThread);
-            g_hAltTabSessionThread = NULL;
-        } else {
-            return;
-        }
-    }
-    g_altTabSessionPollRunning.store(true, std::memory_order_relaxed);
-    g_hAltTabSessionThread = CreateThread(NULL, 0, AltTabSessionPollThread, NULL, 0, NULL);
-    if (!g_hAltTabSessionThread) {
-        g_altTabSessionPollRunning.store(false, std::memory_order_relaxed);
-    }
-}
-DWORD WINAPI AltTabSessionPollThread(LPVOID lpParam) {
-    (void)lpParam;
-    while (!g_unloading.load(std::memory_order_relaxed) &&
-           g_altTabSessionPollRunning.load(std::memory_order_relaxed)) {
-        TouchAltTabSession();
-        if (!(GetAsyncKeyState(VK_MENU) & 0x8000)) break;
-        Sleep(AnimConstants::AltTabPollMs);
-    }
-    g_altTabSessionPollRunning.store(false, std::memory_order_relaxed);
-    return 0;
-}
-void CALLBACK ExplorerForegroundProc(HWINEVENTHOOK hWinEventHook, DWORD event, HWND hWnd, LONG idObject,
-                                     LONG idChild, DWORD dwEventThread, DWORD dwmsEventTime) {
-    (void)hWinEventHook;
-    (void)dwEventThread;
-    (void)dwmsEventTime;
-    if (event != EVENT_SYSTEM_FOREGROUND || idObject != OBJID_WINDOW || idChild != CHILDID_SELF) return;
-    if (!hWnd || g_unloading.load(std::memory_order_relaxed) ||
-        !g_explorerAltTabTrackerEnabled.load(std::memory_order_relaxed) ||
-        !g_switchAnimation.load(std::memory_order_relaxed)) {
-        return;
-    }
-    const bool altDown = (GetAsyncKeyState(VK_MENU) & 0x8000) != 0;
-    if (IsSwsSelectionEndpoint(hWnd) ||
-        IsSwsSelectionSessionActive(FindSwsSelectionEndpoint())) {
-        // Compatible SWS sessions use the exact selection signal, not a
-        // guessed Alt scope. This also prevents cancellation or outside clicks
-        // from inheriting a pending native generation.
-        if (!altDown && IsAltTabSourceCandidate(hWnd)) {
-            g_lastAppForeground.store(hWnd, std::memory_order_relaxed);
-        }
-        std::lock_guard<std::mutex> lock(g_SharedStateMutex);
-        if (g_pSharedState && g_sharedStateWritable) {
-            InterlockedExchange(&g_pSharedState->lastAltTabTick, 0);
-            InterlockedExchange(&g_pSharedState->altTabSourceWindow, 0);
-        }
-        return;
-    }
-    if (!altDown) {
-        if (IsAltTabSourceCandidate(hWnd)) {
-            g_lastAppForeground.store(hWnd, std::memory_order_relaxed);
-        }
-        return;
-    }
-    HWND source = g_lastAppForeground.load(std::memory_order_relaxed);
-    if (!source || source == hWnd || !IsAltTabSourceCandidate(source)) {
-        if (g_altTabSessionPollRunning.load(std::memory_order_relaxed)) {
-            TouchAltTabSession();
-        }
-        return;
-    }
-    if (!g_altTabSessionPollRunning.load(std::memory_order_relaxed)) {
-        BeginAltTabSession(source);
-        StartAltTabSessionPoll();
-    } else {
-        TouchAltTabSession();
-    }
-}
-DWORD WINAPI ExplorerFgHookThread(LPVOID lpParam) {
-    (void)lpParam;
-    HWND initial = GetForegroundWindow();
-    if (IsAltTabSourceCandidate(initial)) {
-        g_lastAppForeground.store(initial, std::memory_order_relaxed);
-    }
-    PulseSharedHeartbeat();
-    HWINEVENTHOOK hook = SetWinEventHook(
-        EVENT_SYSTEM_FOREGROUND,
-        EVENT_SYSTEM_FOREGROUND,
-        NULL,
-        ExplorerForegroundProc,
-        0, 0,
-        WINEVENT_OUTOFCONTEXT);
-    g_hExplorerFgHook.store(hook, std::memory_order_release);
-    if (!hook) {
-        Wh_Log(L"Explorer FOREGROUND hook failed");
-        return 0;
-    }
-    MSG msg;
-    while (GetMessageW(&msg, NULL, 0, 0)) {
-        TranslateMessage(&msg);
-        DispatchMessageW(&msg);
-    }
-    if (HWINEVENTHOOK oldHook = g_hExplorerFgHook.exchange(NULL, std::memory_order_acquire)) {
-        UnhookWinEvent(oldHook);
-    }
-    return 0;
-}
-static bool ConsumeAltTabIntentForForeground(HWND hWnd,
-                                             DWORD eventTime,
-                                             bool* swsSelectionOut = nullptr) {
-    if (swsSelectionOut) *swsSelectionOut = false;
-    const SwsSelectionIntent swsIntent =
-        ConsumeSwsSelectionIntent(hWnd, eventTime);
-    if (swsIntent != SwsSelectionIntent::Unavailable) {
-        const bool accepted = swsIntent == SwsSelectionIntent::Accepted;
-        if (swsSelectionOut) *swsSelectionOut = accepted;
-        return accepted;
-    }
-    if (ConsumeAltTabIntent(hWnd, eventTime)) return true;
-    if (!IsShellExplorerProcess() ||
-        !(GetAsyncKeyState(VK_MENU) & 0x8000) ||
-        g_altTabSessionPollRunning.load(std::memory_order_relaxed)) {
-        return false;
-    }
-
-    // File Explorer owns both the shell-wide Alt+Tab tracker and its local
-    // destination hook. With heavily styled Explorer windows, the local hook
-    // can win the callback race and look for the shared intent just before the
-    // tracker publishes it. Seed that same session from the already remembered
-    // source instead of dropping this switch animation.
-    const HWND source =
-        g_lastAppForeground.load(std::memory_order_relaxed);
-    if (!source || source == hWnd || !IsAltTabSourceCandidate(source)) {
-        return false;
-    }
-    BeginAltTabSession(source);
-    StartAltTabSessionPoll();
-    return ConsumeAltTabIntent(hWnd, eventTime);
-}
-DWORD WINAPI SwitchingAnimThread(LPVOID lpParam) {
-    SwitchAnimData* data = (SwitchAnimData*)lpParam;
-    HWND hWnd = data->hWnd;
-    int durationMs = data->durationMs;
-    const DWORD preparedTick = data->preparedTick;
-    // Module enumeration and backdrop queries can take several milliseconds
-    // in a heavily styled Explorer. The target is already cloaked; never do
-    // this work before concealment or on its activation thread.
-    const BOOL needsFullExplorerRepair =
-        HasModernExplorerTitleFrame(hWnd) &&
-        IsTranslucentWindowsAccentBlurActive(hWnd);
-    delete data; 
-    struct CleanupGuard {
-        HWND h;
-        BOOL needsFullExplorerRepair;
-        bool uncloaked = false; 
-        ~CleanupGuard() {
-            if (!uncloaked && IsWindow(h)) {
-                RestoreSwitchTargetAfterUncloak(
-                    h, needsFullExplorerRepair);
-                FlushDwmOrYield();
-            }
-            {
-                std::lock_guard<std::mutex> lock(g_StateMutex);
-                g_AnimActive.erase(h);
-            }
-            if (reinterpret_cast<ULONG_PTR>(
-                    GetPropW(h, kPropSwitchAnimationActive)) == 1) {
-                RemovePropW(h, kPropSwitchAnimationActive);
-            }
-        }
-    } guard{hWnd, needsFullExplorerRepair};
-    SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
-    RECT winRect;
-    if (g_unloading.load(std::memory_order_relaxed) || !IsWindow(hWnd) || !IsAppMainWindow(hWnd, true) || !GetWindowRect(hWnd, &winRect)) {
-        return 0; 
-    }
-    RECT extRect = winRect;
-    DwmGetWindowAttribute(hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, &extRect, sizeof(extRect));
-    int ghostX = winRect.left;
-    int ghostY = winRect.top;
-    int ghostW = winRect.right - winRect.left;
-    int ghostH = winRect.bottom - winRect.top;
-    if (ghostW <= 0 || ghostH <= 0) {
-        return 0; 
-    }
-    HWND hGhost = CreateWindowExW(
-        WS_EX_LAYERED | WS_EX_TOOLWINDOW | WS_EX_TOPMOST | WS_EX_NOACTIVATE | WS_EX_NOREDIRECTIONBITMAP,
-        L"STATIC", NULL, WS_POPUP,
-        ghostX, ghostY, ghostW, ghostH,
-        NULL, NULL, NULL, NULL);
-    if (!hGhost) return 0;
-    HTHUMBNAIL hThumb = NULL;
-    HRESULT hr = DwmRegisterThumbnail(hGhost, hWnd, &hThumb);
-    if (FAILED(hr)) {
-        Wh_Log(L"Switch thumbnail register failed hwnd=%p hr=0x%08X", hWnd, hr);
-        DestroyWindow_Original(hGhost);
-        return 0;
-    }
-    SetPropW(hGhost, kPropSwitchAnimationGhost, reinterpret_cast<HANDLE>(TRUE));
-    // Configure an invisible first frame before showing the host. Commit the
-    // real-window cloak and thumbnail setup before starting the animation
-    // clock, so setup latency cannot skip the beginning of the fade.
-    DWM_THUMBNAIL_PROPERTIES initialProps{};
-    initialProps.dwFlags = DWM_TNP_VISIBLE | DWM_TNP_OPACITY |
-                          DWM_TNP_RECTDESTINATION;
-    initialProps.fVisible = TRUE;
-    initialProps.opacity = 0;
-    initialProps.rcDestination = {0, 0, ghostW, ghostH};
-    hr = DwmUpdateThumbnailProperties(hThumb, &initialProps);
-    if (FAILED(hr)) {
-        Wh_Log(L"Switch thumbnail setup failed hwnd=%p hr=0x%08X", hWnd, hr);
-        DwmUnregisterThumbnail(hThumb);
-        DestroyWindow_Original(hGhost);
-        return 0;
-    }
-    ShowWindow_Original(hGhost, SW_SHOWNOACTIVATE);
-    FlushDwmOrYield();
-    if (IsDiagnosticLoggingEnabled()) {
-        Wh_Log(L"Switch first frame ready hwnd=%p startup_ms=%lu fullExplorerRepair=%d",
-               hWnd, static_cast<unsigned long>(GetTickCount() - preparedTick),
-               needsFullExplorerRepair);
-    }
-    LARGE_INTEGER qpcFreq, qpcStart, qpcNow;
-    QueryPerformanceFrequency(&qpcFreq);
-    QueryPerformanceCounter(&qpcStart);
-    double totalMs = (double)durationMs;
-    float startScale = AnimConstants::SwitchStartScale;
-    int W = extRect.right - extRect.left;
-    int H = extRect.bottom - extRect.top;
-    int offsetX = extRect.left - winRect.left;
-    int offsetY = extRect.top - winRect.top;
-    for (;;) {
-        MSG msg;
-        while (PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE)) {
-            TranslateMessage(&msg);
-            DispatchMessageW(&msg);
-        }
-        QueryPerformanceCounter(&qpcNow);
-        double elapsedMs = (qpcNow.QuadPart - qpcStart.QuadPart) * 1000.0 / qpcFreq.QuadPart;
-        BOOL lastFrame = (elapsedMs >= totalMs);
-        float progress = lastFrame ? 1.0f : (float)(elapsedMs / totalMs);
-        float ease = 1.0f - powf(1.0f - progress, 3.0f);
-        float currentScale = startScale + (1.0f - startScale) * ease;
-        int thumbW = (int)(W * currentScale);
-        int thumbH = (int)(H * currentScale);
-        float cx = offsetX + W / 2.0f;
-        float cy = offsetY + H / 2.0f;
-        int thumbX = (int)(cx - thumbW / 2.0f);
-        int thumbY = (int)(cy - thumbH / 2.0f);
-        DWM_THUMBNAIL_PROPERTIES props{};
-        props.dwFlags = DWM_TNP_VISIBLE | DWM_TNP_RECTDESTINATION | DWM_TNP_OPACITY;
-        props.fVisible = TRUE;
-        props.opacity = (BYTE)(255.0f * ease);
-        props.rcDestination.left = thumbX;
-        props.rcDestination.top = thumbY;
-        props.rcDestination.right = thumbX + thumbW;
-        props.rcDestination.bottom = thumbY + thumbH;
-        DwmUpdateThumbnailProperties(hThumb, &props);
-        if (lastFrame || g_unloading.load(std::memory_order_relaxed)) break;
-        FlushDwmOrYield();
-    }
-    if (IsWindow(hWnd)) {
-        RestoreSwitchTargetAfterUncloak(hWnd,
-                                        needsFullExplorerRepair);
-        guard.uncloaked = true;
-    }
-    FlushDwmOrYield();
-    if (hThumb) DwmUnregisterThumbnail(hThumb);
-    DestroyWindow_Original(hGhost);
-    return 0; 
-}
-void CALLBACK ForegroundEventProc(HWINEVENTHOOK, DWORD event, HWND hWnd,
-                                  LONG idObject, LONG idChild, DWORD,
-                                  DWORD dwmsEventTime) {
-    if (event != EVENT_SYSTEM_FOREGROUND || idObject != OBJID_WINDOW || idChild != CHILDID_SELF) return;
-    if (!g_switchAnimation.load(std::memory_order_relaxed) || g_unloading.load(std::memory_order_relaxed)) return;
-    DWORD windowPid = 0;
-    GetWindowThreadProcessId(hWnd, &windowPid);
-    if (windowPid != GetCurrentProcessId() || GetForegroundWindow() != hWnd ||
-        IsIconic(hWnd) || !IsAppMainWindow(hWnd, true)) return;
-    bool swsSelection = false;
-    if (!ConsumeAltTabIntentForForeground(hWnd, dwmsEventTime,
-                                          &swsSelection)) return;
-    {
-        std::lock_guard<std::mutex> lock(g_StateMutex);
-        if (!g_AnimActive.insert(hWnd).second) {
-            if (IsDiagnosticLoggingEnabled()) {
-                Wh_Log(L"Switch animation skipped hwnd=%p reason=active-animation trigger=%s",
-                       hWnd, swsSelection ? L"sws-selection" : L"alt-tab");
-            }
-            return;
-        }
-        g_AnimWantRising.erase(hWnd);
-        g_AnimRestoreRequestForeground.erase(hWnd);
-        g_AsyncRestoreReservations.erase(hWnd);
-    }
-    // Match the v1.2.0 handoff: conceal the target as soon as the switch has
-    // been accepted. In particular, no Explorer/module/backdrop inspection
-    // belongs between acceptance and this cloak.
-    const DWORD preparedTick = GetTickCount();
-    SetPropW(hWnd, kPropSwitchAnimationActive, reinterpret_cast<HANDLE>(1));
-    SetWindowCloak(hWnd, TRUE);
-    if (IsDiagnosticLoggingEnabled()) {
-        Wh_Log(L"Switch animation start hwnd=%p trigger=%s event_delay_ms=%lu",
-               hWnd, swsSelection ? L"sws-selection" : L"alt-tab",
-               static_cast<unsigned long>(dwmsEventTime
-                   ? preparedTick - dwmsEventTime : 0));
-    }
-    auto* data = new (std::nothrow)
-        SwitchAnimData{hWnd,
-                       g_switchDurationMs.load(std::memory_order_relaxed),
-                       preparedTick};
-    if (!data || !StartWorkerThread(SwitchingAnimThread, data)) {
-        Wh_Log(L"Switch animation worker failed hwnd=%p", hWnd);
-        // The repair helper itself upgrades active AccentBlur to full repair.
-        // No extra pre-cloak styling query is needed on this failure path.
-        RestoreSwitchTargetAfterUncloak(hWnd, FALSE);
-        RemovePropW(hWnd, kPropSwitchAnimationActive);
-        delete data;
-        std::lock_guard<std::mutex> lock(g_StateMutex);
-        g_AnimActive.erase(hWnd);
-    }
-}
-
-void CALLBACK TrayHideVisibilityEventProc(HWINEVENTHOOK, DWORD event,
-                                          HWND hWnd, LONG idObject,
-                                          LONG idChild, DWORD, DWORD) {
-    if (event != EVENT_OBJECT_SHOW || !hWnd || idObject != OBJID_WINDOW ||
-        idChild != CHILDID_SELF ||
-        g_unloading.load(std::memory_order_relaxed)) {
-        return;
-    }
-
-    DWORD windowProcessId = 0;
-    GetWindowThreadProcessId(hWnd, &windowProcessId);
-    if (windowProcessId != GetCurrentProcessId()) return;
-
-    // Observe the resulting HWND state rather than relying on a particular
-    // exported show API. This also covers DefWindowProc restores,
-    // DeferWindowPos/EndDeferWindowPos, AnimateWindow and late async shows.
-    ReleaseVisibleTrayHideCloak(hWnd);
-}
-
-static bool IsTaskbarEventWindow(HWND hWnd) {
-    for (HWND current = hWnd; current; current = GetParent(current)) {
-        WCHAR className[64]{};
-        if (!GetClassNameW(current, className, ARRAYSIZE(className))) continue;
-        if (_wcsicmp(className, L"Shell_TrayWnd") == 0 ||
-            _wcsicmp(className, L"Shell_SecondaryTrayWnd") == 0) {
-            return true;
-        }
-    }
-    return false;
-}
-
-static void IncrementSharedTaskbarLayoutEpoch() {
-    std::lock_guard<std::mutex> lock(g_SharedStateMutex);
-    if (!g_pSharedState || !g_sharedStateWritable) return;
-    LONG epoch = InterlockedIncrement(&g_pSharedState->taskbarLayoutEpoch);
-    if (epoch == 0) InterlockedIncrement(&g_pSharedState->taskbarLayoutEpoch);
-}
-
-static bool PublishSharedTaskbarObserver(DWORD explorerPid, bool ready) {
-    std::lock_guard<std::mutex> lock(g_SharedStateMutex);
-    if (!g_pSharedState || !g_sharedStateWritable) return false;
-    const LONG ownPid = static_cast<LONG>(explorerPid);
-    const LONG previous = InterlockedCompareExchange(
-        &g_pSharedState->taskbarObserverPid, ready ? ownPid : 0,
-        ready ? 0 : ownPid);
-    if (ready && previous != 0 && previous != ownPid) return false;
-    if ((ready && previous != ownPid) || (!ready && previous == ownPid)) {
-        LONG epoch = InterlockedIncrement(&g_pSharedState->taskbarLayoutEpoch);
-        if (epoch == 0) InterlockedIncrement(&g_pSharedState->taskbarLayoutEpoch);
-    }
-    return ready ? (previous == 0 || previous == ownPid) : previous == ownPid;
-}
-
-void CALLBACK TaskbarLayoutEventProc(HWINEVENTHOOK hWinEventHook, DWORD event, HWND hWnd,
-                                     LONG idObject, LONG idChild, DWORD dwEventThread,
-                                     DWORD dwmsEventTime) {
-    (void)hWinEventHook;
-    (void)idChild;
-    (void)dwEventThread;
-    (void)dwmsEventTime;
-    if (g_unloading.load(std::memory_order_relaxed) || !hWnd ||
-        (event != EVENT_OBJECT_CREATE && event != EVENT_OBJECT_DESTROY &&
-         event != EVENT_OBJECT_SHOW && event != EVENT_OBJECT_HIDE &&
-         event != EVENT_OBJECT_REORDER && event != EVENT_OBJECT_LOCATIONCHANGE &&
-         event != EVENT_OBJECT_HOSTEDOBJECTSINVALIDATED) ||
-        !IsTaskbarEventWindow(hWnd)) {
-        return;
-    }
-    if (idObject == OBJID_WINDOW &&
-        (event == EVENT_OBJECT_SHOW || event == EVENT_OBJECT_HIDE ||
-         event == EVENT_OBJECT_LOCATIONCHANGE)) {
-        return;
-    }
-
-    IncrementSharedTaskbarLayoutEpoch();
-    std::lock_guard<std::mutex> lock(g_StateMutex);
-    // Force a fresh HWND/UIA result while retaining a non-authoritative
-    // process fallback in case Explorer is still reflowing and the bounded
-    // lookup doesn't finish in time.
-    InvalidateTaskbarDockCachesLocked(/*preserveProcessFallback=*/true);
-}
-
-DWORD WINAPI WinEventHookThread(LPVOID) {
-    const bool explorerProcess = IsShellExplorerProcess();
-    HWINEVENTHOOK hook = SetWinEventHook(
-        EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, NULL, ForegroundEventProc,
-        GetCurrentProcessId(), 0, WINEVENT_OUTOFCONTEXT);
-    g_hForegroundHook.store(hook, std::memory_order_release);
-    HWINEVENTHOOK trayHideVisibilityHook = SetWinEventHook(
-        EVENT_OBJECT_SHOW, EVENT_OBJECT_SHOW, nullptr,
-        TrayHideVisibilityEventProc, GetCurrentProcessId(), 0,
-        WINEVENT_OUTOFCONTEXT);
-
-    const bool observeTaskbar = explorerProcess;
-    const DWORD explorerPid = observeTaskbar ? GetCurrentProcessId() : 0;
-    HWINEVENTHOOK taskbarLayoutHook = nullptr;
-    HWINEVENTHOOK taskbarLocationHook = nullptr;
-    HWINEVENTHOOK taskbarHostedObjectsHook = nullptr;
-    auto publishObserver = [&](bool ready) -> bool {
-        return PublishSharedTaskbarObserver(explorerPid, ready);
-    };
-    auto removeTaskbarHooks = [&]() {
-        if (taskbarLayoutHook) UnhookWinEvent(taskbarLayoutHook);
-        if (taskbarLocationHook) UnhookWinEvent(taskbarLocationHook);
-        if (taskbarHostedObjectsHook) UnhookWinEvent(taskbarHostedObjectsHook);
-        taskbarLayoutHook = taskbarLocationHook = taskbarHostedObjectsHook = nullptr;
-        publishObserver(false);
-    };
-    auto installTaskbarHooks = [&]() -> bool {
-        if (!observeTaskbar || !IsShellExplorerProcess()) return false;
-        taskbarLayoutHook =
-            SetWinEventHook(EVENT_OBJECT_CREATE, EVENT_OBJECT_REORDER, nullptr,
-                            TaskbarLayoutEventProc, explorerPid, 0, WINEVENT_OUTOFCONTEXT);
-        taskbarLocationHook =
-            SetWinEventHook(EVENT_OBJECT_LOCATIONCHANGE, EVENT_OBJECT_LOCATIONCHANGE,
-                            nullptr, TaskbarLayoutEventProc, explorerPid, 0,
-                            WINEVENT_OUTOFCONTEXT);
-        taskbarHostedObjectsHook =
-            SetWinEventHook(EVENT_OBJECT_HOSTEDOBJECTSINVALIDATED,
-                            EVENT_OBJECT_HOSTEDOBJECTSINVALIDATED, nullptr,
-                            TaskbarLayoutEventProc, explorerPid, 0,
-                            WINEVENT_OUTOFCONTEXT);
-        if (!taskbarLayoutHook || !taskbarLocationHook || !taskbarHostedObjectsHook) {
-            removeTaskbarHooks();
-            return false;
-        }
-        if (!publishObserver(true)) {
-            removeTaskbarHooks();
-            return false;
-        }
-        return true;
-    };
-    bool taskbarHooksReady = installTaskbarHooks();
-    UINT_PTR taskbarHookRetryTimer = 0;
-    if (observeTaskbar && !taskbarHooksReady) {
-        taskbarHookRetryTimer = SetTimer(nullptr, 0, 2000, nullptr);
-        if (!taskbarHookRetryTimer) {
-            Wh_Log(L"Taskbar layout hook retry timer failed");
-        }
-    }
-
-    if (!hook && !trayHideVisibilityHook &&
-        !observeTaskbar) {
-        g_winEventThreadStarted.store(false, std::memory_order_relaxed);
-        return 0;
-    }
-        
-    MSG msg;
-    while (GetMessageW(&msg, NULL, 0, 0)) {
-        if (msg.message == WM_TIMER && msg.wParam == taskbarHookRetryTimer &&
-            observeTaskbar && !taskbarHooksReady) {
-            if (!IsShellExplorerProcess()) {
-                KillTimer(nullptr, taskbarHookRetryTimer);
-                taskbarHookRetryTimer = 0;
-                continue;
-            }
-            taskbarHooksReady = installTaskbarHooks();
-            if (taskbarHooksReady) {
-                KillTimer(nullptr, taskbarHookRetryTimer);
-                taskbarHookRetryTimer = 0;
-            }
-            continue;
-        }
-        TranslateMessage(&msg);
-        DispatchMessageW(&msg);
-    }
-    if (taskbarHookRetryTimer) KillTimer(nullptr, taskbarHookRetryTimer);
-    
-    if (HWINEVENTHOOK oldHook = g_hForegroundHook.exchange(NULL, std::memory_order_acquire)) {
-        UnhookWinEvent(oldHook);
-    }
-    if (trayHideVisibilityHook) UnhookWinEvent(trayHideVisibilityHook);
-    removeTaskbarHooks();
-    return 0;
-}
-
-struct QuadFrame {
-    int x{};
-    int y{};
-    int width{};
-    int height{};
-    float opacity{1.0f};
-};
-
-struct alignas(16) GpuQuadConstants {
-    float outputSize[2];
-    float rectOrigin[2];
-    float rectSize[2];
-    float opacity;
-    float padding;
-    float sourceSize[2];
-    float padding2[2];
-};
-
-struct alignas(16) GpuGenieConstants {
-    float outputSize[2];
-    float sourceSize[2];
-    float sourceOrigin[2];
-    float dockPosition[2];
-    float neckWidth;
-    float morphTime;
-    float opacity;
-    float spread;
-    uint32_t taskbarEdge;
-    float padding[3];
-};
-
-struct alignas(16) GpuInplaceConstants {
-    float outputSize[2];
-    float sourceSize[2];
-    float rectOrigin[2];
-    float progress;
-    float blockSize;
-    uint32_t effectStyle;
-    float fieldSize[2];
-    float padding;
-};
-
-struct alignas(16) GpuFieldConstants {
-    float sourceSize[2];
-    float blockSize;
-    float fieldStep;
-    uint32_t effectStyle;
-    float padding[3];
-};
-
-struct alignas(16) GpuCloseConstants {
-    float outputSize[2];
-    float sourceSize[2];
-    float sourceOrigin[2];
-    float progress;
-    float blockSize;
-};
-
-struct alignas(16) GpuShatterConstants {
-    float outputSize[2];
-    float sourceSize[2];
-    float sourceOrigin[2];
-    float progress;
-    uint32_t blockSize;
-    float thanosBaseStartMax;
-    float thanosWaveNoiseMult;
-    float thanosLifeSpan;
-    float padding;
-};
-
-struct GpuGenieFrame {
-    float sourceOriginX{};
-    float sourceOriginY{};
-    float dockX{};
-    float dockY{};
-    float neckWidth{};
-    float morphTime{};
-    float opacity{1.0f};
-    TaskbarEdge taskbarEdge{TaskbarEdge::Bottom};
-};
-
-struct GpuInplaceFrame {
-    float rectOriginX{};
-    float rectOriginY{};
-    float progress{};
-    int blockSize{1};
-    uint32_t effectStyle{};
-};
-
-struct GpuCloseFrame {
-    float sourceOriginX{};
-    float sourceOriginY{};
-    float progress{};
-    float blockSize{};
-};
-
-static_assert(sizeof(GpuQuadConstants) % 16 == 0);
-static_assert(sizeof(GpuGenieConstants) % 16 == 0);
-static_assert(sizeof(GpuInplaceConstants) % 16 == 0);
-static_assert(sizeof(GpuFieldConstants) % 16 == 0);
-static_assert(sizeof(GpuCloseConstants) % 16 == 0);
-static_assert(sizeof(GpuShatterConstants) % 16 == 0);
-
-using D3DCompile_t = HRESULT(WINAPI*)(
-    LPCVOID, SIZE_T, LPCSTR, const D3D_SHADER_MACRO*, ID3DInclude*, LPCSTR,
-    LPCSTR, UINT, UINT, ID3DBlob**, ID3DBlob**);
-
-// Keep the small effect shaders beside the matching CPU frame calculations.
-// The compiler DLL is loaded lazily from System32; if it is unavailable, the
-// existing layered-window renderer remains the automatic fallback.
-static constexpr char kGpuQuadShader[] = R"hlsl(
-cbuffer FrameConstants : register(b0)
-{
-    float2 outputSize;
-    float2 rectOrigin;
-    float2 rectSize;
-    float opacity;
-    float padding;
-    float2 sourceSize;
-    float2 padding2;
-};
-
-struct VertexOutput
-{
-    float4 position : SV_POSITION;
-};
-
-VertexOutput VSMain(uint vertexId : SV_VertexID)
-{
-    VertexOutput output;
-    float2 uv = float2(vertexId & 1, (vertexId >> 1) & 1);
-    float2 pixelPosition = rectOrigin + uv * rectSize;
-    output.position = float4(
-        pixelPosition.x * (2.0f / outputSize.x) - 1.0f,
-        1.0f - pixelPosition.y * (2.0f / outputSize.y),
-        0.0f, 1.0f);
-    return output;
-}
-
-Texture2D sourceTexture : register(t0);
-
-float4 PSMain(VertexOutput input) : SV_TARGET
-{
-    int2 destinationPixel = int2(floor(input.position.xy - rectOrigin));
-    int2 sourcePixel = int2(floor(
-        float2(destinationPixel) * sourceSize / rectSize));
-    sourcePixel = clamp(sourcePixel, int2(0, 0), int2(sourceSize) - 1);
-    return sourceTexture.Load(int3(sourcePixel, 0)) * opacity;
-}
-)hlsl";
-
-// Genie is a dense two-vertex strip along the axis perpendicular to the
-// taskbar. Horizontal bars bend rows; vertical bars bend columns. The pixel
-// shader reconstructs the inverse mapping on the other axis, reducing
-// per-frame CPU work to one constant-buffer update for every orientation.
-static constexpr char kGpuGenieShader[] = R"hlsl(
-cbuffer GenieConstants : register(b0)
-{
-    float2 outputSize;
-    float2 sourceSize;
-    float2 sourceOrigin;
-    float2 dockPosition;
-    float neckWidth;
-    float morphTime;
-    float opacity;
-    float spread;
-    uint taskbarEdge;
-    float3 padding;
-};
-
-float MorphAt(float edgeCoordinate)
-{
-    float m = saturate(
-        morphTime * (1.0f + spread) -
-        (1.0f - edgeCoordinate) * spread);
-    return m * m * (3.0f - 2.0f * m);
-}
-
-struct VertexOutput
-{
-    float4 position : SV_POSITION;
-    float sourceAxis : TEXCOORD0;
-};
-
-VertexOutput VSMain(uint vertexId : SV_VertexID)
-{
-    VertexOutput output;
-    bool verticalTaskbar = taskbarEdge >= 2u;
-    uint sourceStep = vertexId >> 1;
-    float side = float(vertexId & 1);
-    float sourceAxisSize = verticalTaskbar ? sourceSize.x : sourceSize.y;
-    float axis = min(float(sourceStep) / sourceAxisSize, 1.0f);
-    bool leadingEdge = taskbarEdge == 1u || taskbarEdge == 2u;
-    float edgeCoordinate = leadingEdge ? 1.0f - axis : axis;
-    float morph = MorphAt(edgeCoordinate);
-    float2 outputPixel;
-    if (verticalTaskbar) {
-        float sourceX = sourceOrigin.x + sourceSize.x * axis;
-        outputPixel.x = lerp(sourceX, dockPosition.x, morph);
-        float height = max(1.0f, lerp(sourceSize.y, neckWidth, morph));
-        float sourceCenterY = sourceOrigin.y + sourceSize.y * 0.5f;
-        float centerY = lerp(sourceCenterY, dockPosition.y, morph);
-        outputPixel.y = centerY + (side - 0.5f) * height;
-    } else {
-        float sourceY = sourceOrigin.y + sourceSize.y * axis;
-        outputPixel.y = lerp(sourceY, dockPosition.y, morph);
-        float width = max(1.0f, lerp(sourceSize.x, neckWidth, morph));
-        float sourceCenterX = sourceOrigin.x + sourceSize.x * 0.5f;
-        float centerX = lerp(sourceCenterX, dockPosition.x, morph);
-        outputPixel.x = centerX + (side - 0.5f) * width;
-    }
-    output.position = float4(
-        outputPixel.x * (2.0f / outputSize.x) - 1.0f,
-        1.0f - outputPixel.y * (2.0f / outputSize.y),
-        0.0f, 1.0f);
-    output.sourceAxis = axis;
-    return output;
-}
-
-Texture2D sourceTexture : register(t0);
-
-float4 PSMain(VertexOutput input) : SV_TARGET
-{
-    bool verticalTaskbar = taskbarEdge >= 2u;
-    float axis = saturate(input.sourceAxis);
-    bool leadingEdge = taskbarEdge == 1u || taskbarEdge == 2u;
-    float edgeCoordinate = leadingEdge ? 1.0f - axis : axis;
-    float morph = MorphAt(edgeCoordinate);
-    float u;
-    float v;
-    if (verticalTaskbar) {
-        float height = max(1.0f, lerp(sourceSize.y, neckWidth, morph));
-        float sourceCenterY = sourceOrigin.y + sourceSize.y * 0.5f;
-        float centerY = lerp(sourceCenterY, dockPosition.y, morph);
-        float top = centerY - height * 0.5f;
-        v = (input.position.y - top) / height;
-        u = axis;
-        if (v < 0.0f || v >= 1.0f) discard;
-    } else {
-        float width = max(1.0f, lerp(sourceSize.x, neckWidth, morph));
-        float sourceCenterX = sourceOrigin.x + sourceSize.x * 0.5f;
-        float centerX = lerp(sourceCenterX, dockPosition.x, morph);
-        float left = centerX - width * 0.5f;
-        u = (input.position.x - left) / width;
-        v = axis;
-        if (u < 0.0f || u >= 1.0f) discard;
-    }
-    int2 sourcePixel = int2(floor(float2(u, v) * sourceSize));
-    sourcePixel = clamp(sourcePixel, int2(0, 0), int2(sourceSize) - 1);
-    return sourceTexture.Load(int3(sourcePixel, 0)) * opacity;
-}
-)hlsl";
-
-// The five in-place effects share a full-window pass. Ink Splash, Scorch and
-// Splinter read a low-resolution field generated once by kGpuFieldShader;
-// Mirage and Stipple calculate their small masks directly. Quantizing all math
-// to the CPU renderer's dynamic block size preserves the existing character.
-static constexpr char kGpuInplaceShader[] = R"hlsl(
-cbuffer InplaceConstants : register(b0)
-{
-    float2 outputSize;
-    float2 sourceSize;
-    float2 rectOrigin;
-    float progress;
-    float blockSizeValue;
-    uint effectStyle;
-    float2 fieldSize;
-    float padding;
-};
-
-struct VertexOutput
-{
-    float4 position : SV_POSITION;
-};
-
-VertexOutput VSMain(uint vertexId : SV_VertexID)
-{
-    VertexOutput output;
-    float2 uv = float2(vertexId & 1, (vertexId >> 1) & 1);
-    float2 pixelPosition = rectOrigin + uv * sourceSize;
-    output.position = float4(
-        pixelPosition.x * (2.0f / outputSize.x) - 1.0f,
-        1.0f - pixelPosition.y * (2.0f / outputSize.y),
-        0.0f, 1.0f);
-    return output;
-}
-
-Texture2D sourceTexture : register(t0);
-Texture2D<float4> effectField : register(t1);
-
-float4 PSMain(VertexOutput input) : SV_TARGET
-{
-    int blockSize = max(1, int(blockSizeValue));
-    int2 sourceDimensions = max(int2(sourceSize), int2(1, 1));
-    int2 destinationPixel =
-        int2(floor(input.position.xy - rectOrigin));
-    destinationPixel = clamp(
-        destinationPixel, int2(0, 0), sourceDimensions - 1);
-    int2 blockOrigin = (destinationPixel / blockSize) * blockSize;
-    int2 blockExtent = min(
-        int2(blockSize, blockSize), sourceDimensions - blockOrigin);
-    int2 inBlock = destinationPixel - blockOrigin;
-    float2 blockCenter =
-        float2(blockOrigin) + float2(blockExtent) * 0.5f;
-    float2 uv = blockCenter / sourceSize;
-
-    if (effectStyle <= 3)
-    {
-        int2 fieldDimensions = max(int2(fieldSize), int2(1, 1));
-        int2 fieldPixel = clamp(
-            blockOrigin / blockSize, int2(0, 0), fieldDimensions - 1);
-        float4 parameters = effectField.Load(int3(fieldPixel, 0));
-        float reveal = 0.0f;
-
-        if (effectStyle == 1)
-        {
-            float boundary = progress * 1.7f - 0.15f;
-            float t = saturate(
-                (parameters.x - boundary - 0.04f) / -0.08f);
-            reveal = t * t * (3.0f - 2.0f * t);
-        }
-        else if (effectStyle == 2)
-        {
-            float distanceFromCorner =
-                length(1.0f - uv) * 1.55f -
-                progress * parameters.x;
-            float radius = progress - parameters.y;
-            reveal = distanceFromCorner <= radius
-                         ? 1.0f
-                         : progress * progress * progress * progress;
-        }
-        else
-        {
-            const float fadeEdge = 0.08f;
-            float outer = smoothstep(0.0f, fadeEdge, progress);
-            float endFill = smoothstep(
-                1.0f - fadeEdge, 1.0f, progress);
-            float hard = parameters.y <= progress - parameters.x
-                             ? 1.0f
-                             : 0.0f;
-            reveal = outer * lerp(endFill, 1.0f, hard);
-        }
-
-        if (reveal <= 0.01f) discard;
-        return sourceTexture.Load(int3(destinationPixel, 0)) * reveal;
-    }
-
-    if (effectStyle == 4)
-    {
-        if (progress <= 0.01f) discard;
-        float inverseProgress = 1.0f - progress;
-        float2 displacedUv = uv + inverseProgress * float2(
-            0.035f * cos(62.0f * uv.x),
-            0.035f * sin(62.0f * uv.y));
-        int2 displacedOrigin = int2(
-            displacedUv * sourceSize - float2(blockExtent) * 0.5f);
-        displacedOrigin = clamp(
-            displacedOrigin, int2(0, 0),
-            sourceDimensions - blockExtent);
-        int2 sourcePixel = displacedOrigin + inBlock;
-        return sourceTexture.Load(int3(sourcePixel, 0)) * progress;
-    }
-
-    // Stipple reveals the original block whenever its repeating dot cell is
-    // inside the radial threshold used by the CPU effect.
-    float2 cell = frac(uv * 28.0f) - 0.5f;
-    float cellDistance = length(cell);
-    float originDistance = max(length(uv), 0.0001f);
-    if (cellDistance > progress / originDistance) discard;
-    return sourceTexture.Load(int3(destinationPixel, 0));
-}
-)hlsl";
-
-// Build Ink Splash, Scorch and Splinter fields once on the GPU, matching the
-// CPU precalculation with a low-resolution render;
-// the per-frame shader above then only performs a texture load and mask test.
-static constexpr char kGpuFieldShader[] = R"hlsl(
-cbuffer FieldConstants : register(b0)
-{
-    float2 sourceSize;
-    float blockSizeValue;
-    float fieldStep;
-    uint effectStyle;
-    float3 padding;
-};
-
-struct VertexOutput
-{
-    float4 position : SV_POSITION;
-};
-
-VertexOutput VSMain(uint vertexId : SV_VertexID)
-{
-    VertexOutput output;
-    float2 uv = float2(vertexId & 1, (vertexId >> 1) & 1);
-    output.position = float4(
-        uv.x * 2.0f - 1.0f, 1.0f - uv.y * 2.0f, 0.0f, 1.0f);
-    return output;
-}
-
-float InkHash(float2 p)
-{
-    return frac(sin(dot(p, float2(127.1f, 311.7f))) * 43758.5453f);
-}
-
-float PatternHash(float2 p)
-{
-    return frac(sin(dot(p, float2(12.9898f, 78.233f))) * 43758.5453f);
-}
-
-float ValueNoise(float2 p)
-{
-    float2 i = floor(p);
-    float2 f = frac(p);
-    f = f * f * (3.0f - 2.0f * f);
-    float a = InkHash(i);
-    float b = InkHash(i + float2(1.0f, 0.0f));
-    float c = InkHash(i + float2(0.0f, 1.0f));
-    float d = InkHash(i + float2(1.0f, 1.0f));
-    return lerp(lerp(a, b, f.x), lerp(c, d, f.x), f.y);
-}
-
-float Fbm(float2 p)
-{
-    float value = 0.0f;
-    float amplitude = 0.5f;
-    [unroll]
-    for (int octave = 0; octave < 4; ++octave)
-    {
-        value += amplitude * ValueNoise(p);
-        p *= 2.1f;
-        amplitude *= 0.5f;
-    }
-    return value;
-}
-
-float InkDistance(int2 fieldPixel)
-{
-    float2 uv = (float2(fieldPixel) + 0.5f) * fieldStep / sourceSize;
-    float blob = Fbm(uv * 3.5f);
-    float fingers = Fbm(uv * 14.0f);
-    float distortion =
-        (blob - 0.5f) * 0.5f + (fingers - 0.5f) * 0.18f;
-    float2 centered = uv - 0.5f;
-    centered.x *= sourceSize.x / max(sourceSize.y, 1.0f);
-    return length(centered) + distortion;
-}
-
-float Mod289(float x)
-{
-    return x - floor(x * (1.0f / 289.0f)) * 289.0f;
-}
-
-float Permute(float x)
-{
-    return Mod289(((x * 34.0f) + 1.0f) * x);
-}
-
-float SimplexContribution(float q, float2 p)
-{
-    float m = 0.5f - dot(p, p);
-    if (m < 0.0f) return 0.0f;
-    m *= m;
-    m *= m;
-    float x = 2.0f * frac(q * 0.024390243902439f) - 1.0f;
-    float h = abs(x) - 0.5f;
-    float ox = floor(x + 0.5f);
-    float a0 = x - ox;
-    m *= 1.79284291400159f -
-         0.85373472095314f * (a0 * a0 + h * h);
-    return m * dot(float2(a0, h), p);
-}
-
-float SimplexNoise(float2 v)
-{
-    const float C0 = 0.211324865405187f;
-    const float C1 = 0.366025403784439f;
-    const float C2 = -0.577350269189626f;
-    float2 i = floor(v + (v.x + v.y) * C1);
-    float2 x0 = v - i + (i.x + i.y) * C0;
-    float2 i1 = x0.x > x0.y ? float2(1.0f, 0.0f)
-                              : float2(0.0f, 1.0f);
-    float2 x1 = x0 + C0 - i1;
-    float2 x2 = x0 + C2;
-    i = float2(Mod289(i.x), Mod289(i.y));
-    float q0 = Permute(Permute(i.y) + i.x);
-    float q1 = Permute(Permute(i.y + i1.y) + i.x + i1.x);
-    float q2 = Permute(Permute(i.y + 1.0f) + i.x + 1.0f);
-    return 130.0f * (
-        SimplexContribution(q0, x0) +
-        SimplexContribution(q1, x1) +
-        SimplexContribution(q2, x2));
-}
-
-float PerlinHash(int x, int y)
-{
-    uint hash = uint(x) * 73856093u ^ uint(y) * 19349663u;
-    return float(hash % 10000u) / 10000.0f;
-}
-
-float PerlinValueNoise(float2 position)
-{
-    int2 cell = int2(floor(position));
-    float2 fraction = position - float2(cell);
-    float2 blend = fraction * fraction * (3.0f - 2.0f * fraction);
-    float a = PerlinHash(cell.x, cell.y);
-    float b = PerlinHash(cell.x + 1, cell.y);
-    float c = PerlinHash(cell.x, cell.y + 1);
-    float d = PerlinHash(cell.x + 1, cell.y + 1);
-    return lerp(lerp(a, b, blend.x), lerp(c, d, blend.x), blend.y);
-}
-
-float4 PSMain(VertexOutput input) : SV_TARGET
-{
-    int blockSize = max(1, int(blockSizeValue));
-    int2 sourceDimensions = max(int2(sourceSize), int2(1, 1));
-    int2 fieldPixel = int2(floor(input.position.xy));
-    int2 blockOrigin = fieldPixel * blockSize;
-    if (effectStyle == 8)
-    {
-        float2 noisePosition = float2(blockOrigin) / 150.0f;
-        float noiseValue = 0.0f;
-        float amplitude = 0.5f;
-        [unroll]
-        for (int octave = 0; octave < 3; ++octave)
-        {
-            noiseValue += amplitude * PerlinValueNoise(noisePosition);
-            noisePosition *= 2.0f;
-            amplitude *= 0.5f;
-        }
-        return float4(noiseValue * 0.9f, 0.0f, 0.0f, 0.0f);
-    }
-    int2 blockExtent = min(
-        int2(blockSize, blockSize), sourceDimensions - blockOrigin);
-    float2 blockCenter =
-        float2(blockOrigin) + float2(blockExtent) * 0.5f;
-    float2 uv = blockCenter / sourceSize;
-
-    if (effectStyle == 1)
-    {
-        float2 f = blockCenter / fieldStep - 0.5f;
-        int2 base = int2(floor(f));
-        float2 t = frac(f);
-        int2 coarseSize = max(
-            int2(ceil(sourceSize / fieldStep)), int2(2, 2));
-        base = clamp(base, int2(0, 0), coarseSize - 2);
-        float a = InkDistance(base);
-        float b = InkDistance(base + int2(1, 0));
-        float c = InkDistance(base + int2(0, 1));
-        float d = InkDistance(base + int2(1, 1));
-        float splashDistance = lerp(
-            lerp(a, b, t.x), lerp(c, d, t.x), t.y);
-        return float4(splashDistance, 0.0f, 0.0f, 0.0f);
-    }
-
-    if (effectStyle == 2)
-    {
-        float n = SimplexNoise(float2(uv.x * 2.8f, 0.0f));
-        float force = 0.42f + 0.58f * exp(n * 0.55f);
-        float randomDelay =
-            PatternHash(float2(uv.x * 2.8f, 0.1f)) * 0.42f;
-        // The consumer reconstructs uv from the block position, so only keep
-        // the two values which cannot be derived there.
-        return float4(force, randomDelay, 0.0f, 0.0f);
-    }
-
-    float distanceFromCenter = length(uv - 0.5f) / 3.2f;
-    float randomY = PatternHash(float2(uv.y * 2.6f, 0.0f));
-    float randomX = PatternHash(float2(0.0f, uv.x * 2.6f));
-    float jitter = min(randomY, randomX) * 0.38f;
-    return float4(jitter, distanceFromCenter, 0.0f, 0.0f);
-}
-)hlsl";
-
-// Perlin Dissolve is the only full-canvas close effect selected by the
-// hybrid GPU router. Its one-value-per-pixel field and source sampling remain
-// entirely on the GPU.
-static constexpr char kGpuCloseShader[] = R"hlsl(
-cbuffer CloseConstants : register(b0)
-{
-    float2 outputSize;
-    float2 sourceSize;
-    float2 sourceOrigin;
-    float progress;
-    float blockSize;
-};
-
-struct VertexOutput
-{
-    float4 position : SV_POSITION;
-};
-
-VertexOutput VSMain(uint vertexId : SV_VertexID)
-{
-    VertexOutput output;
-    float2 uv = float2(vertexId & 1, (vertexId >> 1) & 1);
-    output.position = float4(
-        uv.x * 2.0f - 1.0f, 1.0f - uv.y * 2.0f, 0.0f, 1.0f);
-    return output;
-}
-
-Texture2D sourceTexture : register(t0);
-Texture2D effectFieldTexture : register(t1);
-
-float4 PSMain(VertexOutput input) : SV_TARGET
-{
-    int2 outputPixel = int2(floor(input.position.xy));
-    int2 origin = int2(sourceOrigin);
-    int2 sourceDimensions = int2(sourceSize);
-    int2 sourcePixel = outputPixel - origin;
-    if (sourcePixel.x < 0 || sourcePixel.x >= sourceDimensions.x ||
-        sourcePixel.y < 0 || sourcePixel.y >= sourceDimensions.y) discard;
-
-    int step = max(1, int(blockSize + 0.5f));
-    int2 fieldPixel = int2(floor(float2(sourcePixel) / float(step)));
-    float startTime = effectFieldTexture.Load(int3(fieldPixel, 0)).r;
-    float localProgress = (progress - startTime) / 0.15f;
-    if (localProgress >= 1.0f) discard;
-    float opacity = localProgress <= 0.0f ? 1.0f : 1.0f - localProgress;
-    return sourceTexture.Load(int3(sourcePixel, 0)) * opacity;
-}
-)hlsl";
-// Dense Thanos is the only forward-scatter close effect selected by the
-// hybrid GPU router. Draw each source pixel as a point directly into the
-// presenter, avoiding both per-particle CPU storage and a second GPU surface.
-static constexpr char kGpuShatterShader[] = R"hlsl(
-cbuffer ShatterConstants : register(b0)
-{
-    float2 outputSize;
-    float2 sourceSize;
-    float2 sourceOrigin;
-    float progress;
-    uint blockSize;
-    float thanosBaseStartMax;
-    float thanosWaveNoiseMult;
-    float thanosLifeSpan;
-    float padding;
-};
-
-struct VertexOutput
-{
-    float4 position : SV_POSITION;
-    nointerpolation float2 sourceBlockOrigin : TEXCOORD0;
-    nointerpolation float2 destinationBlockOrigin : TEXCOORD1;
-    nointerpolation float opacity : TEXCOORD2;
-};
-
-VertexOutput VSMain(uint vertexId : SV_VertexID,
-                    uint instanceId : SV_InstanceID)
-{
-    VertexOutput output;
-    uint size = max(1u, blockSize);
-    uint2 sourceDimensions = uint2(sourceSize);
-    uint blockColumns = (sourceDimensions.x + size - 1u) / size;
-    uint2 blockOrigin = uint2(
-        (instanceId % blockColumns) * size,
-        (instanceId / blockColumns) * size);
-
-    uint hash = blockOrigin.x * 73856093u ^
-                blockOrigin.y * 19349663u;
-    float clampedProgress = saturate(progress);
-    float2 displacement = 0.0f;
-    float opacity = 1.0f;
-    float distanceFromBottomRight =
-        (sourceSize.x - float(blockOrigin.x)) +
-        (sourceSize.y - float(blockOrigin.y));
-    float startTime = distanceFromBottomRight /
-                      (sourceSize.x + sourceSize.y) *
-                      thanosBaseStartMax;
-    startTime +=
-        (float(hash % 100u) / 100.0f - 0.5f) *
-        thanosWaveNoiseMult;
-    startTime = clamp(startTime, 0.0f, 0.65f);
-    float localProgress =
-        (clampedProgress - startTime) / thanosLifeSpan;
-    if (localProgress >= 1.0f) {
-        opacity = 0.0f;
-    } else if (localProgress > 0.0f) {
-        float noiseX =
-            float((hash >> 4) % 200u) / 100.0f - 1.0f;
-        float noiseY =
-            float((hash >> 8) % 200u) / 100.0f - 1.0f;
-        float2 wind = float2(sourceSize.x * 0.5f,
-                             sourceSize.y * 0.2f);
-        float swirl =
-            (float(blockOrigin.y) / sourceSize.y - 0.5f) * 2.0f;
-        wind.y += swirl * sourceSize.y * 0.3f;
-        wind += float2(noiseX * sourceSize.x * 0.2f,
-                       noiseY * sourceSize.y * 0.3f);
-        float2 curve = float2(noiseY * sourceSize.x * 0.4f,
-                              -noiseX * sourceSize.y * 0.4f);
-        displacement = wind * localProgress +
-                       curve * localProgress * localProgress;
-        opacity = 1.0f - localProgress;
-        if (opacity >= 0.99f) opacity = 1.0f;
-    }
-
-    int2 destinationOrigin = int2(sourceOrigin) + int2(blockOrigin) +
-                             int2(displacement);
-    uint2 extent = min(uint2(size, size), sourceDimensions - blockOrigin);
-    float2 corner = float2(vertexId & 1u, (vertexId >> 1u) & 1u);
-    float2 destination = float2(destinationOrigin) + corner * float2(extent);
-    output.position = float4(
-        destination.x * (2.0f / outputSize.x) - 1.0f,
-        1.0f - destination.y * (2.0f / outputSize.y),
-        0.0f, 1.0f);
-    output.sourceBlockOrigin = float2(blockOrigin);
-    output.destinationBlockOrigin = float2(destinationOrigin);
-    output.opacity = opacity;
-    return output;
-}
-
-VertexOutput VSPointMain(uint vertexId : SV_VertexID)
-{
-    // At blockSize=1, one point primitive replaces the four-vertex quad for
-    // each source pixel while preserving the same hash, motion, and opacity.
-    VertexOutput output = VSMain(0u, vertexId);
-    output.position.xy += float2(1.0f / outputSize.x,
-                                 -1.0f / outputSize.y);
-    return output;
-}
-
-Texture2D<float4> sourceTexture : register(t0);
-
-float4 PSMain(VertexOutput input) : SV_TARGET
-{
-    clip(input.opacity - 0.0001f);
-    int2 blockPixel = int2(floor(
-        input.position.xy - input.destinationBlockOrigin));
-    int2 sourcePixel = int2(input.sourceBlockOrigin) + blockPixel;
-    return sourceTexture.Load(int3(sourcePixel, 0)) * input.opacity;
-}
-)hlsl";
-enum : uint32_t {
-    GpuPipelineNone = 0,
-    GpuPipelineQuad = 1u << 0,
-    GpuPipelineGenie = 1u << 1,
-    GpuPipelineInplace = 1u << 2,
-    GpuPipelineField = 1u << 3,
-    GpuPipelineClose = 1u << 4,
-    GpuPipelineShatter = 1u << 5,
-};
-
-static constexpr uint32_t RequiredGpuPipelines(bool isClosing,
-                                                int effectStyle) {
-    if (isClosing) {
-        if (effectStyle == 1) {
-            return GpuPipelineQuad | GpuPipelineShatter;
-        }
-        if (effectStyle == 2) {
-            return GpuPipelineQuad | GpuPipelineField | GpuPipelineClose;
-        }
-        return GpuPipelineNone;
-    }
-    if (effectStyle == 0) return GpuPipelineGenie;
-    if (effectStyle >= 1 && effectStyle <= 3) {
-        return GpuPipelineInplace | GpuPipelineField;
-    }
-    if (effectStyle == 4 || effectStyle == 5) {
-        return GpuPipelineInplace;
-    }
-    if (effectStyle == 6 || effectStyle == 7) {
-        return GpuPipelineQuad;
-    }
-    return GpuPipelineNone;
-}
-
-static_assert(RequiredGpuPipelines(false, 0) == GpuPipelineGenie);
-static_assert(RequiredGpuPipelines(false, 1) ==
-              (GpuPipelineInplace | GpuPipelineField));
-static_assert(RequiredGpuPipelines(false, 6) == GpuPipelineQuad);
-static_assert(RequiredGpuPipelines(true, 2) ==
-              (GpuPipelineQuad | GpuPipelineField | GpuPipelineClose));
-static_assert(RequiredGpuPipelines(true, 1) ==
-              (GpuPipelineQuad | GpuPipelineShatter));
-static_assert(RequiredGpuPipelines(true, 0) == GpuPipelineNone);
-static_assert(RequiredGpuPipelines(true, 3) == GpuPipelineNone);
-
-// Layered GPU presentation has a fixed synchronization/readback cost. The
-// matched benchmark only found a repeatable win once Thanos or Perlin reached
-// a genuinely dense one-value-per-pixel field on a large source. Keep this
-// threshold conservative instead of guessing from the user's GPU model.
-static constexpr uint64_t kHybridCloseGpuMinSourcePixels = 1500000ull;
-static constexpr bool IsPotentialHybridGpuClose(int effectStyle,
-                                                int blockSize) {
-    return (effectStyle == 1 || effectStyle == 2) && blockSize == 1;
-}
-static constexpr bool ShouldUseHybridGpuClose(int effectStyle, int blockSize,
-                                              int sourceWidth,
-                                              int sourceHeight) {
-    if (!IsPotentialHybridGpuClose(effectStyle, blockSize) ||
-        sourceWidth <= 0 || sourceHeight <= 0) {
-        return false;
-    }
-    const uint64_t sourcePixels = static_cast<uint64_t>(sourceWidth) *
-                                  static_cast<uint64_t>(sourceHeight);
-    return sourcePixels >= kHybridCloseGpuMinSourcePixels;
-}
-static_assert(ShouldUseHybridGpuClose(1, 1, 1920, 1200));
-static_assert(ShouldUseHybridGpuClose(2, 1, 1920, 1200));
-static_assert(!ShouldUseHybridGpuClose(0, 1, 1920, 1200));
-static_assert(!ShouldUseHybridGpuClose(1, 5, 1920, 1200));
-static_assert(!ShouldUseHybridGpuClose(2, 1, 1200, 1000));
-
-struct GpuRenderService {
-    std::mutex mutex;
-    std::atomic<bool> ready{false};
-    std::atomic<uint32_t> readyPipelines{GpuPipelineNone};
-    uint32_t activePresenters{};
-    DWORD retryAfterTick{};
-    uint64_t generation{1};
-    HMODULE compilerModule{};
-    ComPtr<ID3D11Device> device;
-    ComPtr<ID3D11DeviceContext> context;
-    ComPtr<IDXGIDevice1> dxgiDevice;
-    ComPtr<IDXGIFactory2> factory;
-    ComPtr<IDCompositionDevice> compositionDevice;
-    std::wstring adapterDescription;
-    uint64_t adapterDedicatedVideoMemory{};
-    UINT adapterVendorId{};
-    UINT adapterDeviceId{};
-    ComPtr<ID3D11VertexShader> quadVertexShader;
-    ComPtr<ID3D11PixelShader> quadPixelShader;
-    ComPtr<ID3D11Buffer> quadConstants;
-    ComPtr<ID3D11VertexShader> genieVertexShader;
-    ComPtr<ID3D11PixelShader> geniePixelShader;
-    ComPtr<ID3D11Buffer> genieConstants;
-    ComPtr<ID3D11VertexShader> inplaceVertexShader;
-    ComPtr<ID3D11PixelShader> inplacePixelShader;
-    ComPtr<ID3D11Buffer> inplaceConstants;
-    ComPtr<ID3D11VertexShader> fieldVertexShader;
-    ComPtr<ID3D11PixelShader> fieldPixelShader;
-    ComPtr<ID3D11Buffer> fieldConstants;
-    ComPtr<ID3D11VertexShader> closeVertexShader;
-    ComPtr<ID3D11PixelShader> closePixelShader;
-    ComPtr<ID3D11Buffer> closeConstants;
-    ComPtr<ID3D11VertexShader> shatterVertexShader;
-    ComPtr<ID3D11VertexShader> shatterPointVertexShader;
-    ComPtr<ID3D11PixelShader> shatterPixelShader;
-    ComPtr<ID3D11Buffer> shatterConstants;
-    ComPtr<ID3D11BlendState> blendState;
-    ComPtr<ID3D11RasterizerState> rasterizerState;
-};
-
-// Windhawk's controlled unload path explicitly shuts this service down after
-// joining every worker. At host-process exit those callbacks aren't invoked,
-// and an automatic global destructor would release D3D/DXGI/DirectComposition
-// COM objects under the loader lock after the other threads are gone. Let the
-// OS reclaim them on process exit instead of running that unsafe destructor.
-[[clang::no_destroy]] static GpuRenderService g_gpuRenderService;
-
-static void ReleaseGpuDeviceResourcesLocked() {
-    auto& service = g_gpuRenderService;
-    if (service.context) {
-        service.context->ClearState();
-        service.context->Flush();
-    }
-    service.rasterizerState.Reset();
-    service.blendState.Reset();
-    service.shatterConstants.Reset();
-    service.shatterPixelShader.Reset();
-    service.shatterPointVertexShader.Reset();
-    service.shatterVertexShader.Reset();
-    service.closeConstants.Reset();
-    service.closePixelShader.Reset();
-    service.closeVertexShader.Reset();
-    service.fieldConstants.Reset();
-    service.fieldPixelShader.Reset();
-    service.fieldVertexShader.Reset();
-    service.inplaceConstants.Reset();
-    service.inplacePixelShader.Reset();
-    service.inplaceVertexShader.Reset();
-    service.genieConstants.Reset();
-    service.geniePixelShader.Reset();
-    service.genieVertexShader.Reset();
-    service.quadConstants.Reset();
-    service.quadPixelShader.Reset();
-    service.quadVertexShader.Reset();
-    // Fully release the string allocation too: the service destructor is
-    // intentionally suppressed, including during a controlled DLL unload.
-    std::wstring{}.swap(service.adapterDescription);
-    service.adapterDedicatedVideoMemory = 0;
-    service.adapterVendorId = 0;
-    service.adapterDeviceId = 0;
-    service.compositionDevice.Reset();
-    service.factory.Reset();
-    service.dxgiDevice.Reset();
-    service.context.Reset();
-    service.device.Reset();
-    service.activePresenters = 0;
-    service.readyPipelines.store(GpuPipelineNone,
-                                 std::memory_order_release);
-    service.ready.store(false, std::memory_order_release);
-    if (++service.generation == 0) ++service.generation;
-}
-
-static bool FailGpuServiceLocked(HRESULT hr, PCWSTR stage) {
-    ReleaseGpuDeviceResourcesLocked();
-    g_gpuRenderService.retryAfterTick = GetTickCount() + 30000;
-    Wh_Log(L"GPU renderer unavailable at %s (0x%08X); using CPU fallback",
-           stage, static_cast<unsigned>(hr));
-    return false;
-}
-
-static bool InitializeGpuServiceLocked(uint32_t requiredPipelines) {
-    auto& service = g_gpuRenderService;
-    if (RequiresCpuAnimationRendererProcess()) {
-        return false;
-    }
-    if (g_unloading.load(std::memory_order_relaxed) ||
-        GetSystemMetrics(SM_REMOTESESSION)) {
-        return false;
-    }
-
-    const bool initializeCore =
-        !service.ready.load(std::memory_order_acquire);
-    ComPtr<ID3D11Device> device;
-    ComPtr<ID3D11DeviceContext> context;
-    ComPtr<IDXGIDevice1> dxgiDevice;
-    ComPtr<IDXGIFactory2> factory;
-    ComPtr<IDCompositionDevice> compositionDevice;
-    DXGI_ADAPTER_DESC1 selectedAdapterDesc{};
-    bool selectedAdapterDescAvailable = false;
-    D3D_FEATURE_LEVEL selectedLevel{};
-    HRESULT hr = S_OK;
-
-    if (!initializeCore) {
-        const HRESULT deviceState = service.device
-                                        ? service.device->GetDeviceRemovedReason()
-                                        : E_UNEXPECTED;
-        if (FAILED(deviceState)) {
-            return FailGpuServiceLocked(deviceState, L"device state");
-        }
-        device = service.device;
-    } else {
-        const DWORD now = GetTickCount();
-        if (service.retryAfterTick &&
-            static_cast<LONG>(now - service.retryAfterTick) < 0) {
-            return false;
-        }
-        service.retryAfterTick = 0;
-        ReleaseGpuDeviceResourcesLocked();
-
-        const D3D_FEATURE_LEVEL requestedLevels[] = {
-            D3D_FEATURE_LEVEL_11_0,
-            D3D_FEATURE_LEVEL_10_1,
-            D3D_FEATURE_LEVEL_10_0,
-        };
-        hr = D3D11CreateDevice(
-            nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr,
-            D3D11_CREATE_DEVICE_BGRA_SUPPORT, requestedLevels,
-            ARRAYSIZE(requestedLevels), D3D11_SDK_VERSION,
-            device.ReleaseAndGetAddressOf(), &selectedLevel,
-            context.ReleaseAndGetAddressOf());
-        if (FAILED(hr)) {
-            return FailGpuServiceLocked(hr, L"D3D11CreateDevice");
-        }
-
-        hr = device.As(&dxgiDevice);
-        if (FAILED(hr)) return FailGpuServiceLocked(hr, L"IDXGIDevice1");
-        // This limit is shared by every composition swap chain on the device.
-        // Two permits keep concurrent same-process animations moving without
-        // allowing a long queue of stale frames.
-        dxgiDevice->SetMaximumFrameLatency(2);
-
-        ComPtr<IDXGIAdapter> adapter;
-        hr = dxgiDevice->GetAdapter(adapter.ReleaseAndGetAddressOf());
-        if (FAILED(hr)) return FailGpuServiceLocked(hr, L"GetAdapter");
-        ComPtr<IDXGIAdapter1> adapter1;
-        if (SUCCEEDED(adapter.As(&adapter1))) {
-            if (SUCCEEDED(adapter1->GetDesc1(&selectedAdapterDesc))) {
-                selectedAdapterDescAvailable = true;
-                if (selectedAdapterDesc.Flags &
-                    DXGI_ADAPTER_FLAG_SOFTWARE) {
-                    return FailGpuServiceLocked(DXGI_ERROR_UNSUPPORTED,
-                                                L"software adapter");
-                }
-            }
-        }
-
-        hr = adapter->GetParent(
-            IID_PPV_ARGS(factory.ReleaseAndGetAddressOf()));
-        if (FAILED(hr)) return FailGpuServiceLocked(hr, L"IDXGIFactory2");
-
-        hr = DCompositionCreateDevice(
-            dxgiDevice.Get(), __uuidof(IDCompositionDevice),
-            reinterpret_cast<void**>(
-                compositionDevice.ReleaseAndGetAddressOf()));
-        if (FAILED(hr)) {
-            return FailGpuServiceLocked(hr, L"DCompositionCreateDevice");
-        }
-    }
-
-    const uint32_t readyPipelines =
-        initializeCore
-            ? GpuPipelineNone
-            : service.readyPipelines.load(std::memory_order_acquire);
-    const uint32_t missingPipelines =
-        requiredPipelines & ~readyPipelines;
-    if (!initializeCore && missingPipelines == GpuPipelineNone) return true;
-
-    ComPtr<ID3D11VertexShader> quadVertexShader;
-    ComPtr<ID3D11PixelShader> quadPixelShader;
-    ComPtr<ID3D11Buffer> quadConstants;
-    ComPtr<ID3D11VertexShader> genieVertexShader;
-    ComPtr<ID3D11PixelShader> geniePixelShader;
-    ComPtr<ID3D11Buffer> genieConstants;
-    ComPtr<ID3D11VertexShader> inplaceVertexShader;
-    ComPtr<ID3D11PixelShader> inplacePixelShader;
-    ComPtr<ID3D11Buffer> inplaceConstants;
-    ComPtr<ID3D11VertexShader> fieldVertexShader;
-    ComPtr<ID3D11PixelShader> fieldPixelShader;
-    ComPtr<ID3D11Buffer> fieldConstants;
-    ComPtr<ID3D11VertexShader> closeVertexShader;
-    ComPtr<ID3D11PixelShader> closePixelShader;
-    ComPtr<ID3D11Buffer> closeConstants;
-    ComPtr<ID3D11VertexShader> shatterVertexShader;
-    ComPtr<ID3D11VertexShader> shatterPointVertexShader;
-    ComPtr<ID3D11PixelShader> shatterPixelShader;
-    ComPtr<ID3D11Buffer> shatterConstants;
-
-    if (missingPipelines != GpuPipelineNone && !service.compilerModule) {
-        service.compilerModule = LoadLibraryExW(
-            L"d3dcompiler_47.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
-    }
-    auto compile = missingPipelines != GpuPipelineNone &&
-                           service.compilerModule
-                       ? reinterpret_cast<D3DCompile_t>(GetProcAddress(
-                             service.compilerModule, "D3DCompile"))
-                       : nullptr;
-    if (missingPipelines != GpuPipelineNone && !compile) {
-        return FailGpuServiceLocked(HRESULT_FROM_WIN32(ERROR_MOD_NOT_FOUND),
-                                    L"D3DCompile");
-    }
-
-    constexpr UINT compileFlags =
-        D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_OPTIMIZATION_LEVEL3;
-    ComPtr<ID3DBlob> vertexBytecode;
-    ComPtr<ID3DBlob> pointVertexBytecode;
-    ComPtr<ID3DBlob> pixelBytecode;
-    ComPtr<ID3DBlob> errors;
-    if (missingPipelines & GpuPipelineQuad) {
-    hr = compile(kGpuQuadShader, sizeof(kGpuQuadShader) - 1,
-                 "windows-animations-gpu", nullptr, nullptr, "VSMain",
-                 "vs_4_0", compileFlags, 0,
-                 vertexBytecode.ReleaseAndGetAddressOf(),
-                 errors.ReleaseAndGetAddressOf());
-    if (FAILED(hr)) return FailGpuServiceLocked(hr, L"vertex shader compile");
-    errors.Reset();
-    hr = compile(kGpuQuadShader, sizeof(kGpuQuadShader) - 1,
-                 "windows-animations-gpu", nullptr, nullptr, "PSMain",
-                 "ps_4_0", compileFlags, 0,
-                 pixelBytecode.ReleaseAndGetAddressOf(),
-                 errors.ReleaseAndGetAddressOf());
-    if (FAILED(hr)) return FailGpuServiceLocked(hr, L"pixel shader compile");
-
-    hr = device->CreateVertexShader(
-        vertexBytecode->GetBufferPointer(), vertexBytecode->GetBufferSize(),
-        nullptr, quadVertexShader.ReleaseAndGetAddressOf());
-    if (FAILED(hr)) return FailGpuServiceLocked(hr, L"CreateVertexShader");
-    hr = device->CreatePixelShader(
-        pixelBytecode->GetBufferPointer(), pixelBytecode->GetBufferSize(),
-        nullptr, quadPixelShader.ReleaseAndGetAddressOf());
-    if (FAILED(hr)) return FailGpuServiceLocked(hr, L"CreatePixelShader");
-    }
-
-    if (missingPipelines & GpuPipelineGenie) {
-    errors.Reset();
-    hr = compile(kGpuGenieShader, sizeof(kGpuGenieShader) - 1,
-                 "windows-animations-genie-gpu", nullptr, nullptr, "VSMain",
-                 "vs_4_0", compileFlags, 0,
-                 vertexBytecode.ReleaseAndGetAddressOf(),
-                 errors.ReleaseAndGetAddressOf());
-    if (FAILED(hr)) {
-        return FailGpuServiceLocked(hr, L"Genie vertex shader compile");
-    }
-    errors.Reset();
-    hr = compile(kGpuGenieShader, sizeof(kGpuGenieShader) - 1,
-                 "windows-animations-genie-gpu", nullptr, nullptr, "PSMain",
-                 "ps_4_0", compileFlags, 0,
-                 pixelBytecode.ReleaseAndGetAddressOf(),
-                 errors.ReleaseAndGetAddressOf());
-    if (FAILED(hr)) {
-        return FailGpuServiceLocked(hr, L"Genie pixel shader compile");
-    }
-
-    hr = device->CreateVertexShader(
-        vertexBytecode->GetBufferPointer(), vertexBytecode->GetBufferSize(),
-        nullptr, genieVertexShader.ReleaseAndGetAddressOf());
-    if (FAILED(hr)) {
-        return FailGpuServiceLocked(hr, L"CreateGenieVertexShader");
-    }
-    hr = device->CreatePixelShader(
-        pixelBytecode->GetBufferPointer(), pixelBytecode->GetBufferSize(),
-        nullptr, geniePixelShader.ReleaseAndGetAddressOf());
-    if (FAILED(hr)) {
-        return FailGpuServiceLocked(hr, L"CreateGeniePixelShader");
-    }
-    }
-
-    if (missingPipelines & GpuPipelineInplace) {
-    errors.Reset();
-    hr = compile(kGpuInplaceShader, sizeof(kGpuInplaceShader) - 1,
-                 "windows-animations-inplace-gpu", nullptr, nullptr,
-                 "VSMain", "vs_4_0", compileFlags, 0,
-                 vertexBytecode.ReleaseAndGetAddressOf(),
-                 errors.ReleaseAndGetAddressOf());
-    if (FAILED(hr)) {
-        return FailGpuServiceLocked(hr, L"Inplace vertex shader compile");
-    }
-    errors.Reset();
-    hr = compile(kGpuInplaceShader, sizeof(kGpuInplaceShader) - 1,
-                 "windows-animations-inplace-gpu", nullptr, nullptr,
-                 "PSMain", "ps_4_0", compileFlags, 0,
-                 pixelBytecode.ReleaseAndGetAddressOf(),
-                 errors.ReleaseAndGetAddressOf());
-    if (FAILED(hr)) {
-        return FailGpuServiceLocked(hr, L"Inplace pixel shader compile");
-    }
-
-    hr = device->CreateVertexShader(
-        vertexBytecode->GetBufferPointer(), vertexBytecode->GetBufferSize(),
-        nullptr, inplaceVertexShader.ReleaseAndGetAddressOf());
-    if (FAILED(hr)) {
-        return FailGpuServiceLocked(hr, L"CreateInplaceVertexShader");
-    }
-    hr = device->CreatePixelShader(
-        pixelBytecode->GetBufferPointer(), pixelBytecode->GetBufferSize(),
-        nullptr, inplacePixelShader.ReleaseAndGetAddressOf());
-    if (FAILED(hr)) {
-        return FailGpuServiceLocked(hr, L"CreateInplacePixelShader");
-    }
-    }
-
-    if (missingPipelines & GpuPipelineField) {
-    errors.Reset();
-    hr = compile(kGpuFieldShader, sizeof(kGpuFieldShader) - 1,
-                 "windows-animations-field-gpu", nullptr, nullptr,
-                 "VSMain", "vs_4_0", compileFlags, 0,
-                 vertexBytecode.ReleaseAndGetAddressOf(),
-                 errors.ReleaseAndGetAddressOf());
-    if (FAILED(hr)) {
-        return FailGpuServiceLocked(hr, L"Field vertex shader compile");
-    }
-    errors.Reset();
-    hr = compile(kGpuFieldShader, sizeof(kGpuFieldShader) - 1,
-                 "windows-animations-field-gpu", nullptr, nullptr,
-                 "PSMain", "ps_4_0", compileFlags, 0,
-                 pixelBytecode.ReleaseAndGetAddressOf(),
-                 errors.ReleaseAndGetAddressOf());
-    if (FAILED(hr)) {
-        return FailGpuServiceLocked(hr, L"Field pixel shader compile");
-    }
-
-    hr = device->CreateVertexShader(
-        vertexBytecode->GetBufferPointer(), vertexBytecode->GetBufferSize(),
-        nullptr, fieldVertexShader.ReleaseAndGetAddressOf());
-    if (FAILED(hr)) {
-        return FailGpuServiceLocked(hr, L"CreateFieldVertexShader");
-    }
-    hr = device->CreatePixelShader(
-        pixelBytecode->GetBufferPointer(), pixelBytecode->GetBufferSize(),
-        nullptr, fieldPixelShader.ReleaseAndGetAddressOf());
-    if (FAILED(hr)) {
-        return FailGpuServiceLocked(hr, L"CreateFieldPixelShader");
-    }
-    }
-
-    if (missingPipelines & GpuPipelineClose) {
-    errors.Reset();
-    hr = compile(kGpuCloseShader, sizeof(kGpuCloseShader) - 1,
-                 "windows-animations-close-gpu", nullptr, nullptr,
-                 "VSMain", "vs_4_0", compileFlags, 0,
-                 vertexBytecode.ReleaseAndGetAddressOf(),
-                 errors.ReleaseAndGetAddressOf());
-    if (FAILED(hr)) {
-        return FailGpuServiceLocked(hr, L"Close vertex shader compile");
-    }
-
-    errors.Reset();
-    hr = compile(kGpuCloseShader, sizeof(kGpuCloseShader) - 1,
-                 "windows-animations-close-gpu", nullptr, nullptr,
-                 "PSMain", "ps_4_0", compileFlags, 0,
-                 pixelBytecode.ReleaseAndGetAddressOf(),
-                 errors.ReleaseAndGetAddressOf());
-    if (FAILED(hr)) {
-        return FailGpuServiceLocked(hr, L"Close pixel shader compile");
-    }
-
-    hr = device->CreateVertexShader(
-        vertexBytecode->GetBufferPointer(), vertexBytecode->GetBufferSize(),
-        nullptr, closeVertexShader.ReleaseAndGetAddressOf());
-    if (FAILED(hr)) {
-        return FailGpuServiceLocked(hr, L"CreateCloseVertexShader");
-    }
-    hr = device->CreatePixelShader(
-        pixelBytecode->GetBufferPointer(), pixelBytecode->GetBufferSize(),
-        nullptr, closePixelShader.ReleaseAndGetAddressOf());
-    if (FAILED(hr)) {
-        return FailGpuServiceLocked(hr, L"CreateClosePixelShader");
-    }
-    }
-
-    if (missingPipelines & GpuPipelineShatter) {
-    errors.Reset();
-    hr = compile(kGpuShatterShader, sizeof(kGpuShatterShader) - 1,
-                 "windows-animations-shatter-gpu", nullptr, nullptr,
-                 "VSMain", "vs_4_0", compileFlags, 0,
-                 vertexBytecode.ReleaseAndGetAddressOf(),
-                 errors.ReleaseAndGetAddressOf());
-    if (FAILED(hr)) {
-        return FailGpuServiceLocked(hr, L"Shatter vertex shader compile");
-    }
-    errors.Reset();
-    hr = compile(kGpuShatterShader, sizeof(kGpuShatterShader) - 1,
-                 "windows-animations-shatter-point-gpu", nullptr, nullptr,
-                 "VSPointMain", "vs_4_0", compileFlags, 0,
-                 pointVertexBytecode.ReleaseAndGetAddressOf(),
-                 errors.ReleaseAndGetAddressOf());
-    if (FAILED(hr)) {
-        return FailGpuServiceLocked(
-            hr, L"Shatter point vertex shader compile");
-    }
-    errors.Reset();
-    hr = compile(kGpuShatterShader, sizeof(kGpuShatterShader) - 1,
-                 "windows-animations-shatter-gpu", nullptr, nullptr,
-                 "PSMain", "ps_4_0", compileFlags, 0,
-                 pixelBytecode.ReleaseAndGetAddressOf(),
-                 errors.ReleaseAndGetAddressOf());
-    if (FAILED(hr)) {
-        return FailGpuServiceLocked(hr, L"Shatter pixel shader compile");
-    }
-    hr = device->CreateVertexShader(
-        vertexBytecode->GetBufferPointer(), vertexBytecode->GetBufferSize(),
-        nullptr, shatterVertexShader.ReleaseAndGetAddressOf());
-    if (FAILED(hr)) {
-        return FailGpuServiceLocked(hr, L"CreateShatterVertexShader");
-    }
-    hr = device->CreateVertexShader(
-        pointVertexBytecode->GetBufferPointer(),
-        pointVertexBytecode->GetBufferSize(), nullptr,
-        shatterPointVertexShader.ReleaseAndGetAddressOf());
-    if (FAILED(hr)) {
-        return FailGpuServiceLocked(
-            hr, L"CreateShatterPointVertexShader");
-    }
-    hr = device->CreatePixelShader(
-        pixelBytecode->GetBufferPointer(), pixelBytecode->GetBufferSize(),
-        nullptr, shatterPixelShader.ReleaseAndGetAddressOf());
-    if (FAILED(hr)) {
-        return FailGpuServiceLocked(hr, L"CreateShatterPixelShader");
-    }
-    }
-
-    D3D11_BUFFER_DESC constantsDesc{};
-    constantsDesc.Usage = D3D11_USAGE_DEFAULT;
-    constantsDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-    if (missingPipelines & GpuPipelineQuad) {
-        constantsDesc.ByteWidth = sizeof(GpuQuadConstants);
-        hr = device->CreateBuffer(&constantsDesc, nullptr,
-                                  quadConstants.ReleaseAndGetAddressOf());
-        if (FAILED(hr)) {
-            return FailGpuServiceLocked(hr, L"CreateQuadBuffer");
-        }
-    }
-    if (missingPipelines & GpuPipelineGenie) {
-        constantsDesc.ByteWidth = sizeof(GpuGenieConstants);
-        hr = device->CreateBuffer(&constantsDesc, nullptr,
-                                  genieConstants.ReleaseAndGetAddressOf());
-        if (FAILED(hr)) {
-            return FailGpuServiceLocked(hr, L"CreateGenieBuffer");
-        }
-    }
-    if (missingPipelines & GpuPipelineInplace) {
-        constantsDesc.ByteWidth = sizeof(GpuInplaceConstants);
-        hr = device->CreateBuffer(
-            &constantsDesc, nullptr,
-            inplaceConstants.ReleaseAndGetAddressOf());
-        if (FAILED(hr)) {
-            return FailGpuServiceLocked(hr, L"CreateInplaceBuffer");
-        }
-    }
-    if (missingPipelines & GpuPipelineField) {
-        constantsDesc.ByteWidth = sizeof(GpuFieldConstants);
-        hr = device->CreateBuffer(&constantsDesc, nullptr,
-                                  fieldConstants.ReleaseAndGetAddressOf());
-        if (FAILED(hr)) {
-            return FailGpuServiceLocked(hr, L"CreateFieldBuffer");
-        }
-    }
-    if (missingPipelines & GpuPipelineClose) {
-        constantsDesc.ByteWidth = sizeof(GpuCloseConstants);
-        hr = device->CreateBuffer(&constantsDesc, nullptr,
-                                  closeConstants.ReleaseAndGetAddressOf());
-        if (FAILED(hr)) {
-            return FailGpuServiceLocked(hr, L"CreateCloseBuffer");
-        }
-    }
-    if (missingPipelines & GpuPipelineShatter) {
-        constantsDesc.ByteWidth = sizeof(GpuShatterConstants);
-        hr = device->CreateBuffer(&constantsDesc, nullptr,
-                                  shatterConstants.ReleaseAndGetAddressOf());
-        if (FAILED(hr)) {
-            return FailGpuServiceLocked(hr, L"CreateShatterBuffer");
-        }
-    }
-
-    ComPtr<ID3D11BlendState> blendState;
-    ComPtr<ID3D11RasterizerState> rasterizerState;
-    if (initializeCore) {
-        D3D11_BLEND_DESC blendDesc{};
-        auto& targetBlend = blendDesc.RenderTarget[0];
-        targetBlend.BlendEnable = TRUE;
-        targetBlend.SrcBlend = D3D11_BLEND_ONE;
-        targetBlend.DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
-        targetBlend.BlendOp = D3D11_BLEND_OP_ADD;
-        targetBlend.SrcBlendAlpha = D3D11_BLEND_ONE;
-        targetBlend.DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
-        targetBlend.BlendOpAlpha = D3D11_BLEND_OP_ADD;
-        targetBlend.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-        hr = device->CreateBlendState(
-            &blendDesc, blendState.ReleaseAndGetAddressOf());
-        if (FAILED(hr)) {
-            return FailGpuServiceLocked(hr, L"CreateBlendState");
-        }
-
-        D3D11_RASTERIZER_DESC rasterizerDesc{};
-        rasterizerDesc.FillMode = D3D11_FILL_SOLID;
-        rasterizerDesc.CullMode = D3D11_CULL_NONE;
-        rasterizerDesc.DepthClipEnable = TRUE;
-        hr = device->CreateRasterizerState(
-            &rasterizerDesc, rasterizerState.ReleaseAndGetAddressOf());
-        if (FAILED(hr)) {
-            return FailGpuServiceLocked(hr, L"CreateRasterizerState");
-        }
-    }
-
-    if (initializeCore) {
-        service.device = std::move(device);
-        service.context = std::move(context);
-        service.dxgiDevice = std::move(dxgiDevice);
-        service.factory = std::move(factory);
-        service.compositionDevice = std::move(compositionDevice);
-        if (selectedAdapterDescAvailable) {
-            service.adapterDescription = selectedAdapterDesc.Description;
-            service.adapterDedicatedVideoMemory = static_cast<uint64_t>(
-                selectedAdapterDesc.DedicatedVideoMemory);
-            service.adapterVendorId = selectedAdapterDesc.VendorId;
-            service.adapterDeviceId = selectedAdapterDesc.DeviceId;
-        }
-        service.blendState = std::move(blendState);
-        service.rasterizerState = std::move(rasterizerState);
-    }
-    if (missingPipelines & GpuPipelineQuad) {
-        service.quadVertexShader = std::move(quadVertexShader);
-        service.quadPixelShader = std::move(quadPixelShader);
-        service.quadConstants = std::move(quadConstants);
-    }
-    if (missingPipelines & GpuPipelineGenie) {
-        service.genieVertexShader = std::move(genieVertexShader);
-        service.geniePixelShader = std::move(geniePixelShader);
-        service.genieConstants = std::move(genieConstants);
-    }
-    if (missingPipelines & GpuPipelineInplace) {
-        service.inplaceVertexShader = std::move(inplaceVertexShader);
-        service.inplacePixelShader = std::move(inplacePixelShader);
-        service.inplaceConstants = std::move(inplaceConstants);
-    }
-    if (missingPipelines & GpuPipelineField) {
-        service.fieldVertexShader = std::move(fieldVertexShader);
-        service.fieldPixelShader = std::move(fieldPixelShader);
-        service.fieldConstants = std::move(fieldConstants);
-    }
-    if (missingPipelines & GpuPipelineClose) {
-        service.closeVertexShader = std::move(closeVertexShader);
-        service.closePixelShader = std::move(closePixelShader);
-        service.closeConstants = std::move(closeConstants);
-    }
-    if (missingPipelines & GpuPipelineShatter) {
-        service.shatterVertexShader = std::move(shatterVertexShader);
-        service.shatterPointVertexShader =
-            std::move(shatterPointVertexShader);
-        service.shatterPixelShader = std::move(shatterPixelShader);
-        service.shatterConstants = std::move(shatterConstants);
-    }
-    service.readyPipelines.fetch_or(missingPipelines,
-                                    std::memory_order_release);
-    if (initializeCore) {
-        service.ready.store(true, std::memory_order_release);
-        if (IsDiagnosticLoggingEnabled()) {
-            Wh_Log(
-                L"GPU renderer core ready (feature level 0x%X) adapter=%s "
-                L"vendor=0x%04X device=0x%04X dedicated_mib=%.0f",
-                static_cast<unsigned>(selectedLevel),
-                service.adapterDescription.empty()
-                    ? L"unknown"
-                    : service.adapterDescription.c_str(),
-                service.adapterVendorId, service.adapterDeviceId,
-                static_cast<double>(service.adapterDedicatedVideoMemory) /
-                    (1024.0 * 1024.0));
-        }
-    }
-    if (missingPipelines != GpuPipelineNone &&
-        IsDiagnosticLoggingEnabled()) {
-        Wh_Log(L"GPU renderer pipelines ready mask=0x%X total=0x%X",
-               static_cast<unsigned>(missingPipelines),
-               static_cast<unsigned>(service.readyPipelines.load(
-                   std::memory_order_relaxed)));
-    }
-    return true;
-}
-
-static std::atomic<bool> g_gpuWarmupRunning{false};
-static std::atomic<uint32_t> g_gpuWarmupRequestedPipelines{
-    GpuPipelineNone};
-static std::atomic<uint64_t> g_gpuWarmupSettingsGeneration{1};
-static std::mutex g_gpuWarmupRequestMutex;
-
-static void CancelPendingGpuWarmup() {
-    std::lock_guard<std::mutex> lock(g_gpuWarmupRequestMutex);
-    uint64_t generation =
-        g_gpuWarmupSettingsGeneration.fetch_add(
-            1, std::memory_order_acq_rel) + 1;
-    if (!generation) {
-        g_gpuWarmupSettingsGeneration.store(1, std::memory_order_release);
-    }
-    g_gpuWarmupRequestedPipelines.store(
-        GpuPipelineNone, std::memory_order_release);
-}
-
-static bool QueueGpuWarmupRequest(uint32_t requiredPipelines,
-                                  uint64_t expectedGeneration) {
-    if (requiredPipelines == GpuPipelineNone) return false;
-    std::lock_guard<std::mutex> lock(g_gpuWarmupRequestMutex);
-    if (expectedGeneration &&
-        expectedGeneration !=
-            g_gpuWarmupSettingsGeneration.load(
-                std::memory_order_acquire)) {
-        return false;
-    }
-    g_gpuWarmupRequestedPipelines.fetch_or(requiredPipelines,
-                                           std::memory_order_release);
-    return true;
-}
-
-static bool IsGpuServiceReady(uint32_t requiredPipelines) {
-    if (!g_gpuRenderService.ready.load(std::memory_order_acquire)) {
-        return false;
-    }
-    const uint32_t readyPipelines =
-        g_gpuRenderService.readyPipelines.load(std::memory_order_acquire);
-    return (readyPipelines & requiredPipelines) == requiredPipelines;
-}
-
-static DWORD WINAPI GpuWarmupThread(LPVOID) {
-    for (;;) {
-        if (g_unloading.load(std::memory_order_relaxed)) {
-            g_gpuWarmupRequestedPipelines.store(
-                GpuPipelineNone, std::memory_order_release);
-            g_gpuWarmupRunning.store(false, std::memory_order_release);
-            break;
-        }
-        uint32_t requestedPipelines = GpuPipelineNone;
-        uint64_t requestGeneration = 0;
-        {
-            std::lock_guard<std::mutex> lock(g_gpuWarmupRequestMutex);
-            requestGeneration =
-                g_gpuWarmupSettingsGeneration.load(
-                    std::memory_order_acquire);
-            requestedPipelines =
-                g_gpuWarmupRequestedPipelines.exchange(
-                    GpuPipelineNone, std::memory_order_acq_rel);
-        }
-        if (requestedPipelines != GpuPipelineNone) {
-            if (requestGeneration !=
-                g_gpuWarmupSettingsGeneration.load(
-                    std::memory_order_acquire)) {
-                continue;
-            }
-            bool deferForActivePresenter = false;
-            {
-                std::lock_guard<std::mutex> lock(g_gpuRenderService.mutex);
-                if (g_gpuRenderService.activePresenters != 0) {
-                    deferForActivePresenter = true;
-                } else if (requestGeneration ==
-                           g_gpuWarmupSettingsGeneration.load(
-                               std::memory_order_acquire)) {
-                    InitializeGpuServiceLocked(requestedPipelines);
-                }
-            }
-            if (deferForActivePresenter) {
-                // D3DCompile is intentionally serialized with service state.
-                // Don't let a newly requested pipeline stall frames from an
-                // already-running GPU animation in the same process.
-                QueueGpuWarmupRequest(requestedPipelines,
-                                      requestGeneration);
-                Sleep(10);
-            }
-            continue;
-        }
-
-        g_gpuWarmupRunning.store(false, std::memory_order_release);
-        if (g_gpuWarmupRequestedPipelines.load(std::memory_order_acquire) ==
-            GpuPipelineNone) {
-            break;
-        }
-        bool expected = false;
-        if (!g_gpuWarmupRunning.compare_exchange_strong(
-                expected, true, std::memory_order_acq_rel)) {
-            break;
-        }
-    }
-    return 0;
-}
-
-static void RequestGpuWarmup(uint32_t requiredPipelines,
-                             uint64_t expectedGeneration = 0) {
-    if (requiredPipelines == GpuPipelineNone) return;
-    if ((!g_gpuAcceleration.load(std::memory_order_relaxed) &&
-         !g_closeGpuAcceleration.load(std::memory_order_relaxed)) ||
-        RequiresCpuAnimationRendererProcess() ||
-        g_unloading.load(std::memory_order_relaxed) ||
-        GetSystemMetrics(SM_REMOTESESSION)) {
-        return;
-    }
-    {
-        std::unique_lock<std::mutex> lock(g_gpuRenderService.mutex,
-                                          std::try_to_lock);
-        if (lock.owns_lock()) {
-            if (IsGpuServiceReady(requiredPipelines)) {
-                return;
-            }
-            const DWORD retryAfter = g_gpuRenderService.retryAfterTick;
-            if (retryAfter &&
-                static_cast<LONG>(GetTickCount() - retryAfter) < 0) {
-                return;
-            }
-        }
-    }
-    if (!QueueGpuWarmupRequest(requiredPipelines,
-                               expectedGeneration)) {
-        return;
-    }
-    bool expected = false;
-    if (!g_gpuWarmupRunning.compare_exchange_strong(
-            expected, true, std::memory_order_acq_rel)) {
-        return;
-    }
-    if (!StartWorkerThread(GpuWarmupThread, nullptr)) {
-        g_gpuWarmupRunning.store(false, std::memory_order_release);
-    }
-}
-
-struct StableGpuWindowSearch {
-    DWORD processId{};
-    HWND hWnd{};
-    bool requireCloseCompatibility{};
-    HWND excludedWindow{};
-};
-
-static BOOL CALLBACK FindStableGpuWindowProc(HWND hWnd, LPARAM lParam) {
-    auto* search = reinterpret_cast<StableGpuWindowSearch*>(lParam);
-    if (hWnd == search->excludedWindow) return TRUE;
-    DWORD processId = 0;
-    GetWindowThreadProcessId(hWnd, &processId);
-    if (processId != search->processId || !IsWindowVisible(hWnd) ||
-        IsIconic(hWnd) || IsHungAppWindow(hWnd) || !IsLaunchWindow(hWnd) ||
-        GetPropW(hWnd, kPropCloseBypass) || GetPropW(hWnd, kPropClosed) ||
-        GetPropW(hWnd, kPropLaunchAnimation)) {
-        return TRUE;
-    }
-    if (search->requireCloseCompatibility &&
-        RequiresCpuClosePresentation(hWnd)) {
-        return TRUE;
-    }
-    search->hWnd = hWnd;
-    return FALSE;
-}
-
-static HWND FindStableGpuWindow(bool requireCloseCompatibility = false,
-                                HWND excludedWindow = nullptr) {
-    StableGpuWindowSearch search{
-        GetCurrentProcessId(), nullptr, requireCloseCompatibility,
-        excludedWindow};
-    EnumWindows(FindStableGpuWindowProc,
-                reinterpret_cast<LPARAM>(&search));
-    return search.hWnd;
-}
-
-struct RemainingAnimationWindowSearch {
-    DWORD processId{};
-    HWND excludedWindow{};
-    bool found{};
-};
-
-static BOOL CALLBACK FindRemainingAnimationWindowProc(HWND hWnd,
-                                                       LPARAM lParam) {
-    auto* search =
-        reinterpret_cast<RemainingAnimationWindowSearch*>(lParam);
-    if (hWnd == search->excludedWindow) return TRUE;
-
-    DWORD processId = 0;
-    GetWindowThreadProcessId(hWnd, &processId);
-    if (processId != search->processId ||
-        (!IsWindowVisible(hWnd) && !IsIconic(hWnd)) ||
-        GetPropW(hWnd, kPropCloseBypass) ||
-        GetPropW(hWnd, kPropClosed) || !IsLaunchWindow(hWnd)) {
-        return TRUE;
-    }
-
-    search->found = true;
-    return FALSE;
-}
-
-static bool HasRemainingAnimationWindow(HWND excludedWindow) {
-    RemainingAnimationWindowSearch search{
-        GetCurrentProcessId(), excludedWindow, false};
-    EnumWindows(FindRemainingAnimationWindowProc,
-                reinterpret_cast<LPARAM>(&search));
-    return search.found;
-}
-
-static void RequestPredictedGpuWarmup(HWND hStableWnd) {
-    if (RequiresCpuAnimationRendererProcess() ||
-        g_unloading.load(std::memory_order_relaxed) ||
-        GetSystemMetrics(SM_REMOTESESSION)) {
-        return;
-    }
-    const uint64_t settingsGeneration =
-        g_gpuWarmupSettingsGeneration.load(std::memory_order_acquire);
-
-    uint32_t requiredPipelines = GpuPipelineNone;
-    const bool minRestoreRelevant =
-        g_restoreAnimation.load(std::memory_order_relaxed) ||
-        g_launchAnimation.load(std::memory_order_relaxed);
-    if (minRestoreRelevant &&
-        g_gpuAcceleration.load(std::memory_order_relaxed)) {
-        requiredPipelines |= RequiredGpuPipelines(
-            /*isClosing=*/false,
-            PeekMinRestoreEffectStyle(hStableWnd));
-    }
-
-    if (!hStableWnd || !IsWindow(hStableWnd)) {
-        hStableWnd = FindStableGpuWindow();
-    }
-    if (g_closeAnimation.load(std::memory_order_relaxed) &&
-        g_closeGpuAcceleration.load(std::memory_order_relaxed)) {
-        const int closeEffect = PeekCloseEffectStyle();
-        const int blockSize =
-            std::max(1, g_shatterBlockSize.load(std::memory_order_relaxed));
-        HWND hCloseCompatibleWnd =
-            hStableWnd && !RequiresCpuClosePresentation(hStableWnd)
-                ? hStableWnd
-                : FindStableGpuWindow(/*requireCloseCompatibility=*/true);
-        if (hCloseCompatibleWnd &&
-            IsPotentialHybridGpuClose(closeEffect, blockSize)) {
-            requiredPipelines |= RequiredGpuPipelines(
-                /*isClosing=*/true, closeEffect);
-        }
-    }
-
-    // Peeking doesn't consume the session-wide order. Another process can
-    // advance that order before this process animates; if the newly selected
-    // pipeline is still cold, the normal CPU fallback keeps the action safe
-    // without reserving or precompiling every effect for idle windows.
-    RequestGpuWarmup(requiredPipelines, settingsGeneration);
-}
-
-static void ReportGpuPresenterFailureLocked(HRESULT hr, PCWSTR stage) {
-    auto& service = g_gpuRenderService;
-    const HRESULT removedReason =
-        service.device ? service.device->GetDeviceRemovedReason() : S_OK;
-    if (FAILED(removedReason) || hr == DXGI_ERROR_DEVICE_REMOVED ||
-        hr == DXGI_ERROR_DEVICE_RESET || hr == DXGI_ERROR_DEVICE_HUNG ||
-        hr == DXGI_ERROR_DRIVER_INTERNAL_ERROR) {
-        FailGpuServiceLocked(FAILED(removedReason) ? removedReason : hr, stage);
-        return;
-    }
-    Wh_Log(L"GPU presenter unavailable at %s (0x%08X); using CPU fallback",
-           stage, static_cast<unsigned>(hr));
-}
-
-class GpuEffectPresenter {
-private:
-    uint64_t serviceGeneration{};
-    HWND presentationWindow{};
-    HDC presentationScreenDC{};
-    bool layeredPresentation{};
-    int outputWidth{};
-    int outputHeight{};
-    int inputWidth{};
-    int inputHeight{};
-    uint64_t estimatedAllocationBytes{};
-    ComPtr<IDCompositionDevice> compositionDevice;
-    ComPtr<IDCompositionTarget> compositionTarget;
-    ComPtr<IDCompositionVisual> compositionVisual;
-    ComPtr<IDXGISwapChain1> swapChain;
-    ComPtr<IDXGISwapChain2> framePacedSwapChain;
-    HANDLE frameLatencyWaitableObject{};
-    bool frameSlotReserved{};
-    ComPtr<ID3D11Texture2D> layeredOutputTexture;
-    ComPtr<IDXGISurface1> layeredOutputSurface;
-    ComPtr<ID3D11RenderTargetView> renderTarget;
-    ComPtr<ID3D11Texture2D> sourceTexture;
-    ComPtr<ID3D11ShaderResourceView> sourceView;
-    ComPtr<ID3D11Texture2D> effectFieldTexture;
-    ComPtr<ID3D11ShaderResourceView> effectFieldView;
-    int effectFieldWidth{};
-    int effectFieldHeight{};
-    void ResetObjectsLocked() {
-        if (serviceGeneration &&
-            serviceGeneration == g_gpuRenderService.generation &&
-            g_gpuRenderService.activePresenters != 0) {
-            --g_gpuRenderService.activePresenters;
-        }
-        if (compositionTarget) compositionTarget->SetRoot(nullptr);
-        if (compositionDevice) compositionDevice->Commit();
-        // GetFrameLatencyWaitableObject returns a DXGI-owned handle. Releasing
-        // the swap chain closes it; calling CloseHandle here would double-close
-        // an object the application doesn't own.
-        frameLatencyWaitableObject = nullptr;
-        frameSlotReserved = false;
-        effectFieldView.Reset();
-        effectFieldTexture.Reset();
-        sourceView.Reset();
-        sourceTexture.Reset();
-        renderTarget.Reset();
-        layeredOutputSurface.Reset();
-        layeredOutputTexture.Reset();
-        framePacedSwapChain.Reset();
-        swapChain.Reset();
-        compositionVisual.Reset();
-        compositionTarget.Reset();
-        compositionDevice.Reset();
-        serviceGeneration = 0;
-        presentationWindow = nullptr;
-        presentationScreenDC = nullptr;
-        layeredPresentation = false;
-        outputWidth = outputHeight = 0;
-        inputWidth = inputHeight = 0;
-        effectFieldWidth = effectFieldHeight = 0;
-        estimatedAllocationBytes = 0;
-    }
-
-    bool CanPresentLocked() const {
-        const auto& service = g_gpuRenderService;
-        return serviceGeneration && serviceGeneration == service.generation &&
-               service.ready.load(std::memory_order_acquire) &&
-               ((layeredPresentation && layeredOutputSurface) ||
-                (!layeredPresentation && swapChain)) &&
-               renderTarget && sourceView;
-    }
-
-    bool WaitForFrameSlot() {
-        if (!frameLatencyWaitableObject) return true;
-        if (frameSlotReserved) return true;
-        const DWORD waitResult = WaitForSingleObject(
-            frameLatencyWaitableObject,
-            AnimConstants::GpuFrameLatencyWaitMs);
-        if (waitResult == WAIT_OBJECT_0) {
-            frameSlotReserved = true;
-            return true;
-        }
-        Wh_Log(L"GPU frame-latency wait failed result=0x%08X",
-               static_cast<unsigned>(waitResult));
-        return false;
-    }
-
-    void BeginFrameLocked(bool enableBlending = true) {
-        auto& service = g_gpuRenderService;
-        const FLOAT transparent[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-        service.context->ClearRenderTargetView(renderTarget.Get(), transparent);
-        ID3D11RenderTargetView* target = renderTarget.Get();
-        service.context->OMSetRenderTargets(1, &target, nullptr);
-        const FLOAT blendFactor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-        service.context->OMSetBlendState(
-            enableBlending ? service.blendState.Get() : nullptr,
-            blendFactor, 0xFFFFFFFFu);
-        D3D11_VIEWPORT viewport{};
-        viewport.Width = static_cast<float>(outputWidth);
-        viewport.Height = static_cast<float>(outputHeight);
-        viewport.MaxDepth = 1.0f;
-        service.context->RSSetViewports(1, &viewport);
-        service.context->RSSetState(service.rasterizerState.Get());
-        service.context->IASetInputLayout(nullptr);
-        service.context->IASetPrimitiveTopology(
-            D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-    }
-
-    bool EndFrameLocked() {
-        auto& service = g_gpuRenderService;
-        ID3D11ShaderResourceView* noViews[2] = {nullptr, nullptr};
-        service.context->PSSetShaderResources(0, 2, noViews);
-        service.context->OMSetRenderTargets(0, nullptr, nullptr);
-        if (layeredPresentation) {
-            HDC surfaceDC = nullptr;
-            HRESULT hr = layeredOutputSurface->GetDC(FALSE, &surfaceDC);
-            if (FAILED(hr) || !surfaceDC) {
-                ReportGpuPresenterFailureLocked(
-                    FAILED(hr) ? hr : E_FAIL, L"GetLayeredSurfaceDC");
-                return false;
-            }
-
-            RECT windowRect{};
-            POINT destination{};
-            BOOL updated = FALSE;
-            DWORD updateError = ERROR_INVALID_WINDOW_HANDLE;
-            if (IsWindow(presentationWindow) &&
-                GetWindowRect(presentationWindow, &windowRect)) {
-                destination.x = windowRect.left;
-                destination.y = windowRect.top;
-                SIZE size{outputWidth, outputHeight};
-                POINT source{};
-                BLENDFUNCTION blend{
-                    AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
-                updated = UpdateLayeredWindow(
-                    presentationWindow, presentationScreenDC, &destination, &size,
-                    surfaceDC, &source, 0, &blend, ULW_ALPHA);
-                updateError = updated ? ERROR_SUCCESS : GetLastError();
-            }
-            const HRESULT releaseHr = layeredOutputSurface->ReleaseDC(nullptr);
-            if (!updated || FAILED(releaseHr)) {
-                const HRESULT failure = !updated
-                                            ? HRESULT_FROM_WIN32(updateError)
-                                            : releaseHr;
-                ReportGpuPresenterFailureLocked(
-                    FAILED(failure) ? failure : E_FAIL,
-                    L"PresentLayeredSurface");
-                return false;
-            }
-            return true;
-        }
-        const HRESULT hr = swapChain->Present(0, 0);
-        frameSlotReserved = false;
-        if (FAILED(hr)) {
-            Wh_Log(L"GPU present failed (0x%08X); ending animation safely",
-                   static_cast<unsigned>(hr));
-            ReportGpuPresenterFailureLocked(hr, L"Present");
-            return false;
-        }
-        return true;
-    }
-
-public:
-    bool Initialize(HWND hWnd, HDC screenDC, const void* sourceBits,
-                    int sourceWidth,
-                    int sourceHeight, int canvasWidth, int canvasHeight,
-                    bool framePaced, bool useLayeredPresentation,
-                    uint32_t requiredPipelines) {
-        std::lock_guard<std::mutex> lock(g_gpuRenderService.mutex);
-        ResetObjectsLocked();
-        if (!sourceBits || sourceWidth < 1 || sourceHeight < 1 ||
-            canvasWidth < 1 || canvasHeight < 1 ||
-            !InitializeGpuServiceLocked(requiredPipelines)) {
-            return false;
-        }
-        auto& service = g_gpuRenderService;
-        HRESULT hr = S_OK;
-        if (useLayeredPresentation) {
-            D3D11_TEXTURE2D_DESC outputDesc{};
-            outputDesc.Width = static_cast<UINT>(canvasWidth);
-            outputDesc.Height = static_cast<UINT>(canvasHeight);
-            outputDesc.MipLevels = 1;
-            outputDesc.ArraySize = 1;
-            outputDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
-            outputDesc.SampleDesc.Count = 1;
-            outputDesc.Usage = D3D11_USAGE_DEFAULT;
-            outputDesc.BindFlags = D3D11_BIND_RENDER_TARGET;
-            outputDesc.MiscFlags = D3D11_RESOURCE_MISC_GDI_COMPATIBLE;
-            hr = service.device->CreateTexture2D(
-                &outputDesc, nullptr,
-                layeredOutputTexture.ReleaseAndGetAddressOf());
-            if (SUCCEEDED(hr)) {
-                hr = service.device->CreateRenderTargetView(
-                    layeredOutputTexture.Get(), nullptr,
-                    renderTarget.ReleaseAndGetAddressOf());
-            }
-            if (SUCCEEDED(hr)) {
-                hr = layeredOutputTexture.As(&layeredOutputSurface);
-            }
-        } else {
-            DXGI_SWAP_CHAIN_DESC1 swapDesc{};
-            swapDesc.Width = static_cast<UINT>(canvasWidth);
-            swapDesc.Height = static_cast<UINT>(canvasHeight);
-            swapDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
-            swapDesc.Stereo = FALSE;
-            swapDesc.SampleDesc.Count = 1;
-            swapDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-            swapDesc.BufferCount = 2;
-            swapDesc.Scaling = DXGI_SCALING_STRETCH;
-            swapDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
-            swapDesc.AlphaMode = DXGI_ALPHA_MODE_PREMULTIPLIED;
-            if (framePaced) {
-                swapDesc.Flags =
-                    DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT;
-            }
-            hr = service.factory->CreateSwapChainForComposition(
-                service.device.Get(), &swapDesc, nullptr,
-                swapChain.ReleaseAndGetAddressOf());
-            if (SUCCEEDED(hr) && framePaced) {
-                hr = swapChain.As(&framePacedSwapChain);
-                if (SUCCEEDED(hr)) {
-                    hr = framePacedSwapChain->SetMaximumFrameLatency(1);
-                }
-                if (SUCCEEDED(hr)) {
-                    frameLatencyWaitableObject =
-                        framePacedSwapChain->GetFrameLatencyWaitableObject();
-                    if (!frameLatencyWaitableObject) {
-                        hr = HRESULT_FROM_WIN32(GetLastError());
-                        if (SUCCEEDED(hr)) hr = E_FAIL;
-                    }
-                }
-            }
-            ComPtr<ID3D11Texture2D> backBuffer;
-            if (SUCCEEDED(hr)) {
-                hr = swapChain->GetBuffer(
-                    0, IID_PPV_ARGS(backBuffer.ReleaseAndGetAddressOf()));
-            }
-            if (SUCCEEDED(hr)) {
-                hr = service.device->CreateRenderTargetView(
-                    backBuffer.Get(), nullptr,
-                    renderTarget.ReleaseAndGetAddressOf());
-            }
-        }
-        if (FAILED(hr)) {
-            ResetObjectsLocked();
-            ReportGpuPresenterFailureLocked(
-                hr, useLayeredPresentation ? L"CreateLayeredRenderTarget"
-                                           : L"CreateSwapChainRenderTarget");
-            return false;
-        }
-
-        D3D11_TEXTURE2D_DESC sourceDesc{};
-        sourceDesc.Width = static_cast<UINT>(sourceWidth);
-        sourceDesc.Height = static_cast<UINT>(sourceHeight);
-        sourceDesc.MipLevels = 1;
-        sourceDesc.ArraySize = 1;
-        sourceDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
-        sourceDesc.SampleDesc.Count = 1;
-        sourceDesc.Usage = D3D11_USAGE_IMMUTABLE;
-        sourceDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-        D3D11_SUBRESOURCE_DATA sourceData{};
-        sourceData.pSysMem = sourceBits;
-        sourceData.SysMemPitch = static_cast<UINT>(sourceWidth * 4);
-        hr = service.device->CreateTexture2D(
-            &sourceDesc, &sourceData,
-            sourceTexture.ReleaseAndGetAddressOf());
-        if (SUCCEEDED(hr)) {
-            hr = service.device->CreateShaderResourceView(
-                sourceTexture.Get(), nullptr,
-                sourceView.ReleaseAndGetAddressOf());
-        }
-        if (FAILED(hr)) {
-            ResetObjectsLocked();
-            ReportGpuPresenterFailureLocked(hr, L"CreateSourceTexture");
-            return false;
-        }
-
-        if (!useLayeredPresentation) {
-            compositionDevice = service.compositionDevice;
-            hr = compositionDevice->CreateTargetForHwnd(
-                hWnd, TRUE, compositionTarget.ReleaseAndGetAddressOf());
-            if (SUCCEEDED(hr)) {
-                hr = compositionDevice->CreateVisual(
-                    compositionVisual.ReleaseAndGetAddressOf());
-            }
-            if (SUCCEEDED(hr)) {
-                hr = compositionVisual->SetContent(swapChain.Get());
-            }
-            if (SUCCEEDED(hr)) {
-                hr = compositionTarget->SetRoot(compositionVisual.Get());
-            }
-            if (SUCCEEDED(hr)) hr = compositionDevice->Commit();
-            if (FAILED(hr)) {
-                ResetObjectsLocked();
-                ReportGpuPresenterFailureLocked(hr, L"composition setup");
-                return false;
-            }
-        }
-
-        serviceGeneration = service.generation;
-        ++service.activePresenters;
-        presentationWindow = hWnd;
-        presentationScreenDC = screenDC;
-        layeredPresentation = useLayeredPresentation;
-        outputWidth = canvasWidth;
-        outputHeight = canvasHeight;
-        inputWidth = sourceWidth;
-        inputHeight = sourceHeight;
-        const uint64_t outputPixels =
-            static_cast<uint64_t>(canvasWidth) * canvasHeight;
-        const uint64_t sourcePixels =
-            static_cast<uint64_t>(sourceWidth) * sourceHeight;
-        // Count only explicit per-animation GPU surfaces. Driver-managed
-        // composition storage and the shared device/shaders aren't knowable
-        // here, so telemetry deliberately reports this as an estimate.
-        estimatedAllocationBytes =
-            sourcePixels * 4u + outputPixels * 4u *
-                (useLayeredPresentation ? 1u : 2u);
-        return true;
-    }
-
-    bool InitializeInplaceField(uint32_t effectStyle, int blockSize,
-                                int fieldStep) {
-        std::lock_guard<std::mutex> lock(g_gpuRenderService.mutex);
-        auto& service = g_gpuRenderService;
-        if (!CanPresentLocked() || effectStyle < 1 ||
-            (effectStyle > 3 && effectStyle != 8) ||
-            blockSize < 1 || fieldStep < 1 || !service.fieldVertexShader ||
-            !service.fieldPixelShader || !service.fieldConstants) {
-            return false;
-        }
-
-        const int fieldWidth =
-            (inputWidth + blockSize - 1) / blockSize;
-        const int fieldHeight =
-            (inputHeight + blockSize - 1) / blockSize;
-        if (fieldWidth < 1 || fieldHeight < 1) return false;
-
-        D3D11_TEXTURE2D_DESC fieldDesc{};
-        fieldDesc.Width = static_cast<UINT>(fieldWidth);
-        fieldDesc.Height = static_cast<UINT>(fieldHeight);
-        fieldDesc.MipLevels = 1;
-        fieldDesc.ArraySize = 1;
-        // Ink and Perlin need one value; Scorch and Splinter need two. UVs for
-        // Scorch are reconstructed from the block position in the consumer.
-        // Preserve 32-bit precision while avoiding unused texture channels.
-        const DXGI_FORMAT compactFieldFormat =
-            effectStyle == 1 || effectStyle == 8
-                ? DXGI_FORMAT_R32_FLOAT
-                : DXGI_FORMAT_R32G32_FLOAT;
-        fieldDesc.Format = compactFieldFormat;
-        fieldDesc.SampleDesc.Count = 1;
-        fieldDesc.Usage = D3D11_USAGE_DEFAULT;
-        fieldDesc.BindFlags =
-            D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-        ComPtr<ID3D11Texture2D> fieldTexture;
-        ComPtr<ID3D11RenderTargetView> fieldTarget;
-        ComPtr<ID3D11ShaderResourceView> fieldView;
-        auto createFieldResources = [&]() -> HRESULT {
-            HRESULT result = service.device->CreateTexture2D(
-                &fieldDesc, nullptr,
-                fieldTexture.ReleaseAndGetAddressOf());
-            if (SUCCEEDED(result)) {
-                result = service.device->CreateRenderTargetView(
-                    fieldTexture.Get(), nullptr,
-                    fieldTarget.ReleaseAndGetAddressOf());
-            }
-            if (SUCCEEDED(result)) {
-                result = service.device->CreateShaderResourceView(
-                    fieldTexture.Get(), nullptr,
-                    fieldView.ReleaseAndGetAddressOf());
-            }
-            return result;
-        };
-        HRESULT hr = createFieldResources();
-        if (FAILED(hr)) {
-            // Compact render-target formats are standard on supported D3D11
-            // hardware, but retain the original layout as a compatibility
-            // fallback for unusual drivers instead of dropping to CPU.
-            fieldView.Reset();
-            fieldTarget.Reset();
-            fieldTexture.Reset();
-            fieldDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-            hr = createFieldResources();
-        }
-        if (FAILED(hr)) {
-            ReportGpuPresenterFailureLocked(hr, L"CreateEffectField");
-            return false;
-        }
-
-        const GpuFieldConstants constantsData{
-            {static_cast<float>(inputWidth),
-             static_cast<float>(inputHeight)},
-            static_cast<float>(blockSize),
-            static_cast<float>(fieldStep),
-            effectStyle,
-            {0.0f, 0.0f, 0.0f},
-        };
-        service.context->UpdateSubresource(
-            service.fieldConstants.Get(), 0, nullptr, &constantsData, 0, 0);
-
-        ID3D11RenderTargetView* target = fieldTarget.Get();
-        service.context->OMSetRenderTargets(1, &target, nullptr);
-        service.context->OMSetBlendState(nullptr, nullptr, 0xFFFFFFFFu);
-        D3D11_VIEWPORT viewport{};
-        viewport.Width = static_cast<float>(fieldWidth);
-        viewport.Height = static_cast<float>(fieldHeight);
-        viewport.MaxDepth = 1.0f;
-        service.context->RSSetViewports(1, &viewport);
-        service.context->RSSetState(service.rasterizerState.Get());
-        service.context->IASetInputLayout(nullptr);
-        service.context->IASetPrimitiveTopology(
-            D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-        service.context->VSSetShader(service.fieldVertexShader.Get(), nullptr,
-                                     0);
-        ID3D11Buffer* constantsBuffer = service.fieldConstants.Get();
-        service.context->VSSetConstantBuffers(0, 1, &constantsBuffer);
-        service.context->PSSetShader(service.fieldPixelShader.Get(), nullptr,
-                                     0);
-        service.context->PSSetConstantBuffers(0, 1, &constantsBuffer);
-        service.context->Draw(4, 0);
-        service.context->OMSetRenderTargets(0, nullptr, nullptr);
-
-        effectFieldTexture = std::move(fieldTexture);
-        effectFieldView = std::move(fieldView);
-        effectFieldWidth = fieldWidth;
-        effectFieldHeight = fieldHeight;
-        const uint64_t bytesPerPixel =
-            fieldDesc.Format == DXGI_FORMAT_R32_FLOAT
-                ? 4u
-                : fieldDesc.Format == DXGI_FORMAT_R32G32_FLOAT ? 8u : 16u;
-        estimatedAllocationBytes +=
-            static_cast<uint64_t>(fieldWidth) * fieldHeight * bytesPerPixel;
-        return true;
-    }
-
-    bool PresentQuad(const QuadFrame& frame) {
-        if (!WaitForFrameSlot()) return false;
-        std::lock_guard<std::mutex> lock(g_gpuRenderService.mutex);
-        auto& service = g_gpuRenderService;
-        if (!CanPresentLocked() || !service.quadVertexShader ||
-            !service.quadPixelShader || !service.quadConstants) {
-            return false;
-        }
-
-        const GpuQuadConstants constantsData{
-            {static_cast<float>(outputWidth),
-             static_cast<float>(outputHeight)},
-            {static_cast<float>(frame.x), static_cast<float>(frame.y)},
-            {static_cast<float>(frame.width),
-             static_cast<float>(frame.height)},
-            Clamp(frame.opacity, 0.0f, 1.0f),
-            0.0f,
-            {static_cast<float>(inputWidth),
-             static_cast<float>(inputHeight)},
-            {0.0f, 0.0f},
-        };
-        service.context->UpdateSubresource(
-            service.quadConstants.Get(), 0, nullptr, &constantsData, 0, 0);
-
-        BeginFrameLocked();
-        service.context->VSSetShader(service.quadVertexShader.Get(), nullptr, 0);
-        ID3D11Buffer* constantsBuffer = service.quadConstants.Get();
-        service.context->VSSetConstantBuffers(0, 1, &constantsBuffer);
-        service.context->PSSetShader(service.quadPixelShader.Get(), nullptr, 0);
-        service.context->PSSetConstantBuffers(0, 1, &constantsBuffer);
-        ID3D11ShaderResourceView* view = sourceView.Get();
-        service.context->PSSetShaderResources(0, 1, &view);
-        service.context->Draw(4, 0);
-        return EndFrameLocked();
-    }
-
-    bool PresentGenie(const GpuGenieFrame& frame) {
-        if (!WaitForFrameSlot()) return false;
-        std::lock_guard<std::mutex> lock(g_gpuRenderService.mutex);
-        auto& service = g_gpuRenderService;
-        if (!CanPresentLocked() || !service.genieVertexShader ||
-            !service.geniePixelShader || !service.genieConstants) {
-            return false;
-        }
-
-        const GpuGenieConstants constantsData{
-            {static_cast<float>(outputWidth),
-             static_cast<float>(outputHeight)},
-            {static_cast<float>(inputWidth),
-             static_cast<float>(inputHeight)},
-            {frame.sourceOriginX, frame.sourceOriginY},
-            {frame.dockX, frame.dockY},
-            frame.neckWidth,
-            Clamp(frame.morphTime, 0.0f, 1.0f),
-            Clamp(frame.opacity, 0.0f, 1.0f),
-            AnimConstants::MinimizeSpread,
-            static_cast<uint32_t>(frame.taskbarEdge),
-            {0.0f, 0.0f, 0.0f},
-        };
-        service.context->UpdateSubresource(
-            service.genieConstants.Get(), 0, nullptr, &constantsData, 0, 0);
-
-        BeginFrameLocked();
-        service.context->VSSetShader(service.genieVertexShader.Get(), nullptr,
-                                     0);
-        ID3D11Buffer* constantsBuffer = service.genieConstants.Get();
-        service.context->VSSetConstantBuffers(0, 1, &constantsBuffer);
-        service.context->PSSetShader(service.geniePixelShader.Get(), nullptr,
-                                     0);
-        service.context->PSSetConstantBuffers(0, 1, &constantsBuffer);
-        ID3D11ShaderResourceView* view = sourceView.Get();
-        service.context->PSSetShaderResources(0, 1, &view);
-        service.context->Draw(
-            static_cast<UINT>(
-                (static_cast<uint64_t>(
-                     IsHorizontalTaskbar(frame.taskbarEdge)
-                         ? inputHeight
-                         : inputWidth) +
-                 1) *
-                2),
-            0);
-        return EndFrameLocked();
-    }
-
-    bool PresentInplace(const GpuInplaceFrame& frame) {
-        if (!WaitForFrameSlot()) return false;
-        std::lock_guard<std::mutex> lock(g_gpuRenderService.mutex);
-        auto& service = g_gpuRenderService;
-        if (!CanPresentLocked() || !service.inplaceVertexShader ||
-            !service.inplacePixelShader || !service.inplaceConstants ||
-            (frame.effectStyle <= 3 && !effectFieldView)) {
-            return false;
-        }
-
-        const GpuInplaceConstants constantsData{
-            {static_cast<float>(outputWidth),
-             static_cast<float>(outputHeight)},
-            {static_cast<float>(inputWidth),
-             static_cast<float>(inputHeight)},
-            {frame.rectOriginX, frame.rectOriginY},
-            Clamp(frame.progress, 0.0f, 1.0f),
-            static_cast<float>(std::max(1, frame.blockSize)),
-            frame.effectStyle,
-            {static_cast<float>(effectFieldWidth),
-             static_cast<float>(effectFieldHeight)},
-            0.0f,
-        };
-        service.context->UpdateSubresource(
-            service.inplaceConstants.Get(), 0, nullptr, &constantsData, 0, 0);
-
-        BeginFrameLocked();
-        service.context->VSSetShader(service.inplaceVertexShader.Get(),
-                                     nullptr, 0);
-        ID3D11Buffer* constantsBuffer = service.inplaceConstants.Get();
-        service.context->VSSetConstantBuffers(0, 1, &constantsBuffer);
-        service.context->PSSetShader(service.inplacePixelShader.Get(),
-                                     nullptr, 0);
-        service.context->PSSetConstantBuffers(0, 1, &constantsBuffer);
-        ID3D11ShaderResourceView* views[2] = {
-            sourceView.Get(), effectFieldView.Get()};
-        service.context->PSSetShaderResources(0, 2, views);
-        service.context->Draw(4, 0);
-        return EndFrameLocked();
-    }
-
-    bool PresentShatter(const GpuCloseFrame& frame) {
-        if (!WaitForFrameSlot()) return false;
-        std::lock_guard<std::mutex> lock(g_gpuRenderService.mutex);
-        auto& service = g_gpuRenderService;
-        const int blockSize =
-            std::max(1, static_cast<int>(frame.blockSize));
-        const bool usePointParticles = blockSize == 1;
-        if (!CanPresentLocked() || !service.shatterVertexShader ||
-            (usePointParticles && !service.shatterPointVertexShader) ||
-            !service.shatterPixelShader || !service.shatterConstants) {
-            return false;
-        }
-
-        const GpuShatterConstants shatterConstantsData{
-            {static_cast<float>(outputWidth),
-             static_cast<float>(outputHeight)},
-            {static_cast<float>(inputWidth),
-             static_cast<float>(inputHeight)},
-            {frame.sourceOriginX, frame.sourceOriginY},
-            Clamp(frame.progress, 0.0f, 1.0f),
-            static_cast<uint32_t>(blockSize),
-            AnimConstants::ThanosBaseStartMax,
-            AnimConstants::ThanosWaveNoiseMult,
-            AnimConstants::ThanosLifeSpan,
-            0.0f,
-        };
-        service.context->UpdateSubresource(
-            service.shatterConstants.Get(), 0, nullptr,
-            &shatterConstantsData, 0, 0);
-
-        const UINT blockColumns = static_cast<UINT>(
-            (inputWidth + blockSize - 1) / blockSize);
-        const UINT blockRows = static_cast<UINT>(
-            (inputHeight + blockSize - 1) / blockSize);
-        const uint64_t blockCount64 =
-            static_cast<uint64_t>(blockColumns) * blockRows;
-        if (!blockCount64 || blockCount64 > UINT_MAX) return false;
-
-        // Rasterize particles directly without an intermediate full-size
-        // texture. Disable blending so overlapping blocks overwrite pixels
-        // instead of accumulating opacity.
-        BeginFrameLocked(/*enableBlending=*/false);
-        service.context->IASetPrimitiveTopology(
-            usePointParticles
-                ? D3D11_PRIMITIVE_TOPOLOGY_POINTLIST
-                : D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-        service.context->VSSetShader(
-            usePointParticles
-                ? service.shatterPointVertexShader.Get()
-                : service.shatterVertexShader.Get(),
-            nullptr, 0);
-        ID3D11Buffer* shatterConstantsBuffer =
-            service.shatterConstants.Get();
-        service.context->VSSetConstantBuffers(
-            0, 1, &shatterConstantsBuffer);
-        service.context->PSSetShader(service.shatterPixelShader.Get(),
-                                     nullptr, 0);
-        service.context->PSSetConstantBuffers(
-            0, 1, &shatterConstantsBuffer);
-        ID3D11ShaderResourceView* view = sourceView.Get();
-        service.context->PSSetShaderResources(0, 1, &view);
-        if (usePointParticles) {
-            // One source pixel becomes one rasterized point. This cuts the
-            // 1 px path from four vertex invocations per particle to one;
-            // larger blocks retain their exact clipped-quad geometry.
-            service.context->Draw(static_cast<UINT>(blockCount64), 0);
-        } else {
-            service.context->DrawInstanced(
-                4, static_cast<UINT>(blockCount64), 0, 0);
-        }
-        return EndFrameLocked();
-    }
-
-    bool PresentClose(const GpuCloseFrame& frame) {
-        if (!WaitForFrameSlot()) return false;
-        std::lock_guard<std::mutex> lock(g_gpuRenderService.mutex);
-        auto& service = g_gpuRenderService;
-        if (!CanPresentLocked() || !service.closeVertexShader ||
-            !service.closePixelShader || !service.closeConstants ||
-            !effectFieldView) {
-            return false;
-        }
-
-        const GpuCloseConstants constantsData{
-            {static_cast<float>(outputWidth),
-             static_cast<float>(outputHeight)},
-            {static_cast<float>(inputWidth),
-             static_cast<float>(inputHeight)},
-            {frame.sourceOriginX, frame.sourceOriginY},
-            Clamp(frame.progress, 0.0f, 1.0f),
-            frame.blockSize,
-        };
-        service.context->UpdateSubresource(
-            service.closeConstants.Get(), 0, nullptr, &constantsData, 0, 0);
-
-        BeginFrameLocked();
-        service.context->VSSetShader(service.closeVertexShader.Get(), nullptr,
-                                     0);
-        ID3D11Buffer* constantsBuffer = service.closeConstants.Get();
-        service.context->VSSetConstantBuffers(0, 1, &constantsBuffer);
-        service.context->PSSetShader(service.closePixelShader.Get(), nullptr,
-                                     0);
-        service.context->PSSetConstantBuffers(0, 1, &constantsBuffer);
-        ID3D11ShaderResourceView* views[2] = {
-            sourceView.Get(),
-            effectFieldView.Get(),
-        };
-        service.context->PSSetShaderResources(0, 2, views);
-        service.context->Draw(4, 0);
-        return EndFrameLocked();
-    }
-
-    void Reset() {
-        std::lock_guard<std::mutex> lock(g_gpuRenderService.mutex);
-        ResetObjectsLocked();
-    }
-
-    bool IsInitialized() const { return serviceGeneration != 0; }
-    uint64_t EstimatedAllocationBytes() const {
-        return estimatedAllocationBytes;
-    }
-    void GetAdapterTelemetry(std::wstring& description,
-                             uint64_t& dedicatedVideoMemory) const {
-        std::lock_guard<std::mutex> lock(g_gpuRenderService.mutex);
-        if (serviceGeneration &&
-            serviceGeneration == g_gpuRenderService.generation) {
-            description = g_gpuRenderService.adapterDescription;
-            dedicatedVideoMemory =
-                g_gpuRenderService.adapterDedicatedVideoMemory;
-        } else {
-            description.clear();
-            dedicatedVideoMemory = 0;
-        }
-    }
-    bool IsFramePaced() const {
-        return frameLatencyWaitableObject != nullptr;
-    }
-    bool UsesLayeredPresentation() const {
-        return layeredPresentation;
-    }
-    bool ReserveFrameSlot() {
-        return WaitForFrameSlot();
-    }
-};
-
-static void ShutdownGpuRenderService() {
-    std::lock_guard<std::mutex> lock(g_gpuRenderService.mutex);
-    ReleaseGpuDeviceResourcesLocked();
-    if (g_gpuRenderService.compilerModule) {
-        FreeLibrary(g_gpuRenderService.compilerModule);
-        g_gpuRenderService.compilerModule = nullptr;
-    }
-    g_gpuRenderService.retryAfterTick = 0;
-}
-
-static bool ShutdownGpuRenderServiceIfIdle(bool waitForService) {
-    std::unique_lock<std::mutex> lock(g_gpuRenderService.mutex,
-                                      std::defer_lock);
-    if (waitForService) {
-        lock.lock();
-    } else if (!lock.try_lock()) {
-        return false;
-    }
-    if (g_gpuRenderService.activePresenters != 0) return false;
-
-    const bool hadResources =
-        g_gpuRenderService.ready.load(std::memory_order_relaxed) ||
-        g_gpuRenderService.compilerModule != nullptr;
-    ReleaseGpuDeviceResourcesLocked();
-    if (g_gpuRenderService.compilerModule) {
-        FreeLibrary(g_gpuRenderService.compilerModule);
-        g_gpuRenderService.compilerModule = nullptr;
-    }
-    g_gpuRenderService.retryAfterTick = 0;
-    return hadResources;
-}
-
-static void ReleaseGpuRenderServiceForFinalWindow(
-    HWND closingWindow, bool waitForService = true) {
-    if (HasRemainingAnimationWindow(closingWindow)) return;
-
-    CancelPendingGpuWarmup();
-    if (ShutdownGpuRenderServiceIfIdle(waitForService) &&
-        IsDiagnosticLoggingEnabled()) {
-        Wh_Log(L"GPU renderer released: no remaining app window");
-    }
-}
-
-static DWORD WINAPI FinalWindowGpuReleaseThread(LPVOID parameter) {
-    const HWND closingWindow = reinterpret_cast<HWND>(parameter);
-    ReleaseGpuRenderServiceForFinalWindow(closingWindow);
-    return 0;
-}
-
-static void ScheduleFinalWindowGpuRelease(HWND closingWindow) {
-    StartWorkerThread(FinalWindowGpuReleaseThread, closingWindow);
-}
-
-class AnimationEngine {
-private:
-    WindowAnimData* data = nullptr;
-    int W = 0, H = 0;
-    int origLeft = 0, origTop = 0;
-    float origCenterX = 0.0f, origCenterY = 0.0f;
-    float dockXf = 0.0f, dockY = 0.0f, neckW = 0.0f;
-    float taskbarButtonCenterX = 0.0f, taskbarButtonCenterY = 0.0f;
-    TaskbarEdge taskbarEdge = TaskbarEdge::Bottom;
-    float taskbarDpiScale = 1.0f;
-    int boundLeft = 0, boundTop = 0, boundW = 0, boundH = 0;
-    HWND hGhost = NULL;
-    HDC hScreenDC = NULL, hSrcDC = NULL, hSrcDibDC = NULL, hCanvasDC = NULL;
-    HBITMAP hOldSrc = NULL, hSrcDib = NULL, hOldSrcDib = NULL, hCanvas = NULL, hOldCanvas = NULL;
-    BYTE* srcBits = nullptr;
-    BYTE* pBits = nullptr;
-    int srcStride = 0, canvasStride = 0;
-    size_t canvasBytes = 0;
-    int blockSizeSetting = 1;
-    int closeEffect = 1;
-    int minRestoreEffect = 0;
-    double totalMs = 0.0;
-    bool ownershipReleased = false;
-    bool keepGhostBelowTaskbar = false;
-    bool ghostCounted = false;
-    bool usingGpuBackend = false;
-    GpuEffectPresenter gpuPresenter;
-    std::vector<ShatterBlock> shatterBlocks;
-    // Close particles occupy a regular block grid. Their source coordinates
-    // are implicit in vector order, so only effect-specific physics values
-    // and a compact intrusive active-list link need to be stored per block.
-    std::vector<CloseShatterParticle> closeShatterParticles;
-    std::vector<CloseThanosParticle> closeThanosParticles;
-    static constexpr uint32_t kNoActiveCloseParticle = UINT32_MAX;
-    uint32_t firstActiveCloseParticle = kNoActiveCloseParticle;
-    size_t initialCloseParticleCount = 0;
-    size_t activeCloseParticleCount = 0;
-    // Perlin blocks never move and only need their dissolve start time. Keep
-    // source coordinates implicit in row-major order instead of storing a
-    // full ShatterBlock (coordinates plus unrelated physics values) for
-    // every block—especially important for 1 px fullscreen fields.
-    std::vector<float> perlinStartTimes;
-    std::vector<float> axisBounds;
-    std::vector<float> meltLag;
-    std::vector<float> meltSpeed;
-    static constexpr int kMeltStripPx = 120;
-    static constexpr int kMeltSubStepPx = 6;
-    static constexpr float kMeltMaxLagStep = 0.08f;
-    static constexpr float kMeltMaxSpeedStep = 0.12f;
-    bool firstFramePending = true;
-    bool firstFrameDwmSynchronized = false;
-    bool telemetryEnabled = false;
-    bool telemetryInitialClosing = false;
-    bool telemetryInitialRising = false;
-    bool telemetryLaunch = false;
-    bool telemetryPresentationFailed = false;
-    uint32_t telemetryFrameAttempts = 0;
-    uint32_t telemetryFramesPresented = 0;
-    uint32_t telemetryReversals = 0;
-    LONGLONG telemetryFrequency = 0;
-    LONGLONG telemetryStartTick = 0;
-    LONGLONG telemetryFirstFrameTick = 0;
-    LONGLONG telemetryInitializeTicks = 0;
-    LONGLONG telemetryPrecalcTicks = 0;
-    LONGLONG telemetryRenderTicks = 0;
-    LONGLONG telemetryWorstRenderTicks = 0;
-    LONGLONG telemetryCpuClearTicks = 0;
-    LONGLONG telemetryCpuWorstClearTicks = 0;
-    LONGLONG telemetryCpuEffectTicks = 0;
-    LONGLONG telemetryCpuWorstEffectTicks = 0;
-    LONGLONG telemetryCpuPresentTicks = 0;
-    LONGLONG telemetryCpuWorstPresentTicks = 0;
-    uint32_t telemetryCpuClearSamples = 0;
-    uint32_t telemetryCpuEffectSamples = 0;
-    uint32_t telemetryCpuPresentSamples = 0;
-    uint64_t telemetryCpuCloseParticleVisits = 0;
-    uint32_t telemetryCpuCloseParticleFrames = 0;
-    LONGLONG telemetryPacingWaitTicks = 0;
-    uint32_t telemetryPacingWaits = 0;
-    std::wstring telemetryAdapterDescription;
-    uint64_t telemetryAdapterDedicatedVideoMemory = 0;
-    DWORD displayRefreshHz = 0;
-    LONGLONG ReadTelemetryCounter() const {
-        if (!telemetryEnabled) return 0;
-        LARGE_INTEGER counter{};
-        return QueryPerformanceCounter(&counter) ? counter.QuadPart : 0;
-    }
-    void RecordTelemetryCpuPhase(LONGLONG startTick,
-                                 LONGLONG& totalTicks,
-                                 LONGLONG& worstTicks,
-                                 uint32_t& samples) {
-        if (!telemetryEnabled || startTick <= 0) return;
-        const LONGLONG endTick = ReadTelemetryCounter();
-        if (endTick <= 0) return;
-        const LONGLONG elapsed =
-            std::max<LONGLONG>(0, endTick - startTick);
-        totalTicks += elapsed;
-        worstTicks = std::max(worstTicks, elapsed);
-        ++samples;
-    }
-    void ClearCpuCanvas() {
-        const LONGLONG startTick = ReadTelemetryCounter();
-        memset(pBits, 0, canvasBytes);
-        RecordTelemetryCpuPhase(
-            startTick, telemetryCpuClearTicks,
-            telemetryCpuWorstClearTicks, telemetryCpuClearSamples);
-    }
-    void RecordTelemetryCpuEffect(LONGLONG startTick) {
-        RecordTelemetryCpuPhase(
-            startTick, telemetryCpuEffectTicks,
-            telemetryCpuWorstEffectTicks, telemetryCpuEffectSamples);
-    }
-    inline float MorphAt(float v, float tt) {
-        float m = tt * (1.0f + AnimConstants::MinimizeSpread) - (1.0f - v) * AnimConstants::MinimizeSpread;
-        if (m < 0.0f) m = 0.0f;
-        if (m > 1.0f) m = 1.0f;
-        return m * m * (3.0f - 2.0f * m);
-    }
-    inline void DrawParticlePixel(int srcX, int srcY, int dstX, int dstY,
-                                  float alpha) {
-        if (static_cast<unsigned>(srcX) >= static_cast<unsigned>(W) ||
-            static_cast<unsigned>(srcY) >= static_cast<unsigned>(H) ||
-            static_cast<unsigned>(dstX) >= static_cast<unsigned>(boundW) ||
-            static_cast<unsigned>(dstY) >= static_cast<unsigned>(boundH)) {
-            return;
-        }
-        const BYTE* src = srcBits + (size_t)srcY * srcStride +
-                          (size_t)srcX * sizeof(uint32_t);
-        BYTE* dst = pBits + (size_t)dstY * canvasStride +
-                    (size_t)dstX * sizeof(uint32_t);
-        if (alpha >= 0.99f) {
-            memcpy(dst, src, sizeof(uint32_t));
-            return;
-        }
-        dst[0] = (BYTE)(src[0] * alpha);
-        dst[1] = (BYTE)(src[1] * alpha);
-        dst[2] = (BYTE)(src[2] * alpha);
-        dst[3] = (BYTE)(src[3] * alpha);
-    }
-    inline void DrawBlock(int srcX, int srcY, int dstX, int dstY, float alpha, int bw = -1, int bh = -1) {
-        // Shatter, Thanos, and Perlin call this with the default extent. At
-        // one-pixel density, bypass the generic rectangle clipping and row
-        // loop for every particle while preserving the same row-major writes.
-        if (blockSizeSetting == 1 && bw <= 0 && bh <= 0) {
-            DrawParticlePixel(srcX, srcY, dstX, dstY, alpha);
-            return;
-        }
-        if (bw <= 0) bw = blockSizeSetting;
-        if (bh <= 0) bh = blockSizeSetting;
-        const int y0 = dstY < 0 ? -dstY : 0;
-        const int y1 = std::min(bh, std::min(H - srcY, boundH - dstY));
-        const int x0 = dstX < 0 ? -dstX : 0;
-        const int x1 = std::min(bw, std::min(W - srcX, boundW - dstX));
-        if (x0 >= x1 || y0 >= y1) return;
-        const size_t bytes = (size_t)(x1 - x0) * sizeof(uint32_t);
-        for (int by = y0; by < y1; ++by) {
-            const BYTE* src = srcBits + (size_t)(srcY + by) * srcStride + (size_t)(srcX + x0) * 4;
-            BYTE* dst = pBits + (size_t)(dstY + by) * canvasStride + (size_t)(dstX + x0) * 4;
-            if (alpha >= 0.99f) {
-                memcpy(dst, src, bytes);
-                continue;
-            }
-            for (int bx = x0; bx < x1; ++bx, src += 4, dst += 4) {
-                dst[0] = (BYTE)(src[0] * alpha); dst[1] = (BYTE)(src[1] * alpha);
-                dst[2] = (BYTE)(src[2] * alpha); dst[3] = (BYTE)(src[3] * alpha);
-            }
-        }
-    }
-    inline void DrawBlockScaled(int srcX, int srcY, int srcW, int srcH, int dstX, int dstY, int dstW,
-                                int dstH, float alpha) {
-        if (dstW < 1 || dstH < 1 || srcW < 1 || srcH < 1 || alpha <= 0.0f) return;
-        if (dstW == srcW && dstH == srcH) {
-            DrawBlock(srcX, srcY, dstX, dstY, alpha, srcW, srcH);
-            return;
-        }
-        for (int dy = 0; dy < dstH; ++dy) {
-            const int outY = dstY + dy;
-            if (outY < 0 || outY >= boundH) continue;
-            const int sy = srcY + dy * srcH / dstH;
-            if (sy < 0 || sy >= H) continue;
-            const BYTE* srcRow = srcBits + (size_t)sy * srcStride;
-            BYTE* dstRow = pBits + (size_t)outY * canvasStride;
-            for (int dx = 0; dx < dstW; ++dx) {
-                const int outX = dstX + dx;
-                if (outX < 0 || outX >= boundW) continue;
-                const int sx = srcX + dx * srcW / dstW;
-                if (sx < 0 || sx >= W) continue;
-                const BYTE* s = srcRow + (size_t)sx * 4;
-                BYTE* d = dstRow + (size_t)outX * 4;
-                if (alpha >= 0.99f) {
-                    d[0] = s[0]; d[1] = s[1]; d[2] = s[2]; d[3] = s[3];
-                } else {
-                    d[0] = (BYTE)(s[0] * alpha); d[1] = (BYTE)(s[1] * alpha);
-                    d[2] = (BYTE)(s[2] * alpha); d[3] = (BYTE)(s[3] * alpha);
-                }
-            }
-        }
-    }
-    void BlitVerticalSquash(int dstBaseX, int dstBaseY, int dstH, float alpha, float bright) {
-        if (dstH < 1 || alpha <= 0.0f) return;
-        if (bright < 0.0f) bright = 0.0f;
-        if (bright > 1.5f) bright = 1.5f;
-        const float invH = 1.0f / (float)dstH;
-        for (int dy = 0; dy < dstH; ++dy) {
-            const int outY = dstBaseY + dy;
-            if (outY < 0 || outY >= boundH) continue;
-            const float srcYF = ((float)dy + 0.5f) * invH * (float)H - 0.5f;
-            int y0 = (int)floorf(srcYF);
-            float fy = srcYF - (float)y0;
-            int y1 = y0 + 1;
-            if (y0 < 0) { y0 = 0; fy = 0.0f; }
-            if (y1 >= H) y1 = H - 1;
-            if (y0 >= H) y0 = H - 1;
-            const BYTE* row0 = srcBits + (size_t)y0 * srcStride;
-            const BYTE* row1 = srcBits + (size_t)y1 * srcStride;
-            BYTE* dstRow = pBits + (size_t)outY * canvasStride;
-            const float w0 = 1.0f - fy;
-            const float w1 = fy;
-            for (int x = 0; x < W; ++x) {
-                const int outX = dstBaseX + x;
-                if (outX < 0 || outX >= boundW) continue;
-                const BYTE* s0 = row0 + (size_t)x * 4;
-                const BYTE* s1 = row1 + (size_t)x * 4;
-                BYTE* d = dstRow + (size_t)outX * 4;
-                float b = ((float)s0[0] * w0 + (float)s1[0] * w1) * bright;
-                float g = ((float)s0[1] * w0 + (float)s1[1] * w1) * bright;
-                float r = ((float)s0[2] * w0 + (float)s1[2] * w1) * bright;
-                float a = ((float)s0[3] * w0 + (float)s1[3] * w1) * alpha;
-                if (bright > 1.0f) {
-                    const float lift = (bright - 1.0f) * 0.65f;
-                    b += (255.0f - b) * lift;
-                    g += (255.0f - g) * lift;
-                    r += (220.0f - r) * lift;
-                }
-                d[0] = (BYTE)(b > 255.0f ? 255.0f : b);
-                d[1] = (BYTE)(g > 255.0f ? 255.0f : g);
-                d[2] = (BYTE)(r > 255.0f ? 255.0f : r);
-                d[3] = (BYTE)(a > 255.0f ? 255.0f : a);
-            }
-        }
-    }
-    void DrawSharpCrtBeam(float cx, float cy, float halfLen, float intensity) {
-        if (intensity <= 0.02f || halfLen < 0.25f) return;
-        if (intensity > 1.0f) intensity = 1.0f;
-        const float tip = 1.75f;
-        const int x0 = (int)floorf(cx - halfLen - tip);
-        const int x1 = (int)ceilf(cx + halfLen + tip);
-        const int y0 = (int)floorf(cy - 2.0f);
-        const int y1 = (int)ceilf(cy + 2.0f);
-        for (int y = y0; y <= y1; ++y) {
-            if (y < 0 || y >= boundH) continue;
-            const float ady = fabsf((float)y + 0.5f - cy);
-            float gy = 0.0f;
-            if (ady < 0.55f) gy = 1.0f;
-            else if (ady < 1.55f) gy = 1.0f - (ady - 0.55f);
-            if (gy <= 0.0f) continue;
-            BYTE* dstRow = pBits + (size_t)y * canvasStride;
-            for (int x = x0; x <= x1; ++x) {
-                if (x < 0 || x >= boundW) continue;
-                const float adx = fabsf((float)x + 0.5f - cx);
-                float gx = 1.0f;
-                if (adx > halfLen) {
-                    const float t = (adx - halfLen) / tip;
-                    if (t >= 1.0f) continue;
-                    gx = 1.0f - t;
-                }
-                const float a = gy * gx * intensity;
-                if (a < 0.02f) continue;
-                const float hot = gy;
-                const float b = (210.0f + 45.0f * hot) * a;
-                const float g = (235.0f + 20.0f * hot) * a;
-                const float r = (255.0f) * a;
-                const float aa = 255.0f * a;
-                BYTE* d = dstRow + (size_t)x * 4;
-                d[0] = (BYTE)(b > 255.0f ? 255.0f : b);
-                d[1] = (BYTE)(g > 255.0f ? 255.0f : g);
-                d[2] = (BYTE)(r > 255.0f ? 255.0f : r);
-                d[3] = (BYTE)(aa > 255.0f ? 255.0f : aa);
-            }
-        }
-    }
-    void DrawSharpCrtDot(float cx, float cy, float intensity) {
-        if (intensity <= 0.02f) return;
-        if (intensity > 1.0f) intensity = 1.0f;
-        const int x0 = (int)floorf(cx - 1.5f);
-        const int x1 = (int)ceilf(cx + 1.5f);
-        const int y0 = (int)floorf(cy - 1.5f);
-        const int y1 = (int)ceilf(cy + 1.5f);
-        for (int y = y0; y <= y1; ++y) {
-            if (y < 0 || y >= boundH) continue;
-            BYTE* dstRow = pBits + (size_t)y * canvasStride;
-            for (int x = x0; x <= x1; ++x) {
-                if (x < 0 || x >= boundW) continue;
-                const float dx = (float)x + 0.5f - cx;
-                const float dy = (float)y + 0.5f - cy;
-                const float d2 = dx * dx + dy * dy;
-                float w = 0.0f;
-                if (d2 <= 0.35f) w = 1.0f;
-                else if (d2 <= 1.6f) w = 1.0f - (d2 - 0.35f) / 1.25f;
-                if (w <= 0.0f) continue;
-                const float a = w * intensity;
-                BYTE* d = dstRow + (size_t)x * 4;
-                d[0] = (BYTE)(255.0f * a);
-                d[1] = (BYTE)(255.0f * a);
-                d[2] = (BYTE)(255.0f * a);
-                d[3] = (BYTE)(255.0f * a);
-            }
-        }
-    }
-    void RenderPerlin(float progress) {
-        const int columns =
-            (W + blockSizeSetting - 1) / blockSizeSetting;
-        const int rows =
-            (H + blockSizeSetting - 1) / blockSizeSetting;
-        const size_t expectedValues =
-            static_cast<size_t>(columns) * static_cast<size_t>(rows);
-        if (perlinStartTimes.size() != expectedValues) return;
-
-        const int dstOffsetX = origLeft - boundLeft;
-        const int dstOffsetY = origTop - boundTop;
-        const float* startTime = perlinStartTimes.data();
-        for (int srcY = 0; srcY < H; srcY += blockSizeSetting) {
-            for (int srcX = 0; srcX < W;
-                 srcX += blockSizeSetting, ++startTime) {
-                const float localProgress =
-                    (progress - *startTime) /
-                    AnimConstants::PerlinLifeSpan;
-                if (localProgress >= 1.0f) continue;
-                DrawBlock(
-                    srcX, srcY, dstOffsetX + srcX, dstOffsetY + srcY,
-                    localProgress <= 0.0f ? 1.0f
-                                          : 1.0f - localProgress);
-            }
-        }
-    }
-    void RenderShatter(float progress, float& fade) {
-        fade = 1.0f - progress;
-        if (fade < 0.0f) fade = 0.0f;
-        const int columns =
-            (W + blockSizeSetting - 1) / blockSizeSetting;
-        const int rows =
-            (H + blockSizeSetting - 1) / blockSizeSetting;
-        const size_t expectedParticles =
-            static_cast<size_t>(columns) * static_cast<size_t>(rows);
-        if (closeShatterParticles.size() != expectedParticles ||
-            (firstActiveCloseParticle != kNoActiveCloseParticle &&
-             firstActiveCloseParticle >= closeShatterParticles.size())) {
-            return;
-        }
-        if (telemetryEnabled) {
-            telemetryCpuCloseParticleVisits += activeCloseParticleCount;
-            ++telemetryCpuCloseParticleFrames;
-        }
-
-        const float easeOut = 1.0f - powf(1.0f - progress, 5.0f);
-        const int dstOffsetX = origLeft - boundLeft;
-        const int dstOffsetY = origTop - boundTop;
-        size_t rowStart = 0;
-        int srcY = 0;
-        uint32_t previousParticle = kNoActiveCloseParticle;
-        uint32_t particleIndex = firstActiveCloseParticle;
-        while (particleIndex != kNoActiveCloseParticle) {
-            CloseShatterParticle& particle =
-                closeShatterParticles[particleIndex];
-            const uint32_t nextParticle = particle.nextActive;
-            while (static_cast<size_t>(particleIndex) >=
-                   rowStart + static_cast<size_t>(columns)) {
-                rowStart += static_cast<size_t>(columns);
-                srcY += blockSizeSetting;
-            }
-            const int srcX = static_cast<int>(
-                                 static_cast<size_t>(particleIndex) -
-                                 rowStart) *
-                             blockSizeSetting;
-            const float travel =
-                easeOut * (AnimConstants::ShatterTravelBase +
-                           particle.force *
-                               AnimConstants::ShatterTravelMult);
-            const float velocityX =
-                particle.dirX + particle.noiseX * 0.4f;
-            const float velocityY =
-                particle.dirY + particle.noiseY * 0.4f;
-            const float dX = particle.dirX * travel +
-                             particle.noiseX * travel * 0.4f;
-            const float dY = particle.dirY * travel +
-                             particle.noiseY * travel * 0.4f;
-            const int dstBaseX =
-                dstOffsetX + srcX + static_cast<int>(dX);
-            const int dstBaseY =
-                dstOffsetY + srcY + static_cast<int>(dY);
-            const int blockW = std::min(blockSizeSetting, W - srcX);
-            const int blockH = std::min(blockSizeSetting, H - srcY);
-            const bool outsideLeft = dstBaseX + blockW <= 0;
-            const bool outsideRight = dstBaseX >= boundW;
-            const bool outsideTop = dstBaseY + blockH <= 0;
-            const bool outsideBottom = dstBaseY >= boundH;
-            const bool permanentlyOutside =
-                (outsideLeft && velocityX <= 0.0f) ||
-                (outsideRight && velocityX >= 0.0f) ||
-                (outsideTop && velocityY <= 0.0f) ||
-                (outsideBottom && velocityY >= 0.0f);
-
-            if (permanentlyOutside) {
-                if (previousParticle == kNoActiveCloseParticle)
-                    firstActiveCloseParticle = nextParticle;
-                else
-                    closeShatterParticles[previousParticle].nextActive =
-                        nextParticle;
-                if (activeCloseParticleCount > 0)
-                    --activeCloseParticleCount;
-            } else {
-                previousParticle = particleIndex;
-                if (!outsideLeft && !outsideRight && !outsideTop &&
-                    !outsideBottom) {
-                    DrawBlock(srcX, srcY, dstBaseX, dstBaseY, 1.0f);
-                }
-            }
-            particleIndex = nextParticle;
-        }
-    }
-    void RenderThanos(float progress) {
-        const int columns =
-            (W + blockSizeSetting - 1) / blockSizeSetting;
-        const int rows =
-            (H + blockSizeSetting - 1) / blockSizeSetting;
-        const size_t expectedParticles =
-            static_cast<size_t>(columns) * static_cast<size_t>(rows);
-        if (closeThanosParticles.size() != expectedParticles ||
-            (firstActiveCloseParticle != kNoActiveCloseParticle &&
-             firstActiveCloseParticle >= closeThanosParticles.size())) {
-            return;
-        }
-        if (telemetryEnabled) {
-            telemetryCpuCloseParticleVisits += activeCloseParticleCount;
-            ++telemetryCpuCloseParticleFrames;
-        }
-
-        const int dstOffsetX = origLeft - boundLeft;
-        const int dstOffsetY = origTop - boundTop;
-        size_t rowStart = 0;
-        int srcY = 0;
-        uint32_t previousParticle = kNoActiveCloseParticle;
-        uint32_t particleIndex = firstActiveCloseParticle;
-        while (particleIndex != kNoActiveCloseParticle) {
-            CloseThanosParticle& particle =
-                closeThanosParticles[particleIndex];
-            const uint32_t nextParticle = particle.nextActive;
-            const float localProgress =
-                (progress - particle.startTime) /
-                AnimConstants::ThanosLifeSpan;
-            if (localProgress >= 1.0f) {
-                if (previousParticle == kNoActiveCloseParticle)
-                    firstActiveCloseParticle = nextParticle;
-                else
-                    closeThanosParticles[previousParticle].nextActive =
-                        nextParticle;
-                if (activeCloseParticleCount > 0)
-                    --activeCloseParticleCount;
-                particleIndex = nextParticle;
-                continue;
-            }
-            previousParticle = particleIndex;
-            while (static_cast<size_t>(particleIndex) >=
-                   rowStart + static_cast<size_t>(columns)) {
-                rowStart += static_cast<size_t>(columns);
-                srcY += blockSizeSetting;
-            }
-            const int srcX = static_cast<int>(
-                                 static_cast<size_t>(particleIndex) -
-                                 rowStart) *
-                             blockSizeSetting;
-            int dstBaseX = dstOffsetX + srcX;
-            int dstBaseY = dstOffsetY + srcY;
-            float currentAlphaMult = 1.0f;
-            if (localProgress > 0.0f) {
-                const float travel = localProgress;
-                const float travelSq = travel * travel;
-                dstBaseX += static_cast<int>(
-                    particle.windX * travel +
-                    particle.curveX * travelSq);
-                dstBaseY += static_cast<int>(
-                    particle.windY * travel +
-                    particle.curveY * travelSq);
-                currentAlphaMult = 1.0f - localProgress;
-            }
-            DrawBlock(srcX, srcY, dstBaseX, dstBaseY,
-                      currentAlphaMult);
-            particleIndex = nextParticle;
-        }
-    }
-    void RenderGlitch(float progress) {
-        if (!srcBits || !pBits || W < 1 || H < 1) return;
-        auto ihash = [](int x, int y) -> float {
-            uint32_t h = (uint32_t)(x * 374761393) ^ (uint32_t)(y * 668265263);
-            h = (h ^ (h >> 13)) * 1274126177u;
-            return (h & 0xFFFFu) / 65535.0f;
-        };
-        auto smoothstep01 = [](float e0, float e1, float x) -> float {
-            float t = Clamp((x - e0) / std::max(1e-5f, e1 - e0), 0.0f, 1.0f);
-            return t * t * (3.0f - 2.0f * t);
-        };
-        const float p = progress * progress * (3.0f - 2.0f * progress);
-        const int pBand = (int)floorf(p * 18.0f);
-        const int pTear = (int)floorf(p * 32.0f);
-        const int pMicro = (int)floorf(p * 64.0f);
-        const int pBreak = (int)floorf(p * 22.0f);
-        float alphaBase = 1.0f - smoothstep01(0.0f, 1.0f, p);
-        alphaBase *= 1.0f - smoothstep01(0.55f, 1.0f, p);
-        if (alphaBase <= 0.01f) return;
-        const float breakupCut = 1.0f - p * 0.92f;
-        const bool opaque = alphaBase >= 0.99f;
-        const int dstBaseX = origLeft - boundLeft;
-        const int dstBaseY = origTop - boundTop;
-        if (breakupCut >= 0.92f) {
-            for (int y = 0; y < H; ++y) {
-                const int lineId = (int)((float)y / (float)H * 70.0f);
-                const float bandMask = (ihash(lineId, pBand) >= 0.55f) ? 1.0f : 0.0f;
-                const float tear =
-                    (ihash((int)(lineId * 1.7f), pTear) - 0.5f) * 0.10f * bandMask;
-                const float micro =
-                    (ihash((int)((float)y / (float)H * 220.0f), pMicro) - 0.5f) * 0.025f;
-                const int sx = (int)((tear + micro) * (float)W);
-                DrawBlock(0, y, dstBaseX + sx, dstBaseY + y, alphaBase, W, 1);
-            }
-            return;
-        }
-        for (int y = 0; y < H; ++y) {
-            const int lineId = (int)((float)y / (float)H * 70.0f);
-            const float bandMask = (ihash(lineId, pBand) >= 0.55f) ? 1.0f : 0.0f;
-            const float tear =
-                (ihash((int)(lineId * 1.7f), pTear) - 0.5f) * 0.10f * bandMask;
-            const float micro =
-                (ihash((int)((float)y / (float)H * 220.0f), pMicro) - 0.5f) * 0.025f;
-            const int tearX = (int)((tear + micro) * (float)W);
-            const int dstY = dstBaseY + y;
-            if (dstY < 0 || dstY >= boundH) continue;
-            const BYTE* srcRow = srcBits + (size_t)y * srcStride;
-            BYTE* dstRow = pBits + (size_t)dstY * canvasStride;
-            for (int x = 0; x < W; ++x) {
-                if (ihash(x, y + pBreak * 17) > breakupCut) continue;
-                const int dstX = dstBaseX + x + tearX;
-                if (dstX < 0 || dstX >= boundW) continue;
-                const BYTE* src = srcRow + (size_t)x * 4;
-                BYTE* dst = dstRow + (size_t)dstX * 4;
-                if (opaque) {
-                    dst[0] = src[0];
-                    dst[1] = src[1];
-                    dst[2] = src[2];
-                    dst[3] = src[3];
-                } else {
-                    dst[0] = (BYTE)(src[0] * alphaBase);
-                    dst[1] = (BYTE)(src[1] * alphaBase);
-                    dst[2] = (BYTE)(src[2] * alphaBase);
-                    dst[3] = (BYTE)(src[3] * alphaBase);
-                }
-            }
-        }
-    }
-    void RenderCrtOff(float progress) {
-        const float squashEnd = AnimConstants::CrtSquashEnd;
-        const float zipEnd = AnimConstants::CrtZipEnd;
-        const float cx = (float)(origLeft - boundLeft) + (float)W * 0.5f;
-        const float cy = (float)(origTop - boundTop) + (float)H * 0.5f;
-        if (progress < squashEnd) {
-            const float u = progress / squashEnd;
-            const float punch = u * u * u;
-            const float minH = 2.0f;
-            const float dstHf = (float)H * (1.0f - punch) + minH * punch;
-            const int dstH = std::max(2, (int)(dstHf + 0.5f));
-            const int dstY = (int)(cy - (float)dstH * 0.5f);
-            const int dstX = origLeft - boundLeft;
-            const float bright = 1.0f + punch * 0.85f;
-            const float handoffStart = 10.0f;
-            float contentAlpha = 1.0f;
-            float beamAlpha = 0.0f;
-            if ((float)dstH < handoffStart) {
-                const float t = ((float)dstH - minH) / (handoffStart - minH);
-                contentAlpha = Clamp(t, 0.0f, 1.0f);
-                beamAlpha = 1.0f - contentAlpha;
-            }
-            if (contentAlpha > 0.02f) {
-                BlitVerticalSquash(dstX, dstY, dstH, contentAlpha, bright);
-            }
-            if (beamAlpha > 0.02f) {
-                DrawSharpCrtBeam(cx, cy, (float)W * 0.5f, beamAlpha);
-            }
-            return;
-        }
-        if (progress < zipEnd) {
-            const float u = (progress - squashEnd) / (zipEnd - squashEnd);
-            const float ease = u * u;
-            const float halfLen = (float)W * 0.5f * (1.0f - ease) + 1.0f * ease;
-            DrawSharpCrtBeam(cx, cy, halfLen, 1.0f);
-            return;
-        }
-        const float u = (progress - zipEnd) / std::max(0.01f, 1.0f - zipEnd);
-        const float decay = 1.0f - u;
-        if (decay > 0.02f) DrawSharpCrtDot(cx, cy, decay * decay);
-    }
-    void RenderCrtOn(float progress) {
-        // Restoration reverses the CRT shutdown: dot -> phosphor line -> image.
-        RenderCrtOff(1.0f - Clamp(progress, 0.0f, 1.0f));
-    }
-    void RenderPixelMelt(float progress) {
-        const int stripCount = (int)meltLag.size();
-        if (!srcBits || !pBits || stripCount < 1 || W < 1 || H < 1) return;
-        const int baseX = origLeft - boundLeft;
-        const int baseY = origTop - boundTop;
-        const int maxH = std::max(1, boundH - 1);
-        auto sampleStrip = [&](float px, float& lag, float& spd) {
-            const float f = px / (float)kMeltStripPx - 0.5f;
-            int i0 = (int)floorf(f);
-            float u = f - (float)i0;
-            if (i0 < 0) {
-                i0 = 0;
-                u = 0.0f;
-            }
-            int i1 = i0 + 1;
-            if (i0 >= stripCount) i0 = stripCount - 1;
-            if (i1 >= stripCount) i1 = stripCount - 1;
-            u = u * u * (3.0f - 2.0f * u);
-            lag = meltLag[(size_t)i0] * (1.0f - u) + meltLag[(size_t)i1] * u;
-            spd = meltSpeed[(size_t)i0] * (1.0f - u) + meltSpeed[(size_t)i1] * u;
-        };
-        for (int x = 0; x < W; x += kMeltSubStepPx) {
-            const int bw = std::min(kMeltSubStepPx, W - x);
-            float lag = 0.0f, spd = 1.0f;
-            sampleStrip((float)x + 0.5f * (float)bw, lag, spd);
-            const int dstX = baseX + x;
-            if (dstX >= boundW || dstX + bw <= 0) continue;
-
-            if (progress <= lag) {
-                DrawBlock(x, 0, dstX, baseY, 1.0f, bw, H);
-                continue;
-            }
-            float t = (progress - lag) / std::max(0.2f, 1.0f - lag);
-            if (t > 1.0f) t = 1.0f;
-            t = t * t * t;
-            const float fall = t * (float)H * (0.75f + 0.95f * spd);
-            const float stretch = 1.0f + t * (0.3f + 0.7f * spd);
-            int dstH = std::max(1, (int)((float)H * stretch + 0.5f));
-            if (dstH > maxH) dstH = maxH;
-            float alpha = 1.0f;
-            if (t > 0.55f) {
-                const float u = (t - 0.55f) / 0.45f;
-                alpha = powf(1.0f - u, 1.2f);
-            }
-            if (alpha <= 0.02f) continue;
-
-            const int dstY = baseY + (int)fall;
-            if (dstY >= boundH || dstY + dstH <= 0) continue;
-            DrawBlockScaled(x, 0, bw, H, dstX, dstY, bw, dstH, alpha);
-        }
-    }
-    void RenderInkSplash(float progress) {
-        const float p = data->isRising ? progress : (1.0f - progress);
-        const float boundary = p * 1.7f - 0.15f;
-        const int dstBaseX = origLeft - boundLeft;
-        const int dstBaseY = origTop - boundTop;
-        for (const auto& b : shatterBlocks) {
-            const float diff = b.noiseY - boundary;
-            float t = (diff - 0.04f) / (-0.04f - 0.04f);
-            if (t < 0.0f) t = 0.0f;
-            if (t > 1.0f) t = 1.0f;
-            const float reveal = t * t * (3.0f - 2.0f * t);
-            if (reveal <= 0.01f) continue;
-            DrawBlock(b.srcX, b.srcY, dstBaseX + b.srcX, dstBaseY + b.srcY, reveal, b.bw, b.bh);
-        }
-    }
-    void RenderScorch(float progress) {
-        float p = data->isRising ? progress : (1.0f - progress);
-        p = p * p * (3.0f - 2.0f * p);
-        const int dstBaseX = origLeft - boundLeft;
-        const int dstBaseY = origTop - boundTop;
-        for (const auto& b : shatterBlocks) {
-            const float dist = hypotf(1.0f - b.dirX, 1.0f - b.dirY) * 1.55f - p * b.force;
-            const float r = p - b.noiseX;
-            const float reveal = (dist <= r) ? 1.0f : (p * p * p * p);
-            if (reveal <= 0.01f) continue;
-            DrawBlock(b.srcX, b.srcY, dstBaseX + b.srcX, dstBaseY + b.srcY, reveal, b.bw, b.bh);
-        }
-    }
-    void RenderSplinter(float progress) {
-        float p = data->isRising ? progress : (1.0f - progress);
-        p = p * p * (3.0f - 2.0f * p);
-        constexpr float fadeEdge = 0.08f;
-        auto smooth01 = [](float e0, float e1, float x) -> float {
-            float t = (x - e0) / (e1 - e0);
-            if (t < 0.0f) t = 0.0f;
-            if (t > 1.0f) t = 1.0f;
-            return t * t * (3.0f - 2.0f * t);
-        };
-        const float outer = smooth01(0.0f, fadeEdge, p);
-        const float endFill = smooth01(1.0f - fadeEdge, 1.0f, p);
-        const int dstBaseX = origLeft - boundLeft;
-        const int dstBaseY = origTop - boundTop;
-        for (const auto& b : shatterBlocks) {
-            const float r = p - b.noiseX;
-            const float hard = (b.noiseY <= r) ? 1.0f : 0.0f;
-            const float inner = hard + (1.0f - hard) * endFill;
-            const float reveal = outer * inner;
-            if (reveal <= 0.01f) continue;
-            DrawBlock(b.srcX, b.srcY, dstBaseX + b.srcX, dstBaseY + b.srcY, reveal, b.bw, b.bh);
-        }
-    }
-    void RenderMirage(float progress) {
-        float p = data->isRising ? progress : (1.0f - progress);
-        p = p * p * (3.0f - 2.0f * p);
-        const float inv = 1.0f - p;
-        if (p <= 0.01f) return;
-        const int dstBaseX = origLeft - boundLeft;
-        const int dstBaseY = origTop - boundTop;
-        for (const auto& b : shatterBlocks) {
-            const float su = b.dirX + inv * b.force;
-            const float sv = b.dirY + inv * b.noiseX;
-            int sx = (int)(su * (float)W - 0.5f * (float)b.bw);
-            int sy = (int)(sv * (float)H - 0.5f * (float)b.bh);
-            if (sx < 0) sx = 0;
-            if (sy < 0) sy = 0;
-            if (sx > W - b.bw) sx = W - b.bw;
-            if (sy > H - b.bh) sy = H - b.bh;
-            DrawBlock(sx, sy, dstBaseX + b.srcX, dstBaseY + b.srcY, p, b.bw, b.bh);
-        }
-    }
-    void RenderStipple(float progress) {
-        float p = data->isRising ? progress : (1.0f - progress);
-        p = p * p * (3.0f - 2.0f * p);
-        const int dstBaseX = origLeft - boundLeft;
-        const int dstBaseY = origTop - boundTop;
-        for (const auto& b : shatterBlocks) {
-            const float threshold = p / b.force;
-            if (b.noiseY > threshold) continue;
-            DrawBlock(b.srcX, b.srcY, dstBaseX + b.srcX, dstBaseY + b.srcY, 1.0f, b.bw, b.bh);
-        }
-    }
-    QuadFrame CalculateSwellFrame(float progress) const {
-        const float t = data->isRising ? (1.0f - progress) : progress;
-        const float u = 1.0f - t;
-        const float eased = 1.0f - u * u * u;
-        const float scale = 1.0f + 0.18f * eased;
-        float opacity = data->isRising
-                            ? progress * progress * (3.0f - 2.0f * progress)
-                            : 1.0f - eased;
-        if (data->isRising && opacity < 0.04f) opacity = 0.04f;
-        const int dstW = std::max(1, (int)((float)W * scale + 0.5f));
-        const int dstH = std::max(1, (int)((float)H * scale + 0.5f));
-        const int dstX = (origLeft - boundLeft) + (W - dstW) / 2;
-        const int dstY = (origTop - boundTop) + (H - dstH) / 2;
-        return {dstX, dstY, dstW, dstH, opacity};
-    }
-    void RenderSwell(float progress, float& fade) {
-        const QuadFrame frame = CalculateSwellFrame(progress);
-        fade = frame.opacity;
-        DrawBlockScaled(0, 0, W, H, frame.x, frame.y, frame.width,
-                        frame.height, 1.0f);
-    }
-    QuadFrame CalculateWin10Frame(float progress) const {
-        if (progress < 0.0f) progress = 0.0f;
-        if (progress > 1.0f) progress = 1.0f;
-        float e = 0.0f;
-        float opacity = 1.0f;
-        if (data->isRising) {
-            float inv = 1.0f - progress;
-            e = 1.0f - (inv * inv * inv);
-            opacity = progress / 0.35f;
-            if (opacity > 1.0f) opacity = 1.0f;
-        } else {
-            e = progress * progress;
-            opacity = 1.0f - (progress * progress);
-            if (opacity < 0.0f) opacity = 0.0f;
-        }
-        const float fullL = (float)origLeft;
-        const float fullT = (float)origTop;
-        const float fullR = (float)(origLeft + W);
-        const float fullB = (float)(origTop + H);
-        const bool horizontalTaskbar =
-            IsHorizontalTaskbar(taskbarEdge);
-        const float btnW =
-            (horizontalTaskbar ? 48.0f : 40.0f) * taskbarDpiScale;
-        const float btnH =
-            (horizontalTaskbar ? 40.0f : 48.0f) * taskbarDpiScale;
-        const float tbCenterX = taskbarButtonCenterX;
-        const float tbCenterY = taskbarButtonCenterY;
-        float curL, curT, curR, curB;
-        if (data->isRising) {
-            const float startScale = 0.85f;
-            const float travelRatio = 0.12f;
-            float fullCenterX = fullL + W * 0.5f;
-            float fullCenterY = fullT + H * 0.5f;
-            float startCenterX = fullCenterX + (tbCenterX - fullCenterX) * travelRatio;
-            float startCenterY = fullCenterY + (tbCenterY - fullCenterY) * travelRatio;
-            float startW = W * startScale;
-            float startH = H * startScale;
-            float startL = startCenterX - startW * 0.5f;
-            float startT = startCenterY - startH * 0.5f;
-            float startR = startCenterX + startW * 0.5f;
-            float startB = startCenterY + startH * 0.5f;
-            curL = startL + (fullL - startL) * e;
-            curT = startT + (fullT - startT) * e;
-            curR = startR + (fullR - startR) * e;
-            curB = startB + (fullB - startB) * e;
-        } else {
-            const float endScaleMult = 1.6f; 
-            const float endW = btnW * endScaleMult;
-            const float endH = btnH * endScaleMult;
-            const float endL = tbCenterX - endW * 0.5f;
-            const float endT = tbCenterY - endH * 0.5f;
-            const float endR = tbCenterX + endW * 0.5f;
-            const float endB = tbCenterY + endH * 0.5f;
-            curL = fullL + (endL - fullL) * e;
-            curT = fullT + (endT - fullT) * e;
-            curR = fullR + (endR - fullR) * e;
-            curB = fullB + (endB - fullB) * e;
-        }
-        const int outX = (int)floorf(curL) - boundLeft;
-        const int outY = (int)floorf(curT) - boundTop;
-        const int outW = std::max(1, (int)ceilf(curR - curL));
-        const int outH = std::max(1, (int)ceilf(curB - curT));
-        return {outX, outY, outW, outH, opacity};
-    }
-    void RenderWin10MinRestore(float progress, float& fade) {
-        const QuadFrame frame = CalculateWin10Frame(progress);
-        fade = frame.opacity;
-        DrawBlockScaled(0, 0, W, H, frame.x, frame.y, frame.width,
-                        frame.height, 1.0f);
-    }
-    void RenderMinimizeRestore(float progress, float& fade) {
-        float tt = data->isRising ? (1.0f - progress) : progress;
-        if (tt > 0.8f) fade = (1.0f - tt) / 0.2f;
-        if (fade < 0.0f) fade = 0.0f;
-        if (fade > 1.0f) fade = 1.0f;
-        const bool horizontalTaskbar =
-            IsHorizontalTaskbar(taskbarEdge);
-        const bool leadingEdge = taskbarEdge == TaskbarEdge::Top ||
-                                 taskbarEdge == TaskbarEdge::Left;
-        const int axisSize = horizontalTaskbar ? H : W;
-        for (int k = 0; k <= axisSize; ++k) {
-            const float axis = static_cast<float>(k) /
-                               static_cast<float>(axisSize);
-            const float edgeCoordinate = leadingEdge ? 1.0f - axis : axis;
-            const float e = MorphAt(edgeCoordinate, tt);
-            const float sourceAxis = horizontalTaskbar
-                ? static_cast<float>(origTop) + H * axis
-                : static_cast<float>(origLeft) + W * axis;
-            const float dockAxis = horizontalTaskbar ? dockY : dockXf;
-            axisBounds[k] = sourceAxis + (dockAxis - sourceAxis) * e;
-        }
-
-        int segment = 0;
-        const int canvasAxisSize = horizontalTaskbar ? boundH : boundW;
-        for (int canvasAxis = 0; canvasAxis < canvasAxisSize; ++canvasAxis) {
-            const float screenAxis = static_cast<float>(
-                                         canvasAxis +
-                                         (horizontalTaskbar ? boundTop
-                                                            : boundLeft)) +
-                                     0.5f;
-            if (screenAxis < axisBounds.front() ||
-                screenAxis >= axisBounds.back()) {
-                continue;
-            }
-            while (segment < axisSize - 1 &&
-                   axisBounds[segment + 1] <= screenAxis) {
-                ++segment;
-            }
-            const float segmentSize =
-                axisBounds[segment + 1] - axisBounds[segment];
-            const float fraction = segmentSize > 1e-4f
-                ? (screenAxis - axisBounds[segment]) / segmentSize
-                : 0.0f;
-            const float axis =
-                (static_cast<float>(segment) + fraction) /
-                static_cast<float>(axisSize);
-            const float edgeCoordinate = leadingEdge ? 1.0f - axis : axis;
-            const float morph = MorphAt(edgeCoordinate, tt);
-            const float crossSourceSize =
-                static_cast<float>(horizontalTaskbar ? W : H);
-            const float crossSize =
-                std::max(1.0f,
-                         crossSourceSize +
-                             (neckW - crossSourceSize) * morph);
-            const float sourceCenter =
-                horizontalTaskbar ? origCenterX : origCenterY;
-            const float dockCenter = horizontalTaskbar ? dockXf : dockY;
-            const float crossCenter =
-                sourceCenter + (dockCenter - sourceCenter) * morph;
-            const float crossCanvasStart =
-                crossCenter - crossSize * 0.5f -
-                static_cast<float>(horizontalTaskbar ? boundLeft
-                                                     : boundTop);
-            int crossStart = std::max(0, static_cast<int>(crossCanvasStart));
-            int crossEnd = std::min(
-                horizontalTaskbar ? boundW : boundH,
-                static_cast<int>(crossCanvasStart + crossSize) + 1);
-            const float inverseCrossSize = 1.0f / crossSize;
-
-            if (horizontalTaskbar) {
-                int sourceY = Clamp(
-                    static_cast<int>(axis * H), 0, H - 1);
-                const BYTE* sourceRow =
-                    srcBits + static_cast<size_t>(sourceY) * srcStride;
-                uint32_t* destinationRow = reinterpret_cast<uint32_t*>(
-                    pBits + static_cast<size_t>(canvasAxis) * canvasStride);
-                for (int x = crossStart; x < crossEnd; ++x) {
-                    const float u =
-                        (static_cast<float>(x) + 0.5f -
-                         crossCanvasStart) * inverseCrossSize;
-                    if (u < 0.0f || u >= 1.0f) continue;
-                    const int sourceX = Clamp(
-                        static_cast<int>(u * W), 0, W - 1);
-                    destinationRow[x] =
-                        reinterpret_cast<const uint32_t*>(sourceRow)[sourceX];
-                }
-            } else {
-                const int sourceX = Clamp(
-                    static_cast<int>(axis * W), 0, W - 1);
-                for (int y = crossStart; y < crossEnd; ++y) {
-                    const float v =
-                        (static_cast<float>(y) + 0.5f -
-                         crossCanvasStart) * inverseCrossSize;
-                    if (v < 0.0f || v >= 1.0f) continue;
-                    const int sourceY = Clamp(
-                        static_cast<int>(v * H), 0, H - 1);
-                    const uint32_t* sourceRow =
-                        reinterpret_cast<const uint32_t*>(
-                            srcBits + static_cast<size_t>(sourceY) *
-                                          srcStride);
-                    uint32_t* destinationRow =
-                        reinterpret_cast<uint32_t*>(
-                            pBits + static_cast<size_t>(y) * canvasStride);
-                    destinationRow[canvasAxis] = sourceRow[sourceX];
-                }
-            }
-        }
-    }
-    void SetAnimationWindowCloak(BOOL cloak) {
-        if (!data || !IsWindow(data->hRealWnd)) return;
-        // A bounded caller wait can expire before a delayed first frame. A
-        // synchronous hide which already completed must not acquire a late
-        // cloak after its caller has restored the real window's DWM state.
-        if (cloak && data->closeMsg == ANIM_CALLER_SW_HIDE &&
-            !IsWindowVisible(data->hRealWnd)) {
-            return;
-        }
-        if (data->isClosing && data->alphaOnlyCloseCompatibility) {
-            SetExcelCloseTransparency(data->hRealWnd, cloak);
-            return;
-        }
-        SetWindowCloak(data->hRealWnd, cloak);
-    }
-public:
-    AnimationEngine(WindowAnimData* d) {
-        data = d;
-        telemetryEnabled =
-            g_performanceTelemetry.load(std::memory_order_relaxed);
-        telemetryInitialClosing = data->isClosing != FALSE;
-        telemetryInitialRising = data->isRising != FALSE;
-        telemetryLaunch = data->launchAnimationToken != 0;
-        if (telemetryEnabled) {
-            LARGE_INTEGER frequency{};
-            LARGE_INTEGER start{};
-            if (QueryPerformanceFrequency(&frequency) &&
-                QueryPerformanceCounter(&start)) {
-                telemetryFrequency = frequency.QuadPart;
-                telemetryStartTick = start.QuadPart;
-            } else {
-                telemetryEnabled = false;
-            }
-        }
-        W = data->width;
-        H = data->height;
-        origLeft = data->targetRect.left;
-        origTop  = data->targetRect.top;
-        origCenterX = (float)origLeft + W * 0.5f;
-        origCenterY = (float)origTop + H * 0.5f;
-        HMONITOR hMon = MonitorFromWindow(data->hRealWnd, MONITOR_DEFAULTTONEAREST);
-        if (hMon) {
-            MONITORINFOEXW monitorInfo{};
-            monitorInfo.cbSize = sizeof(monitorInfo);
-            if (GetMonitorInfoW(
-                    hMon,
-                    reinterpret_cast<MONITORINFO*>(&monitorInfo))) {
-                DEVMODEW displayMode{};
-                displayMode.dmSize = sizeof(displayMode);
-                if (EnumDisplaySettingsW(
-                        monitorInfo.szDevice, ENUM_CURRENT_SETTINGS,
-                        &displayMode) &&
-                    (displayMode.dmFields & DM_DISPLAYFREQUENCY) &&
-                    displayMode.dmDisplayFrequency > 1) {
-                    displayRefreshHz = displayMode.dmDisplayFrequency;
-                }
-            }
-        }
-        MONITORINFO mmi{};
-        mmi.cbSize = sizeof(mmi);
-        if (!hMon || !GetMonitorInfoW(hMon, &mmi)) {
-            mmi.rcMonitor.left = 0; mmi.rcMonitor.top = 0;
-            mmi.rcMonitor.right = GetSystemMetrics(SM_CXSCREEN);
-            mmi.rcMonitor.bottom = GetSystemMetrics(SM_CYSCREEN);
-            mmi.rcWork = mmi.rcMonitor;
-        }
-        HWND hTray = FindTaskbarForMonitor(hMon ? hMon : data->hMon);
-        taskbarDpiScale =
-            static_cast<float>(GetAnimationSpaceDpi(data->hRealWnd, hTray)) /
-            96.0f;
-        const int monLeft = (int)mmi.rcMonitor.left, monTop = (int)mmi.rcMonitor.top;
-        const int monRight = (int)mmi.rcMonitor.right, monBottom = (int)mmi.rcMonitor.bottom;
-        const TaskbarGeometry taskbarGeometry = GetTaskbarGeometry(
-            data->hRealWnd, hTray, mmi,
-            data->requestedUnhide || data->deferredMinimize);
-        taskbarEdge = taskbarGeometry.edge;
-        const bool horizontalTaskbar =
-            IsHorizontalTaskbar(taskbarEdge);
-        const float buttonWidth =
-            (horizontalTaskbar ? 48.0f : 40.0f) * taskbarDpiScale;
-        const float buttonHeight =
-            (horizontalTaskbar ? 40.0f : 48.0f) * taskbarDpiScale;
-        const float buttonInset = 2.0f * taskbarDpiScale;
-        if (horizontalTaskbar) {
-            dockXf = static_cast<float>(
-                Clamp(data->targetDockX, monLeft, monRight));
-            dockY = Clamp(taskbarGeometry.innerEdge,
-                          static_cast<float>(monTop),
-                          static_cast<float>(monBottom));
-            taskbarButtonCenterX = dockXf;
-            taskbarButtonCenterY =
-                dockY + (taskbarEdge == TaskbarEdge::Bottom
-                             ? buttonInset + buttonHeight * 0.5f
-                             : -buttonInset - buttonHeight * 0.5f);
-        } else {
-            dockXf = Clamp(taskbarGeometry.innerEdge,
-                           static_cast<float>(monLeft),
-                           static_cast<float>(monRight));
-            dockY = static_cast<float>(
-                Clamp(data->targetDockY, monTop, monBottom));
-            taskbarButtonCenterX =
-                dockXf + (taskbarEdge == TaskbarEdge::Right
-                              ? buttonInset + buttonWidth * 0.5f
-                              : -buttonInset - buttonWidth * 0.5f);
-            taskbarButtonCenterY = dockY;
-        }
-        taskbarButtonCenterX = Clamp(
-            taskbarButtonCenterX, static_cast<float>(monLeft),
-            static_cast<float>(monRight));
-        taskbarButtonCenterY = Clamp(
-            taskbarButtonCenterY, static_cast<float>(monTop),
-            static_cast<float>(monBottom));
-        neckW = Clamp((horizontalTaskbar ? W : H) * 0.03f,
-                      12.0f, 60.0f);
-        blockSizeSetting = std::max(1, g_shatterBlockSize.load(std::memory_order_relaxed));
-        if (data->isClosing) {
-            closeEffect = data->effectStyle;
-            minRestoreEffect = 0;
-        } else {
-            closeEffect = 1;
-            minRestoreEffect = data->effectStyle;
-        }
-        keepGhostBelowTaskbar =
-            !data->isClosing && (minRestoreEffect == 0 || minRestoreEffect == 7);
-        if (data->isClosing) {
-            int padLeft = 0, padTop = 0, padRight = 0, padBottom = 0;
-            if (closeEffect == 0) {
-                int maxShatter = (int)(AnimConstants::ShatterTravelBase + AnimConstants::ShatterTravelMult) + 50;
-                padLeft = padTop = padRight = padBottom = maxShatter;
-            } else if (closeEffect == 1) {
-                padLeft = W / 2;
-                padRight = (int)(W * 1.5f);
-                padTop = H / 2;
-                padBottom = (int)(H * 1.5f);
-            } else if (closeEffect == 3) {
-                padLeft = padRight = (int)(W * 0.14f) + 8;
-                padTop = padBottom = 2;
-            } else if (closeEffect == 4) {
-                padLeft = padTop = padRight = padBottom = 4;
-            } else if (closeEffect == 5) {
-                padLeft = padRight = 4;
-                padTop = 2;
-                padBottom = (int)(H * 0.9f) + 16;
-            } else {
-                padLeft = padTop = padRight = padBottom = 50;
-            }
-            boundLeft = std::max(monLeft, origLeft - padLeft);
-            boundTop = std::max(monTop, origTop - padTop);
-            int boundRight = std::min(monRight, origLeft + W + padRight);
-            int boundBottom = std::min(monBottom, origTop + H + padBottom);
-            boundW = boundRight - boundLeft;
-            boundH = boundBottom - boundTop;
-        } else if (minRestoreEffect >= 1 && minRestoreEffect <= 5) {
-            boundLeft = Clamp(origLeft, monLeft, monRight - 1);
-            boundTop = Clamp(origTop, monTop, monBottom - 1);
-            boundW = std::min(W, monRight - boundLeft);
-            boundH = std::min(H, monBottom - boundTop);
-        } else if (minRestoreEffect == 6) {
-            const int padX = (int)ceilf((float)W * 0.10f) + 2;
-            const int padY = (int)ceilf((float)H * 0.10f) + 2;
-            boundLeft = std::max(monLeft, origLeft - padX);
-            boundTop = std::max(monTop, origTop - padY);
-            const int boundRight = std::min(monRight, origLeft + W + padX);
-            const int boundBottom = std::min(monBottom, origTop + H + padY);
-            boundW = boundRight - boundLeft;
-            boundH = boundBottom - boundTop;
-        } else if (minRestoreEffect == 7) {
-            const int pad =
-                std::max(1, static_cast<int>(ceilf(8.0f * taskbarDpiScale)));
-            // RenderWin10MinRestore finishes at a 1.6x taskbar-button box, not
-            // at the button's center point. Include that complete endpoint in
-            // the ghost canvas so the last frames aren't clipped on any edge.
-            const float buttonW =
-                (horizontalTaskbar ? 48.0f : 40.0f) * taskbarDpiScale;
-            const float buttonH =
-                (horizontalTaskbar ? 40.0f : 48.0f) * taskbarDpiScale;
-            const float targetHalfW = buttonW * 0.8f;
-            const float targetHalfH = buttonH * 0.8f;
-            const int targetLeft =
-                static_cast<int>(floorf(
-                    taskbarButtonCenterX - targetHalfW));
-            const int targetRight =
-                static_cast<int>(ceilf(
-                    taskbarButtonCenterX + targetHalfW));
-            const int targetTop =
-                static_cast<int>(floorf(
-                    taskbarButtonCenterY - targetHalfH));
-            const int targetBottom =
-                static_cast<int>(ceilf(
-                    taskbarButtonCenterY + targetHalfH));
-            boundLeft =
-                std::max(monLeft, std::min(origLeft, targetLeft) - pad);
-            const int boundRight = std::min(
-                monRight, std::max(origLeft + W, targetRight) + pad);
-            boundTop =
-                std::max(monTop, std::min(origTop, targetTop) - pad);
-            const int boundBottom = std::min(
-                monBottom, std::max(origTop + H, targetBottom) + pad);
-            boundW = boundRight - boundLeft;
-            boundH = boundBottom - boundTop;
-        } else if (minRestoreEffect == 8) {
-            // CRT collapse stays centered on the original window rectangle.
-            const int pad = 4;
-            boundLeft = std::max(monLeft, origLeft - pad);
-            boundTop = std::max(monTop, origTop - pad);
-            const int boundRight = std::min(monRight, origLeft + W + pad);
-            const int boundBottom = std::min(monBottom, origTop + H + pad);
-            boundW = boundRight - boundLeft;
-            boundH = boundBottom - boundTop;
-        } else {
-            // Genie bends rows for horizontal taskbars and columns for
-            // vertical taskbars. Its canvas is the exact union of the source
-            // rectangle and final neck, plus a tiny edge-side safety pad.
-            constexpr int genieBoundsSafetyPad = 2;
-            constexpr int genieEdgePad = 40;
-            int boundRight;
-            int boundBottom;
-            if (horizontalTaskbar) {
-                const int targetLeft = static_cast<int>(
-                    floorf(dockXf - neckW * 0.5f));
-                const int targetRight = static_cast<int>(
-                    ceilf(dockXf + neckW * 0.5f));
-                boundLeft = std::max(
-                    monLeft,
-                    std::min(origLeft, targetLeft) - genieBoundsSafetyPad);
-                boundRight = std::min(
-                    monRight,
-                    std::max(origLeft + W, targetRight) +
-                        genieBoundsSafetyPad);
-                boundTop = std::max(
-                    monTop,
-                    std::min(origTop,
-                             static_cast<int>(floorf(dockY)) -
-                                 (taskbarEdge == TaskbarEdge::Top
-                                      ? genieEdgePad
-                                      : 0)));
-                boundBottom = std::min(
-                    monBottom,
-                    std::max(origTop + H,
-                             static_cast<int>(ceilf(dockY)) +
-                                 (taskbarEdge == TaskbarEdge::Bottom
-                                      ? genieEdgePad
-                                      : 0)));
-            } else {
-                const int targetTop = static_cast<int>(
-                    floorf(dockY - neckW * 0.5f));
-                const int targetBottom = static_cast<int>(
-                    ceilf(dockY + neckW * 0.5f));
-                boundTop = std::max(
-                    monTop,
-                    std::min(origTop, targetTop) - genieBoundsSafetyPad);
-                boundBottom = std::min(
-                    monBottom,
-                    std::max(origTop + H, targetBottom) +
-                        genieBoundsSafetyPad);
-                boundLeft = std::max(
-                    monLeft,
-                    std::min(origLeft,
-                             static_cast<int>(floorf(dockXf)) -
-                                 (taskbarEdge == TaskbarEdge::Left
-                                      ? genieEdgePad
-                                      : 0)));
-                boundRight = std::min(
-                    monRight,
-                    std::max(origLeft + W,
-                             static_cast<int>(ceilf(dockXf)) +
-                                 (taskbarEdge == TaskbarEdge::Right
-                                      ? genieEdgePad
-                                      : 0)));
-            }
-            boundW = boundRight - boundLeft;
-            boundH = boundBottom - boundTop;
-        }
-        if (boundW < 1) boundW = 1;
-        if (boundH < 1) boundH = 1;
-        totalMs = (double)data->durationMs;
-    }
-    void ShowGhostNoActivate() {
-        if (keepGhostBelowTaskbar) {
-            HWND hTray = FindTaskbarForMonitor(data->hMon);
-            if (hTray && IsWindow(hTray) &&
-                SetWindowPos_Original(
-                    hGhost, hTray, 0, 0, 0, 0,
-                    SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE | SWP_NOOWNERZORDER |
-                        SWP_SHOWWINDOW)) {
-                return;
-            }
-        }
-        ShowWindow_Original(hGhost, SW_SHOWNOACTIVATE);
-    }
-    bool CreateGhostWindow(bool gpuGhost,
-                           bool gpuLayeredPresentation = false) {
-        const bool layeredGhost =
-            !gpuGhost || gpuLayeredPresentation;
-        const DWORD ghostExStyle =
-            (layeredGhost ? WS_EX_LAYERED : WS_EX_NOREDIRECTIONBITMAP) |
-            WS_EX_TOOLWINDOW | WS_EX_TOPMOST | WS_EX_NOACTIVATE |
-            WS_EX_TRANSPARENT;
-        hGhost = CreateWindowExW(
-            ghostExStyle,
-            L"STATIC", NULL, WS_POPUP,
-            boundLeft, boundTop, boundW, boundH,
-            NULL, NULL, NULL, NULL);
-        if (!hGhost) return false;
-        g_animationGhostCount.fetch_add(1, std::memory_order_acq_rel);
-        ghostCounted = true;
-        SetPropW(hGhost, kPropAnimationGhost,
-                 reinterpret_cast<HANDLE>(data->hRealWnd));
-        if (keepGhostBelowTaskbar) {
-            SetPropW(hGhost, L"NonRudeHWND", reinterpret_cast<HANDLE>(TRUE));
-        }
-        return true;
-    }
-    void DestroyGhostForBackendSwitch() {
-        if (hGhost) {
-            DestroyWindow_Original(hGhost);
-            hGhost = nullptr;
-        }
-        if (ghostCounted) {
-            g_animationGhostCount.fetch_sub(1, std::memory_order_acq_rel);
-            ghostCounted = false;
-        }
-    }
-    bool InitializeCpuRenderer() {
-        hSrcDC = CreateCompatibleDC(hScreenDC);
-        if (!hSrcDC) return false;
-        hOldSrc = (HBITMAP)SelectObject(hSrcDC, data->hBitmap);
-        if (!hOldSrc || hOldSrc == HGDI_ERROR) return false;
-        hSrcDib = CreateDib32(hScreenDC, W, H, (void**)&srcBits);
-        if (!hSrcDib || !srcBits) return false;
-        hSrcDibDC = CreateCompatibleDC(hScreenDC);
-        if (!hSrcDibDC) return false;
-        hOldSrcDib = (HBITMAP)SelectObject(hSrcDibDC, hSrcDib);
-        if (!hOldSrcDib || hOldSrcDib == HGDI_ERROR) return false;
-        BitBlt(hSrcDibDC, 0, 0, W, H, hSrcDC, 0, 0, SRCCOPY);
-        GdiFlush();
-        SelectObject(hSrcDC, hOldSrc);
-        hOldSrc = nullptr;
-        DeleteDC(hSrcDC);
-        hSrcDC = nullptr;
-        if (data->isClosing && data->hBitmap) {
-            // The CPU renderer now owns an independent source DIB. A close
-            // cannot reverse into a restore, so release the capture promptly.
-            DeleteObject(data->hBitmap);
-            data->hBitmap = nullptr;
-            data->pBits = nullptr;
-        }
-        srcStride = W * 4;
-        hCanvas = CreateDib32(hScreenDC, boundW, boundH, (void**)&pBits);
-        if (!hCanvas || !pBits) return false;
-        hCanvasDC = CreateCompatibleDC(hScreenDC);
-        if (!hCanvasDC) return false;
-        hOldCanvas = (HBITMAP)SelectObject(hCanvasDC, hCanvas);
-        if (!hOldCanvas || hOldCanvas == HGDI_ERROR) return false;
-        canvasStride = boundW * 4;
-        canvasBytes = (size_t)boundW * 4 * boundH;
-        if (!data->isClosing && minRestoreEffect == 0) {
-            axisBounds.resize(
-                (IsHorizontalTaskbar(taskbarEdge) ? H : W) + 1);
-        }
-        return true;
-    }
-    bool Initialize() {
-        hScreenDC = GetDC(NULL);
-        if (!hScreenDC) return false;
-
-        const uint32_t requiredGpuPipelines = RequiredGpuPipelines(
-            data->isClosing != FALSE,
-            data->isClosing ? closeEffect : minRestoreEffect);
-        const bool gpuSupportedEffect =
-            requiredGpuPipelines != GpuPipelineNone;
-        const bool gpuCloseCompatibilityFallback =
-            data->isClosing &&
-            RequiresCpuClosePresentation(data->hRealWnd);
-        const bool gpuLaunchCompatibilityFallback =
-            data->launchAnimationToken &&
-            RequiresCpuLaunchPresentation(data->hRealWnd);
-        const bool gpuProcessCompatibilityFallback =
-            RequiresCpuAnimationRendererProcess();
-        const bool hybridGpuSelected =
-            data->isClosing
-                ? ShouldUseHybridGpuClose(closeEffect, blockSizeSetting, W, H)
-                : data->isRising != FALSE;
-        const bool gpuToggleEnabled =
-            data->isClosing
-                ? g_closeGpuAcceleration.load(std::memory_order_relaxed)
-                : g_gpuAcceleration.load(std::memory_order_relaxed);
-        const bool gpuConfigured =
-            hybridGpuSelected && gpuSupportedEffect &&
-            !gpuCloseCompatibilityFallback &&
-            !gpuLaunchCompatibilityFallback &&
-            !gpuProcessCompatibilityFallback &&
-            gpuToggleEnabled &&
-            !GetSystemMetrics(SM_REMOTESESSION);
-        if (telemetryEnabled && gpuToggleEnabled && gpuSupportedEffect &&
-            !hybridGpuSelected) {
-            if (data->isClosing) {
-                Wh_Log(L"Animation renderer=CPU hybrid selection hwnd=%p "
-                       L"style=%d source=%dx%d block_px=%d",
-                       data->hRealWnd, closeEffect, W, H,
-                       blockSizeSetting);
-            } else {
-                Wh_Log(L"Animation renderer=CPU hybrid selection hwnd=%p "
-                       L"style=%d standalone minimize",
-                       data->hRealWnd, minRestoreEffect);
-            }
-        }
-        if (telemetryEnabled && hybridGpuSelected &&
-            gpuCloseCompatibilityFallback &&
-            gpuSupportedEffect && gpuToggleEnabled) {
-            Wh_Log(L"Animation renderer=CPU compatibility fallback hwnd=%p "
-                   L"style=%d backdrop-sensitive close",
-                   data->hRealWnd, closeEffect);
-        }
-        if (telemetryEnabled && hybridGpuSelected &&
-            gpuLaunchCompatibilityFallback &&
-            gpuSupportedEffect && gpuToggleEnabled) {
-            Wh_Log(L"Animation renderer=CPU compatibility fallback hwnd=%p "
-                   L"style=%d utility launch",
-                   data->hRealWnd, minRestoreEffect);
-        }
-        if (telemetryEnabled && hybridGpuSelected &&
-            gpuProcessCompatibilityFallback &&
-            gpuSupportedEffect && gpuToggleEnabled) {
-            Wh_Log(L"Animation renderer=CPU compatibility fallback hwnd=%p "
-                   L"GPU-incompatible process",
-                   data->hRealWnd);
-        }
-        if (gpuConfigured) {
-            if (IsGpuServiceReady(requiredGpuPipelines)) {
-                // Hybrid selection reaches this path for a rising
-                // restore/launch or a qualifying dense close. Rising effects
-                // use DirectComposition; closes use the atomic layered GPU
-                // presenter. Standalone minimizes were intentionally routed
-                // to CPU above. A live reversal keeps the presenter on which
-                // it began instead of swapping resources mid-animation.
-                const bool gpuLayeredPresentation =
-                    data->isClosing != FALSE;
-                if (CreateGhostWindow(
-                        /*gpuGhost=*/true,
-                        gpuLayeredPresentation) &&
-                    gpuPresenter.Initialize(
-                        hGhost, hScreenDC, data->pBits, W, H, boundW, boundH,
-                        // Restore swap chains can use DXGI's waitable
-                        // frame-latency object. Layered closes use their
-                        // atomic HWND presentation path instead.
-                        /*framePaced=*/!gpuLayeredPresentation,
-                        /*useLayeredPresentation=*/gpuLayeredPresentation,
-                        requiredGpuPipelines)) {
-                    bool effectFieldReady = true;
-                    if (!data->isClosing && minRestoreEffect >= 1 &&
-                        minRestoreEffect <= 3) {
-                        int fieldStep = 1;
-                        int blockSize = 1;
-                        if (minRestoreEffect == 1) {
-                            fieldStep =
-                                std::max(8, std::min(W, H) / 48);
-                            blockSize = std::max(4, fieldStep / 2);
-                        } else {
-                            blockSize = Clamp(
-                                std::min(W, H) / 96, 2, 5);
-                        }
-                        effectFieldReady =
-                            gpuPresenter.InitializeInplaceField(
-                                static_cast<uint32_t>(minRestoreEffect),
-                                blockSize, fieldStep);
-                    } else if (data->isClosing && closeEffect == 2) {
-                        effectFieldReady =
-                            gpuPresenter.InitializeInplaceField(
-                                8, blockSizeSetting, blockSizeSetting);
-                    }
-                    if (effectFieldReady) {
-                        usingGpuBackend = true;
-                        if (telemetryEnabled) {
-                            gpuPresenter.GetAdapterTelemetry(
-                                telemetryAdapterDescription,
-                                telemetryAdapterDedicatedVideoMemory);
-                            for (wchar_t& character :
-                                 telemetryAdapterDescription) {
-                                if (iswspace(character)) character = L'_';
-                            }
-                        }
-                        if (telemetryEnabled) {
-                            Wh_Log(
-                                L"Animation renderer=GPU presenter=%s hwnd=%p "
-                                L"style=%d",
-                                gpuPresenter.UsesLayeredPresentation()
-                                    ? L"layered"
-                                    : L"composition",
-                                data->hRealWnd,
-                                data->isClosing ? closeEffect
-                                                : minRestoreEffect);
-                        }
-                        return true;
-                    }
-                }
-                gpuPresenter.Reset();
-                DestroyGhostForBackendSwitch();
-            } else {
-                // A cold device/shader/swap-chain path can exceed the shell's
-                // first-frame handshake. Warm it on a separate registered
-                // worker and keep this animation on the proven CPU renderer.
-                RequestGpuWarmup(requiredGpuPipelines);
-            }
-        }
-
-        if (!CreateGhostWindow(/*gpuGhost=*/false)) return false;
-        usingGpuBackend = false;
-        return InitializeCpuRenderer();
-    }
-    bool IsUsingGpuBackend() const {
-        return usingGpuBackend;
-    }
-    bool IsPerformanceTelemetryEnabled() const {
-        return telemetryEnabled;
-    }
-    void SetTelemetryInitializeTicks(LONGLONG ticks) {
-        if (telemetryEnabled) telemetryInitializeTicks = std::max<LONGLONG>(0, ticks);
-    }
-    void SetTelemetryPrecalcTicks(LONGLONG ticks) {
-        if (telemetryEnabled) telemetryPrecalcTicks = std::max<LONGLONG>(0, ticks);
-    }
-    void RecordTelemetryFrameSample(LONGLONG startTick, bool presented) {
-        if (!telemetryEnabled || startTick <= 0) return;
-        LARGE_INTEGER end{};
-        QueryPerformanceCounter(&end);
-        const LONGLONG elapsed = std::max<LONGLONG>(
-            0, end.QuadPart - startTick);
-        ++telemetryFrameAttempts;
-        if (presented) {
-            ++telemetryFramesPresented;
-        } else {
-            telemetryPresentationFailed = true;
-        }
-        telemetryRenderTicks += elapsed;
-        telemetryWorstRenderTicks =
-            std::max(telemetryWorstRenderTicks, elapsed);
-    }
-    bool TelemetryPresentationFailed() const {
-        return telemetryPresentationFailed;
-    }
-    void LogPerformanceTelemetry(PCWSTR status) const {
-        if (!telemetryEnabled || !telemetryFrequency ||
-            !telemetryStartTick) {
-            return;
-        }
-        LARGE_INTEGER now{};
-        QueryPerformanceCounter(&now);
-        const auto ticksToMs = [this](LONGLONG ticks) {
-            return static_cast<double>(ticks) * 1000.0 /
-                   static_cast<double>(telemetryFrequency);
-        };
-        const PCWSTR kind = telemetryInitialClosing
-                                ? L"close"
-                                : telemetryLaunch
-                                      ? L"launch"
-                                      : telemetryInitialRising ? L"restore"
-                                                               : L"minimize";
-        const int effectStyle = telemetryInitialClosing
-                                    ? closeEffect
-                                    : minRestoreEffect;
-        PCWSTR effect = L"unknown";
-        if (telemetryInitialClosing) {
-            static constexpr PCWSTR closeNames[] = {
-                L"shatter", L"thanos", L"perlin", L"glitch",
-                L"crt", L"melt"};
-            if (effectStyle >= 0 && effectStyle <
-                                        static_cast<int>(ARRAYSIZE(closeNames))) {
-                effect = closeNames[effectStyle];
-            }
-        } else {
-            static constexpr PCWSTR minRestoreNames[] = {
-                L"genie", L"ink", L"scorch", L"splinter",
-                L"mirage", L"stipple", L"swell", L"windows10"};
-            if (effectStyle >= 0 && effectStyle < static_cast<int>(
-                                                    ARRAYSIZE(minRestoreNames))) {
-                effect = minRestoreNames[effectStyle];
-            }
-        }
-        uint64_t blockCount = 0;
-        if (telemetryInitialClosing &&
-            (effectStyle >= 0 && effectStyle <= 2)) {
-            blockCount =
-                static_cast<uint64_t>((W + blockSizeSetting - 1) /
-                                      blockSizeSetting) *
-                static_cast<uint64_t>((H + blockSizeSetting - 1) /
-                                      blockSizeSetting);
-        }
-        const double firstFrameMs = telemetryFirstFrameTick
-                                        ? ticksToMs(telemetryFirstFrameTick -
-                                                    telemetryStartTick)
-                                        : -1.0;
-        const double averageFrameMs = telemetryFrameAttempts
-                                          ? ticksToMs(telemetryRenderTicks) /
-                                                telemetryFrameAttempts
-                                          : 0.0;
-        const double averageCpuClearMs = telemetryCpuClearSamples
-                                             ? ticksToMs(telemetryCpuClearTicks) /
-                                                   telemetryCpuClearSamples
-                                             : 0.0;
-        const double averageCpuEffectMs = telemetryCpuEffectSamples
-                                              ? ticksToMs(telemetryCpuEffectTicks) /
-                                                    telemetryCpuEffectSamples
-                                              : 0.0;
-        const double averageCpuPresentMs = telemetryCpuPresentSamples
-                                               ? ticksToMs(telemetryCpuPresentTicks) /
-                                                     telemetryCpuPresentSamples
-                                               : 0.0;
-        const double averagePacingWaitMs = telemetryPacingWaits
-                                               ? ticksToMs(
-                                                     telemetryPacingWaitTicks) /
-                                                     telemetryPacingWaits
-                                               : 0.0;
-        const double averageActiveParticlePercent =
-            initialCloseParticleCount && telemetryCpuCloseParticleFrames
-                ? static_cast<double>(telemetryCpuCloseParticleVisits) *
-                      100.0 /
-                      (static_cast<double>(initialCloseParticleCount) *
-                       telemetryCpuCloseParticleFrames)
-                : 0.0;
-        const double gpuMiB = usingGpuBackend
-                                  ? static_cast<double>(
-                                        gpuPresenter.EstimatedAllocationBytes()) /
-                                        (1024.0 * 1024.0)
-                                  : 0.0;
-        const PCWSTR adapter = usingGpuBackend
-                                   ? telemetryAdapterDescription.empty()
-                                         ? L"unknown"
-                                         : telemetryAdapterDescription.c_str()
-                                   : L"cpu";
-        PCWSTR particlePath = L"none";
-        if (telemetryInitialClosing) {
-            if (effectStyle == 2) {
-                particlePath = usingGpuBackend ? L"field"
-                                               : L"compact-field";
-            } else if (effectStyle == 0 || effectStyle == 1) {
-                particlePath = usingGpuBackend
-                                   ? blockSizeSetting == 1 ? L"point"
-                                                           : L"quad"
-                                   : L"active-compact";
-            }
-        }
-        Wh_Log(
-            L"Perf summary hwnd=%p kind=%s effect=%s style=%d renderer=%s "
-            L"presenter=%s adapter=%s adapter_vram_mib=%.0f refresh_hz=%lu "
-            L"source=%dx%d canvas=%dx%d target_ms=%.0f gpu_mib=%.2f "
-            L"blocks=%.0f block_px=%d particle_path=%s "
-            L"init_ms=%.3f precalc_ms=%.3f first_ms=%.3f "
-            L"frames=%u/%u avg_frame_ms=%.3f worst_frame_ms=%.3f "
-            L"cpu_samples=%u/%u/%u avg_clear_ms=%.3f "
-            L"avg_effect_ms=%.3f avg_present_ms=%.3f "
-            L"worst_clear_ms=%.3f worst_effect_ms=%.3f "
-            L"worst_present_ms=%.3f "
-            L"active_avg_pct=%.1f active_final=%zu/%zu "
-            L"pace_wait_ms=%.3f reversals=%u total_ms=%.3f status=%s",
-            data->hRealWnd, kind, effect, effectStyle,
-            usingGpuBackend ? L"GPU" : L"CPU",
-            usingGpuBackend
-                ? gpuPresenter.UsesLayeredPresentation()
-                      ? L"layered"
-                      : L"composition"
-                : L"cpu",
-            adapter,
-            static_cast<double>(telemetryAdapterDedicatedVideoMemory) /
-                (1024.0 * 1024.0),
-            static_cast<unsigned long>(displayRefreshHz),
-            W, H, boundW, boundH,
-            totalMs, gpuMiB, static_cast<double>(blockCount),
-            blockSizeSetting, particlePath,
-            ticksToMs(telemetryInitializeTicks),
-            ticksToMs(telemetryPrecalcTicks), firstFrameMs,
-            telemetryFramesPresented, telemetryFrameAttempts,
-            averageFrameMs, ticksToMs(telemetryWorstRenderTicks),
-            telemetryCpuClearSamples, telemetryCpuEffectSamples,
-            telemetryCpuPresentSamples, averageCpuClearMs,
-            averageCpuEffectMs, averageCpuPresentMs,
-            ticksToMs(telemetryCpuWorstClearTicks),
-            ticksToMs(telemetryCpuWorstEffectTicks),
-            ticksToMs(telemetryCpuWorstPresentTicks),
-            averageActiveParticlePercent, activeCloseParticleCount,
-            initialCloseParticleCount, averagePacingWaitMs,
-            telemetryReversals,
-            ticksToMs(now.QuadPart - telemetryStartTick),
-            status ? status : L"unknown");
-    }
-    void OnFramePresented(bool synchronizeBeforeSignal) {
-        if (!firstFramePending) return;
-        ShowGhostNoActivate();
-        if ((!data->isRising || data->hiddenByCloak) &&
-            IsWindow(data->hRealWnd)) {
-            // Reassert the real-window side of the handoff when the first ghost
-            // frame is ready. This also covers cross-process Win+D restores,
-            // whose framework can rebuild its DWM surface during native restore.
-            SetAnimationWindowCloak(TRUE);
-            data->hiddenByCloak = TRUE;
-        }
-        const bool synchronizeRestoreHandoff =
-            data->isRising && data->hiddenByCloak;
-        if (synchronizeBeforeSignal || synchronizeRestoreHandoff) {
-            // Commit the complete source-to-ghost visibility handoff before
-            // signaling the initiating hook (when one is waiting). Without
-            // this flush a rising real window can leak below its first ghost.
-            FlushDwmOrYield();
-            firstFrameDwmSynchronized = true;
-        }
-        if (telemetryEnabled && !telemetryFirstFrameTick) {
-            LARGE_INTEGER firstFrame{};
-            QueryPerformanceCounter(&firstFrame);
-            telemetryFirstFrameTick = firstFrame.QuadPart;
-        }
-        firstFramePending = false;
-        if (data->hFirstFrameShown) SetEvent(data->hFirstFrameShown);
-    }
-    bool PresentCanvas(float fade) {
-        const LONGLONG presentStartTick = ReadTelemetryCounter();
-        POINT ptDst = {boundLeft, boundTop};
-        SIZE sz = {boundW, boundH};
-        POINT ptSrc = {0, 0};
-        BLENDFUNCTION bf;
-        bf.BlendOp = AC_SRC_OVER;
-        bf.BlendFlags = 0;
-        bf.SourceConstantAlpha = (BYTE)(255.0f * fade);
-        bf.AlphaFormat = AC_SRC_ALPHA;
-        const BOOL presented = UpdateLayeredWindow(
-            hGhost, hScreenDC, &ptDst, &sz, hCanvasDC, &ptSrc, 0, &bf,
-            ULW_ALPHA);
-        const bool synchronizePilotHandoff =
-            !data->isClosing &&
-            (minRestoreEffect == 6 || minRestoreEffect == 7 ||
-             minRestoreEffect == 8);
-        if (presented) {
-            OnFramePresented(synchronizePilotHandoff);
-        }
-        RecordTelemetryCpuPhase(
-            presentStartTick, telemetryCpuPresentTicks,
-            telemetryCpuWorstPresentTicks, telemetryCpuPresentSamples);
-        return presented != FALSE;
-    }
-    bool PresentGpuQuad(const QuadFrame& frame) {
-        if (!gpuPresenter.PresentQuad(frame)) {
-            return false;
-        }
-        OnFramePresented(/*synchronizeBeforeSignal=*/true);
-        return true;
-    }
-    bool PresentGpuGenie(float progress) {
-        const float morphTime =
-            data->isRising ? (1.0f - progress) : progress;
-        float opacity = 1.0f;
-        if (morphTime > 0.8f) {
-            opacity = (1.0f - morphTime) / 0.2f;
-        }
-        const GpuGenieFrame frame{
-            static_cast<float>(origLeft - boundLeft),
-            static_cast<float>(origTop - boundTop),
-            dockXf - static_cast<float>(boundLeft),
-            dockY - static_cast<float>(boundTop),
-            neckW,
-            morphTime,
-            Clamp(opacity, 0.0f, 1.0f),
-            taskbarEdge,
-        };
-        if (!gpuPresenter.PresentGenie(frame)) {
-            return false;
-        }
-        OnFramePresented(/*synchronizeBeforeSignal=*/true);
-        return true;
-    }
-    bool PresentGpuInplace(float progress) {
-        float visibleProgress =
-            data->isRising ? progress : (1.0f - progress);
-        if (minRestoreEffect != 1) {
-            visibleProgress = visibleProgress * visibleProgress *
-                              (3.0f - 2.0f * visibleProgress);
-        }
-        int blockSize = 1;
-        if (minRestoreEffect == 1) {
-            const int fieldStep =
-                std::max(8, std::min(W, H) / 48);
-            blockSize = std::max(4, fieldStep / 2);
-        } else if (minRestoreEffect == 2 || minRestoreEffect == 3) {
-            blockSize = Clamp(std::min(W, H) / 96, 2, 5);
-        } else {
-            const int divisor = minRestoreEffect == 4 ? 96 : 110;
-            blockSize = Clamp(std::min(W, H) / divisor, 2, 4);
-        }
-        const GpuInplaceFrame frame{
-            static_cast<float>(origLeft - boundLeft),
-            static_cast<float>(origTop - boundTop),
-            visibleProgress,
-            blockSize,
-            static_cast<uint32_t>(minRestoreEffect),
-        };
-        if (!gpuPresenter.PresentInplace(frame)) {
-            return false;
-        }
-        OnFramePresented(/*synchronizeBeforeSignal=*/true);
-        return true;
-    }
-    bool PresentGpuClose(float progress) {
-        const GpuCloseFrame frame{
-            static_cast<float>(origLeft - boundLeft),
-            static_cast<float>(origTop - boundTop),
-            progress,
-            static_cast<float>(blockSizeSetting),
-        };
-        const bool presented = closeEffect == 1
-                                   ? gpuPresenter.PresentShatter(frame)
-                                   : gpuPresenter.PresentClose(frame);
-        if (!presented) {
-            return false;
-        }
-        OnFramePresented(/*synchronizeBeforeSignal=*/true);
-        return true;
-    }
-    bool ShowInkBootstrapFrame() {
-        if (usingGpuBackend) {
-            if (data->isClosing) {
-                return PresentGpuQuad(QuadFrame{
-                    origLeft - boundLeft,
-                    origTop - boundTop,
-                    W,
-                    H,
-                    1.0f,
-                });
-            }
-            if (minRestoreEffect >= 1 && minRestoreEffect <= 5) {
-                return PresentGpuInplace(0.0f);
-            }
-            return PresentGpuQuad(CalculateSwellFrame(0.0f));
-        }
-        ClearCpuCanvas();
-        const LONGLONG effectStartTick = ReadTelemetryCounter();
-        if (!data->isRising) {
-            const int dstX = origLeft - boundLeft;
-            const int dstY = origTop - boundTop;
-            DrawBlock(0, 0, dstX, dstY, 1.0f, W, H);
-        } else if (minRestoreEffect == 8 && data->isRising) {
-            RenderCrtOn(0.0f);
-        } else if (minRestoreEffect == 6) {
-            const int dstW = std::max(1, (int)((float)W * 1.18f + 0.5f));
-            const int dstH = std::max(1, (int)((float)H * 1.18f + 0.5f));
-            const int dstX = (origLeft - boundLeft) + (W - dstW) / 2;
-            const int dstY = (origTop - boundTop) + (H - dstH) / 2;
-            DrawBlockScaled(0, 0, W, H, dstX, dstY, dstW, dstH, 1.0f);
-            RecordTelemetryCpuEffect(effectStartTick);
-            PresentCanvas(0.04f);
-            if (!firstFrameDwmSynchronized) FlushDwmOrYield();
-            return true;
-        }
-        RecordTelemetryCpuEffect(effectStartTick);
-        PresentCanvas(1.0f);
-        if (!firstFrameDwmSynchronized) FlushDwmOrYield();
-        return true;
-    }
-    bool PrecalcInkSplash() {
-        auto fractf = [](float x) -> float { return x - floorf(x); };
-        auto is_hash = [&](float px, float py) -> float {
-            return fractf(sinf(px * 127.1f + py * 311.7f) * 43758.5453f);
-        };
-        auto is_noise = [&](float x, float y) -> float {
-            const float ix = floorf(x), iy = floorf(y);
-            float fx = x - ix, fy = y - iy;
-            fx = fx * fx * (3.0f - 2.0f * fx);
-            fy = fy * fy * (3.0f - 2.0f * fy);
-            const float a = is_hash(ix, iy);
-            const float b = is_hash(ix + 1.0f, iy);
-            const float c = is_hash(ix, iy + 1.0f);
-            const float d = is_hash(ix + 1.0f, iy + 1.0f);
-            return a * (1.0f - fx) * (1.0f - fy) + b * fx * (1.0f - fy) + c * (1.0f - fx) * fy + d * fx * fy;
-        };
-        auto is_fbm = [&](float x, float y) -> float {
-            float v = 0.0f, amp = 0.5f;
-            for (int i = 0; i < 4; ++i) {
-                v += amp * is_noise(x, y);
-                x *= 2.1f;
-                y *= 2.1f;
-                amp *= 0.5f;
-            }
-            return v;
-        };
-        const float aspect = (float)W / (float)std::max(1, H);
-        const int fieldStep = std::max(8, std::min(W, H) / 48);
-        const int drawStep = std::max(4, fieldStep / 2);
-        const int nw = (W + fieldStep - 1) / fieldStep;
-        const int nh = (H + fieldStep - 1) / fieldStep;
-        try {
-            std::vector<float> field((size_t)nw * (size_t)nh);
-            for (int iy = 0; iy < nh; ++iy) {
-                for (int ix = 0; ix < nw; ++ix) {
-                    const float uvx = ((float)ix + 0.5f) * (float)fieldStep / (float)W;
-                    const float uvy = ((float)iy + 0.5f) * (float)fieldStep / (float)H;
-                    const float blob = is_fbm(uvx * 3.5f, uvy * 3.5f);
-                    const float fingers = is_fbm(uvx * 14.0f, uvy * 14.0f);
-                    const float distortion = (blob - 0.5f) * 0.5f + (fingers - 0.5f) * 0.18f;
-                    float cx = uvx - 0.5f;
-                    float cy = uvy - 0.5f;
-                    cx *= aspect;
-                    field[(size_t)iy * nw + ix] = sqrtf(cx * cx + cy * cy) + distortion;
-                }
-            }
-            shatterBlocks.reserve(((W + drawStep - 1) / drawStep) * ((H + drawStep - 1) / drawStep));
-            for (int y = 0; y < H; y += drawStep) {
-                const int bh = std::min(drawStep, H - y);
-                for (int x = 0; x < W; x += drawStep) {
-                    const int bw = std::min(drawStep, W - x);
-                    const float fx = ((float)x + 0.5f * (float)bw) / (float)fieldStep - 0.5f;
-                    const float fy = ((float)y + 0.5f * (float)bh) / (float)fieldStep - 0.5f;
-                    int x0 = (int)floorf(fx);
-                    int y0 = (int)floorf(fy);
-                    float tx = fx - (float)x0;
-                    float ty = fy - (float)y0;
-                    if (x0 < 0) x0 = 0;
-                    if (y0 < 0) y0 = 0;
-                    if (x0 > nw - 2) x0 = std::max(0, nw - 2);
-                    if (y0 > nh - 2) y0 = std::max(0, nh - 2);
-                    const float a = field[(size_t)y0 * nw + x0];
-                    const float b = field[(size_t)y0 * nw + x0 + 1];
-                    const float c = field[(size_t)(y0 + 1) * nw + x0];
-                    const float d = field[(size_t)(y0 + 1) * nw + x0 + 1];
-                    const float splashD = a * (1.0f - tx) * (1.0f - ty) + b * tx * (1.0f - ty) +
-                                         c * (1.0f - tx) * ty + d * tx * ty;
-                    shatterBlocks.push_back({x, y, 0, 0, 0, 0, splashD, bw, bh});
-                }
-            }
-        } catch (const std::exception&) {
-            Wh_Log(L"Ink splash precalc failed");
-            shatterBlocks.clear();
-            return false;
-        }
-        return true;
-    }
-    bool PrecalcScorch() {
-        auto hm_rand = [](float x, float y) -> float {
-            const float n = sinf(x * 12.9898f + y * 78.233f) * 43758.5453f;
-            return n - floorf(n);
-        };
-        auto hm_snoise = [](float vx, float vy) -> float {
-            const float C0 = 0.211324865405187f;
-            const float C1 = 0.366025403784439f;
-            const float C2 = -0.577350269189626f;
-            const float C3 = 0.024390243902439f;
-            auto mod289v = [](float x) -> float { return x - floorf(x * (1.0f / 289.0f)) * 289.0f; };
-            auto perm = [&](float x) -> float { return mod289v(((x * 34.0f) + 1.0f) * x); };
-            float i_x = floorf(vx + (vx + vy) * C1);
-            float i_y = floorf(vy + (vx + vy) * C1);
-            float x0 = vx - i_x + (i_x + i_y) * C0;
-            float y0 = vy - i_y + (i_x + i_y) * C0;
-            const float i1x = (x0 > y0) ? 1.0f : 0.0f;
-            const float i1y = (x0 > y0) ? 0.0f : 1.0f;
-            float x1 = x0 + C0 - i1x;
-            float y1 = y0 + C0 - i1y;
-            float x2 = x0 + C2;
-            float y2 = y0 + C2;
-            i_x = mod289v(i_x);
-            i_y = mod289v(i_y);
-            const float q0 = perm(perm(i_y) + i_x);
-            const float q1 = perm(perm(i_y + i1y) + i_x + i1x);
-            const float q2 = perm(perm(i_y + 1.0f) + i_x + 1.0f);
-
-            auto bake = [&](float q, float px, float py) -> float {
-                float m = 0.5f - (px * px + py * py);
-                if (m < 0.0f) return 0.0f;
-                m *= m;
-                m *= m;
-                const float xf = 2.0f * (q * C3 - floorf(q * C3)) - 1.0f;
-                const float h = fabsf(xf) - 0.5f;
-                const float ox = floorf(xf + 0.5f);
-                const float a0 = xf - ox;
-                m *= 1.79284291400159f - 0.85373472095314f * (a0 * a0 + h * h);
-                return m * (a0 * px + h * py);
-            };
-            return 130.0f * (bake(q0, x0, y0) + bake(q1, x1, y1) + bake(q2, x2, y2));
-        };
-        const int step = Clamp(std::min(W, H) / 96, 2, 5);
-        try {
-            shatterBlocks.reserve(((W + step - 1) / step) * ((H + step - 1) / step));
-            for (int y = 0; y < H; y += step) {
-                const int bh = std::min(step, H - y);
-                for (int x = 0; x < W; x += step) {
-                    const int bw = std::min(step, W - x);
-                    const float uvx = ((float)x + 0.5f * (float)bw) / (float)W;
-                    const float uvy = ((float)y + 0.5f * (float)bh) / (float)H;
-                    const float n = hm_snoise(uvx * 2.8f, 0.0f);
-                    const float expN = 0.42f + 0.58f * expf(n * 0.55f);
-                    const float rnd = hm_rand(uvx * 2.8f, 0.1f) * 0.42f;
-                    shatterBlocks.push_back({x, y, uvx, uvy, expN, rnd, 0.0f, bw, bh});
-                }
-            }
-        } catch (const std::exception&) {
-            Wh_Log(L"Scorch precalc failed");
-            shatterBlocks.clear();
-            return false;
-        }
-        return true;
-    }
-    bool PrecalcSplinter() {
-        auto ch_rand = [](float x, float y) -> float {
-            const float n = sinf(x * 12.9898f + y * 78.233f) * 43758.5453f;
-            return n - floorf(n);
-        };
-        constexpr float threshold = 3.2f;
-        const int step = Clamp(std::min(W, H) / 96, 2, 5);
-        try {
-            shatterBlocks.reserve(((W + step - 1) / step) * ((H + step - 1) / step));
-            for (int y = 0; y < H; y += step) {
-                const int bh = std::min(step, H - y);
-                for (int x = 0; x < W; x += step) {
-                    const int bw = std::min(step, W - x);
-                    const float uvx = ((float)x + 0.5f * (float)bw) / (float)W;
-                    const float uvy = ((float)y + 0.5f * (float)bh) / (float)H;
-                    const float dist = hypotf(uvx - 0.5f, uvy - 0.5f) / threshold;
-                    const float ry = ch_rand(uvy * 2.6f, 0.0f);
-                    const float rx = ch_rand(0.0f, uvx * 2.6f);
-                    const float jitter = (std::min)(ry, rx) * 0.38f;
-                    shatterBlocks.push_back({x, y, uvx, uvy, 0.0f, jitter, dist, bw, bh});
-                }
-            }
-        } catch (const std::exception&) {
-            Wh_Log(L"Splinter precalc failed");
-            shatterBlocks.clear();
-            return false;
-        }
-        return true;
-    }
-    bool PrecalcMirage() {
-        constexpr float sz = 0.035f;
-        constexpr float zoom = 62.0f;
-        const int step = Clamp(std::min(W, H) / 96, 2, 4);
-        try {
-            shatterBlocks.reserve(((W + step - 1) / step) * ((H + step - 1) / step));
-            for (int y = 0; y < H; y += step) {
-                const int bh = std::min(step, H - y);
-                for (int x = 0; x < W; x += step) {
-                    const int bw = std::min(step, W - x);
-                    const float uvx = ((float)x + 0.5f * (float)bw) / (float)W;
-                    const float uvy = ((float)y + 0.5f * (float)bh) / (float)H;
-                    const float dx = sz * cosf(zoom * uvx);
-                    const float dy = sz * sinf(zoom * uvy);
-                    shatterBlocks.push_back({x, y, uvx, uvy, dx, dy, 0.0f, bw, bh});
-                }
-            }
-        } catch (const std::exception&) {
-            Wh_Log(L"Mirage precalc failed");
-            shatterBlocks.clear();
-            return false;
-        }
-        return true;
-    }
-    bool PrecalcStipple() {
-        constexpr float dots = 28.0f;
-        const int step = Clamp(std::min(W, H) / 110, 2, 4);
-        try {
-            shatterBlocks.reserve(((W + step - 1) / step) * ((H + step - 1) / step));
-            for (int y = 0; y < H; y += step) {
-                const int bh = std::min(step, H - y);
-                for (int x = 0; x < W; x += step) {
-                    const int bw = std::min(step, W - x);
-                    const float uvx = ((float)x + 0.5f * (float)bw) / (float)W;
-                    const float uvy = ((float)y + 0.5f * (float)bh) / (float)H;
-                    float fx = uvx * dots;
-                    float fy = uvy * dots;
-                    fx -= floorf(fx);
-                    fy -= floorf(fy);
-                    const float cellDist = hypotf(fx - 0.5f, fy - 0.5f);
-                    const float originDist = (std::max)(hypotf(uvx, uvy), 0.0001f);
-                    shatterBlocks.push_back({x, y, uvx, uvy, originDist, 0.0f, cellDist, bw, bh});
-                }
-            }
-        } catch (const std::exception&) {
-            Wh_Log(L"Stipple precalc failed");
-            shatterBlocks.clear();
-            return false;
-        }
-        return true;
-    }
-    bool PrecalcPixelMelt() {
-        auto hash01 = [](int ix) -> float {
-            uint32_t h = (uint32_t)ix * 747796405u + 2891336453u;
-            h = (h ^ (h >> 14)) * 277803737u;
-            h ^= h >> 13;
-            return (h & 0xFFFFFFu) / 16777215.0f;
-        };
-        auto valueNoise = [&](float x) -> float {
-            const int i = (int)floorf(x);
-            float f = x - (float)i;
-            f = f * f * (3.0f - 2.0f * f);
-            return hash01(i) * (1.0f - f) + hash01(i + 1) * f;
-        };
-        auto fbm = [&](float x) -> float {
-            float v = 0.0f, a = 0.5f, n = 0.0f;
-            for (int o = 0; o < 4; ++o) {
-                v += a * valueNoise(x);
-                n += a;
-                x = x * 2.03f + 17.0f;
-                a *= 0.5f;
-            }
-            return v / std::max(0.001f, n);
-        };
-        try {
-            const int stripCount = (W + kMeltStripPx - 1) / kMeltStripPx;
-            meltLag.resize((size_t)stripCount);
-            meltSpeed.resize((size_t)stripCount);
-            for (int si = 0; si < stripCount; ++si) {
-                const float a = fbm((float)si * 0.85f);
-                const float b = fbm((float)si * 1.7f + 9.1f);
-                float lagN = Clamp(0.6f * a + 0.4f * b, 0.0f, 1.0f);
-                lagN = lagN * lagN * (3.0f - 2.0f * lagN);
-                meltLag[(size_t)si] = 0.02f + lagN * 0.52f;
-                meltSpeed[(size_t)si] = 0.4f + (1.0f - lagN) * 0.85f;
-            }
-            auto limitSteps = [&](std::vector<float>& v, float maxStep) {
-                for (int pass = 0; pass < 3; ++pass) {
-                    for (int i = 1; i < stripCount; ++i) {
-                        const float d = v[(size_t)i] - v[(size_t)i - 1];
-                        if (d > maxStep) v[(size_t)i] = v[(size_t)i - 1] + maxStep;
-                        if (d < -maxStep) v[(size_t)i] = v[(size_t)i - 1] - maxStep;
-                    }
-                    for (int i = stripCount - 2; i >= 0; --i) {
-                        const float d = v[(size_t)i] - v[(size_t)i + 1];
-                        if (d > maxStep) v[(size_t)i] = v[(size_t)i + 1] + maxStep;
-                        if (d < -maxStep) v[(size_t)i] = v[(size_t)i + 1] - maxStep;
-                    }
-                }
-            };
-            limitSteps(meltLag, kMeltMaxLagStep);
-            limitSteps(meltSpeed, kMeltMaxSpeedStep);
-        } catch (const std::exception&) {
-            Wh_Log(L"Pixel melt precalc failed");
-            meltLag.clear();
-            meltSpeed.clear();
-            return false;
-        }
-        return true;
-    }
-    bool PrecalcPhysics() {
-        if (!data->isClosing) {
-            if (usingGpuBackend &&
-                (minRestoreEffect >= 1 && minRestoreEffect <= 5)) {
-                return true;
-            }
-            if (minRestoreEffect == 1) return PrecalcInkSplash();
-            if (minRestoreEffect == 2) return PrecalcScorch();
-            if (minRestoreEffect == 3) return PrecalcSplinter();
-            if (minRestoreEffect == 4) return PrecalcMirage();
-            if (minRestoreEffect == 5) return PrecalcStipple();
-            return true;
-        }
-        if (closeEffect == 3 || closeEffect == 4 ||
-            (usingGpuBackend &&
-             (closeEffect == 1 || closeEffect == 2))) {
-            return true;
-        }
-        if (closeEffect == 5) return PrecalcPixelMelt();
-        float cx = W / 2.0f;
-        float cy = H / 2.0f;
-        float maxDist = (float)(W + H);
-        
-        try {
-            if (closeEffect == 2) {
-                auto pseudo_hash = [](int ix, int iy) -> float {
-                    uint32_t h = ((uint32_t)ix * 73856093u) ^ ((uint32_t)iy * 19349663u);
-                    return (h % 10000) / 10000.0f;
-                };
-                const size_t columns = static_cast<size_t>(
-                    (W + blockSizeSetting - 1) / blockSizeSetting);
-                const size_t rows = static_cast<size_t>(
-                    (H + blockSizeSetting - 1) / blockSizeSetting);
-                perlinStartTimes.assign(columns * rows, 0.0f);
-
-                // Adjacent output rows share the same pair of lattice rows
-                // for long stretches (150, 75, and 37.5 source pixels for
-                // the three octaves). Cache their horizontal contributions
-                // instead of recalculating four hashes for every block.
-                std::vector<float> latticeA(columns);
-                std::vector<float> latticeB(columns);
-                std::vector<float> latticeC(columns);
-                std::vector<float> latticeD(columns);
-                float amplitude = 0.5f;
-                for (int octave = 0; octave < 3; ++octave) {
-                    int cachedLatticeY = INT_MIN;
-                    size_t valueIndex = 0;
-                    for (int srcY = 0; srcY < H;
-                         srcY += blockSizeSetting) {
-                        float ty = static_cast<float>(srcY) /
-                                   AnimConstants::PerlinNoiseScale;
-                        for (int i = 0; i < octave; ++i) ty *= 2.0f;
-                        const int iy = static_cast<int>(floorf(ty));
-                        const float fy = ty - iy;
-                        const float uy =
-                            fy * fy * (3.0f - 2.0f * fy);
-
-                        if (iy != cachedLatticeY) {
-                            size_t column = 0;
-                            for (int srcX = 0; srcX < W;
-                                 srcX += blockSizeSetting, ++column) {
-                                float tx = static_cast<float>(srcX) /
-                                           AnimConstants::PerlinNoiseScale;
-                                for (int i = 0; i < octave; ++i)
-                                    tx *= 2.0f;
-                                const int ix =
-                                    static_cast<int>(floorf(tx));
-                                const float fx = tx - ix;
-                                const float ux =
-                                    fx * fx * (3.0f - 2.0f * fx);
-                                const float oneMinusUx = 1.0f - ux;
-                                latticeA[column] =
-                                    pseudo_hash(ix, iy) * oneMinusUx;
-                                latticeB[column] =
-                                    pseudo_hash(ix + 1, iy) * ux;
-                                latticeC[column] =
-                                    pseudo_hash(ix, iy + 1) * oneMinusUx;
-                                latticeD[column] =
-                                    pseudo_hash(ix + 1, iy + 1) * ux;
-                            }
-                            cachedLatticeY = iy;
-                        }
-
-                        const float oneMinusUy = 1.0f - uy;
-                        for (size_t column = 0; column < columns;
-                             ++column, ++valueIndex) {
-                            const float noise =
-                                latticeA[column] * oneMinusUy +
-                                latticeB[column] * oneMinusUy +
-                                latticeC[column] * uy +
-                                latticeD[column] * uy;
-                            perlinStartTimes[valueIndex] +=
-                                amplitude * noise;
-                        }
-                    }
-                    amplitude *= 0.5f;
-                }
-                for (float& startTime : perlinStartTimes)
-                    startTime *= 0.9f;
-            } else {
-                const size_t particleCount =
-                    static_cast<size_t>(
-                        (W + blockSizeSetting - 1) / blockSizeSetting) *
-                    static_cast<size_t>(
-                        (H + blockSizeSetting - 1) / blockSizeSetting);
-                if (particleCount > UINT32_MAX) return false;
-                firstActiveCloseParticle = particleCount
-                                               ? 0
-                                               : kNoActiveCloseParticle;
-                initialCloseParticleCount = particleCount;
-                activeCloseParticleCount = particleCount;
-                if (closeEffect == 0)
-                    closeShatterParticles.reserve(particleCount);
-                else
-                    closeThanosParticles.reserve(particleCount);
-                uint32_t particleIndex = 0;
-                for (int srcY = 0; srcY < H; srcY += blockSizeSetting) {
-                    for (int srcX = 0; srcX < W; srcX += blockSizeSetting) {
-                        uint32_t hash = ((uint32_t)srcX * 73856093u) ^ ((uint32_t)srcY * 19349663u);
-                        const uint32_t nextActive = particleIndex + 1;
-                        if (closeEffect == 0) {
-                            float force = ((hash >> 8) % 100) / 100.0f;
-                            float noiseX = ((hash % 2000) / 1000.0f) - 1.0f;
-                            float noiseY = (((hash >> 4) % 2000) / 1000.0f) - 1.0f;
-                            float dirX = (srcX + blockSizeSetting / 2.0f) - cx;
-                            float dirY = (srcY + blockSizeSetting / 2.0f) - cy;
-                            float dist = sqrtf(dirX * dirX + dirY * dirY);
-                            if (dist > 0.1f) { dirX /= dist; dirY /= dist; }
-                            closeShatterParticles.push_back(
-                                {dirX, dirY, force, noiseX, noiseY,
-                                 nextActive});
-                        } else {
-                            float distFromBottomRight = (float)((W - srcX) + (H - srcY));
-                            float baseStartTime = (distFromBottomRight / maxDist) * AnimConstants::ThanosBaseStartMax;
-                            float waveNoise = (((hash % 100) / 100.0f) - 0.5f) * AnimConstants::ThanosWaveNoiseMult;
-                            float startTime = baseStartTime + waveNoise;
-                            if (startTime < 0.0f) startTime = 0.0f;
-                            if (startTime > 0.65f) startTime = 0.65f;
-                            float noiseX = (((hash >> 4) % 200) / 100.0f) - 1.0f;
-                            float noiseY = (((hash >> 8) % 200) / 100.0f) - 1.0f;
-                            float baseWindX = W * 0.5f;
-                            float baseWindY = H * 0.2f;
-                            float swirl = ((srcY / (float)H) - 0.5f) * 2.0f;
-                            baseWindY += swirl * (H * 0.3f);
-                            float windX = baseWindX + noiseX * (W * 0.2f);
-                            float windY = baseWindY + noiseY * (H * 0.3f);
-                            float curveX = noiseY * (W * 0.4f);
-                            float curveY = -noiseX * (H * 0.4f);
-                            closeThanosParticles.push_back(
-                                {windX, windY, curveX, curveY, startTime,
-                                 nextActive});
-                        }
-                        ++particleIndex;
-                    }
-                }
-                if (closeEffect == 0 && !closeShatterParticles.empty())
-                    closeShatterParticles.back().nextActive =
-                        kNoActiveCloseParticle;
-                else if (closeEffect == 1 &&
-                         !closeThanosParticles.empty())
-                    closeThanosParticles.back().nextActive =
-                        kNoActiveCloseParticle;
-            }
-        } catch (const std::exception&) {
-            Wh_Log(L"Close physics precalc failed (likely OOM) effect=%d "
-                   L"shatter_particles~%zu thanos_particles~%zu "
-                   L"perlin_values~%zu",
-                   closeEffect, closeShatterParticles.capacity(),
-                   closeThanosParticles.capacity(),
-                   perlinStartTimes.capacity());
-            closeShatterParticles.clear();
-            closeThanosParticles.clear();
-            perlinStartTimes.clear();
-            firstActiveCloseParticle = kNoActiveCloseParticle;
-            initialCloseParticleCount = 0;
-            activeCloseParticleCount = 0;
-            return false;
-        }
-        return true;
-    }
-    NativeMinimizeState WaitForNativeMinimizeSubmission() {
-        NativeMinimizeBarrier* barrier = data->nativeMinimizeBarrier;
-        if (!barrier) return NativeMinimizeState::Cancelled;
-        const DWORD deadline = GetTickCount() + AnimConstants::NativeStateWaitMs;
-        for (;;) {
-            const DWORD wait = WaitForSingleObject(barrier->submitted, 50);
-            if (wait == WAIT_OBJECT_0) {
-                if (g_unloading.load(std::memory_order_relaxed) &&
-                    IsWindow(data->hRealWnd)) {
-                    data->nativeStateTimedOut = TRUE;
-                }
-                return barrier->state.load(std::memory_order_acquire);
-            }
-            if (wait != WAIT_TIMEOUT || !IsWindow(data->hRealWnd) ||
-                g_unloading.load(std::memory_order_relaxed)) {
-                if (IsWindow(data->hRealWnd)) data->nativeStateTimedOut = TRUE;
-                return NativeMinimizeState::Cancelled;
-            }
-            if ((LONG)(GetTickCount() - deadline) >= 0) {
-                NativeMinimizeState expected = NativeMinimizeState::Pending;
-                if (barrier->state.compare_exchange_strong(
-                        expected, NativeMinimizeState::Cancelled,
-                        std::memory_order_acq_rel)) {
-                    SetEvent(barrier->submitted);
-                }
-                data->nativeStateTimedOut = TRUE;
-                Wh_Log(L"Native minimize submission timeout hwnd=%p state=%ld",
-                       data->hRealWnd,
-                       static_cast<LONG>(barrier->state.load(std::memory_order_acquire)));
-                return barrier->state.load(std::memory_order_acquire);
-            }
-        }
-    }
-    bool WaitForNativeMinimizeForEndpoint() {
-        const NativeMinimizeState state = WaitForNativeMinimizeSubmission();
-        if (data->nativeStateTimedOut || state != NativeMinimizeState::AsyncSubmitted) {
-            return true;
-        }
-
-        if (IsIconic(data->hRealWnd)) data->nativeAsyncMinimizeObserved = TRUE;
-        if (data->nativeAsyncMinimizeObserved) return true;
-        const DWORD deadline = GetTickCount() + AnimConstants::NativeStateWaitMs;
-        while (IsWindow(data->hRealWnd) && !IsIconic(data->hRealWnd) &&
-               !g_unloading.load(std::memory_order_relaxed) &&
-               (LONG)(GetTickCount() - deadline) < 0) {
-            Sleep(10);
-        }
-        if (IsIconic(data->hRealWnd)) data->nativeAsyncMinimizeObserved = TRUE;
-        if (!data->nativeAsyncMinimizeObserved && IsWindow(data->hRealWnd)) {
-            data->nativeStateTimedOut = TRUE;
-            if (!g_unloading.load(std::memory_order_relaxed)) {
-                Wh_Log(L"Native async minimize state timeout hwnd=%p", data->hRealWnd);
-            }
-        }
-        return true;
-    }
-    void SignalFirstFrameShown() {
-        if (!data->hFirstFrameShown) return;
-        SetEvent(data->hFirstFrameShown);
-        CloseHandle(data->hFirstFrameShown);
-        data->hFirstFrameShown = nullptr;
-    }
-    bool ApplyDirectionState(bool wantRising) {
-        if ((BOOL)wantRising == data->isRising) return false;
-
-        HWND hWnd = data->hRealWnd;
-        if (wantRising) {
-            if (data->restoreMaximized) {
-                ArmMaximizedRestoreGuard(
-                    hWnd,
-                    static_cast<DWORD>(AnimConstants::MaximizedRestoreGuardMs));
-            }
-            data->deferredMinimize = FALSE;
-            if (IsWindow(hWnd)) {
-                UpdateDwmTransitions(hWnd, FALSE);
-                SetAnimationWindowCloak(TRUE);
-                if (IsIconic(hWnd)) {
-                    if (data->nativeMinimizeBarrier) {
-                        data->nativeAsyncMinimizeObserved = TRUE;
-                    }
-                    if (!data->nativeStateTimedOut) {
-                        RestoreWindowUnderGhostAsync(
-                            hWnd, data->originalExStyle,
-                            data->restoreMaximized);
-                    }
-                }
-                data->hiddenByCloak = TRUE;
-            }
-            data->isRising = TRUE;
-        } else {
-            if (IsWindow(hWnd)) {
-                if (!IsIconic(hWnd)) {
-                    UpdateDwmTransitions(hWnd, FALSE);
-                    SetAnimationWindowCloak(TRUE);
-                    data->hiddenByCloak = TRUE;
-                }
-                // Queue a final minimize even if the window still looks
-                // iconic: an earlier async restore may not have been consumed
-                // by the target thread yet.
-                data->deferredMinimize = TRUE;
-                if (data->deferredShowCmd != SW_SHOWMINNOACTIVE &&
-                    data->deferredShowCmd != SW_SHOWMINIMIZED &&
-                    data->deferredShowCmd != SW_MINIMIZE) {
-                    data->deferredShowCmd = SW_MINIMIZE;
-                }
-            } else {
-                data->deferredMinimize = FALSE;
-            }
-            data->isRising = FALSE;
-        }
-        return true;
-    }
-    bool ApplyWantedDirectionState() {
-        bool wantRising = false;
-        if (!GetAnimWantRising(data->hRealWnd, &wantRising)) return false;
-        return ApplyDirectionState(wantRising);
-    }
-    bool WaitForEndpointShowState(bool rising) {
-        const bool reachedAtSubmission = HasReachedNativeShowState(
-            data->hRealWnd, rising, data->restoreMaximized);
-        bool sawOppositeState = !reachedAtSubmission;
-        const DWORD settleDeadline =
-            GetTickCount() + AnimConstants::EndpointAsyncSettleMs;
-        const DWORD deadline =
-            GetTickCount() + AnimConstants::NativeStateWaitMs;
-        while (IsWindow(data->hRealWnd) &&
-               !g_unloading.load(std::memory_order_relaxed) &&
-               (LONG)(GetTickCount() - deadline) < 0) {
-            bool wantRising = rising;
-            if (GetAnimWantRising(data->hRealWnd, &wantRising) &&
-                wantRising != rising) {
-                return false;
-            }
-            const bool reached = HasReachedNativeShowState(
-                data->hRealWnd, rising, data->restoreMaximized);
-            if (!reached) {
-                sawOppositeState = true;
-            } else if (sawOppositeState ||
-                       (LONG)(GetTickCount() - settleDeadline) >= 0) {
-                return true;
-            }
-            Sleep(10);
-        }
-        if (IsWindow(data->hRealWnd) &&
-            !HasReachedNativeShowState(data->hRealWnd, rising,
-                                       data->restoreMaximized)) {
-            data->nativeStateTimedOut = TRUE;
-        }
-        return true;
-    }
-    bool TryReverseToWantedDirection(const LARGE_INTEGER& qpcFreq, LARGE_INTEGER& qpcStart) {
-        LARGE_INTEGER qpcNow;
-        QueryPerformanceCounter(&qpcNow);
-        double elapsedMs = (qpcNow.QuadPart - qpcStart.QuadPart) * 1000.0 / qpcFreq.QuadPart;
-        double progress = totalMs > 0.0 ? (elapsedMs / totalMs) : 1.0;
-        if (progress < 0.0) progress = 0.0;
-        if (progress > 1.0) progress = 1.0;
-
-        if (!ApplyWantedDirectionState()) return false;
-        if (telemetryEnabled) ++telemetryReversals;
-
-        const double newElapsed = totalMs * (1.0 - progress);
-        QueryPerformanceCounter(&qpcNow);
-        qpcStart.QuadPart =
-            qpcNow.QuadPart - (LONGLONG)(newElapsed * (double)qpcFreq.QuadPart / 1000.0);
-        if (telemetryEnabled) {
-            Wh_Log(L"Anim reverse hwnd=%p -> %s at p=%.2f",
-                   data->hRealWnd,
-                   data->isRising ? L"restore" : L"minimize", progress);
-        }
-        return true;
-    }
-    void RunLoop() {
-        LARGE_INTEGER qpcFreq, qpcStart, qpcNow;
-        QueryPerformanceFrequency(&qpcFreq);
-        QueryPerformanceCounter(&qpcStart);
-        // Pace both renderers to the target monitor. CPU layered windows can
-        // finish UpdateLayeredWindow/DwmFlush much faster than the display and
-        // previously rendered hundreds of frames that DWM could never show.
-        // GPU layered presenters need the same explicit deadline; composition
-        // presenters additionally retain their DXGI frame-latency reservation.
-        // The first frame remains immediate and all animation progress stays
-        // time based, so this only removes redundant submissions.
-        const bool reserveGpuFrameSlot =
-            usingGpuBackend && gpuPresenter.IsFramePaced();
-        const DWORD pacingRefreshHz =
-            displayRefreshHz >= 24 && displayRefreshHz <= 1000
-                ? displayRefreshHz
-                : 60;
-        const LONGLONG frameIntervalTicks = std::max<LONGLONG>(
-            1, (qpcFreq.QuadPart + pacingRefreshHz / 2) / pacingRefreshHz);
-        // Keep a regular waitable-timer fallback if the high-resolution flag
-        // isn't available at runtime.
-        HANDLE framePacingTimer = CreateWaitableTimerExW(
-            nullptr, nullptr, CREATE_WAITABLE_TIMER_HIGH_RESOLUTION,
-            TIMER_MODIFY_STATE | SYNCHRONIZE);
-        if (!framePacingTimer) {
-            framePacingTimer =
-                CreateWaitableTimerW(nullptr, FALSE, nullptr);
-        }
-        bool refreshDeadlinePacing = framePacingTimer != nullptr;
-        LONGLONG nextFrameDeadline = qpcStart.QuadPart;
-        auto WaitForRefreshDeadline = [&]() {
-            while (refreshDeadlinePacing) {
-                LARGE_INTEGER now{};
-                QueryPerformanceCounter(&now);
-                const LONGLONG remainingTicks =
-                    nextFrameDeadline - now.QuadPart;
-                if (remainingTicks <= 0) return;
-
-                LARGE_INTEGER dueTime{};
-                const LONGLONG due100ns = std::max<LONGLONG>(
-                    1, (remainingTicks * 10000000LL +
-                        qpcFreq.QuadPart - 1) /
-                           qpcFreq.QuadPart);
-                dueTime.QuadPart = -due100ns;
-                if (!SetWaitableTimer(framePacingTimer, &dueTime, 0,
-                                      nullptr, nullptr, FALSE)) {
-                    Wh_Log(L"Animation refresh timer arm failed error=%lu; "
-                           L"continuing without refresh-deadline pacing",
-                           static_cast<unsigned long>(GetLastError()));
-                    refreshDeadlinePacing = false;
-                    return;
-                }
-                const DWORD waitResult = WaitForSingleObject(
-                    framePacingTimer,
-                    AnimConstants::GpuFrameLatencyWaitMs);
-                if (waitResult != WAIT_OBJECT_0) {
-                    Wh_Log(L"Animation refresh timer wait failed result=0x%08X; "
-                           L"continuing without refresh-deadline pacing",
-                           static_cast<unsigned>(waitResult));
-                    refreshDeadlinePacing = false;
-                    return;
-                }
-                // A timer can wake fractionally early. Recheck QPC and rearm
-                // instead of spinning for the remaining fraction.
-            }
-        };
-        for (;;) {
-            if (!data->isClosing) TryReverseToWantedDirection(qpcFreq, qpcStart);
-            MSG msg;
-            while (PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE)) {
-                TranslateMessage(&msg);
-                DispatchMessageW(&msg);
-            }
-            if (!data->isClosing) TryReverseToWantedDirection(qpcFreq, qpcStart);
-            const bool waitForFramePacing =
-                reserveGpuFrameSlot || refreshDeadlinePacing;
-            const LONGLONG pacingWaitStart =
-                telemetryEnabled && waitForFramePacing ? []() {
-                    LARGE_INTEGER counter{};
-                    QueryPerformanceCounter(&counter);
-                    return counter.QuadPart;
-                }() : 0;
-            if (reserveGpuFrameSlot && !gpuPresenter.ReserveFrameSlot()) {
-                RecordTelemetryFrameSample(pacingWaitStart, false);
-                break;
-            }
-            if (refreshDeadlinePacing) {
-                WaitForRefreshDeadline();
-            }
-            // A minimize/restore request can reverse while the worker is
-            // sleeping for the next refresh. Apply it before calculating this
-            // frame so pacing never adds one stale-direction frame.
-            if (!data->isClosing) {
-                TryReverseToWantedDirection(qpcFreq, qpcStart);
-            }
-            QueryPerformanceCounter(&qpcNow);
-            if (telemetryEnabled && waitForFramePacing) {
-                telemetryPacingWaitTicks +=
-                    std::max<LONGLONG>(0,
-                                       qpcNow.QuadPart - pacingWaitStart);
-                ++telemetryPacingWaits;
-            }
-            double elapsedMs = (qpcNow.QuadPart - qpcStart.QuadPart) * 1000.0 / qpcFreq.QuadPart;
-            BOOL lastFrame = (elapsedMs >= totalMs);
-            float progress = lastFrame ? 1.0f : (float)(elapsedMs / totalMs);
-            const bool presentingFirstFrame = firstFramePending;
-            bool presented = false;
-            const LONGLONG renderStartTick =
-                telemetryEnabled ? qpcNow.QuadPart : 0;
-            if (usingGpuBackend) {
-                if (data->isClosing) {
-                    presented = PresentGpuClose(progress);
-                } else if (minRestoreEffect == 0) {
-                    presented = PresentGpuGenie(progress);
-                } else if (minRestoreEffect >= 1 &&
-                           minRestoreEffect <= 5) {
-                    presented = PresentGpuInplace(progress);
-                } else {
-                    const QuadFrame frame =
-                        minRestoreEffect == 6
-                            ? CalculateSwellFrame(progress)
-                            : CalculateWin10Frame(progress);
-                    presented = PresentGpuQuad(frame);
-                }
-            } else {
-                ClearCpuCanvas();
-                const LONGLONG effectStartTick = ReadTelemetryCounter();
-                float fade = 1.0f;
-                if (data->isClosing) {
-                    if (closeEffect == 2) RenderPerlin(progress);
-                    else if (closeEffect == 0) RenderShatter(progress, fade);
-                    else if (closeEffect == 3) RenderGlitch(progress);
-                    else if (closeEffect == 4) RenderCrtOff(progress);
-                    else if (closeEffect == 5) RenderPixelMelt(progress);
-                    else RenderThanos(progress);
-                } else if (minRestoreEffect == 1) {
-                    RenderInkSplash(progress);
-                } else if (minRestoreEffect == 2) {
-                    RenderScorch(progress);
-                } else if (minRestoreEffect == 3) {
-                    RenderSplinter(progress);
-                } else if (minRestoreEffect == 4) {
-                    RenderMirage(progress);
-                } else if (minRestoreEffect == 5) {
-                    RenderStipple(progress);
-                } else if (minRestoreEffect == 6) {
-                    RenderSwell(progress, fade);
-                } else if (minRestoreEffect == 7) {
-                    RenderWin10MinRestore(progress, fade);
-                } else if (minRestoreEffect == 8) {
-                    if (data->isRising) RenderCrtOn(progress);
-                    else RenderCrtOff(progress);
-                } else {
-                    RenderMinimizeRestore(progress, fade);
-                }
-                RecordTelemetryCpuEffect(effectStartTick);
-                presented = PresentCanvas(fade);
-            }
-            if (!presented) {
-                RecordTelemetryFrameSample(renderStartTick, false);
-                break;
-            }
-            const bool synchronizeLayeredGpuCloseFrame =
-                usingGpuBackend && data->isClosing &&
-                !gpuPresenter.IsFramePaced() &&
-                (!presentingFirstFrame || !firstFrameDwmSynchronized);
-            if (usingGpuBackend &&
-                (lastFrame || synchronizeLayeredGpuCloseFrame)) {
-                // Layered GPU closes don't own a composition swap chain, so
-                // retain their stable DWM synchronization and always drain
-                // the final frame before the ghost is hidden. The separate
-                // refresh timer only limits how often frames are submitted.
-                FlushDwmOrYield();
-            }
-            RecordTelemetryFrameSample(renderStartTick, true);
-            if (refreshDeadlinePacing) {
-                LARGE_INTEGER afterPresent{};
-                QueryPerformanceCounter(&afterPresent);
-                nextFrameDeadline += frameIntervalTicks;
-                if (nextFrameDeadline <= afterPresent.QuadPart) {
-                    // Rendering already consumed this deadline. Discard all
-                    // missed slots and rebase to completion time so a slow
-                    // effect can submit its next current frame immediately.
-                    // The following fast frame gets a fresh full interval,
-                    // preventing a burst of catch-up submissions.
-                    nextFrameDeadline = afterPresent.QuadPart;
-                }
-            }
-            if (g_unloading.load(std::memory_order_relaxed)) break;
-            if (lastFrame) {
-                if (!data->isClosing && TryReverseToWantedDirection(qpcFreq, qpcStart)) continue;
-                break;
-            }
-            if (!usingGpuBackend &&
-                (!presentingFirstFrame || !firstFrameDwmSynchronized)) {
-                FlushDwmOrYield();
-            }
-        }
-        if (framePacingTimer) {
-            CancelWaitableTimer(framePacingTimer);
-            CloseHandle(framePacingTimer);
-        }
-    }
-    bool FinishRising() {
-        if (data->isClosing || !data->isRising) return true;
-        if (!data->launchAnimationToken) {
-            RestoreWindowUnderGhostAsync(data->hRealWnd,
-                                         data->originalExStyle,
-                                         data->restoreMaximized);
-            if (!WaitForEndpointShowState(true)) return false;
-        }
-        bool chromeRefreshQueued = false;
-        if (data->hiddenByCloak) {
-            SetAnimationWindowCloak(FALSE);
-            UpdateDwmTransitions(data->hRealWnd, TRUE);
-            RestoreZOrderAfterGhostAsync(data->hRealWnd,
-                                         data->originalExStyle);
-            chromeRefreshQueued = RefreshDwmChromeAfterUncloak(
-                data->hRealWnd, /*nonBlocking=*/true);
-        } else {
-            RestoreLayeredOpacity(data->hRealWnd, data->originalExStyle);
-            UpdateDwmTransitions(data->hRealWnd, TRUE);
-            RestoreZOrderAfterGhostAsync(data->hRealWnd,
-                                         data->originalExStyle);
-            if (data->launchAnimationToken &&
-                IsTranslucentWindowsAccentBlurActive(data->hRealWnd)) {
-                chromeRefreshQueued = RefreshDwmChromeAfterUncloak(
-                    data->hRealWnd, /*nonBlocking=*/true);
-            }
-        }
-        FlushDwmOrYield();
-        if (chromeRefreshQueued) {
-            // Explorer, Mica, and AccentBlur windows rebuild their client
-            // surface in response to the queued frame/composition refresh.
-            // Keep the completed snapshot over the real window for a short bounded
-            // handoff; otherwise the client body can flash while DWM's title
-            // bar remains intact. A live reversal leaves the ghost visible and
-            // returns to rendering immediately.
-            const DWORD deadline =
-                GetTickCount() + AnimConstants::EndpointAsyncSettleMs;
-            while (IsWindow(data->hRealWnd) &&
-                   !g_unloading.load(std::memory_order_relaxed) &&
-                   (LONG)(GetTickCount() - deadline) < 0) {
-                bool wantRising = true;
-                if (GetAnimWantRising(data->hRealWnd, &wantRising) &&
-                    !wantRising) {
-                    return false;
-                }
-                Sleep(5);
-            }
-            FlushDwmOrYield();
-        }
-        RemovePropW(data->hRealWnd, kPropClassicShowDesktopRestoreZOrder);
-        // Foreground is restored once by the batch-level worker after all
-        // Show Desktop restore animations and shell Z-order updates settle.
-        if (hGhost) ShowWindow_Original(hGhost, SW_HIDE);
-        return true;
-    }
-    void FinishTimedOutNativeState() {
-        if (!IsWindow(data->hRealWnd)) return;
-        if (hGhost) ShowWindow_Original(hGhost, SW_HIDE);
-        if (data->hiddenByCloak) {
-            SetAnimationWindowCloak(FALSE);
-        } else {
-            RestoreLayeredOpacity(data->hRealWnd, data->originalExStyle);
-        }
-        UpdateDwmTransitions(data->hRealWnd, TRUE);
-        RestoreZOrderAfterGhostAsync(data->hRealWnd, data->originalExStyle);
-        RemovePropW(data->hRealWnd, kPropClassicShowDesktopRestoreZOrder);
-        RemovePropW(data->hRealWnd,
-                    kPropClassicShowDesktopRestoreForeground);
-        data->deferredMinimize = FALSE;
-    }
-    void FinishClose() {
-        if (!data->isClosing) return;
-        const bool deferredHide = data->closeMsg == ANIM_DEFER_SW_HIDE;
-        ULONG_PTR retainedTrayHideCloak = 0;
-        if (data->hWaitFinish) {
-            SetEvent(data->hWaitFinish);
-            CloseHandle(data->hWaitFinish);
-            data->hWaitFinish = NULL;
-        }
-        // A synchronous hide belongs to the intercepted API's caller. Only
-        // the animation completes here; never replace that hide with a queued
-        // ShowWindowAsync, or return to an app's close transaction before its
-        // original hide notifications have run.
-        if (data->closeMsg == WM_DESTROY ||
-            data->closeMsg == ANIM_CALLER_SW_HIDE ||
-            !IsWindow(data->hRealWnd)) return;
-        SetPropW(data->hRealWnd, kPropCloseBypass, (HANDLE)1);
-        if (deferredHide) {
-            ShowWindowAsync_Original(data->hRealWnd, SW_HIDE);
-        }
-        else if (data->closeMsg == WM_CLOSE) PostMessageW(data->hRealWnd, WM_CLOSE, 0, 0);
-        else if (data->closeMsg == WM_SYSCOMMAND) PostMessageW(data->hRealWnd, WM_SYSCOMMAND, SC_CLOSE, 0);
-        else PostMessageW(data->hRealWnd, data->closeMsg, 0, 0);
-        for (int i = 0; i < 50; ++i) {
-            if (!IsWindow(data->hRealWnd) || g_unloading.load(std::memory_order_relaxed) ||
-                !IsWindowVisible(data->hRealWnd)) {
-                break;
-            }
-            Sleep(10);
-        }
-        if (deferredHide) {
-            if (!g_unloading.load(std::memory_order_relaxed) &&
-                IsWindow(data->hRealWnd) &&
-                !IsWindowVisible(data->hRealWnd) &&
-                NeedsPersistentTrayHideCloak(data->hRealWnd)) {
-                // A hidden Tauri/WebView2 HWND can keep its last compositor
-                // surface after DWMWA_CLOAK is removed, producing a blank,
-                // non-interactive window even though WS_VISIBLE is clear.
-                // Keep only this mod-owned cloak until the next native show;
-                // the show hooks and actual-state observers below transfer or
-                // release it after the real window becomes visible again.
-                retainedTrayHideCloak =
-                    RetainTrayHideCloak(data->hRealWnd);
-            }
-        }
-        if (IsWindow(data->hRealWnd)) {
-            RemovePropW(data->hRealWnd, kPropCloseBypass);
-            RemovePropW(data->hRealWnd, kPropClosed);
-            if (!retainedTrayHideCloak) {
-                SetAnimationWindowCloak(FALSE);
-            }
-            UpdateDwmTransitions(data->hRealWnd, TRUE);
-        }
-    }
-    bool FinishDeferredMinimize() {
-        if (!data->deferredMinimize) return true;
-        const int unhideMs = data->unhideDurationMs;
-        const int animMs = data->durationMs;
-        if (data->requestedUnhide && unhideMs > animMs) {
-            int remaining = unhideMs - animMs;
-            while (remaining > 0 && !g_unloading.load(std::memory_order_relaxed)) {
-                bool wantRising = false;
-                if (GetAnimWantRising(data->hRealWnd, &wantRising) && wantRising) {
-                    return false;
-                }
-                const int chunk = remaining < 20 ? remaining : 20;
-                Sleep(chunk);
-                remaining -= chunk;
-            }
-        }
-        {
-            bool wantRising = false;
-            if (GetAnimWantRising(data->hRealWnd, &wantRising) && wantRising) {
-                return false;
-            }
-        }
-        if (!g_unloading.load(std::memory_order_relaxed) &&
-            IsWindow(data->hRealWnd)) {
-            const int showCmd =
-                data->deferredShowCmd == SW_SHOWMINNOACTIVE ||
-                        data->deferredShowCmd == SW_SHOWMINIMIZED ||
-                        data->deferredShowCmd == SW_MINIMIZE
-                    ? data->deferredShowCmd
-                    : SW_MINIMIZE;
-            const BOOL submitted =
-                ShowWindowAsync_Original(data->hRealWnd, showCmd);
-            if (submitted && !WaitForEndpointShowState(false)) {
-                return false;
-            }
-            if (!submitted) {
-                data->nativeStateTimedOut = TRUE;
-            }
-        }
-        {
-            bool wantRising = false;
-            if (GetAnimWantRising(data->hRealWnd, &wantRising) && wantRising) {
-                return false;
-            }
-        }
-        if (hGhost) ShowWindow_Original(hGhost, SW_HIDE);
-        data->deferredMinimize = FALSE;
-        if (IsWindow(data->hRealWnd)) {
-            SetAnimationWindowCloak(FALSE);
-            UpdateDwmTransitions(data->hRealWnd, TRUE);
-            RestoreZOrderAfterGhostAsync(data->hRealWnd,
-                                         data->originalExStyle);
-        }
-        return true;
-    }
-    bool ReleaseTaskbarRevealFocus() {
-        if (!data->requestedUnhide || !data->taskbarFocusBorrowed) return false;
-        HWND hTray = FindTaskbarForMonitor(data->hMon);
-        if (!hTray || GetForegroundWindow() != hTray) {
-            data->taskbarFocusBorrowed = FALSE;
-            return false;
-        }
-        if (!RestoreForegroundAfterTaskbarReveal(hTray, data->hRealWnd, data->hNextApp,
-                                                data->isRising != FALSE)) {
-            return false;
-        }
-        data->taskbarFocusBorrowed = FALSE;
-        return true;
-    }
-    void ReacquireTaskbarRevealFocus() {
-        if (!data->requestedUnhide || data->taskbarFocusBorrowed ||
-            g_unloading.load(std::memory_order_relaxed)) {
-            return;
-        }
-        HWND hTray = FindTaskbarForMonitor(data->hMon);
-        if (!hTray || !SetForegroundWindow(hTray)) return;
-        data->taskbarFocusBorrowed = TRUE;
-        WaitForTaskbarExpanded(data->hRealWnd, hTray, data->hMon);
-    }
-    bool ActivateRestoredWindowIfRequested() {
-        if (!data->isRising || !IsWindow(data->hRealWnd)) return false;
-        HWND hRequestForeground = NULL;
-        {
-            std::lock_guard<std::mutex> lock(g_StateMutex);
-            auto it = g_AnimRestoreRequestForeground.find(data->hRealWnd);
-            if (it == g_AnimRestoreRequestForeground.end()) return false;
-            hRequestForeground = it->second;
-        }
-        HWND hForeground = GetForegroundWindow();
-        HWND hTray = FindTaskbarForMonitor(data->hMon);
-        if (hForeground == hRequestForeground || (hTray && hForeground == hTray)) {
-            return SetForegroundWindow(data->hRealWnd);
-        }
-        return false;
-    }
-    bool CompleteMinRestoreEndpoint() {
-        if (data->isClosing) return true;
-        if (data->launchAnimationToken &&
-            !IsLaunchAnimationCurrent(data->hRealWnd,
-                                      data->launchAnimationToken)) {
-            // The launch HWND was destroyed/reused. WM_DESTROY owns state-map
-            // cleanup; the stale worker must not mutate the replacement.
-            ownershipReleased = true;
-            return true;
-        }
-        if (g_unloading.load(std::memory_order_relaxed) && IsWindow(data->hRealWnd)) {
-            data->nativeStateTimedOut = TRUE;
-        }
-        for (;;) {
-            if (ApplyWantedDirectionState()) return false;
-            if (!WaitForNativeMinimizeForEndpoint()) {
-                ApplyWantedDirectionState();
-                return false;
-            }
-            if (ApplyWantedDirectionState()) return false;
-
-            if (data->nativeStateTimedOut) {
-                // The target stopped acknowledging an earlier native request. Don't
-                // replace the bounded wait with a synchronous cross-thread window call.
-                // The stable handoff below queues the latest intent asynchronously.
-                FinishTimedOutNativeState();
-            } else if (data->isRising) {
-                if (!FinishRising()) {
-                    if (hGhost) ShowGhostNoActivate();
-                    continue;
-                }
-            } else {
-                if (!FinishDeferredMinimize()) {
-                    continue;
-                }
-                if (hGhost) ShowWindow_Original(hGhost, SW_HIDE);
-                if (IsWindow(data->hRealWnd)) {
-                    SetAnimationWindowCloak(FALSE);
-                    UpdateDwmTransitions(data->hRealWnd, TRUE);
-                    RestoreZOrderAfterGhostAsync(data->hRealWnd,
-                                                 data->originalExStyle);
-                }
-            }
-            bool directionChanged = false;
-            {
-                std::lock_guard<std::mutex> lock(g_StateMutex);
-                auto it = g_AnimWantRising.find(data->hRealWnd);
-                directionChanged =
-                    it != g_AnimWantRising.end() && it->second != (data->isRising != FALSE);
-            }
-            if (directionChanged) {
-                if (hGhost) ShowGhostNoActivate();
-                continue;
-            }
-
-            const bool restoredWindowActivated =
-                !data->nativeStateTimedOut && ActivateRestoredWindowIfRequested();
-            bool taskbarFocusReleased = false;
-            if (restoredWindowActivated && data->taskbarFocusBorrowed) {
-                data->taskbarFocusBorrowed = FALSE;
-                taskbarFocusReleased = true;
-            } else {
-                taskbarFocusReleased = ReleaseTaskbarRevealFocus();
-            }
-            HBITMAP endpointSnapshot = nullptr;
-            void* endpointSnapshotBits = nullptr;
-            bool endpointSnapshotUsesCapture = false;
-            if (!data->isRising && data->pBits && hScreenDC &&
-                g_restoreAnimation.load(std::memory_order_relaxed)) {
-                bool snapshotMissing = false;
-                {
-                    std::lock_guard<std::mutex> lock(g_StateMutex);
-                    auto snapshotIt = g_WndSnapshots.find(data->hRealWnd);
-                    const bool validSnapshot =
-                        snapshotIt != g_WndSnapshots.end() &&
-                        snapshotIt->second.pBits && snapshotIt->second.w == W &&
-                        snapshotIt->second.h == H &&
-                        snapshotIt->second.windowToken &&
-                        reinterpret_cast<ULONG_PTR>(GetPropW(
-                            data->hRealWnd, kPropSnapshotCache)) ==
-                            snapshotIt->second.windowToken;
-                    if (!validSnapshot &&
-                        snapshotIt != g_WndSnapshots.end()) {
-                        EraseSnapshotLocked(snapshotIt);
-                    }
-                    snapshotMissing = !validSnapshot;
-                }
-                if (snapshotMissing) {
-                    if (data->hBitmap) {
-                        // Both renderers own an independent source now. Move
-                        // the original capture into the restore cache instead
-                        // of allocating and copying an identical full bitmap.
-                        endpointSnapshot = data->hBitmap;
-                        endpointSnapshotBits = data->pBits;
-                        endpointSnapshotUsesCapture = true;
-                    } else {
-                        endpointSnapshot = CreateDib32(
-                            hScreenDC, W, H, &endpointSnapshotBits);
-                        if (endpointSnapshot && endpointSnapshotBits) {
-                            memcpy(endpointSnapshotBits, data->pBits,
-                                   (size_t)W * (size_t)H * 4u);
-                        } else if (endpointSnapshot) {
-                            DeleteObject(endpointSnapshot);
-                            endpointSnapshot = nullptr;
-                        }
-                    }
-                }
-            }
-            {
-                std::lock_guard<std::mutex> lock(g_StateMutex);
-                auto it = g_AnimWantRising.find(data->hRealWnd);
-                directionChanged =
-                    it != g_AnimWantRising.end() && it->second != (data->isRising != FALSE);
-                if (!directionChanged) {
-                    if (data->isRising) {
-                        EraseSnapshotLocked(data->hRealWnd);
-                    } else if (endpointSnapshot && endpointSnapshotBits) {
-                        if (StoreSnapshotLocked(
-                                data->hRealWnd, endpointSnapshot,
-                                endpointSnapshotBits, W, H)) {
-                            if (endpointSnapshotUsesCapture) {
-                                data->hBitmap = nullptr;
-                                data->pBits = nullptr;
-                            }
-                            endpointSnapshot = nullptr;
-                            endpointSnapshotBits = nullptr;
-                        }
-                    }
-                    if (data->nativeStateTimedOut && IsWindow(data->hRealWnd) &&
-                        !g_unloading.load(std::memory_order_relaxed)) {
-                        int finalShowCmd =
-                            StableRestoreShowCmd(data->hRealWnd,
-                                                 data->restoreMaximized);
-                        if (!data->isRising) {
-                            finalShowCmd =
-                                data->deferredShowCmd == SW_SHOWMINNOACTIVE ||
-                                        data->deferredShowCmd == SW_SHOWMINIMIZED ||
-                                        data->deferredShowCmd == SW_MINIMIZE
-                                    ? data->deferredShowCmd
-                                    : SW_MINIMIZE;
-                        }
-                        ShowWindowAsync_Original(data->hRealWnd, finalShowCmd);
-                    }
-                    if (data->pairedEffectToken) {
-                        const bool preserveForNextMinimize =
-                            data->isRising &&
-                            g_minRestoreShuffleEffect.load(
-                                std::memory_order_relaxed);
-                        if (!preserveForNextMinimize) {
-                            ClearMinRestorePairIfCurrent(
-                                data->hRealWnd, data->pairedEffectToken);
-                        }
-                    }
-                    if (data->isRising && data->restoreMaximized) {
-                        ArmMaximizedRestoreGuard(
-                            data->hRealWnd,
-                            static_cast<DWORD>(GetDoubleClickTime() + 100));
-                    }
-                    if (data->launchAnimationToken) {
-                        ClearLaunchAnimationIfCurrent(
-                            data->hRealWnd, data->launchAnimationToken);
-                    }
-                    g_AnimActive.erase(data->hRealWnd);
-                    g_AnimWantRising.erase(data->hRealWnd);
-                    g_AnimRestoreRequestForeground.erase(data->hRealWnd);
-                    g_AsyncRestoreReservations.erase(data->hRealWnd);
-                    ownershipReleased = true;
-                }
-            }
-            if (endpointSnapshot && !endpointSnapshotUsesCapture) {
-                DeleteObject(endpointSnapshot);
-            }
-            if (!directionChanged) {
-                data->requestedUnhide = FALSE;
-                return true;
-            }
-            if (taskbarFocusReleased) ReacquireTaskbarRevealFocus();
-            if (hGhost) ShowGhostNoActivate();
-        }
-    }
-    void ReleaseGdiResources() {
-        if (hCanvasDC && hOldCanvas && hOldCanvas != HGDI_ERROR) SelectObject(hCanvasDC, hOldCanvas);
-        if (hSrcDibDC && hOldSrcDib && hOldSrcDib != HGDI_ERROR) SelectObject(hSrcDibDC, hOldSrcDib);
-        if (hSrcDC && hOldSrc && hOldSrc != HGDI_ERROR) SelectObject(hSrcDC, hOldSrc);
-        if (hCanvas) DeleteObject(hCanvas);
-        if (hSrcDib) DeleteObject(hSrcDib);
-        if (data->hBitmap) DeleteObject(data->hBitmap);
-        if (hCanvasDC) DeleteDC(hCanvasDC);
-        if (hSrcDibDC) DeleteDC(hSrcDibDC);
-        if (hSrcDC) DeleteDC(hSrcDC);
-        hCanvas = hSrcDib = data->hBitmap = nullptr;
-        hCanvasDC = hSrcDibDC = hSrcDC = nullptr;
-    }
-    void Teardown() {
-        SignalFirstFrameShown();
-        if (!data->isClosing && !ownershipReleased) {
-            if (g_unloading.load(std::memory_order_relaxed) && data->deferredMinimize) {
-                data->deferredMinimize = FALSE;
-                data->isRising = TRUE;
-                std::lock_guard<std::mutex> lock(g_StateMutex);
-                auto directionIt = g_AnimWantRising.find(data->hRealWnd);
-                if (directionIt != g_AnimWantRising.end()) directionIt->second = true;
-            }
-            while (!CompleteMinRestoreEndpoint()) {
-            }
-        }
-        if (usingGpuBackend || gpuPresenter.IsInitialized()) {
-            gpuPresenter.Reset();
-        }
-        usingGpuBackend = false;
-        if (hScreenDC) {
-            ReleaseDC(NULL, hScreenDC);
-            hScreenDC = nullptr;
-        }
-        if (hGhost) {
-            DestroyWindow_Original(hGhost);
-            hGhost = nullptr;
-        }
-        if (ghostCounted) {
-            g_animationGhostCount.fetch_sub(1, std::memory_order_acq_rel);
-            ghostCounted = false;
-        }
-        if (data->isClosing) {
-            // Release the process-wide graphics runtime before allowing the
-            // last real window's owner thread to finish its native close.
-            // Waiting until after FinishClose can lose the race with process
-            // teardown in Chromium, Task Manager, and similar applications.
-            ReleaseGpuRenderServiceForFinalWindow(data->hRealWnd);
-        }
-        FinishClose();
-        if (!data->isClosing && !ownershipReleased && !data->isRising && !data->deferredMinimize) {
-            SetAnimationWindowCloak(FALSE);
-            UpdateDwmTransitions(data->hRealWnd, TRUE);
-            RestoreZOrderAfterGhostAsync(data->hRealWnd,
-                                         data->originalExStyle);
-        }
-        ReleaseGdiResources();
-        if (!data->isClosing && !ownershipReleased && !FinishDeferredMinimize()) {
-            ApplyWantedDirectionState();
-            FinishRising();
-        }
-        if (!data->isClosing && !ownershipReleased) {
-            ActivateRestoredWindowIfRequested();
-            ReleaseTaskbarRevealFocus();
-        }
-        if (!ownershipReleased) {
-            std::lock_guard<std::mutex> lock(g_StateMutex);
-            g_AnimActive.erase(data->hRealWnd);
-            g_AnimWantRising.erase(data->hRealWnd);
-            g_AnimRestoreRequestForeground.erase(data->hRealWnd);
-            g_AsyncRestoreReservations.erase(data->hRealWnd);
-        }
-        ReleaseNativeMinimizeBarrier(data->nativeMinimizeBarrier);
-        data->nativeMinimizeBarrier = nullptr;
-        ClearAnimationSessionIfCurrent(data->hRealWnd,
-                                       data->animationSessionToken);
-        data->animationSessionToken = 0;
-        delete data;
-        data = nullptr;
-    }
-};
-struct CloseAnimationWorkerCompletion {
-    bool closing;
-    ~CloseAnimationWorkerCompletion() {
-        if (closing) {
-            g_closeAnimationWorkerCount.fetch_sub(1, std::memory_order_release);
-        }
-    }
-};
-
-DWORD WINAPI MainAnimThread(LPVOID lpParam) {
-    SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
-    auto* data = (WindowAnimData*)lpParam;
-    const HWND animatedWindow = data->hRealWnd;
-    const bool closingAnimation = data->isClosing != FALSE;
-    CloseAnimationWorkerCompletion completion{closingAnimation};
-    AnimationEngine engine(data);
-    const bool telemetryEnabled = engine.IsPerformanceTelemetryEnabled();
-    const auto readCounter = []() {
-        LARGE_INTEGER counter{};
-        QueryPerformanceCounter(&counter);
-        return counter.QuadPart;
-    };
-    const LONGLONG initializeStart =
-        telemetryEnabled ? readCounter() : 0;
-    const bool initialized = engine.Initialize();
-    if (telemetryEnabled) {
-        engine.SetTelemetryInitializeTicks(
-            readCounter() - initializeStart);
-    }
-    bool bootstrapPresented = true;
-    bool precalcPrepared = false;
-    if (initialized) {
-        const int style = data->effectStyle;
-        const bool inplaceBootstrap = !data->isClosing && (style >= 1 && style <= 6);
-        const bool closeBootstrap =
-            data->isClosing &&
-            ((style >= 3 && style <= 5) ||
-             (style == 2 && engine.IsUsingGpuBackend()));
-        if (inplaceBootstrap || closeBootstrap) {
-            const LONGLONG bootstrapStart =
-                telemetryEnabled ? readCounter() : 0;
-            bootstrapPresented = engine.ShowInkBootstrapFrame();
-            engine.RecordTelemetryFrameSample(
-                bootstrapStart, bootstrapPresented);
-        }
-        if (bootstrapPresented) {
-            const LONGLONG precalcStart =
-                telemetryEnabled ? readCounter() : 0;
-            precalcPrepared = engine.PrecalcPhysics();
-            if (telemetryEnabled) {
-                engine.SetTelemetryPrecalcTicks(
-                    readCounter() - precalcStart);
-            }
-        }
-        if (bootstrapPresented && precalcPrepared) {
-            if (data->isClosing) {
-                engine.RunLoop();
-            } else {
-                do {
-                    engine.RunLoop();
-                } while (!g_unloading.load(std::memory_order_relaxed) &&
-                         !engine.CompleteMinRestoreEndpoint());
-            }
-        }
-    }
-    PCWSTR telemetryStatus = L"ok";
-    if (g_unloading.load(std::memory_order_relaxed)) {
-        telemetryStatus = L"unload";
-    } else if (!initialized) {
-        telemetryStatus = L"init_failed";
-    } else if (!bootstrapPresented) {
-        telemetryStatus = L"bootstrap_failed";
-    } else if (!precalcPrepared) {
-        telemetryStatus = L"precalc_failed";
-    } else if (engine.TelemetryPresentationFailed()) {
-        telemetryStatus = L"present_failed";
-    }
-    engine.LogPerformanceTelemetry(telemetryStatus);
-    engine.Teardown();
-    if (!closingAnimation) {
-        RequestPredictedGpuWarmup(animatedWindow);
-    } else if (HWND hStableWnd = FindStableGpuWindow(
-                   /*requireCloseCompatibility=*/false, animatedWindow)) {
-        RequestPredictedGpuWarmup(hStableWnd);
-    } else if (!HasRemainingAnimationWindow(animatedWindow)) {
-        // FinishClose normally released this before handing control back to
-        // the owner thread. Retry here in case another GPU presenter was still
-        // unwinding at that instant.
-        ReleaseGpuRenderServiceForFinalWindow(animatedWindow);
-    }
-    return 0;
-}
-static bool StartAnimationWorker(WindowAnimData* data) {
-    const bool closing = data->isClosing != FALSE;
-    if (closing) {
-        g_closeAnimationWorkerCount.fetch_add(1, std::memory_order_acq_rel);
-    }
-    if (StartWorkerThread(MainAnimThread, data)) return true;
-    if (closing) {
-        g_closeAnimationWorkerCount.fetch_sub(1, std::memory_order_release);
-    }
-    return false;
-}
-
-bool StartAnimation(HWND hWnd, BOOL rising, LONG_PTR originalExStyle, BOOL cloakHidden = FALSE,
-                    BOOL isClosing = FALSE, UINT closeMsg = 0, HANDLE hWaitFinish = NULL,
-                    BOOL deferredMinimize = FALSE, BOOL requestedUnhide = FALSE, HWND hNextApp = NULL,
-                    int deferredShowCmd = 0, int effectStyle = -1,
-                    BOOL taskbarFocusBorrowed = FALSE,
-                    NativeMinimizeBarrier* nativeMinimizeBarrier = nullptr,
-                    uint64_t asyncRestoreReservation = 0,
-                    BOOL* suppressNativeMinimizeOnFailure = nullptr,
-                    BOOL restoreMaximizedHint = FALSE,
-                    ULONG_PTR suppliedSnapshotToken = 0) {
-    NativeMinimizeBarrierOwner nativeBarrierOwner(nativeMinimizeBarrier);
-    if (suppliedSnapshotToken &&
-        !IsLaunchAnimationCurrent(hWnd, suppliedSnapshotToken)) {
-        return false;
-    }
-    if (suppressNativeMinimizeOnFailure) *suppressNativeMinimizeOnFailure = FALSE;
-    const BOOL restoreMaximized =
-        !isClosing &&
-        (restoreMaximizedHint || WindowRestoresMaximized(hWnd));
-    
-    static std::atomic<int> s_animCount{0};
-    if (s_animCount.fetch_add(1, std::memory_order_relaxed) % 10 == 0) {
-        SweepStaleData();
-    }
-    RECT winRect{};
-    RECT rect{};
-    if (!GetAnimationWindowRects(hWnd, &winRect, &rect)) {
-        FailAnimationStart(hWnd, rising, originalExStyle, cloakHidden);
-        return false;
-    }
-    int w = rect.right - rect.left;
-    int h = rect.bottom - rect.top;
-    int offsetX = rect.left - winRect.left;
-    int offsetY = rect.top - winRect.top;
-    int rawW = winRect.right - winRect.left;
-    int rawH = winRect.bottom - winRect.top;
-    if (w <= 0 || h <= 0 || rawW <= 0 || rawH <= 0) {
-        FailAnimationStart(hWnd, rising, originalExStyle, cloakHidden);
-        return false;
-    }
-    if (suppliedSnapshotToken &&
-        !IsLaunchSurfaceSizeReady(hWnd, w, h)) {
-        if (IsDiagnosticLoggingEnabled()) {
-            Wh_Log(L"Launch animation skipped hwnd=%p reason=transient-"
-                   L"application-frame source=%dx%d phase=start",
-                   hWnd, w, h);
-        }
-        FailAnimationStart(hWnd, rising, originalExStyle, cloakHidden);
-        return false;
-    }
-    bool blocked = g_unloading.load(std::memory_order_relaxed);
-    if (!blocked) {
-        std::lock_guard<std::mutex> lock(g_StateMutex);
-        if (asyncRestoreReservation) {
-            auto reservationIt = g_AsyncRestoreReservations.find(hWnd);
-            auto directionIt = g_AnimWantRising.find(hWnd);
-            blocked = reservationIt == g_AsyncRestoreReservations.end() ||
-                      reservationIt->second != asyncRestoreReservation ||
-                      directionIt == g_AnimWantRising.end() || !g_AnimActive.count(hWnd);
-            if (!blocked) {
-                rising = directionIt->second;
-                if (!rising) {
-                    deferredMinimize = TRUE;
-                    deferredShowCmd = SW_MINIMIZE;
-                }
-                g_LaunchSeen.insert(hWnd);
-            }
-        } else {
-            blocked = !g_AnimActive.insert(hWnd).second;
-        }
-        if (!blocked && !asyncRestoreReservation) {
-            g_LaunchSeen.insert(hWnd);
-            if (isClosing) {
-                g_AnimWantRising.erase(hWnd);
-            } else {
-                g_AnimWantRising[hWnd] = rising != FALSE;
-            }
-            g_AnimRestoreRequestForeground.erase(hWnd);
-            g_AsyncRestoreReservations.erase(hWnd);
-        }
-    }
-    if (blocked) {
-        if (IsDiagnosticLoggingEnabled()) {
-            Wh_Log(
-                L"Animation skipped (busy/unloading) hwnd=%p rising=%d "
-                L"closing=%d",
-                hWnd, rising, isClosing);
-        }
-        if (asyncRestoreReservation) return false;
-        if (!isClosing && !g_unloading.load(std::memory_order_relaxed) &&
-            RetargetLiveMinRestore(hWnd, rising != FALSE) == MinRestoreRetarget::Accepted) {
-            if (suppressNativeMinimizeOnFailure) *suppressNativeMinimizeOnFailure = TRUE;
-            return false;
-        }
-        FailAnimationStart(hWnd, rising, originalExStyle, cloakHidden, /*skipDwmIfOwned=*/true);
-        return false;
-    }
-    const DWORD targetThreadId = GetWindowThreadProcessId(hWnd, nullptr);
-    const bool onTargetThread =
-        targetThreadId && targetThreadId == GetCurrentThreadId();
-    bool animationSessionPublicationFailed = false;
-    const ULONG_PTR animationSessionToken = PublishAnimationSession(
-        hWnd, &animationSessionPublicationFailed);
-    const DWORD animationSessionPublicationError =
-        animationSessionPublicationFailed ? GetLastError() : ERROR_SUCCESS;
-    if (!isClosing && !onTargetThread &&
-        animationSessionPublicationFailed &&
-        IsClassicShowDesktopOperation()) {
-        if (IsDiagnosticLoggingEnabled()) {
-            Wh_Log(L"Classic Show Desktop delegated after session property "
-                   L"failure hwnd=%p err=%lu",
-                   hWnd, animationSessionPublicationError);
-        }
-        FailAnimationStart(hWnd, rising, originalExStyle, cloakHidden);
-        std::lock_guard<std::mutex> lock(g_StateMutex);
-        g_AnimActive.erase(hWnd);
-        g_AnimWantRising.erase(hWnd);
-        g_AnimRestoreRequestForeground.erase(hWnd);
-        g_AsyncRestoreReservations.erase(hWnd);
-        return false;
-    }
-    LONG_PTR storedExStyle = originalExStyle;
-    if (!isClosing) {
-        const LONG_PTR currentExStyle = GetWindowLongPtrW(hWnd, GWL_EXSTYLE);
-        storedExStyle = (originalExStyle & ~WS_EX_TOPMOST) |
-                        (currentExStyle & WS_EX_TOPMOST);
-        // The ghost is itself inserted into the topmost band, above existing
-        // topmost windows (or directly below the topmost taskbar). Leaving the
-        // real window in its band avoids an asynchronous demote/promote race
-        // with a rapid follow-up animation.
-    }
-    // A long guard is needed only while an accepted minimize/restore session
-    // can receive a duplicate taskbar restore in another injected process.
-    // Launch animations don't need it and must not suppress later taskbar use.
-    if (restoreMaximized && (!rising || cloakHidden)) {
-        ArmMaximizedRestoreGuard(
-            hWnd, static_cast<DWORD>(AnimConstants::MaximizedRestoreGuardMs));
-    }
-    HMONITOR hMon = MonitorFromWindow(hWnd, MONITOR_DEFAULTTONEAREST);
-    MONITORINFO mi{};
-    mi.cbSize = sizeof(mi);
-    if (!GetMonitorInfoW(hMon, &mi)) {
-        mi.rcMonitor.left = 0; mi.rcMonitor.top = 0; mi.rcMonitor.right = GetSystemMetrics(SM_CXSCREEN); mi.rcMonitor.bottom = GetSystemMetrics(SM_CYSCREEN);
-        mi.rcWork = mi.rcMonitor;
-    }
-    DWORD alignVal = 1, dataSize = sizeof(alignVal);
-    RegGetValueW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", L"TaskbarAl", RRF_RT_REG_DWORD, NULL, &alignVal, &dataSize);
-    HWND hTrayForDpi = FindTaskbarForMonitor(hMon);
-    const TaskbarGeometry taskbarGeometry = GetTaskbarGeometry(
-        hWnd, hTrayForDpi, mi,
-        requestedUnhide || deferredMinimize);
-    POINT learnedTarget = GetFallbackTaskbarButtonPosition(
-        hWnd, hTrayForDpi, mi, taskbarGeometry, alignVal);
-    const bool shuffledMinRestorePair =
-        !isClosing &&
-        g_minRestoreShuffleEffect.load(std::memory_order_relaxed);
-    ULONG_PTR pairedEffectToken = 0;
-    bool publishPairToken = false;
-    if (shuffledMinRestorePair) {
-        int pairedEffectStyle = -1;
-        pairedEffectToken = ReadMinRestorePairToken(hWnd, &pairedEffectStyle);
-        if (pairedEffectToken) effectStyle = pairedEffectStyle;
-    }
-    if (effectStyle < 0) {
-        effectStyle = isClosing ? ResolveCloseEffectStyle()
-                                : ResolveMinRestoreEffectStyle();
-    }
-    if (shuffledMinRestorePair && !pairedEffectToken) {
-        pairedEffectToken = CreateMinRestorePairToken(effectStyle);
-        publishPairToken = true;
-    } else if (!isClosing && !shuffledMinRestorePair) {
-        ClearMinRestorePair(hWnd);
-    }
-    if (!isClosing && (effectStyle == 0 || effectStyle == 7)) {
-        WCHAR windowTitle[256] = {0};
-        GetWindowTextW(hWnd, windowTitle, 256);
-        learnedTarget = GetTaskbarButtonPositionAsync(
-            hWnd, windowTitle, learnedTarget, hMon,
-            taskbarGeometry.edge);
-    }
-    int durationMs = isClosing ? g_closeDurationMs.load(std::memory_order_relaxed)
-                               : g_durationMs.load(std::memory_order_relaxed);
-    {
-        if (!isClosing && effectStyle == 7) {
-            durationMs = AnimConstants::Win10MinRestoreMs; // fixed, ignores duration setting
-        } else if (!isClosing && effectStyle == 1) {
-            durationMs = Clamp((durationMs * 6) / 5, 1, 1400); // Ink Splash
-        } else if (!isClosing && effectStyle == 2) {
-            durationMs = Clamp((durationMs * 3) / 4, 1, 1100); // Scorch
-        } else if (!isClosing && effectStyle == 3) {
-            durationMs = Clamp((durationMs * 7) / 6, 1, 1200); // Splinter
-        } else if (!isClosing && effectStyle == 4) {
-            durationMs = Clamp((durationMs * 4) / 5, 1, 1100); // Mirage
-        } else if (!isClosing && effectStyle == 5) {
-            durationMs = Clamp((durationMs * 4) / 5, 1, 1100); // Stipple
-        } else if (!isClosing && effectStyle == 6) {
-            durationMs = Clamp((durationMs * 17) / 20, 1, 1200); // Swell
-        }
-    }
-    {
-        if (isClosing && effectStyle == 3) {
-            durationMs = Clamp((durationMs * 19) / 20, 1, 1300);
-        } else if (isClosing && effectStyle == 4) {
-            durationMs = Clamp((durationMs * 55) / 100, 1, 900);
-        }
-    }
-    auto* data = new (std::nothrow) WindowAnimData{
-        hWnd, nullptr, nullptr, rect, hMon, w, h, learnedTarget.x,
-        learnedTarget.y, rising, storedExStyle, cloakHidden, nullptr,
-        durationMs,
-        isClosing, closeMsg, hWaitFinish,
-        requestedUnhide, hNextApp,
-        g_unhideDurationMs.load(std::memory_order_relaxed),
-        deferredMinimize,
-        deferredShowCmd,
-        effectStyle,
-        restoreMaximized,
-        pairedEffectToken,
-        suppliedSnapshotToken,
-        taskbarFocusBorrowed,
-        FALSE,
-        FALSE,
-        nativeBarrierOwner.release(),
-        animationSessionToken,
-        isClosing && RequiresExcelAlphaOnlyCloseConcealment(hWnd,
-                                                           originalExStyle)
-    };
-    const bool initiatingHookWillSubmitMinimize =
-        !rising && suppressNativeMinimizeOnFailure != nullptr;
-    auto finalizeClaimAfterStartFailure = [&]() {
-        ClearAnimationSessionIfCurrent(hWnd, animationSessionToken);
-        if (suppliedSnapshotToken &&
-            !IsLaunchAnimationCurrent(hWnd, suppliedSnapshotToken)) {
-            return;
-        }
-        if (asyncRestoreReservation) return;
-        if (isClosing) {
-            FailAnimationStart(hWnd, rising, storedExStyle, cloakHidden);
-            std::lock_guard<std::mutex> lock(g_StateMutex);
-            g_AnimActive.erase(hWnd);
-            return;
-        }
-
-        for (;;) {
-            BOOL finalRising = rising;
-            {
-                std::lock_guard<std::mutex> lock(g_StateMutex);
-                auto directionIt = g_AnimWantRising.find(hWnd);
-                if (directionIt != g_AnimWantRising.end()) {
-                    finalRising = directionIt->second;
-                }
-            }
-
-            if (!finalRising && !initiatingHookWillSubmitMinimize &&
-                IsWindow(hWnd)) {
-                const int fallbackMinimizeCmd =
-                    deferredShowCmd == SW_SHOWMINNOACTIVE ||
-                            deferredShowCmd == SW_SHOWMINIMIZED ||
-                            deferredShowCmd == SW_MINIMIZE
-                        ? deferredShowCmd
-                        : SW_MINIMIZE;
-                if (onTargetThread) {
-                    ShowWindow_Original(hWnd, fallbackMinimizeCmd);
-                } else {
-                    ShowWindowAsync_Original(hWnd, fallbackMinimizeCmd);
-                }
-            } else if (finalRising &&
-                       (IsIconic(hWnd) ||
-                        (restoreMaximized && !IsZoomed(hWnd)))) {
-                if (onTargetThread) {
-                    RestoreWindowUnderGhost(hWnd, storedExStyle,
-                                            restoreMaximized);
-                } else {
-                    ShowWindowAsync_Original(
-                        hWnd, StableRestoreShowCmd(hWnd, restoreMaximized));
-                    RestoreZOrderAfterGhostAsync(hWnd, storedExStyle);
-                }
-            }
-            FailAnimationStart(hWnd, finalRising, storedExStyle, cloakHidden);
-
-            bool directionChanged = false;
-            bool clearPairedEffect = false;
-            {
-                std::lock_guard<std::mutex> lock(g_StateMutex);
-                auto directionIt = g_AnimWantRising.find(hWnd);
-                directionChanged = directionIt != g_AnimWantRising.end() &&
-                                   directionIt->second != (finalRising != FALSE);
-            if (!directionChanged) {
-                    clearPairedEffect = pairedEffectToken != 0;
-                    if (finalRising) EraseSnapshotLocked(hWnd);
-                    g_AnimActive.erase(hWnd);
-                    g_AnimWantRising.erase(hWnd);
-                    g_AnimRestoreRequestForeground.erase(hWnd);
-                    g_AsyncRestoreReservations.erase(hWnd);
-                    if (suppliedSnapshotToken) g_LaunchSeen.erase(hWnd);
-                }
-            }
-            if (directionChanged) continue;
-            if (clearPairedEffect) {
-                ClearMinRestorePairIfCurrent(hWnd, pairedEffectToken);
-            }
-            if (finalRising && restoreMaximized) {
-                ArmMaximizedRestoreGuard(
-                    hWnd,
-                    static_cast<DWORD>(GetDoubleClickTime() + 100));
-            }
-            if (initiatingHookWillSubmitMinimize && finalRising &&
-                suppressNativeMinimizeOnFailure) {
-                // The live restore request cancels the not-yet-submitted
-                // minimize owned by the initiating hook.
-                *suppressNativeMinimizeOnFailure = TRUE;
-            }
-            if (suppliedSnapshotToken) {
-                ClearLaunchAnimationIfCurrent(hWnd, suppliedSnapshotToken);
-            }
-            return;
-        }
-    };
-    if (!data) {
-        Wh_Log(L"Animation state allocation failed hwnd=%p", hWnd);
-        finalizeClaimAfterStartFailure();
-        return false;
-    }
-    HDC hScreenDC = GetDC(NULL);
-    data->hBitmap = CreateDib32(hScreenDC, w, h, &data->pBits);
-    if (!data->hBitmap || !data->pBits) {
-        Wh_Log(L"Snapshot DIB alloc failed hwnd=%p %dx%d", hWnd, w, h);
-        ReleaseDC(NULL, hScreenDC);
-        finalizeClaimAfterStartFailure();
-        ReleaseNativeMinimizeBarrier(data->nativeMinimizeBarrier);
-        data->nativeMinimizeBarrier = nullptr;
-        if (data->hBitmap) DeleteObject(data->hBitmap);
-        delete data;
-        return false;
-    }
-    const bool excelCloseScreenOnlyCapture =
-        RequiresExcelScreenOnlyCloseCapture(hWnd, isClosing);
-    const bool screenOnlyCapture =
-        excelCloseScreenOnlyCapture ||
-        (isClosing && RequiresScreenCapture(hWnd));
-    const bool preferScreenCapture =
-        excelCloseScreenOnlyCapture || ShouldUseBitBlt(hWnd, isClosing);
-    const bool allowShowDesktopSwitchGhostWait =
-        !rising && !isClosing && !onTargetThread &&
-        IsClassicShowDesktopOperation();
-    auto CopySnapshot = [&](void* sourceBits, int sourceWidth,
-                            int sourceHeight, bool makeOpaque) -> bool {
-        auto* src = (DWORD*)sourceBits;
-        auto* dst = (DWORD*)data->pBits;
-        memset(dst, 0, (size_t)w * h * 4);
-        const int startY = std::max(0, -offsetY);
-        const int endY = std::min(h, sourceHeight - offsetY);
-        const int startX = std::max(0, -offsetX);
-        const int endX = std::min(w, sourceWidth - offsetX);
-        if (startY >= endY || startX >= endX) return false;
-        const int rowPixels = endX - startX;
-        const size_t rowBytes = (size_t)rowPixels * 4;
-        size_t zeroAlpha = 0;
-        for (int y = startY; y < endY; ++y) {
-            DWORD* dstRow = dst + (size_t)y * w + startX;
-            memcpy(dstRow,
-                   src + (size_t)(y + offsetY) * sourceWidth + startX + offsetX,
-                   rowBytes);
-            if (makeOpaque) {
-                for (int x = 0; x < rowPixels; ++x) dstRow[x] |= 0xFF000000u;
-            } else {
-                for (int x = 0; x < rowPixels; ++x) {
-                    if ((dstRow[x] >> 24) == 0) { dstRow[x] = 0; ++zeroAlpha; }
-                }
-            }
-        }
-        const size_t inBounds = (size_t)(endY - startY) * (size_t)rowPixels;
-        if (zeroAlpha * 2 > inBounds) {
-            for (int y = startY; y < endY; ++y) {
-                DWORD* dstRow = dst + (size_t)y * w + startX;
-                const DWORD* srcRow =
-                    src + (size_t)(y + offsetY) * sourceWidth + startX + offsetX;
-                for (int x = 0; x < rowPixels; ++x) {
-                    if (dstRow[x] == 0) dstRow[x] = 0xFF000000u | (srcRow[x] & 0x00FFFFFFu);
-                }
-            }
-        }
-        return true;
-    };
-    auto CaptureNow = [&](bool allowScreenFallback) -> bool {
-        HDC tempDC = CreateCompatibleDC(hScreenDC);
-        void* tempBits = nullptr;
-        HBITMAP tempBmp = CreateDib32(hScreenDC, rawW, rawH, &tempBits);
-        if (!tempDC || !tempBmp || !tempBits) {
-            Wh_Log(L"Capture temp DIB alloc failed hwnd=%p %dx%d", hWnd, rawW, rawH);
-            if (tempBmp) DeleteObject(tempBmp);
-            if (tempDC) DeleteDC(tempDC);
-            return false;
-        }
-        HBITMAP oldBmp = (HBITMAP)SelectObject(tempDC, tempBmp);
-        const HWND hCaptureTaskbar = FindTaskbarForMonitor(hMon);
-        bool capturedTaskbarAbove = false;
-        RECT capturedTaskbarRect{};
-        auto LogScreenCaptureFailure = [&](PCWSTR phase,
-                                           const ScreenCaptureEligibility& e) {
-            if (!screenOnlyCapture && !IsDiagnosticLoggingEnabled()) return;
-            WCHAR blockerClass[96]{};
-            DWORD blockerProcessId = 0;
-            BOOL blockerIconic = FALSE;
-            HWND blockerOwner = nullptr;
-            HWND blockerRootOwner = nullptr;
-            if (e.blockingWindow) {
-                GetClassNameW(e.blockingWindow, blockerClass,
-                              ARRAYSIZE(blockerClass));
-                GetWindowThreadProcessId(e.blockingWindow,
-                                         &blockerProcessId);
-                blockerIconic = IsIconic(e.blockingWindow);
-                blockerOwner = GetWindow(e.blockingWindow, GW_OWNER);
-                blockerRootOwner =
-                    GetAncestor(e.blockingWindow, GA_ROOTOWNER);
-            }
-            Wh_Log(
-                L"Screen capture unavailable hwnd=%p phase=%s rising=%d "
-                L"crossThread=%d reason=%d blocker=%p blocker_pid=%lu "
-                L"blocker_class=%s blocker_iconic=%d blocker_owner=%p "
-                L"blocker_root_owner=%p",
-                hWnd, phase, rising, !onTargetThread,
-                static_cast<int>(e.failureReason),
-                e.blockingWindow, blockerProcessId,
-                blockerClass[0] ? blockerClass : L"none", blockerIconic,
-                blockerOwner, blockerRootOwner);
-        };
-        auto CaptureScreen = [&]() -> BOOL {
-            // A screen DC contains the fully composed desktop, not just hWnd.
-            // Refuse the fallback when another top-level window contributes
-            // pixels above the target. Checking the z-order also catches the
-            // hit-test-transparent ghosts during batched shell minimizes.
-            DWORD switchGhostDeadline = 0;
-            for (;;) {
-                ScreenCaptureEligibility beforeCapture;
-                if (!CanCaptureWindowFromScreen(
-                        hWnd, rect, hCaptureTaskbar,
-                        &beforeCapture)) {
-                    if (!allowShowDesktopSwitchGhostWait ||
-                        !beforeCapture.blockingSwitchAnimationGhost) {
-                        LogScreenCaptureFailure(L"before", beforeCapture);
-                        return FALSE;
-                    }
-                    if (!switchGhostDeadline) {
-                        switchGhostDeadline =
-                            GetTickCount() +
-                            AnimConstants::ShowDesktopSwitchGhostWaitMs;
-                    }
-                    if (static_cast<LONG>(GetTickCount() -
-                                          switchGhostDeadline) >= 0) {
-                        LogScreenCaptureFailure(L"before-timeout",
-                                                beforeCapture);
-                        return FALSE;
-                    }
-                    // Alt+Tab's thumbnail belongs to the destination process,
-                    // so Explorer can't see its process-local animation set.
-                    // Let that short handoff finish before taking Win+D's
-                    // composed-screen snapshot instead of falling through to
-                    // a visible native minimize.
-                    FlushDwmOrYield();
-                    continue;
-                }
-                const BOOL result =
-                    BitBlt(tempDC, 0, 0, rawW, rawH, hScreenDC,
-                           winRect.left, winRect.top, SRCCOPY);
-                ScreenCaptureEligibility afterCapture;
-                if (!result ||
-                    !CanCaptureWindowFromScreen(
-                        hWnd, rect, hCaptureTaskbar,
-                        &afterCapture)) {
-                    if (allowShowDesktopSwitchGhostWait &&
-                        afterCapture.blockingSwitchAnimationGhost) {
-                        if (!switchGhostDeadline) {
-                            switchGhostDeadline =
-                                GetTickCount() +
-                                AnimConstants::ShowDesktopSwitchGhostWaitMs;
-                        }
-                        if (static_cast<LONG>(GetTickCount() -
-                                              switchGhostDeadline) < 0) {
-                            FlushDwmOrYield();
-                            continue;
-                        }
-                    }
-                    LogScreenCaptureFailure(
-                        result ? L"after" : L"bitblt", afterCapture);
-                    return FALSE;
-                }
-                if (beforeCapture.taskbarAboveAndOverlapping !=
-                        afterCapture.taskbarAboveAndOverlapping ||
-                    (beforeCapture.taskbarAboveAndOverlapping &&
-                     !EqualRect(&beforeCapture.taskbarRect,
-                                &afterCapture.taskbarRect))) {
-                    return FALSE;
-                }
-                capturedTaskbarAbove =
-                    beforeCapture.taskbarAboveAndOverlapping;
-                capturedTaskbarRect = beforeCapture.taskbarRect;
-                return TRUE;
-            }
-        };
-        bool capturedFromScreen = false;
-        bool screenCaptureAttempted = false;
-        BOOL captured = FALSE;
-        if (preferScreenCapture) {
-            screenCaptureAttempted = true;
-            captured = CaptureScreen();
-            capturedFromScreen = captured != FALSE;
-        }
-        if (!captured && onTargetThread && !screenOnlyCapture) {
-            // PrintWindow is synchronous. It is safe only when this hook is
-            // already running on the target window's UI thread. Clear a
-            // rejected screen attempt first so partial PrintWindow output
-            // can't retain pixels from the composed desktop.
-            GdiFlush();
-            memset(tempBits, 0, (size_t)rawW * rawH * sizeof(DWORD));
-            captured = PrintWindow(hWnd, tempDC, PW_RENDERFULLCONTENT);
-        }
-        if (!captured && !screenCaptureAttempted && allowScreenFallback &&
-            IsWindowVisible(hWnd) && !IsIconic(hWnd)) {
-            screenCaptureAttempted = true;
-            captured = CaptureScreen();
-            capturedFromScreen = captured != FALSE;
-        }
-        if (captured && capturedFromScreen) {
-            GdiFlush();
-            RECT overlap{};
-            if (capturedTaskbarAbove &&
-                IntersectRect(&overlap, &winRect,
-                              &capturedTaskbarRect)) {
-                const int left = Clamp(
-                    static_cast<int>(overlap.left - winRect.left), 0, rawW);
-                const int right = Clamp(
-                    static_cast<int>(overlap.right - winRect.left), 0, rawW);
-                const int top = Clamp(
-                    static_cast<int>(overlap.top - winRect.top), 0, rawH);
-                const int bottom = Clamp(
-                    static_cast<int>(overlap.bottom - winRect.top), 0, rawH);
-                auto* pixels = static_cast<DWORD*>(tempBits);
-                const bool horizontal =
-                    (capturedTaskbarRect.right - capturedTaskbarRect.left) >=
-                    (capturedTaskbarRect.bottom - capturedTaskbarRect.top);
-                const bool trailingEdge = horizontal
-                                              ? capturedTaskbarRect.top >=
-                                                    (mi.rcMonitor.top +
-                                                     mi.rcMonitor.bottom) / 2
-                                              : capturedTaskbarRect.left >=
-                                                    (mi.rcMonitor.left +
-                                                     mi.rcMonitor.right) / 2;
-                if (left < right && top < bottom) {
-                    if (horizontal) {
-                        const int sourceY = trailingEdge
-                                                ? std::max(0, top - 1)
-                                                : std::min(rawH - 1, bottom);
-                        for (int y = top; y < bottom; ++y) {
-                            memcpy(pixels + (size_t)y * rawW + left,
-                                   pixels + (size_t)sourceY * rawW + left,
-                                   (size_t)(right - left) * sizeof(DWORD));
-                        }
-                    } else {
-                        const int sourceX = trailingEdge
-                                                ? std::max(0, left - 1)
-                                                : std::min(rawW - 1, right);
-                        for (int y = top; y < bottom; ++y) {
-                            DWORD* row = pixels + (size_t)y * rawW;
-                            std::fill(row + left, row + right, row[sourceX]);
-                        }
-                    }
-                }
-            }
-        }
-        if (captured) {
-            GdiFlush();
-            captured = CopySnapshot(tempBits, rawW, rawH,
-                                    capturedFromScreen);
-        }
-        SelectObject(tempDC, oldBmp);
-        DeleteObject(tempBmp);
-        DeleteDC(tempDC);
-        if (excelCloseScreenOnlyCapture && IsDiagnosticLoggingEnabled()) {
-            Wh_Log(L"Excel close snapshot hwnd=%p source=screen "
-                   L"captured=%d printwindow=0 native_fallback=%d",
-                   hWnd, captured != FALSE, captured == FALSE);
-        }
-        return captured != FALSE;
-    };
-    bool snapshotReady = false;
-    if (suppliedSnapshotToken) {
-        std::lock_guard<std::mutex> lock(g_StateMutex);
-        auto snapshotIt = g_WndSnapshots.find(hWnd);
-        if (snapshotIt != g_WndSnapshots.end() &&
-            snapshotIt->second.windowToken == suppliedSnapshotToken &&
-            snapshotIt->second.pBits &&
-            reinterpret_cast<ULONG_PTR>(GetPropW(
-                hWnd, kPropSnapshotCache)) == suppliedSnapshotToken &&
-            IsLaunchAnimationCurrent(hWnd, suppliedSnapshotToken)) {
-            // suppliedSnapshotToken is used by launch animations. The owner
-            // hook captured a raw GetWindowRect-sized PrintWindow bitmap after
-            // the native show; normalize/crop it into extended-frame space.
-            snapshotReady = CopySnapshot(
-                snapshotIt->second.pBits, snapshotIt->second.w,
-                snapshotIt->second.h, /*makeOpaque=*/false);
-        }
-        EraseSnapshotIfCurrentLocked(hWnd, suppliedSnapshotToken);
-    }
-    if (!snapshotReady && rising) {
-        {
-            std::lock_guard<std::mutex> lock(g_StateMutex);
-            snapshotReady = ConsumeSnapshotLocked(
-                hWnd, data->pBits, w, h, /*logFailure=*/!onTargetThread);
-        }
-        // A cross-thread restore source is already cloaked. Screen capture
-        // would record the background, and PrintWindow could wedge Explorer.
-        if (!snapshotReady) {
-            snapshotReady = CaptureNow(/*allowScreenFallback=*/false);
-        }
-    } else if (!snapshotReady) {
-        if (!isClosing) {
-            std::lock_guard<std::mutex> lock(g_StateMutex);
-            EraseSnapshotLocked(hWnd);
-        }
-        snapshotReady = CaptureNow(/*allowScreenFallback=*/true);
-        // Keep the original capture with the active animation. If minimize
-        // reaches its endpoint, CompleteMinRestoreEndpoint transfers that DIB
-        // directly to the restore cache. Live reversals therefore allocate no
-        // redundant cache bitmap and still keep their current source pixels.
-    }
-    if (snapshotReady && !isClosing) {
-        ApplyRoundedCornerMask(
-            data->pBits, w, h,
-            GetAnimatedWindowCornerRadius(
-                hWnd, restoreMaximized, originalExStyle));
-    }
-    ReleaseDC(NULL, hScreenDC);
-    if (!snapshotReady) {
-        Wh_Log(L"Animation capture failed hwnd=%p rising=%d crossThread=%d",
-               hWnd, rising, !onTargetThread);
-        finalizeClaimAfterStartFailure();
-        ReleaseNativeMinimizeBarrier(data->nativeMinimizeBarrier);
-        data->nativeMinimizeBarrier = nullptr;
-        DeleteObject(data->hBitmap);
-        delete data;
-        return false;
-    }
-    HANDLE hFirstShown = NULL;
-    if (!rising) {
-        hFirstShown = CreateEventW(NULL, TRUE, FALSE, NULL);
-        if (hFirstShown && !DuplicateHandle(GetCurrentProcess(), hFirstShown, GetCurrentProcess(), &data->hFirstFrameShown, 0, FALSE, DUPLICATE_SAME_ACCESS)) {
-            data->hFirstFrameShown = NULL;
-        }
-    }
-    bool waitForFirstFrame = (data->hFirstFrameShown != NULL);
-    const int startedDurationMs = data->durationMs;
-    bool workerStarted = false;
-    // Publish before the worker can present its first frame. This marker also
-    // lets the native hide/destroy caller release alpha ownership after the
-    // animation worker has exited, without touching other close paths.
-    const bool closeConcealmentReady =
-        !data->alphaOnlyCloseCompatibility ||
-        SetPropW(hWnd, kPropExcelCloseAlpha, reinterpret_cast<HANDLE>(1));
-    if (data->alphaOnlyCloseCompatibility && IsDiagnosticLoggingEnabled()) {
-        Wh_Log(L"Excel close concealment hwnd=%p alpha_only=1 ready=%d "
-               L"msg=0x%04X", hWnd, closeConcealmentReady, closeMsg);
-    }
-    if (!isClosing) {
-        if (shuffledMinRestorePair) {
-            if (publishPairToken) {
-                if (!PublishMinRestorePairToken(
-                        hWnd, data->pairedEffectToken)) {
-                    data->pairedEffectToken = 0;
-                }
-            }
-        }
-    }
-    if (asyncRestoreReservation) {
-        std::lock_guard<std::mutex> lock(g_StateMutex);
-        auto reservationIt = g_AsyncRestoreReservations.find(hWnd);
-        auto directionIt = g_AnimWantRising.find(hWnd);
-        const bool reservationStillOwned =
-            reservationIt != g_AsyncRestoreReservations.end() &&
-            reservationIt->second == asyncRestoreReservation &&
-            directionIt != g_AnimWantRising.end() && g_AnimActive.count(hWnd) &&
-            IsWindow(hWnd);
-        if (reservationStillOwned) {
-            workerStarted = StartAnimationWorker(data);
-            if (workerStarted) {
-                g_AsyncRestoreReservations.erase(reservationIt);
-            }
-        }
-    } else if (closeConcealmentReady) {
-        workerStarted = StartAnimationWorker(data);
-    }
-    if (workerStarted) {
-        if (IsDiagnosticLoggingEnabled()) {
-            WCHAR windowClass[96]{};
-            DWORD windowProcessId = 0;
-            GetClassNameW(hWnd, windowClass, ARRAYSIZE(windowClass));
-            GetWindowThreadProcessId(hWnd, &windowProcessId);
-            Wh_Log(
-                L"Animation start hwnd=%p kind=%s style=%d dock=(%ld,%ld) "
-                L"taskbar_edge=%u duration=%d target_pid=%lu class=%s",
-                hWnd,
-                isClosing ? L"close"
-                          : (rising ? L"restore" : L"minimize"),
-                effectStyle, learnedTarget.x, learnedTarget.y,
-                static_cast<unsigned>(taskbarGeometry.edge),
-                startedDurationMs,
-                windowProcessId,
-                windowClass[0] ? windowClass : L"unknown");
-        }
-        if (hFirstShown) {
-            const bool crossThreadGpuGenie =
-                !onTargetThread && effectStyle == 0 &&
-                g_gpuAcceleration.load(std::memory_order_relaxed) &&
-                !GetSystemMetrics(SM_REMOTESESSION);
-            const DWORD firstFrameWaitMs =
-                (!rising && !isClosing &&
-                 ((effectStyle >= 1 && effectStyle <= 7) ||
-                  crossThreadGpuGenie))
-                    ? 500
-                    : 200;
-            if (waitForFirstFrame) {
-                WaitForHandleWithSentMessagePump(hFirstShown,
-                                                 firstFrameWaitMs);
-            }
-            CloseHandle(hFirstShown);
-        }
-        return true;
-    }
-    Wh_Log(L"Animation worker failed hwnd=%p kind=%s", hWnd,
-           isClosing ? L"close" : (rising ? L"restore" : L"minimize"));
-    if (data->alphaOnlyCloseCompatibility) {
-        SetExcelCloseTransparency(hWnd, FALSE);
-    }
-    finalizeClaimAfterStartFailure();
-    if (hFirstShown) CloseHandle(hFirstShown);
-    if (data->hFirstFrameShown) CloseHandle(data->hFirstFrameShown);
-    ReleaseNativeMinimizeBarrier(data->nativeMinimizeBarrier);
-    data->nativeMinimizeBarrier = nullptr;
-    DeleteObject(data->hBitmap);
-    delete data;
-    return false;
-}
-DWORD WINAPI LaunchAnimThread(LPVOID lpParam);
-static bool IsMinimizeCommand(int cmd) {
-    return cmd == SW_MINIMIZE || cmd == SW_SHOWMINIMIZED || cmd == SW_SHOWMINNOACTIVE;
-}
-static bool IsLaunchCommand(int cmd) {
-    // A first show doesn't have to activate the window, and Explorer can use
-    // SW_RESTORE or one of the no-activate commands while applying a saved
-    // placement. The hidden-window and lifetime checks in PrepareLaunchAnim
-    // distinguish these launches from later restore/show requests.
-    return IsShowCmdForWinEvent(cmd) && !IsMinimizeCommand(cmd);
-}
-static void WaitForCloseAnimation(HANDLE wait) {
-    const DWORD timeoutMs = (DWORD)std::max(AnimConstants::WaitTimeoutMs,
-                                            g_closeDurationMs.load(std::memory_order_relaxed) +
-                                                AnimConstants::WaitSlackMs);
-    const DWORD deadline = GetTickCount() + timeoutMs;
-    for (;;) {
-        const DWORD now = GetTickCount();
-        if ((LONG)(now - deadline) >= 0) break;
-        const DWORD r = MsgWaitForMultipleObjectsEx(1, &wait, deadline - now, QS_SENDMESSAGE,
-                                                    MWMO_INPUTAVAILABLE);
-        if (r != WAIT_OBJECT_0 + 1) break;
-        MSG msg;
-        PeekMessageW(&msg, NULL, 0, 0, PM_NOREMOVE | PM_QS_SENDMESSAGE);
-    }
-}
-static void WaitForRemainingCloseAnimationWorkers() {
-    const DWORD timeoutMs = static_cast<DWORD>(std::max(
-        AnimConstants::WaitTimeoutMs,
-        g_closeDurationMs.load(std::memory_order_relaxed) +
-            AnimConstants::WaitSlackMs));
-    const DWORD deadline = GetTickCount() + timeoutMs;
-    while (g_closeAnimationWorkerCount.load(std::memory_order_acquire) > 0 &&
-           !g_unloading.load(std::memory_order_relaxed) &&
-           static_cast<LONG>(GetTickCount() - deadline) < 0) {
-        WaitWithSentMessagePump(10);
-    }
-    if (!g_unloading.load(std::memory_order_relaxed) &&
-        g_closeAnimationWorkerCount.load(std::memory_order_acquire) > 0) {
-        Wh_Log(L"Excel final close worker drain timed out pending=%ld",
-               g_closeAnimationWorkerCount.load(std::memory_order_relaxed));
-    }
-}
-
-struct OtherExcelCloseWindowSearch {
-    HWND excludedWindow;
-    DWORD processId;
-    bool found;
-};
-
-static BOOL CALLBACK FindOtherExcelCloseWindowProc(HWND hWnd,
-                                                   LPARAM lParam) {
-    auto* search = reinterpret_cast<OtherExcelCloseWindowSearch*>(lParam);
-    if (hWnd == search->excludedWindow ||
-        (!IsWindowVisible(hWnd) && !IsIconic(hWnd)) ||
-        GetPropW(hWnd, kPropCloseBypass) || GetPropW(hWnd, kPropClosed)) {
-        return TRUE;
-    }
-    DWORD processId = 0;
-    GetWindowThreadProcessId(hWnd, &processId);
-    if (processId != search->processId) return TRUE;
-    WCHAR className[64]{};
-    if (GetClassNameW(hWnd, className, ARRAYSIZE(className)) &&
-        _wcsicmp(className, L"XLMAIN") == 0) {
-        search->found = true;
-        return FALSE;
-    }
-    return TRUE;
-}
-
-static bool CanRunExcelCloseWithoutBlocking(HWND hWnd, UINT closeMsg,
-                                             LONG_PTR originalExStyle) {
-    if ((closeMsg != ANIM_CALLER_SW_HIDE && closeMsg != WM_DESTROY) ||
-        !RequiresExcelAlphaOnlyCloseConcealment(hWnd, originalExStyle)) {
-        // Alpha ownership protects against a late first frame after a failed
-        // native hide. Already-layered Excel windows do not have that marker,
-        // so keep their established full-animation wait.
-        return false;
-    }
-    DWORD processId = 0;
-    GetWindowThreadProcessId(hWnd, &processId);
-    if (processId != GetCurrentProcessId()) return false;
-    OtherExcelCloseWindowSearch search{hWnd, processId, false};
-    EnumWindows(FindOtherExcelCloseWindowProc,
-                reinterpret_cast<LPARAM>(&search));
-    return search.found;
-}
-
-static bool RunCloseAnimation(HWND hWnd, UINT closeMsg) {
-    const LONG_PTR originalExStyle = GetWindowLongPtrW(hWnd, GWL_EXSTYLE);
-    const bool excelClose =
-        RequiresExcelScreenOnlyCloseCapture(hWnd, /*isClosing=*/true);
-    bool excelFirstFrameOnly = false;
-    UpdateDwmTransitions(hWnd, FALSE);
-    if (RequiresScreenCapture(hWnd) &&
-        !HasRemainingAnimationWindow(hWnd)) {
-        // Console surfaces require a composed-screen snapshot. A composition
-        // renderer retained from a preceding restore can leave that capture
-        // temporarily unavailable. This is the final app window, so there is
-        // no later restore for which keeping the service warm would help.
-        ReleaseGpuRenderServiceForFinalWindow(
-            hWnd, /*waitForService=*/false);
-    }
-    HANDLE wait = CreateEventW(nullptr, TRUE, FALSE, nullptr);
-    HANDLE workerWait = NULL;
-    if (wait && !DuplicateHandle(GetCurrentProcess(), wait, GetCurrentProcess(), &workerWait, 0,
-                                 FALSE, DUPLICATE_SAME_ACCESS)) {
-        CloseHandle(wait);
-        wait = nullptr;
-    }
-    if (closeMsg == ANIM_CALLER_SW_HIDE && !wait) {
-        // This route has no worker-owned native hide. Without its completion
-        // event, use the caller's native API directly instead of starting an
-        // animation which the caller cannot wait for.
-        UpdateDwmTransitions(hWnd, TRUE);
-        if (excelClose) {
-            WaitForRemainingCloseAnimationWorkers();
-            ReleaseGpuRenderServiceForFinalWindow(hWnd);
-        }
-        return false;
-    }
-
-    const bool started =
-        StartAnimation(hWnd, FALSE, originalExStyle, FALSE, TRUE, closeMsg,
-                       workerWait);
-    if (!started) {
-        Wh_Log(L"Close animation did not start hwnd=%p msg=0x%04X", hWnd,
-               closeMsg);
-        // Failed capture/initialization must not leave the process-wide GPU
-        // service behind while the native close continues.
-        ReleaseGpuRenderServiceForFinalWindow(
-            hWnd, /*waitForService=*/false);
-        ScheduleFinalWindowGpuRelease(hWnd);
-    }
-
-    if (started) {
-        // The first-frame wait pumps sent messages. A sibling may have closed
-        // reentrantly during it, so decide whether this is still a non-final
-        // close only after StartAnimation returns. Use the pre-animation style
-        // because our own alpha concealment temporarily adds WS_EX_LAYERED.
-        excelFirstFrameOnly =
-            CanRunExcelCloseWithoutBlocking(hWnd, closeMsg, originalExStyle);
-        if (excelFirstFrameOnly && IsDiagnosticLoggingEnabled()) {
-            Wh_Log(L"Excel close handoff hwnd=%p wait=first-frame msg=0x%04X",
-                   hWnd, closeMsg);
-        }
-        // StartAnimation has already waited for the first presented frame.
-        // Its worker owns independent snapshot pixels and a duplicated event.
-        // Keep the native hide/destroy synchronous on the originating thread,
-        // but don't stall all other workbook windows for the whole effect.
-        // The last Excel window must still wait so process exit can't cut the
-        // worker's animation and graphics cleanup short.
-        if (wait && !excelFirstFrameOnly) {
-            WaitForCloseAnimation(wait);
-        }
-    } else if (workerWait) {
-        CloseHandle(workerWait);
-    }
-
-    if (excelClose && !excelFirstFrameOnly) {
-        // A previous workbook's detached close can finish after this one,
-        // especially with shuffled effects. Its lifetime includes graphics
-        // teardown, not just FinishClose's earlier completion event. Drain
-        // even when this window's capture failed and native close must proceed.
-        WaitForRemainingCloseAnimationWorkers();
-        // An earlier worker can see this still-visible caller-owned frame as
-        // a warmup target before its close lease ends. Re-cancel that request
-        // and release idle graphics after the drain, excluding this frame.
-        ReleaseGpuRenderServiceForFinalWindow(hWnd);
-    }
-    if (wait) CloseHandle(wait);
-    return started;
-}
-
-static void CompleteCallerOwnedHide(HWND hWnd) {
-    if (!IsWindow(hWnd)) return;
-    ULONG_PTR retainedTrayHideCloak = 0;
-    if (!IsWindowVisible(hWnd) && NeedsPersistentTrayHideCloak(hWnd)) {
-        retainedTrayHideCloak = RetainTrayHideCloak(hWnd);
-    }
-    if (GetPropW(hWnd, kPropExcelCloseAlpha)) {
-        SetExcelCloseTransparency(hWnd, FALSE);
-    } else if (!retainedTrayHideCloak) {
-        SetWindowCloak(hWnd, FALSE);
-    }
-    UpdateDwmTransitions(hWnd, TRUE);
-    RemovePropW(hWnd, kPropCloseBypass);
-    RemovePropW(hWnd, kPropClosed);
-}
-
-template <typename NativeHide>
-static BOOL RunCallerOwnedHideAnimation(HWND hWnd, NativeHide&& nativeHide) {
-    const bool animated = RunCloseAnimation(hWnd, ANIM_CALLER_SW_HIDE);
-    if (animated) SetPropW(hWnd, kPropCloseBypass, reinterpret_cast<HANDLE>(1));
-    // Keep the exact synchronous API and its arguments on the originating
-    // thread. Office hides its frame before destroying workbook UI objects;
-    // queuing the hide separately can deliver callbacks to those objects late.
-    const BOOL result = nativeHide();
-    const DWORD nativeError = GetLastError();
-    if (animated) CompleteCallerOwnedHide(hWnd);
-    SetLastError(nativeError);
-    return result;
-}
-
-static bool IsFutureTick(DWORD deadline, DWORD now = GetTickCount()) {
-    return deadline && static_cast<LONG>(now - deadline) < 0;
-}
-
-static void PublishNativeShowDesktopPassthrough(DWORD untilTick) {
-    g_localNativeShowDesktopUntilTick.store(untilTick,
-                                            std::memory_order_release);
-    if (!EnsureSharedStateMapped()) return;
-    std::lock_guard<std::mutex> lock(g_SharedStateMutex);
-    if (!g_pSharedState || !g_sharedStateWritable ||
-        g_pSharedState->magic != kSharedStateMagic) {
-        return;
-    }
-    InterlockedExchange(&g_pSharedState->nativeShowDesktopUntilTick,
-                        static_cast<LONG>(untilTick));
-    PulseSharedHeartbeatLocked();
-}
-
-static bool IsNativeShowDesktopPassthroughActive() {
-    if (!g_nativeShowDesktopAnimations.load(std::memory_order_relaxed)) {
-        return false;
-    }
-
-    const DWORD now = GetTickCount();
-    if (IsFutureTick(g_localNativeShowDesktopUntilTick.load(
-                         std::memory_order_acquire),
-                     now)) {
-        return true;
-    }
-    if (EnsureSharedStateMapped()) {
-        std::lock_guard<std::mutex> lock(g_SharedStateMutex);
-        if (g_pSharedState && g_pSharedState->magic == kSharedStateMagic) {
-            // Target processes map this view read-only, so use an aligned
-            // volatile load rather than an interlocked read-modify-write.
-            const DWORD untilTick = static_cast<DWORD>(
-                g_pSharedState->nativeShowDesktopUntilTick);
-            MemoryBarrier();
-            // This value is a bounded lease, not persistent shared state. Its
-            // own deadline is authoritative: tying it to the shorter Alt+Tab
-            // heartbeat could end a slow Show Desktop batch halfway through
-            // the five-second pre-call scope. If Explorer exits unexpectedly,
-            // the stale lease expires by itself.
-            if (IsFutureTick(untilTick, now)) {
-                return true;
-            }
-        }
-    }
-
-    // Per-process Win+D fallback when no published scope has arrived yet,
-    // including when Explorer's optional CTray symbol can't be resolved.
-    // Persist the observation so work posted behind the key-up
-    // still stays native. Touchpad gestures require the published scope from
-    // RaiseDesktop_Hook and intentionally have no key-state fallback.
-    const bool winDDown =
-        (GetAsyncKeyState('D') & 0x8000) &&
-        ((GetAsyncKeyState(VK_LWIN) & 0x8000) ||
-         (GetAsyncKeyState(VK_RWIN) & 0x8000));
-    if (!winDDown) return false;
-
-    const DWORD untilTick =
-        now + AnimConstants::ShowDesktopKeyFallbackScopeMs;
-    if (IsShellExplorerProcess()) {
-        PublishNativeShowDesktopPassthrough(untilTick);
-    } else {
-        g_localNativeShowDesktopUntilTick.store(untilTick,
-                                                std::memory_order_release);
-    }
-    return true;
-}
-
-static bool IsVisibleShowDesktopCandidate(HWND hWnd) {
-    if (!hWnd || !IsWindow(hWnd) || !IsWindowVisible(hWnd) ||
-        IsIconic(hWnd) || GetAncestor(hWnd, GA_ROOT) != hWnd ||
-        GetWindow(hWnd, GW_OWNER) ||
-        (GetWindowLongPtrW(hWnd, GWL_EXSTYLE) & WS_EX_TOOLWINDOW) ||
-        !ShouldAnimateWindow(hWnd)) {
-        return false;
-    }
-    const std::wstring cls = GetClassNameStr(hWnd);
-    DWORD windowPid = 0;
-    GetWindowThreadProcessId(hWnd, &windowPid);
-    BOOL cloaked = FALSE;
-    return FAILED(DwmGetWindowAttribute(hWnd, DWMWA_CLOAKED, &cloaked,
-                                        sizeof(cloaked))) ||
-           !cloaked;
-}
-
-thread_local bool g_showDesktopIntentHookActive = false;
-struct DeferredClassicShowDesktopMinimize {
-    HWND hWnd{};
-    int showCmd{};
-    int zOrderRank{};
-};
-std::mutex g_deferredClassicShowDesktopMutex;
-bool g_collectDeferredClassicShowDesktopMinimizes = false;
-uint64_t g_deferredClassicShowDesktopGeneration = 0;
-DWORD g_deferredClassicShowDesktopLastQueuedTick = 0;
-std::vector<DeferredClassicShowDesktopMinimize>
-    g_deferredClassicShowDesktopMinimizes;
-static bool PrepareRestoreAnimation(HWND hWnd);
-static bool CommitRestoreAnimation(HWND hWnd, BOOL restoreMaximizedHint);
-static void ScheduleDeferredClassicShowDesktopDrain(uint64_t generation);
-static void RestoreClassicShowDesktopBatchBeforeShell();
-
-static void __cdecl RaiseDesktop_Hook(void* pThis, int flags) {
-    if (!RaiseDesktop_Original) return;
-    const bool showDesktopCall =
-        (flags == 2 || flags == 3) && IsShellExplorerProcess() &&
-        !g_showDesktopIntentHookActive;
-    if (!showDesktopCall) {
-        RaiseDesktop_Original(pThis, flags);
-        return;
-    }
-
-    struct IntentHookScope {
-        bool& active;
-        explicit IntentHookScope(bool& value) : active(value) {
-            active = true;
-        }
-        ~IntentHookScope() { active = false; }
-    } intentHookScope(g_showDesktopIntentHookActive);
-
-    if (g_nativeShowDesktopAnimations.load(std::memory_order_relaxed)) {
-        // Cover synchronous and posted operations in every target process.
-        // The short tail handles work Windows queues after _RaiseDesktop.
-        if (IsDiagnosticLoggingEnabled()) {
-            Wh_Log(L"Show Desktop routing=native flags=%d tail_ms=%d", flags,
-                   AnimConstants::ShowDesktopPostedWorkTailMs);
-        }
-        PublishNativeShowDesktopPassthrough(
-            GetTickCount() + AnimConstants::ShowDesktopHookScopeMs);
-        RaiseDesktop_Original(pThis, flags);
-        PublishNativeShowDesktopPassthrough(
-            GetTickCount() + AnimConstants::ShowDesktopPostedWorkTailMs);
-        return;
-    }
-
-    // Classic mode serializes captures so one animation ghost can't
-    // contaminate the next window's bitmap.
-    g_localShowDesktopOperationUntilTick.store(
-        GetTickCount() + AnimConstants::ShowDesktopHookScopeMs,
-        std::memory_order_release);
-
-    const bool collectDeferredMinimizes = flags == 3;
-    uint64_t deferredMinimizeGeneration = 0;
-    if (collectDeferredMinimizes) {
-        std::lock_guard<std::mutex> lock(
-            g_deferredClassicShowDesktopMutex);
-        g_deferredClassicShowDesktopMinimizes.clear();
-        g_collectDeferredClassicShowDesktopMinimizes = true;
-        deferredMinimizeGeneration =
-            ++g_deferredClassicShowDesktopGeneration;
-        g_deferredClassicShowDesktopLastQueuedTick = GetTickCount();
-        if (IsDiagnosticLoggingEnabled()) {
-            Wh_Log(L"Classic Show Desktop queue collection started "
-                   L"generation=%llu",
-                   static_cast<unsigned long long>(
-                       deferredMinimizeGeneration));
-        }
-    }
-
-    if (flags == 2) {
-        // Let CTray restore its own remembered windows and manage Z-order.
-        // The mod only intercepts the resulting per-window transitions so
-        // they can be animated; it does not submit restore requests itself.
-        RestoreClassicShowDesktopBatchBeforeShell();
-    }
-
-    RaiseDesktop_Original(pThis, flags);
-
-    if (collectDeferredMinimizes) {
-        // CTray posts the per-window work after _RaiseDesktop returns. Keep
-        // collecting on a tracked worker until that burst becomes quiet, then
-        // animate the captured batch in its real visual order.
-        ScheduleDeferredClassicShowDesktopDrain(
-            deferredMinimizeGeneration);
-    }
-    g_localShowDesktopOperationUntilTick.store(
-        GetTickCount() +
-            (collectDeferredMinimizes
-                 ? AnimConstants::ClassicShowDesktopCollectionMaxMs
-                 : 500),
-        std::memory_order_release);
-}
-
-static bool IsClassicShowDesktopOperation() {
-    if (g_nativeShowDesktopAnimations.load(std::memory_order_relaxed) ||
-        !IsShellExplorerProcess()) {
-        return false;
-    }
-    if (g_showDesktopIntentHookActive) {
-        g_localShowDesktopOperationUntilTick.store(
-            GetTickCount() + AnimConstants::ShowDesktopHookScopeMs,
-            std::memory_order_release);
-        return true;
-    }
-    const DWORD now = GetTickCount();
-    if (IsFutureTick(g_localShowDesktopOperationUntilTick.load(
-                         std::memory_order_acquire),
-                     now)) {
-        // The optional-symbol fallback may outlive the physical key chord.
-        // Keep its original deadline fixed so waits across several windows
-        // share one bounded budget instead of multiplying per target.
-        return true;
-    }
-    const bool winDDown =
-        (GetAsyncKeyState('D') & 0x8000) &&
-        ((GetAsyncKeyState(VK_LWIN) & 0x8000) ||
-         (GetAsyncKeyState(VK_RWIN) & 0x8000));
-    if (!winDDown) return false;
-    // Fallback for builds where the optional CTray symbol isn't available.
-    // This fixed deadline is also the whole fallback batch's wait budget.
-    g_localShowDesktopOperationUntilTick.store(
-        now + AnimConstants::ShowDesktopKeyFallbackScopeMs,
-        std::memory_order_release);
-    return true;
-}
-
-static DWORD GetClassicShowDesktopOperationDeadline() {
-    const DWORD now = GetTickCount();
-    if (g_showDesktopIntentHookActive) {
-        return now + AnimConstants::ClassicShowDesktopWaitMs;
-    }
-    const DWORD deadline = g_localShowDesktopOperationUntilTick.load(
-        std::memory_order_acquire);
-    return IsFutureTick(deadline, now) ? deadline : now;
-}
-
-struct AnimationSessionSearch {
-    HWND target{};
-    HWND blocker{};
-};
-
-static BOOL CALLBACK FindAnimationSessionEnumProc(HWND candidate,
-                                                   LPARAM lParam) {
-    auto* search = reinterpret_cast<AnimationSessionSearch*>(lParam);
-    if (!search) return FALSE;
-    const HWND ghostTarget = reinterpret_cast<HWND>(
-        GetPropW(candidate, kPropAnimationGhost));
-    const DWORD ownerDispatchDeadline = static_cast<DWORD>(
-        reinterpret_cast<ULONG_PTR>(GetPropW(
-            candidate, kPropClassicShowDesktopOwnerDispatch)));
-    const bool ownerDispatchPending =
-        !search->target && IsFutureTick(ownerDispatchDeadline);
-    if ((!search->target &&
-         (GetPropW(candidate, kPropAnimationSession) || ghostTarget ||
-          ownerDispatchPending)) ||
-        (search->target && ghostTarget == search->target)) {
-        search->blocker = candidate;
-        return FALSE;
-    }
-    return TRUE;
-}
-
-static HWND FindAnyAnimationSessionWindow() {
-    AnimationSessionSearch search{};
-    EnumWindows(FindAnimationSessionEnumProc,
-                reinterpret_cast<LPARAM>(&search));
-    return search.blocker;
-}
-
-static HWND FindAnimationGhostForTarget(HWND target) {
-    if (!target) return nullptr;
-    AnimationSessionSearch search{target};
-    EnumWindows(FindAnimationSessionEnumProc,
-                reinterpret_cast<LPARAM>(&search));
-    return search.blocker;
-}
-
-class ClassicShowDesktopCaptureClaim {
-    bool held_ = false;
-
-public:
-    ~ClassicShowDesktopCaptureClaim() {
-        if (!held_) return;
-        std::lock_guard<std::mutex> lock(g_StateMutex);
-        g_classicShowDesktopCaptureClaimed = false;
-    }
-
-    bool Acquire(HWND hWnd, DWORD operationDeadline = 0) {
-        if (!IsClassicShowDesktopOperation()) return true;
-
-        const DWORD now = GetTickCount();
-        const DWORD deadline =
-            operationDeadline
-                ? operationDeadline
-                : now + AnimConstants::ClassicShowDesktopWaitMs;
-        bool observedBlocker = false;
-        while (!g_unloading.load(std::memory_order_relaxed) &&
-               !g_nativeShowDesktopAnimations.load(
-                   std::memory_order_relaxed) &&
-               IsWindow(hWnd) &&
-               static_cast<LONG>(GetTickCount() - deadline) < 0) {
-            // g_AnimActive and g_animationGhostCount are process-local. The
-            // HWND properties let Explorer observe both the startup handoff
-            // and the live ghost of animations started by another injected
-            // process before it captures the next classic Win+D window.
-            const HWND crossProcessBlocker =
-                FindAnyAnimationSessionWindow();
-            bool blocker = crossProcessBlocker != nullptr;
-            {
-                std::lock_guard<std::mutex> lock(g_StateMutex);
-                blocker = blocker || g_classicShowDesktopCaptureClaimed;
-                if (!blocker) {
-                    for (HWND activeHwnd : g_AnimActive) {
-                        if (activeHwnd != hWnd && IsWindow(activeHwnd)) {
-                            blocker = true;
-                            break;
-                        }
-                    }
-                }
-                // Check the ghost count while holding the same state lock used
-                // for active-session publication/release. This closes the
-                // endpoint handoff where g_AnimActive is erased just before
-                // the ghost HWND is destroyed.
-                if (!blocker &&
-                    g_animationGhostCount.load(std::memory_order_acquire) > 0) {
-                    blocker = true;
-                }
-                if (!blocker) {
-                    g_classicShowDesktopCaptureClaimed = true;
-                    held_ = true;
-                }
-            }
-            if (held_) {
-                if (observedBlocker) FlushDwmOrYield();
-                return true;
-            }
-            observedBlocker = true;
-            // Dispatch only nonqueued sent messages while CTray waits. Posted
-            // input stays ordered behind the current Show Desktop operation;
-            // a reentrant minimize can compete for the claim without a mutex
-            // being held across message dispatch.
-            MsgWaitForMultipleObjectsEx(0, nullptr, 10, QS_SENDMESSAGE,
-                                        MWMO_INPUTAVAILABLE);
-            MSG msg{};
-            PeekMessageW(&msg, nullptr, 0, 0,
-                         PM_NOREMOVE | PM_QS_SENDMESSAGE);
-        }
-        if (IsDiagnosticLoggingEnabled() && IsWindow(hWnd)) {
-            const HWND blocker = FindAnyAnimationSessionWindow();
-            DWORD blockerProcessId = 0;
-            WCHAR blockerClass[96]{};
-            if (blocker) {
-                GetWindowThreadProcessId(blocker, &blockerProcessId);
-                GetClassNameW(blocker, blockerClass,
-                              ARRAYSIZE(blockerClass));
-            }
-            Wh_Log(L"Classic Show Desktop serialization timed out hwnd=%p "
-                   L"blocker=%p blocker_pid=%lu blocker_class=%s",
-                   hWnd, blocker, blockerProcessId,
-                   blockerClass[0] ? blockerClass : L"none");
-        }
-        return false;
-    }
-};
-
-static void SettleClassicShowDesktopNativeMinimize(HWND hWnd) {
-    if (!hWnd || !IsWindow(hWnd)) return;
-    const DWORD deadline =
-        GetTickCount() + AnimConstants::ShowDesktopNativeSettleMs;
-    while (IsWindowVisible(hWnd) && !IsIconic(hWnd) &&
-           !g_unloading.load(std::memory_order_relaxed) &&
-           static_cast<LONG>(GetTickCount() - deadline) < 0) {
-        // ShowWindowAsync can return before the target thread removes this
-        // window from the composed desktop. Let a native fallback settle so
-        // the following classic Win+D screen capture doesn't see it as an
-        // occluder and incorrectly fall back too.
-        MsgWaitForMultipleObjectsEx(0, nullptr, 10, QS_SENDMESSAGE,
-                                    MWMO_INPUTAVAILABLE);
-        MSG msg{};
-        PeekMessageW(&msg, nullptr, 0, 0,
-                     PM_NOREMOVE | PM_QS_SENDMESSAGE);
-    }
-    if (!IsWindowVisible(hWnd) || IsIconic(hWnd)) FlushDwmOrYield();
-}
-
-static bool WaitForForeignSwitchAnimation(HWND hWnd) {
-    const DWORD targetThreadId =
-        GetWindowThreadProcessId(hWnd, nullptr);
-    if (!targetThreadId || targetThreadId == GetCurrentThreadId() ||
-        !GetPropW(hWnd, kPropSwitchAnimationActive)) {
-        return false;
-    }
-    const DWORD deadline =
-        GetTickCount() + AnimConstants::ShowDesktopSwitchGhostWaitMs;
-    while (IsWindow(hWnd) &&
-           GetPropW(hWnd, kPropSwitchAnimationActive) &&
-           !g_unloading.load(std::memory_order_relaxed) &&
-           static_cast<LONG>(GetTickCount() - deadline) < 0) {
-        // The switch worker owns only the thumbnail/ghost thread. Draining a
-        // composition frame here lets its bounded handoff finish without
-        // synchronously entering the destination window's UI thread.
-        FlushDwmOrYield();
-    }
-    return IsWindow(hWnd) &&
-           !GetPropW(hWnd, kPropSwitchAnimationActive);
-}
-
-static bool QueueClassicShowDesktopMinimize(HWND hWnd, int showCmd) {
-    if (!IsShellExplorerProcess() || !hWnd ||
-        !IsClassicShowDesktopOperation()) {
-        return false;
-    }
-
-    DWORD targetProcessId = 0;
-    GetWindowThreadProcessId(hWnd, &targetProcessId);
-    if (!targetProcessId) return false;
-
-    std::lock_guard<std::mutex> lock(
-        g_deferredClassicShowDesktopMutex);
-    if (!g_collectDeferredClassicShowDesktopMinimizes) return false;
-    g_deferredClassicShowDesktopLastQueuedTick = GetTickCount();
-    const auto existing = std::find_if(
-        g_deferredClassicShowDesktopMinimizes.begin(),
-        g_deferredClassicShowDesktopMinimizes.end(),
-        [hWnd](const DeferredClassicShowDesktopMinimize& item) {
-            return item.hWnd == hWnd;
-        });
-    if (existing == g_deferredClassicShowDesktopMinimizes.end()) {
-        g_deferredClassicShowDesktopMinimizes.push_back({hWnd, showCmd});
-        if (IsDiagnosticLoggingEnabled()) {
-            Wh_Log(L"Classic Show Desktop queued minimize hwnd=%p "
-                   L"target_pid=%lu",
-                   hWnd, targetProcessId);
-        }
-    }
-    return true;
-}
-
-static bool PrepareClassicShowDesktopMinimizeInOwner(
-    HWND hWnd, DWORD operationDeadline = 0) {
-    if (!IsShellExplorerProcess() || !hWnd ||
-        !IsClassicShowDesktopOperation()) {
-        return false;
-    }
-
-    DWORD targetProcessId = 0;
-    GetWindowThreadProcessId(hWnd, &targetProcessId);
-    if (!targetProcessId || targetProcessId == GetCurrentProcessId()) {
-        return false;
-    }
-    if (!HasClassicShowDesktopOwnerProtocol(hWnd)) {
-        if (IsDiagnosticLoggingEnabled()) {
-            Wh_Log(L"Classic Show Desktop owner protocol unavailable "
-                   L"hwnd=%p target_pid=%lu; using immediate fallback",
-                   hWnd, targetProcessId);
-        }
-        return false;
-    }
-
-    // Explorer can observe Show Desktop requests for foreign HWNDs, but it
-    // can't reliably capture those windows once another real surface is above
-    // them. Ask the owning window procedure to prepare its local animation,
-    // but leave the actual minimize to the original Explorer call. This keeps
-    // the native state transition as close to CTray's path as possible. The
-    // captured classic batch later routes the matching restore through each
-    // owner before CTray finalizes its bookkeeping.
-    //
-    // The registered request, marker, and acknowledgement contain the same
-    // deadline token. A deadline also prevents a window that doesn't route
-    // unknown messages through DefWindowProc from retaining a permanent
-    // cross-process marker. Never post a real SC_MINIMIZE as an internal
-    // signal: custom-frame applications can consume and misinterpret it.
-    const DWORD now = GetTickCount();
-    const DWORD existingDeadline = static_cast<DWORD>(
-        reinterpret_cast<ULONG_PTR>(
-            GetPropW(hWnd, kPropClassicShowDesktopOwnerDispatch)));
-    if (IsFutureTick(existingDeadline, now)) return false;
-    if (existingDeadline) {
-        RemovePropW(hWnd, kPropClassicShowDesktopOwnerDispatch);
-    }
-
-    RemovePropW(hWnd, kPropClassicShowDesktopOwnerPrepared);
-    DWORD deadline = now + AnimConstants::ClassicShowDesktopOwnerPrepareMs;
-    if (operationDeadline &&
-        (!IsFutureTick(operationDeadline, now) ||
-         static_cast<LONG>(deadline - operationDeadline) > 0)) {
-        deadline = operationDeadline;
-    }
-    if (!IsFutureTick(deadline, now)) return false;
-    if (!deadline) deadline = 1;
-    if (!SetPropW(hWnd, kPropClassicShowDesktopOwnerDispatch,
-                  reinterpret_cast<HANDLE>(
-                      static_cast<ULONG_PTR>(deadline)))) {
-        if (IsDiagnosticLoggingEnabled()) {
-            Wh_Log(L"Classic Show Desktop owner dispatch marker failed "
-                   L"hwnd=%p target_pid=%lu error=%lu",
-                   hWnd, targetProcessId, GetLastError());
-        }
-        return false;
-    }
-
-    if (!g_classicShowDesktopOwnerDispatchMessage ||
-        !PostMessageW(hWnd, g_classicShowDesktopOwnerDispatchMessage,
-                      static_cast<WPARAM>(deadline), 0)) {
-        const DWORD error = GetLastError();
-        RemovePropW(hWnd, kPropClassicShowDesktopOwnerDispatch);
-        if (IsDiagnosticLoggingEnabled()) {
-            Wh_Log(L"Classic Show Desktop owner dispatch failed hwnd=%p "
-                   L"target_pid=%lu error=%lu",
-                   hWnd, targetProcessId, error);
-        }
-        return false;
-    }
-
-    bool prepared = false;
-    while (IsWindow(hWnd) &&
-           !g_unloading.load(std::memory_order_relaxed) &&
-           static_cast<LONG>(GetTickCount() - deadline) < 0) {
-        const ULONG_PTR acknowledgement = reinterpret_cast<ULONG_PTR>(
-            GetPropW(hWnd, kPropClassicShowDesktopOwnerPrepared));
-        if (acknowledgement == static_cast<ULONG_PTR>(deadline)) {
-            prepared = true;
-            break;
-        }
-
-        const DWORD currentRequest = static_cast<DWORD>(
-            reinterpret_cast<ULONG_PTR>(GetPropW(
-                hWnd, kPropClassicShowDesktopOwnerDispatch)));
-        if (currentRequest != deadline) {
-            // A target-side SetProp acknowledgement can fail even after the
-            // animation session was published. Accept that independently
-            // observable session rather than starting a duplicate capture in
-            // Explorer.
-            prepared = GetPropW(hWnd, kPropAnimationSession) != nullptr ||
-                       FindAnimationGhostForTarget(hWnd) != nullptr;
-            break;
-        }
-
-        MsgWaitForMultipleObjectsEx(0, nullptr, 10, QS_SENDMESSAGE,
-                                    MWMO_INPUTAVAILABLE);
-        MSG message{};
-        PeekMessageW(&message, nullptr, 0, 0,
-                     PM_NOREMOVE | PM_QS_SENDMESSAGE);
-    }
-
-    if (static_cast<DWORD>(reinterpret_cast<ULONG_PTR>(GetPropW(
-            hWnd, kPropClassicShowDesktopOwnerDispatch))) == deadline) {
-        RemovePropW(hWnd, kPropClassicShowDesktopOwnerDispatch);
-    }
-    if (reinterpret_cast<ULONG_PTR>(GetPropW(
-            hWnd, kPropClassicShowDesktopOwnerPrepared)) ==
-        static_cast<ULONG_PTR>(deadline)) {
-        RemovePropW(hWnd, kPropClassicShowDesktopOwnerPrepared);
-    }
-
-    if (IsDiagnosticLoggingEnabled()) {
-        Wh_Log(L"Classic Show Desktop owner preparation %s hwnd=%p "
-               L"target_pid=%lu",
-               prepared ? L"ready" : L"unavailable", hWnd,
-               targetProcessId);
-    }
-    return prepared;
-}
-
-enum class MinimizeKick { None, Immediate, Deferred };
-static MinimizeKick KickMinimizeAnimation(HWND hWnd, bool desktopFocusOnUnhide = false,
-                                          bool allowUnhide = true, int showCmd = 0,
-                                          NativeMinimizeBarrier* nativeMinimizeBarrier = nullptr) {
-    NativeMinimizeBarrierOwner nativeBarrierOwner(nativeMinimizeBarrier);
-    MinRestoreRetarget retarget = RetargetLiveMinRestore(hWnd, false);
-    if (retarget == MinRestoreRetarget::BusyOther &&
-        WaitForForeignSwitchAnimation(hWnd)) {
-        retarget = RetargetLiveMinRestore(hWnd, false);
-    }
-    if (retarget == MinRestoreRetarget::Accepted) {
-        return MinimizeKick::Deferred;
-    }
-    if (retarget == MinRestoreRetarget::BusyOther) return MinimizeKick::None;
-    const bool foreignSessionActive =
-        GetPropW(hWnd, kPropAnimationSession) != nullptr;
-    if (HWND existingGhost = FindAnimationGhostForTarget(hWnd);
-        foreignSessionActive || existingGhost) {
-        if (IsDiagnosticLoggingEnabled()) {
-            DWORD ghostProcessId = 0;
-            if (existingGhost) {
-                GetWindowThreadProcessId(existingGhost, &ghostProcessId);
-            }
-            Wh_Log(L"Minimize animation already represented by foreign "
-                   L"session hwnd=%p ghost=%p ghost_pid=%lu",
-                   hWnd, existingGhost, ghostProcessId);
-        }
-        // The other process already owns the custom visual. Continue only the
-        // exact native minimize requested by this nested hook.
-        return MinimizeKick::Immediate;
-    }
-    if (!g_minimizeAnimation.load(std::memory_order_relaxed)) return MinimizeKick::None;
-    if (!IsWindowVisible(hWnd) || IsIconic(hWnd)) return MinimizeKick::None;
-    // Avoid dropping minimize animations based on IsHungAppWindow: Windows
-    // can report a window as hung transiently during desktop-wide transitions.
-    if (!ShouldAnimateWindow(hWnd)) {
-        return MinimizeKick::None;
-    }
-    if (QueueClassicShowDesktopMinimize(hWnd, showCmd)) {
-        // Hold the shell request only for the short initial burst. Once the
-        // collection closes, same-process windows can use Explorer's normal
-        // capture and foreign windows are handed to their owning UI thread.
-        return MinimizeKick::Deferred;
-    }
-    const DWORD classicOperationDeadline =
-        GetClassicShowDesktopOperationDeadline();
-    ClassicShowDesktopCaptureClaim classicCaptureClaim;
-    if (!classicCaptureClaim.Acquire(hWnd, classicOperationDeadline)) {
-        // A hung/very long previous animation must not make the next screen
-        // capture include that ghost or churn DWM transitions before falling
-        // back. Let this window use the native Show Desktop path instead.
-        return MinimizeKick::None;
-    }
-    if (PrepareClassicShowDesktopMinimizeInOwner(
-            hWnd, classicOperationDeadline)) {
-        // The owner already has the first custom frame in place. Continue the
-        // initiating Explorer hook so its exact native minimize remains in the
-        // shell path. The captured batch independently preserves the matching
-        // owner-side restore animation even when CTray bypasses that hook.
-        return MinimizeKick::Immediate;
-    }
-    BOOL requestedUnhide = FALSE;
-    HWND hTray = NULL;
-    HWND hNext = NULL;
-    BOOL taskbarFocusBorrowed = FALSE;
-    HMONITOR hMon = NULL;
-    int effectStyle = -1;
-    if (g_minRestoreShuffleEffect.load(std::memory_order_relaxed)) {
-        ReadMinRestorePairToken(hWnd, &effectStyle);
-    }
-    if (effectStyle < 0) {
-        effectStyle = ResolveMinRestoreEffectStyle();
-    }
-    const bool genieStyle = effectStyle == 0;
-    if (allowUnhide && genieStyle && g_unhideEnabled.load(std::memory_order_relaxed)) {
-        hMon = MonitorFromWindow(hWnd, MONITOR_DEFAULTTONEAREST);
-        hTray = FindTaskbarForMonitor(hMon);
-        if (hTray) {
-            APPBARDATA abd{};
-            abd.cbSize = sizeof(abd);
-            abd.hWnd = hTray;
-            const UINT uState = (UINT)SHAppBarMessage(ABM_GETSTATE, &abd);
-            if ((uState & ABS_AUTOHIDE) &&
-                !IsTaskbarExpanded(hWnd, hTray, hMon) &&
-                !IsCursorOverTaskbar(hTray)) {
-                requestedUnhide = TRUE;
-                if (!desktopFocusOnUnhide) hNext = FindNextAppWindow(hWnd, hTray);
-            }
-        }
-    }
-    UpdateDwmTransitions(hWnd, FALSE);
-    if (requestedUnhide) {
-        if (hTray) {
-            taskbarFocusBorrowed = SetForegroundWindow(hTray);
-            WaitForTaskbarExpanded(hWnd, hTray, hMon);
-            if (!IsTaskbarExpanded(hWnd, hTray, hMon)) requestedUnhide = FALSE;
-        }
-        BOOL revealRequestSettled = FALSE;
-        if (requestedUnhide &&
-            StartAnimation(hWnd, FALSE, GetWindowLongPtrW(hWnd, GWL_EXSTYLE), FALSE, FALSE, 0, NULL,
-                           TRUE, TRUE, hNext, showCmd, effectStyle, taskbarFocusBorrowed, nullptr, 0,
-                           &revealRequestSettled, FALSE, 0)) {
-            return MinimizeKick::Deferred;
-        }
-        if (taskbarFocusBorrowed) {
-            RestoreForegroundAfterTaskbarReveal(hTray, hWnd, hNext, false);
-        }
-        if (revealRequestSettled) return MinimizeKick::Deferred;
-    }
-    BOOL suppressNativeMinimize = FALSE;
-    const bool started = StartAnimation(
-        hWnd, FALSE, GetWindowLongPtrW(hWnd, GWL_EXSTYLE), FALSE, FALSE, 0, NULL, FALSE,
-        FALSE, NULL, showCmd, effectStyle, FALSE, nativeBarrierOwner.release(), 0,
-        &suppressNativeMinimize, FALSE, 0);
-    if (started) return MinimizeKick::Immediate;
-    return suppressNativeMinimize ? MinimizeKick::Deferred : MinimizeKick::None;
-}
-
-static void DrainDeferredClassicShowDesktopMinimizes(
-    std::vector<DeferredClassicShowDesktopMinimize>& pending) {
-    pending.erase(
-        std::remove_if(
-            pending.begin(), pending.end(),
-            [](const DeferredClassicShowDesktopMinimize& item) {
-                return !IsWindow(item.hWnd) || !IsWindowVisible(item.hWnd) ||
-                       IsIconic(item.hWnd);
-            }),
-        pending.end());
-    if (pending.empty()) return;
-
-    auto zOrderRank = [](HWND hWnd) {
-        int rank = 0;
-        for (HWND candidate = GetWindow(hWnd, GW_HWNDPREV);
-             candidate && rank < 4096;
-             candidate = GetWindow(candidate, GW_HWNDPREV)) {
-            ++rank;
-        }
-        return rank;
-    };
-    for (auto& item : pending) {
-        item.zOrderRank = zOrderRank(item.hWnd);
-    }
-    std::stable_sort(
-        pending.begin(), pending.end(),
-        [](const DeferredClassicShowDesktopMinimize& left,
-           const DeferredClassicShowDesktopMinimize& right) {
-            return left.zOrderRank < right.zOrderRank;
-        });
-
-    for (const auto& item : pending) {
-        if (g_unloading.load(std::memory_order_relaxed) ||
-            !IsWindow(item.hWnd) || !IsWindowVisible(item.hWnd) ||
-            IsIconic(item.hWnd)) {
-            continue;
-        }
-
-        // Start each Show Desktop minimize animation immediately, without
-        // adding artificial spacing between windows.
-
-        g_localShowDesktopOperationUntilTick.store(
-            GetTickCount() + AnimConstants::ShowDesktopHookScopeMs,
-            std::memory_order_release);
-        const int showCmd = IsMinimizeCommand(item.showCmd)
-                                ? item.showCmd
-                                : SW_MINIMIZE;
-        if (IsDiagnosticLoggingEnabled()) {
-            DWORD targetProcessId = 0;
-            GetWindowThreadProcessId(item.hWnd, &targetProcessId);
-            Wh_Log(L"Classic Show Desktop draining queued minimize "
-                   L"hwnd=%p target_pid=%lu z_rank=%d",
-                   item.hWnd, targetProcessId, item.zOrderRank);
-        }
-
-        NativeMinimizeBarrier* barrier = CreateNativeMinimizeBarrier();
-        if (!barrier) {
-            ShowWindowAsync_Original(item.hWnd, showCmd);
-            continue;
-        }
-        AddRefNativeMinimizeBarrier(barrier);
-        const MinimizeKick kick = KickMinimizeAnimation(
-            item.hWnd, /*desktopFocusOnUnhide=*/true,
-            /*allowUnhide=*/false, showCmd, barrier);
-        if (kick == MinimizeKick::Deferred) {
-            CompleteNativeMinimizeBarrier(
-                barrier, NativeMinimizeState::Cancelled);
-            continue;
-        }
-        if (!BeginNativeMinimizeSubmission(barrier)) {
-            CompleteNativeMinimizeBarrier(
-                barrier, NativeMinimizeState::Cancelled);
-            continue;
-        }
-        const BOOL result =
-            ShowWindowAsync_Original(item.hWnd, showCmd);
-        CompleteNativeMinimizeBarrier(
-            barrier, result ? NativeMinimizeState::AsyncSubmitted
-                            : NativeMinimizeState::Failed);
-        if (kick == MinimizeKick::None && result) {
-            SettleClassicShowDesktopNativeMinimize(item.hWnd);
-        }
-    }
-}
-
-static bool CloseDeferredClassicShowDesktopCollection(
-    uint64_t generation,
-    std::vector<DeferredClassicShowDesktopMinimize>* pending) {
-    if (!pending) return false;
-    std::lock_guard<std::mutex> lock(
-        g_deferredClassicShowDesktopMutex);
-    if (!g_collectDeferredClassicShowDesktopMinimizes ||
-        g_deferredClassicShowDesktopGeneration != generation) {
-        return false;
-    }
-    g_collectDeferredClassicShowDesktopMinimizes = false;
-    pending->swap(g_deferredClassicShowDesktopMinimizes);
-    return true;
-}
-
-static DWORD WINAPI DeferredClassicShowDesktopDrainThread(LPVOID parameter) {
-    std::unique_ptr<uint64_t> generationOwner(
-        static_cast<uint64_t*>(parameter));
-    if (!generationOwner) return 0;
-    const uint64_t generation = *generationOwner;
-    const DWORD startedAt = GetTickCount();
-
-    for (;;) {
-        if (g_unloading.load(std::memory_order_relaxed)) return 0;
-        const DWORD now = GetTickCount();
-        bool current = false;
-        bool haveQueuedWindows = false;
-        DWORD lastQueuedAt = startedAt;
-        {
-            std::lock_guard<std::mutex> lock(
-                g_deferredClassicShowDesktopMutex);
-            current = g_collectDeferredClassicShowDesktopMinimizes &&
-                      g_deferredClassicShowDesktopGeneration == generation;
-            if (current) {
-                haveQueuedWindows =
-                    !g_deferredClassicShowDesktopMinimizes.empty();
-                lastQueuedAt =
-                    g_deferredClassicShowDesktopLastQueuedTick;
-            }
-        }
-        if (!current) return 0;
-
-        const bool collectionQuiet =
-            haveQueuedWindows &&
-            static_cast<DWORD>(now - lastQueuedAt) >=
-                AnimConstants::ClassicShowDesktopCollectionQuietMs;
-        const bool noFirstWindow =
-            !haveQueuedWindows &&
-            static_cast<DWORD>(now - startedAt) >=
-                AnimConstants::ClassicShowDesktopCollectionFirstMs;
-        const bool maximumElapsed =
-            static_cast<DWORD>(now - startedAt) >=
-            AnimConstants::ClassicShowDesktopCollectionMaxMs;
-        if (collectionQuiet || noFirstWindow || maximumElapsed) break;
-        Sleep(10);
-    }
-
-    std::vector<DeferredClassicShowDesktopMinimize> pending;
-    if (!CloseDeferredClassicShowDesktopCollection(generation, &pending)) {
-        return 0;
-    }
-    if (IsDiagnosticLoggingEnabled()) {
-        Wh_Log(L"Classic Show Desktop queue collection finished "
-               L"generation=%llu windows=%zu",
-               static_cast<unsigned long long>(generation), pending.size());
-    }
-    DrainDeferredClassicShowDesktopMinimizes(pending);
-    return 0;
-}
-
-static void ScheduleDeferredClassicShowDesktopDrain(uint64_t generation) {
-    auto* generationData = new (std::nothrow) uint64_t(generation);
-    if (generationData && StartWorkerThread(
-                              DeferredClassicShowDesktopDrainThread,
-                              generationData)) {
-        return;
-    }
-    delete generationData;
-
-    // A thread-allocation failure must not strand the HWNDs whose native
-    // minimizes were already suppressed while _RaiseDesktop was running.
-    std::vector<DeferredClassicShowDesktopMinimize> pending;
-    if (CloseDeferredClassicShowDesktopCollection(generation, &pending)) {
-        DrainDeferredClassicShowDesktopMinimizes(pending);
-    }
-}
-
-static void RestoreClassicShowDesktopBatchBeforeShell() {
-    // Intentionally do not issue SW_RESTORE/SC_RESTORE requests here. Windows'
-    // CTray implementation owns restoration order, foreground selection and
-    // final Z-order; the hooks below only animate its native window transitions.
-    if (IsDiagnosticLoggingEnabled()) {
-        Wh_Log(L"Classic Show Desktop restore delegated to Windows");
-    }
-}
-
-static MinimizeKick TryMinimizeAnim(HWND hWnd, NativeMinimizeBarrier* nativeMinimizeBarrier = nullptr,
-                                   int showCmd = 0) {
-    return KickMinimizeAnimation(hWnd, /*desktopFocusOnUnhide=*/true, /*allowUnhide=*/false,
-                                 showCmd, nativeMinimizeBarrier);
-}
-static bool CanPrepareRestoreAnimation(HWND hWnd) {
-    // Do not use IsHungAppWindow as an animation eligibility gate. During
-    // minimize/restore bursts, including Show Desktop, Windows may report a
-    // responsive application's window as hung while its UI thread processes
-    // queued state changes. The restore paths perform their own HWND, visibility,
-    // reservation, and bounds checks before starting an animation.
-    if (!g_restoreAnimation.load(std::memory_order_relaxed) ||
-        !IsWindow(hWnd) || !IsWindowVisible(hWnd) ||
-        !ShouldAnimateWindow(hWnd)) {
-        return false;
-    }
-    return true;
-}
-// Show Desktop restore animations are deliberately not serialized or delayed.
-// Each native restore transition can start its animation immediately.
-
-static bool PrepareRestoreAnimation(HWND hWnd) {
-    if (!CanPrepareRestoreAnimation(hWnd)) return false;
-    const bool classicShowDesktopRestore = IsClassicShowDesktopOperation();
-    ClassicShowDesktopCaptureClaim classicCaptureClaim;
-    // On Show Desktop restoration, let every native window transition start
-    // its own animation without waiting for earlier animation ghosts to finish.
-    // The normal serialization remains in place for minimize captures, where
-    // an existing ghost could contaminate the next desktop snapshot.
-    if (!classicShowDesktopRestore &&
-        !classicCaptureClaim.Acquire(hWnd)) {
-        return false;
-    }
-    if (classicShowDesktopRestore) {
-        // Windows owns the native Show Desktop restore order. Keep the
-        // animation endpoint from promoting this window to HWND_TOP when its
-        // ghost is removed; FinishRising clears this marker after the endpoint.
-        SetPropW(hWnd, kPropClassicShowDesktopRestoreZOrder,
-                 reinterpret_cast<HANDLE>(
-                     static_cast<ULONG_PTR>(GetTickCount() + 30000)));
-    }
-    UpdateDwmTransitions(hWnd, FALSE);
-    SetWindowCloak(hWnd, TRUE);
-    return true;
-}
-static bool CommitRestoreAnimation(HWND hWnd, BOOL restoreMaximizedHint) {
-    const bool started =
-        StartAnimation(hWnd, TRUE, GetWindowLongPtrW(hWnd, GWL_EXSTYLE), TRUE,
-                       FALSE, 0, NULL, FALSE, FALSE, NULL, 0, -1, FALSE,
-                       nullptr, 0, nullptr, restoreMaximizedHint, 0);
-    if (!started && restoreMaximizedHint && !IsAnimating(hWnd)) {
-        // The native restore was already issued, but no long-lived animation
-        // session exists to receive duplicates. Keep only the short debounce.
-        ArmMaximizedRestoreGuard(
-            hWnd, static_cast<DWORD>(GetDoubleClickTime() + 100));
-    }
-    return started;
-}
-
-static bool AreAsyncRestoreBoundsReady(HWND hWnd) {
-    if (!hWnd || !IsWindow(hWnd) || IsIconic(hWnd)) return false;
-
-    RECT windowRect{};
-    RECT animationRect{};
-    if (!GetAnimationWindowRects(hWnd, &windowRect, &animationRect)) {
-        return false;
-    }
-    const int width = animationRect.right - animationRect.left;
-    const int height = animationRect.bottom - animationRect.top;
-    if (width <= 0 || height <= 0) return false;
-
-    int expectedWidth = 0;
-    int expectedHeight = 0;
-    {
-        std::lock_guard<std::mutex> lock(g_StateMutex);
-        auto snapshotIt = g_WndSnapshots.find(hWnd);
-        if (snapshotIt != g_WndSnapshots.end() &&
-            snapshotIt->second.windowToken &&
-            reinterpret_cast<ULONG_PTR>(GetPropW(
-                hWnd, kPropSnapshotCache)) ==
-                snapshotIt->second.windowToken) {
-            expectedWidth = snapshotIt->second.w;
-            expectedHeight = snapshotIt->second.h;
-        }
-    }
-
-    if (!expectedWidth || !expectedHeight) {
-        WINDOWPLACEMENT placement{};
-        placement.length = sizeof(placement);
-        if (GetWindowPlacement(hWnd, &placement)) {
-            expectedWidth = placement.rcNormalPosition.right -
-                            placement.rcNormalPosition.left;
-            expectedHeight = placement.rcNormalPosition.bottom -
-                             placement.rcNormalPosition.top;
-        }
-    }
-
-    // IsIconic can turn false one shell step before DWM replaces the compact
-    // minimized representation (for example 181x25) with the restored frame.
-    // Compare against the cached/normal size so that transient rectangle is
-    // never used to create the restore surface.
-    return expectedWidth <= 0 || expectedHeight <= 0 ||
-           (static_cast<int64_t>(width) * 4 >= expectedWidth &&
-            static_cast<int64_t>(height) * 4 >= expectedHeight);
-}
-
-DWORD WINAPI AsyncRestoreAnimThread(LPVOID lpParam) {
-    auto* restoreData = (AsyncRestoreAnimData*)lpParam;
-    const HWND hWnd = restoreData->hWnd;
-    const LONG_PTR originalExStyle = restoreData->originalExStyle;
-    const uint64_t reservationGeneration = restoreData->reservationGeneration;
-    const BOOL restoreMaximized = restoreData->restoreMaximized;
-    delete restoreData;
-
-    const DWORD deadline = GetTickCount() + 1000;
-    int stableBoundsSamples = 0;
-    while (!g_unloading.load(std::memory_order_relaxed) && IsWindow(hWnd) &&
-           (LONG)(GetTickCount() - deadline) < 0) {
-        if (AreAsyncRestoreBoundsReady(hWnd)) {
-            SetWindowCloak(hWnd, TRUE);
-            if (++stableBoundsSamples >= 2) break;
-        } else {
-            stableBoundsSamples = 0;
-        }
-        Sleep(5);
-    }
-    if (!g_unloading.load(std::memory_order_relaxed) && IsWindow(hWnd) &&
-        IsWindowVisible(hWnd) && stableBoundsSamples >= 2) {
-        UpdateDwmTransitions(hWnd, FALSE);
-        SetWindowCloak(hWnd, TRUE);
-        FlushDwmOrYield();
-        bool wantRising = true;
-        if (GetAsyncRestoreReservation(hWnd, reservationGeneration, &wantRising) &&
-            StartAnimation(hWnd, wantRising, originalExStyle, TRUE, FALSE, 0, NULL, FALSE, FALSE,
-                           NULL, 0, -1, FALSE, nullptr, reservationGeneration,
-                           nullptr, restoreMaximized, 0)) {
-            return 0;
-        }
-    }
-    FinalizeAsyncRestoreReservation(hWnd, reservationGeneration, originalExStyle,
-                                    /*initialRestoreSubmitted=*/true,
-                                    restoreMaximized);
-    return 0;
-}
-static void KeepLaunchWindowTransparent(HWND hWnd) {
-    if (!hWnd || !IsWindow(hWnd)) return;
-    LONG_PTR exStyle = GetWindowLongPtrW(hWnd, GWL_EXSTYLE);
-    if (!(exStyle & WS_EX_LAYERED)) {
-        SetWindowLongPtrW(hWnd, GWL_EXSTYLE, exStyle | WS_EX_LAYERED);
-    }
-    SetLayeredWindowAttributes(hWnd, 0, 0, LWA_ALPHA);
-}
-
-static bool PrepareLaunchAnim(HWND hWnd, int nCmdShow, LONG_PTR* origExOut,
-                               ULONG_PTR* snapshotTokenOut,
-                               BOOL* hiddenByCloakOut,
-                               BOOL* alphaOnlyCompatibilityOut,
-                               PCWSTR interceptSource) {
-    if (hiddenByCloakOut) *hiddenByCloakOut = FALSE;
-    if (alphaOnlyCompatibilityOut) *alphaOnlyCompatibilityOut = FALSE;
-    if (g_unloading.load(std::memory_order_relaxed)) return false;
-    if (!g_launchAnimation.load(std::memory_order_relaxed)) return false;
-    if (!IsLaunchCommand(nCmdShow)) return false;
-    if (!IsLaunchWindow(hWnd)) return false;
-    {
-        std::lock_guard<std::mutex> lock(g_StateMutex);
-        if (g_LaunchSeen.count(hWnd)) return false;
-    }
-    if (GetWindowThreadProcessId(hWnd, nullptr) != GetCurrentThreadId()) {
-        // Launch capture must happen before the real window is made fully
-        // transparent. Never synchronously ask another UI thread to paint it.
-        if (IsDiagnosticLoggingEnabled()) {
-            Wh_Log(L"Launch preparation skipped hwnd=%p source=%ls cmd=%d "
-                   L"reason=foreign-thread",
-                   hWnd, interceptSource, nCmdShow);
-        }
-        return false;
-    }
-    if (IsWindowVisible(hWnd) || IsIconic(hWnd)) {
-        if (IsDiagnosticLoggingEnabled()) {
-            Wh_Log(L"Launch preparation skipped hwnd=%p source=%ls cmd=%d "
-                   L"reason=already-shown visible=%d iconic=%d",
-                   hWnd, interceptSource, nCmdShow,
-                   IsWindowVisible(hWnd) != FALSE,
-                   IsIconic(hWnd) != FALSE);
-        }
-        return false;
-    }
-    LONG_PTR exStyle = GetWindowLongPtrW(hWnd, GWL_EXSTYLE);
-    if (exStyle & WS_EX_LAYERED) {
-        if (IsDiagnosticLoggingEnabled()) {
-            Wh_Log(L"Launch preparation skipped hwnd=%p source=%ls cmd=%d "
-                   L"reason=pre-layered",
-                   hWnd, interceptSource, nCmdShow);
-        }
-        return false;
-    }
-    {
-        std::lock_guard<std::mutex> lock(g_StateMutex);
-        if (!g_LaunchSeen.insert(hWnd).second) return false;
-    }
-    const BOOL alphaOnlyCompatibility =
-        RequiresMozillaAlphaOnlyLaunchConcealment(hWnd);
-    UpdateDwmTransitions(hWnd, FALSE);
-    *origExOut = exStyle;
-    if (snapshotTokenOut) *snapshotTokenOut = 0;
-    KeepLaunchWindowTransparent(hWnd);
-    if (alphaOnlyCompatibilityOut) {
-        *alphaOnlyCompatibilityOut = alphaOnlyCompatibility;
-    }
-    if (!alphaOnlyCompatibility) {
-        const BOOL cloak = TRUE;
-        if (SUCCEEDED(DwmSetWindowAttribute(
-                hWnd, DWMWA_CLOAK, &cloak, sizeof(cloak)))) {
-            if (hiddenByCloakOut) *hiddenByCloakOut = TRUE;
-        }
-    } else if (IsDiagnosticLoggingEnabled()) {
-        // The pre-show DWM cloak added after v1.2.0 can cross a Gecko browser's
-        // first-window/session-restore boundary and make Firefox-family apps
-        // create a second real window. Preserve the proven v1.2.0 alpha-only
-        // sequence, including its quiet post-show settling interval.
-        Wh_Log(L"Launch animation using Mozilla alpha-only compatibility "
-               L"hwnd=%p", hWnd);
-    }
-    if (IsDiagnosticLoggingEnabled()) {
-        Wh_Log(L"Launch prepared hwnd=%p source=%ls cmd=%d cloak=%d "
-               L"alpha_only=%d accent_active=%d accent_cached=%d",
-               hWnd, interceptSource, nCmdShow,
-               hiddenByCloakOut && *hiddenByCloakOut,
-               alphaOnlyCompatibility != FALSE,
-               HasActiveWindowAccentPolicy(hWnd),
-               GetCachedTranslucentWindowsAccentPolicy(hWnd));
-    }
-    return true;
-}
-static bool CaptureLaunchSnapshot(HWND hWnd, ULONG_PTR* snapshotTokenOut) {
-    if (!hWnd || !snapshotTokenOut ||
-        GetWindowThreadProcessId(hWnd, nullptr) != GetCurrentThreadId() ||
-        !IsWindowVisible(hWnd)) {
-        return false;
-    }
-    RECT windowRect{};
-    HDC hScreenDC = GetDC(nullptr);
-    HDC hMemoryDC = hScreenDC ? CreateCompatibleDC(hScreenDC) : nullptr;
-    HBITMAP hBitmap = nullptr;
-    HBITMAP hOldBitmap = nullptr;
-    void* bits = nullptr;
-    int width = 0;
-    int height = 0;
-    ULONG_PTR snapshotToken = 0;
-    if (hScreenDC && hMemoryDC && GetWindowRect(hWnd, &windowRect)) {
-        width = windowRect.right - windowRect.left;
-        height = windowRect.bottom - windowRect.top;
-        if (width > 0 && height > 0) {
-            hBitmap = CreateDib32(hScreenDC, width, height, &bits);
-            if (hBitmap && bits) {
-                hOldBitmap = static_cast<HBITMAP>(SelectObject(hMemoryDC, hBitmap));
-                if (!hOldBitmap || hOldBitmap == HGDI_ERROR ||
-                    !PrintWindow(hWnd, hMemoryDC, PW_RENDERFULLCONTENT)) {
-                    if (hOldBitmap && hOldBitmap != HGDI_ERROR) {
-                        SelectObject(hMemoryDC, hOldBitmap);
-                    }
-                    hOldBitmap = nullptr;
-                    DeleteObject(hBitmap);
-                    hBitmap = nullptr;
-                    bits = nullptr;
-                } else {
-                    GdiFlush();
-                }
-            }
-        }
-    }
-    if (hOldBitmap && hOldBitmap != HGDI_ERROR) {
-        SelectObject(hMemoryDC, hOldBitmap);
-    }
-    if (hMemoryDC) DeleteDC(hMemoryDC);
-    if (hScreenDC) ReleaseDC(nullptr, hScreenDC);
-    if (!hBitmap || !bits) return false;
-    bool storedSnapshot = false;
-    {
-        std::lock_guard<std::mutex> lock(g_StateMutex);
-        storedSnapshot = StoreSnapshotLocked(
-            hWnd, hBitmap, bits, width, height, &snapshotToken);
-    }
-    if (!storedSnapshot) {
-        DeleteObject(hBitmap);
-        return false;
-    }
-    if (!SetPropW(hWnd, kPropLaunchAnimation,
-                  reinterpret_cast<HANDLE>(snapshotToken))) {
-        std::lock_guard<std::mutex> lock(g_StateMutex);
-        EraseSnapshotIfCurrentLocked(hWnd, snapshotToken);
-        return false;
-    }
-    *snapshotTokenOut = snapshotToken;
-    return true;
-}
-static void AbortPreparedLaunchAnim(HWND hWnd, LONG_PTR originalExStyle,
-                                    BOOL hiddenByCloak) {
-    if (hiddenByCloak) SetWindowCloak(hWnd, FALSE);
-    RestoreLayeredOpacity(hWnd, originalExStyle);
-    UpdateDwmTransitions(hWnd, TRUE);
-    RefreshDwmChromeAfterUncloak(hWnd, /*nonBlocking=*/true);
-    std::lock_guard<std::mutex> lock(g_StateMutex);
-    g_LaunchSeen.erase(hWnd);
-}
-static void CommitLaunchAnim(HWND hWnd, LONG_PTR originalExStyle,
-                             ULONG_PTR snapshotToken, BOOL hiddenByCloak,
-                             BOOL alphaOnlyCompatibility) {
-    int launchSurfaceWidth = 0;
-    int launchSurfaceHeight = 0;
-    if (!snapshotToken &&
-        !IsLaunchSurfaceReadyForCapture(
-            hWnd, &launchSurfaceWidth, &launchSurfaceHeight)) {
-        if (IsDiagnosticLoggingEnabled()) {
-            Wh_Log(L"Launch animation skipped hwnd=%p reason=transient-"
-                   L"application-frame source=%dx%d",
-                   hWnd, launchSurfaceWidth, launchSurfaceHeight);
-        }
-        AbortPreparedLaunchAnim(hWnd, originalExStyle, hiddenByCloak);
-        return;
-    }
-    if (!snapshotToken && !CaptureLaunchSnapshot(hWnd, &snapshotToken)) {
-        if (IsDiagnosticLoggingEnabled()) {
-            DWORD ownerProcessId = 0;
-            const DWORD ownerThreadId =
-                GetWindowThreadProcessId(hWnd, &ownerProcessId);
-            Wh_Log(L"Launch snapshot failed hwnd=%p visible=%d iconic=%d "
-                   L"owner_pid=%lu owner_tid=%lu caller_tid=%lu",
-                   hWnd, IsWindowVisible(hWnd) != FALSE,
-                   IsIconic(hWnd) != FALSE, ownerProcessId, ownerThreadId,
-                   GetCurrentThreadId());
-        }
-        AbortPreparedLaunchAnim(hWnd, originalExStyle, hiddenByCloak);
-        return;
-    }
-    auto* ld = new (std::nothrow) LaunchAnimData{
-        hWnd, originalExStyle, snapshotToken, hiddenByCloak,
-        alphaOnlyCompatibility};
-    if (!ld || !StartWorkerThread(LaunchAnimThread, ld)) {
-        delete ld;
-        {
-            std::lock_guard<std::mutex> lock(g_StateMutex);
-            EraseSnapshotIfCurrentLocked(hWnd, snapshotToken);
-        }
-        ClearLaunchAnimationIfCurrent(hWnd, snapshotToken);
-        AbortPreparedLaunchAnim(hWnd, originalExStyle, hiddenByCloak);
-    }
-}
-
-static void CommitPreparedLaunchShow(HWND hWnd, LONG_PTR originalExStyle,
-                                     ULONG_PTR snapshotToken,
-                                     BOOL hiddenByCloak,
-                                     BOOL alphaOnlyCompatibility) {
-    // Some frameworks rebuild their native surface or extended style while
-    // processing the first show. Reassert the pre-show guards before snapshot
-    // capture so that surface can't become visible ahead of the launch ghost.
-    if (!alphaOnlyCompatibility) {
-        if (hiddenByCloak) SetWindowCloak(hWnd, TRUE);
-        KeepLaunchWindowTransparent(hWnd);
-    }
-    CommitLaunchAnim(hWnd, originalExStyle, snapshotToken, hiddenByCloak,
-                     alphaOnlyCompatibility);
-}
-
-static bool IsTrayHideShowCommand(int showCmd) {
-    return IsShowCmdForWinEvent(showCmd) &&
-           !IsMinimizeCommand(showCmd);
-}
-
-static void AbortPreparedTrayHideLaunch(HWND hWnd,
-                                        LONG_PTR originalExStyle) {
-    RestoreLayeredOpacity(hWnd, originalExStyle);
-    UpdateDwmTransitions(hWnd, TRUE);
-    std::lock_guard<std::mutex> lock(g_StateMutex);
-    g_LaunchSeen.erase(hWnd);
-}
-
-template <typename NativeShow>
-static BOOL ShowPersistentlyCloakedTrayWindow(
-    HWND hWnd, int showCmd, bool asynchronousSubmission,
-    NativeShow&& nativeShow) {
-    const ULONG_PTR trayHideCloakToken = ReadTrayHideCloakToken(hWnd);
-    if (!trayHideCloakToken) return nativeShow();
-    if (!BeginTrayHideShowHandoff(hWnd, trayHideCloakToken)) {
-        // Property publication failure must favor a visible real window over
-        // retaining a cloak which no observer can safely coordinate.
-        EndTrayHideShowHandoffIfCurrent(hWnd, trayHideCloakToken);
-        ReleaseTrayHideCloakIfCurrent(hWnd, trayHideCloakToken);
-        return nativeShow();
-    }
-
-    LONG_PTR originalStyle = 0;
-    ULONG_PTR launchSnapshotToken = 0;
-    BOOL launchHiddenByCloak = FALSE;
-    BOOL launchAlphaOnlyCompatibility = FALSE;
-    const bool preparedLaunch = PrepareLaunchAnim(
-        hWnd, showCmd, &originalStyle, &launchSnapshotToken,
-        &launchHiddenByCloak, &launchAlphaOnlyCompatibility,
-        L"tray-show");
-
-    const BOOL result = nativeShow();
-    if (preparedLaunch) {
-        if (IsWindowVisible(hWnd) &&
-            TransferTrayHideCloakToLaunch(hWnd, trayHideCloakToken)) {
-            // The launch animation now owns the already-established cloak and
-            // will remove it only after its final frame is ready.
-            if (!launchAlphaOnlyCompatibility) {
-                if (launchHiddenByCloak) SetWindowCloak(hWnd, TRUE);
-                KeepLaunchWindowTransparent(hWnd);
-            }
-            CommitLaunchAnim(hWnd, originalStyle, launchSnapshotToken,
-                             launchHiddenByCloak,
-                             launchAlphaOnlyCompatibility);
-            return result;
-        }
-
-        // The asynchronous show hasn't landed yet, or a newer hide lifecycle
-        // replaced our token. Undo only the launch alpha guard; the retained
-        // tray cloak still owns visibility.
-        AbortPreparedTrayHideLaunch(hWnd, originalStyle);
-    }
-
-    EndTrayHideShowHandoffIfCurrent(hWnd, trayHideCloakToken);
-
-    if (IsWindowVisible(hWnd)) {
-        ReleaseTrayHideCloakIfCurrent(hWnd, trayHideCloakToken);
-    } else if (asynchronousSubmission && result) {
-        ReleaseTrayHideCloakAfterAsyncShow(hWnd, trayHideCloakToken);
-    }
-    return result;
-}
-
-static bool IsOurWindow(HWND hWnd) {
-    DWORD pid = 0;
-    GetWindowThreadProcessId(hWnd, &pid);
-    return pid == GetCurrentProcessId();
-}
-
-// Tauri/WRY may briefly show a hidden window, hide it again, and immediately
-// issue the final show while restoring startup or tray state. Track only a
-// completed hidden-to-visible transition. The scope covers all early-return
-// paths in the show hooks without arming on a failed or still-pending show.
-struct TransientTauriShowScope {
-    HWND hWnd = nullptr;
-    bool track = false;
-
-    TransientTauriShowScope(HWND target, bool showRequested) : hWnd(target) {
-        const DWORD savedError = GetLastError();
-        track = showRequested && IsOurWindow(target) &&
-                !IsWindowVisible(target) &&
-                GetAncestor(target, GA_ROOT) == target &&
-                NeedsPersistentTrayHideCloak(target);
-        SetLastError(savedError);
-    }
-
-    ~TransientTauriShowScope() {
-        const DWORD savedError = GetLastError();
-        if (track && IsWindow(hWnd) && IsWindowVisible(hWnd)) {
-            ArmTransientTauriShowHideGuard(hWnd);
-        }
-        SetLastError(savedError);
-    }
-};
-
-static bool IsTaskbarSysCommand(HWND hWnd, LPARAM lParam) {
-    if (lParam == static_cast<LPARAM>(MAKELPARAM(0, 1)) ||
-        lParam == static_cast<LPARAM>(-1)) {
-        return false;
-    }
-    HMONITOR hMon = MonitorFromWindow(hWnd, MONITOR_DEFAULTTONEAREST);
-    HWND hTray = FindTaskbarForMonitor(hMon);
-    if (!hTray) return false;
-    if (lParam == 0) return IsCursorOverTaskbar(hTray);
-    POINT pt{static_cast<short>(LOWORD(lParam)),
-             static_cast<short>(HIWORD(lParam))};
-    RECT trayRect{};
-    return GetWindowRect(hTray, &trayRect) && PtInRect(&trayRect, pt);
-}
-static bool IsShellTaskbarRestoreCall(HWND hWnd) {
-    if (!IsShellExplorerProcess() || IsOurWindow(hWnd)) return false;
-    HWND hTray = FindTaskbarForMonitor(
-        MonitorFromWindow(hWnd, MONITOR_DEFAULTTONEAREST));
-    return hTray && IsCursorOverTaskbar(hTray);
-}
-
-// Internal probes, animation preparation, and cleanup must not become the
-// intercepted API's error result. Keep the caller's error when no native call
-// is needed; otherwise preserve the last native call's result through cleanup.
-class NativeApiLastErrorScope {
-    const DWORD entryError = GetLastError();
-    DWORD returnError = entryError;
-
-public:
-    ~NativeApiLastErrorScope() { SetLastError(returnError); }
-
-    template <typename Function, typename... Args>
-    auto Call(Function function, Args... args) -> decltype(function(args...)) {
-        SetLastError(entryError);
-        auto result = function(args...);
-        returnError = GetLastError();
-        return result;
-    }
-};
-
-BOOL WINAPI ShowWindow_Hook(HWND hWnd, int cmd) {
-    NativeApiLastErrorScope lastError;
-    TransientTauriShowScope transientTauriShow(
-        hWnd, IsTrayHideShowCommand(cmd));
-    if (IsNativeShowDesktopPassthroughActive() &&
-        (IsShowCmdForWinEvent(cmd) || cmd == SW_HIDE) &&
-        cmd != SW_RESTORE && cmd != SW_SHOWNORMAL) {
-        return lastError.Call(ShowWindow_Original, hWnd, cmd);
-    }
-    PublishClassicShowDesktopOwnerProtocol(hWnd);
-    if (IsOurWindow(hWnd) && IsTrayHideShowCommand(cmd) &&
-        ReadTrayHideCloakToken(hWnd)) {
-        EnsureWinEventThreadStarted();
-        return ShowPersistentlyCloakedTrayWindow(
-            hWnd, cmd, /*asynchronousSubmission=*/false,
-            [&]() { return lastError.Call(ShowWindow_Original, hWnd, cmd); });
-    }
-    if (IsMinimizeCommand(cmd)) {
-        const BOOL wasVisible = IsWindowVisible(hWnd);
-        const bool classicShowDesktop = IsClassicShowDesktopOperation();
-        NativeMinimizeBarrier* barrier = CreateNativeMinimizeBarrier();
-        if (!barrier) {
-            if (RetargetLiveMinRestore(hWnd, false) == MinRestoreRetarget::Accepted) {
-                return wasVisible;
-            }
-            return lastError.Call(ShowWindow_Original, hWnd, cmd);
-        }
-        AddRefNativeMinimizeBarrier(barrier);
-        const MinimizeKick kick = KickMinimizeAnimation(
-            hWnd, /*desktopFocusOnUnhide=*/true, /*allowUnhide=*/true, cmd, barrier);
-        if (kick == MinimizeKick::Deferred) {
-            CompleteNativeMinimizeBarrier(barrier, NativeMinimizeState::Cancelled);
-            return wasVisible;
-        }
-        if (!BeginNativeMinimizeSubmission(barrier)) {
-            CompleteNativeMinimizeBarrier(barrier, NativeMinimizeState::Cancelled);
-            return wasVisible;
-        }
-        const BOOL result = lastError.Call(ShowWindow_Original, hWnd, cmd);
-        CompleteNativeMinimizeBarrier(
-            barrier, wasVisible ? NativeMinimizeState::SyncCompleted
-                                : NativeMinimizeState::Failed);
-        if (classicShowDesktop && kick == MinimizeKick::None && result) {
-            SettleClassicShowDesktopNativeMinimize(hWnd);
-        }
-        return result;
-    }
-    if ((cmd == SW_RESTORE || cmd == SW_SHOWNORMAL) && IsIconic(hWnd)) {
-        if (RetargetLiveMinRestore(hWnd, true) == MinRestoreRetarget::Accepted) return TRUE;
-        const BOOL restoreMaximized =
-            cmd == SW_RESTORE && WindowRestoresMaximized(hWnd);
-        if (PrepareRestoreAnimation(hWnd)) {
-            if (restoreMaximized) {
-                ArmMaximizedRestoreGuard(
-                    hWnd,
-                    static_cast<DWORD>(AnimConstants::MaximizedRestoreGuardMs));
-            }
-            BOOL result = lastError.Call(ShowWindow_Original, hWnd, cmd);
-            CommitRestoreAnimation(hWnd, restoreMaximized);
-            return result;
-        }
-        return lastError.Call(ShowWindow_Original, hWnd, cmd);
-    }
-    if ((cmd == SW_RESTORE || cmd == SW_SHOWNORMAL) &&
-        RetargetLiveMinRestore(hWnd, true) == MinRestoreRetarget::Accepted) return TRUE;
-    if (cmd == SW_RESTORE && IsShellTaskbarRestoreCall(hWnd) &&
-        ShouldSuppressRedundantMaximizedRestore(hWnd)) {
-        // This hook can run in a different injected process while the restore
-        // worker owns and cloaks the real window. Keep suppression side-effect
-        // free; the owning worker activates only after it safely uncloaks.
-        return IsWindowVisible(hWnd);
-    }
-    if (!IsOurWindow(hWnd)) return lastError.Call(ShowWindow_Original, hWnd, cmd);
-    if (IsShowCmdForWinEvent(cmd)) {
-        EnsureWinEventThreadStarted();
-    }
-    if (cmd == SW_HIDE) {
-        if (GetPropW(hWnd, kPropCloseBypass)) return lastError.Call(ShowWindow_Original, hWnd, cmd);
-        if (ShouldTreatHideAsClose(hWnd)) {
-            return RunCallerOwnedHideAnimation(hWnd, [&]() {
-                return lastError.Call(ShowWindow_Original, hWnd, cmd);
-            });
-        }
-    }
-    LONG_PTR originalStyle;
-    ULONG_PTR launchSnapshotToken = 0;
-    BOOL launchHiddenByCloak = FALSE;
-    BOOL launchAlphaOnlyCompatibility = FALSE;
-    if (PrepareLaunchAnim(hWnd, cmd, &originalStyle,
-                          &launchSnapshotToken, &launchHiddenByCloak,
-                          &launchAlphaOnlyCompatibility, L"ShowWindow")) {
-        BOOL result = lastError.Call(ShowWindow_Original, hWnd, cmd);
-        CommitPreparedLaunchShow(
-            hWnd, originalStyle, launchSnapshotToken, launchHiddenByCloak,
-            launchAlphaOnlyCompatibility);
-        return result;
-    }
-    return lastError.Call(ShowWindow_Original, hWnd, cmd);
-}
-BOOL WINAPI ShowWindowAsync_Hook(HWND hWnd, int cmd) {
-    NativeApiLastErrorScope lastError;
-    TransientTauriShowScope transientTauriShow(
-        hWnd, IsTrayHideShowCommand(cmd));
-    if (IsNativeShowDesktopPassthroughActive() &&
-        (IsShowCmdForWinEvent(cmd) || cmd == SW_HIDE) &&
-        cmd != SW_RESTORE && cmd != SW_SHOWNORMAL) {
-        return lastError.Call(ShowWindowAsync_Original, hWnd, cmd);
-    }
-    PublishClassicShowDesktopOwnerProtocol(hWnd);
-    if (IsOurWindow(hWnd) && IsTrayHideShowCommand(cmd) &&
-        ReadTrayHideCloakToken(hWnd)) {
-        EnsureWinEventThreadStarted();
-        return ShowPersistentlyCloakedTrayWindow(
-            hWnd, cmd, /*asynchronousSubmission=*/true,
-            [&]() { return lastError.Call(ShowWindowAsync_Original, hWnd, cmd); });
-    }
-    if (IsMinimizeCommand(cmd)) {
-        const bool classicShowDesktop = IsClassicShowDesktopOperation();
-        NativeMinimizeBarrier* barrier = CreateNativeMinimizeBarrier();
-        if (!barrier) {
-            if (RetargetLiveMinRestore(hWnd, false) == MinRestoreRetarget::Accepted) {
-                return TRUE;
-            }
-            return lastError.Call(ShowWindowAsync_Original, hWnd, cmd);
-        }
-        AddRefNativeMinimizeBarrier(barrier);
-        const MinimizeKick kick = TryMinimizeAnim(hWnd, barrier, cmd);
-        if (kick == MinimizeKick::Deferred) {
-            CompleteNativeMinimizeBarrier(barrier, NativeMinimizeState::Cancelled);
-            return TRUE;
-        }
-        if (!BeginNativeMinimizeSubmission(barrier)) {
-            CompleteNativeMinimizeBarrier(barrier, NativeMinimizeState::Cancelled);
-            return TRUE;
-        }
-        const BOOL result = lastError.Call(ShowWindowAsync_Original, hWnd, cmd);
-        CompleteNativeMinimizeBarrier(
-            barrier, result ? NativeMinimizeState::AsyncSubmitted
-                            : NativeMinimizeState::Failed);
-        if (classicShowDesktop && kick == MinimizeKick::None && result) {
-            SettleClassicShowDesktopNativeMinimize(hWnd);
-        }
-        return result;
-    }
-    if ((cmd == SW_RESTORE || cmd == SW_SHOWNORMAL) &&
-        RetargetLiveMinRestore(hWnd, true) == MinRestoreRetarget::Accepted) return TRUE;
-    if (cmd == SW_RESTORE && IsShellTaskbarRestoreCall(hWnd) &&
-        ShouldSuppressRedundantMaximizedRestore(hWnd)) {
-        // See ShowWindow_Hook: foregrounding here can re-enter Explorer's
-        // taskbar toggle logic and enqueue an unowned late minimize.
-        return TRUE;
-    }
-    if ((cmd == SW_RESTORE || cmd == SW_SHOWNORMAL) && IsIconic(hWnd) &&
-        CanPrepareRestoreAnimation(hWnd)) {
-        const LONG_PTR originalExStyle = GetWindowLongPtrW(hWnd, GWL_EXSTYLE);
-        const BOOL restoreMaximized =
-            cmd == SW_RESTORE && WindowRestoresMaximized(hWnd);
-        uint64_t reservationGeneration = 0;
-        if (!ReserveAsyncRestore(hWnd, &reservationGeneration)) {
-            if (RetargetLiveMinRestore(hWnd, true) == MinRestoreRetarget::Accepted) return TRUE;
-            return lastError.Call(ShowWindowAsync_Original, hWnd, cmd);
-        }
-        if (restoreMaximized) {
-            ArmMaximizedRestoreGuard(
-                hWnd,
-                static_cast<DWORD>(AnimConstants::MaximizedRestoreGuardMs));
-        }
-        UpdateDwmTransitions(hWnd, FALSE);
-        SetWindowCloak(hWnd, TRUE);
-        const BOOL result = lastError.Call(ShowWindowAsync_Original, hWnd, cmd);
-        auto* restoreData = result
-                                ? new (std::nothrow) AsyncRestoreAnimData{
-                                      hWnd, originalExStyle, reservationGeneration,
-                                      restoreMaximized}
-                                : nullptr;
-        if (!restoreData || !StartWorkerThread(AsyncRestoreAnimThread, restoreData)) {
-            delete restoreData;
-            AbortAsyncRestoreReservation(hWnd, reservationGeneration, originalExStyle,
-                                          result != FALSE, restoreMaximized);
-        }
-        return result;
-    }
-    if (!IsOurWindow(hWnd)) return lastError.Call(ShowWindowAsync_Original, hWnd, cmd);
-    if (IsShowCmdForWinEvent(cmd)) {
-        EnsureWinEventThreadStarted();
-    }
-    if (cmd == SW_HIDE) {
-        if (GetPropW(hWnd, kPropCloseBypass)) return lastError.Call(ShowWindowAsync_Original, hWnd, cmd);
-        if (ShouldTreatHideAsClose(hWnd)) {
-            if (RunCloseAnimation(hWnd, ANIM_DEFER_SW_HIDE)) return TRUE;
-        }
-    }
-    // ShowWindowAsync queues the show even on the owning UI thread. Don't
-    // substitute ShowWindow for an immediate launch capture: that introduces
-    // synchronous callbacks into the caller's still-running handler.
-    return lastError.Call(ShowWindowAsync_Original, hWnd, cmd);
-}
-BOOL WINAPI SetWindowPos_Hook(HWND hWnd, HWND insertAfter, int x, int y, int cx, int cy, UINT flags) {
-    NativeApiLastErrorScope lastError;
-    TransientTauriShowScope transientTauriShow(
-        hWnd, (flags & SWP_SHOWWINDOW) && !(flags & SWP_HIDEWINDOW));
-    if (!(flags & (SWP_HIDEWINDOW | SWP_SHOWWINDOW))) {
-        return lastError.Call(SetWindowPos_Original, hWnd, insertAfter, x, y, cx, cy, flags);
-    }
-    if (IsNativeShowDesktopPassthroughActive()) {
-        return lastError.Call(SetWindowPos_Original, hWnd, insertAfter, x, y, cx, cy, flags);
-    }
-    if (!IsOurWindow(hWnd)) return lastError.Call(SetWindowPos_Original, hWnd, insertAfter, x, y, cx, cy, flags);
-    PublishClassicShowDesktopOwnerProtocol(hWnd);
-    if (flags & SWP_SHOWWINDOW) {
-        EnsureWinEventThreadStarted();
-    }
-    if ((flags & SWP_SHOWWINDOW) && !(flags & SWP_HIDEWINDOW) &&
-        ReadTrayHideCloakToken(hWnd)) {
-        return ShowPersistentlyCloakedTrayWindow(
-            hWnd, SW_SHOW, /*asynchronousSubmission=*/true,
-            [&]() {
-                return lastError.Call(SetWindowPos_Original, hWnd, insertAfter, x, y, cx, cy,
-                                             flags);
-            });
-    }
-    if ((flags & SWP_HIDEWINDOW) && !GetPropW(hWnd, kPropCloseBypass) && ShouldTreatHideAsClose(hWnd)) {
-        if (!(flags & SWP_ASYNCWINDOWPOS)) {
-            return RunCallerOwnedHideAnimation(hWnd, [&]() {
-                return lastError.Call(SetWindowPos_Original, hWnd, insertAfter, x, y, cx, cy,
-                                             flags);
-            });
-        }
-        BOOL applied = lastError.Call(SetWindowPos_Original, hWnd, insertAfter, x, y, cx, cy, flags & ~SWP_HIDEWINDOW);
-        if (!applied) return FALSE;
-        
-        if (RunCloseAnimation(hWnd, ANIM_DEFER_SW_HIDE)) return TRUE;
-        
-        return lastError.Call(SetWindowPos_Original, hWnd, insertAfter, x, y, cx, cy, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_NOACTIVATE | SWP_HIDEWINDOW);
-    }
-    if (flags & SWP_SHOWWINDOW) {
-        LONG_PTR originalStyle;
-        ULONG_PTR launchSnapshotToken = 0;
-        BOOL launchHiddenByCloak = FALSE;
-        BOOL launchAlphaOnlyCompatibility = FALSE;
-        if (PrepareLaunchAnim(hWnd, SW_SHOW, &originalStyle,
-                              &launchSnapshotToken, &launchHiddenByCloak,
-                              &launchAlphaOnlyCompatibility,
-                              L"SetWindowPos")) {
-            BOOL result = lastError.Call(SetWindowPos_Original, hWnd, insertAfter, x, y, cx, cy, flags);
-            if (!result) {
-                AbortPreparedLaunchAnim(hWnd, originalStyle,
-                                        launchHiddenByCloak);
-            } else {
-                CommitPreparedLaunchShow(
-                    hWnd, originalStyle, launchSnapshotToken,
-                    launchHiddenByCloak, launchAlphaOnlyCompatibility);
-            }
-            return result;
-        }
-    }
-    return lastError.Call(SetWindowPos_Original, hWnd, insertAfter, x, y, cx, cy, flags);
-}
-BOOL WINAPI DestroyWindow_Hook(HWND hWnd) {
-    NativeApiLastErrorScope lastError;
-    bool animated = false;
-    if (GetWindowThreadProcessId(hWnd, NULL) == GetCurrentThreadId() &&
-        g_closeAnimation.load(std::memory_order_relaxed) &&
-        IsAppMainWindow(hWnd) &&
-        !IsAnimating(hWnd) &&
-        !GetPropW(hWnd, kPropCloseBypass) &&
-        !GetPropW(hWnd, kPropClosed)) {
-        SetPropW(hWnd, kPropCloseBypass, (HANDLE)1);
-        animated = RunCloseAnimation(hWnd, WM_DESTROY);
-        if (!animated) RemovePropW(hWnd, kPropCloseBypass);
-    }
-    BOOL result = lastError.Call(DestroyWindow_Original, hWnd);
-    if (!result && animated && IsWindow(hWnd)) {
-        RemovePropW(hWnd, kPropCloseBypass);
-        RemovePropW(hWnd, kPropClosed);
-        if (GetPropW(hWnd, kPropExcelCloseAlpha)) {
-            SetExcelCloseTransparency(hWnd, FALSE);
-        } else {
-            SetWindowCloak(hWnd, FALSE);
-        }
-        UpdateDwmTransitions(hWnd, TRUE);
-    }
-    return result;
-}
-static void HandleSwsOwnerRestore(HWND hWnd, WPARAM wParam, LPARAM lParam) {
-    const DWORD token = static_cast<DWORD>(wParam);
-    const HWND endpoint = reinterpret_cast<HWND>(lParam);
-    if (g_unloading.load(std::memory_order_relaxed) ||
-        GetWindowThreadProcessId(hWnd, nullptr) != GetCurrentThreadId() ||
-        !IsSwsOwnerRestoreRequestCurrent(hWnd, endpoint, token) ||
-        !IsIconic(hWnd)) return;
-
-    // The request contains only an endpoint HWND and token, never a pointer
-    // into SWS. Mark the pre-session gap as well as the long-lived animation
-    // so the switcher cannot force activation while this owner-thread hook
-    // prepares its snapshot. ShowWindow_Hook can use this process's cache or
-    // capture on the actual UI thread, unlike the foreign async-show hook.
-    SetPropW(hWnd, SwsSelectionProtocol::OwnerRestoreActiveProp,
-             reinterpret_cast<HANDLE>(static_cast<ULONG_PTR>(token)));
-    if (IsDiagnosticLoggingEnabled()) {
-        Wh_Log(L"SWS owner restore hwnd=%p token=%lu target_pid=%lu",
-               hWnd, static_cast<unsigned long>(token), GetCurrentProcessId());
-    }
-    ShowWindow_Hook(hWnd, SW_RESTORE);
-    if (reinterpret_cast<ULONG_PTR>(GetPropW(
-            hWnd, SwsSelectionProtocol::OwnerRestoreActiveProp)) == token) {
-        RemovePropW(hWnd, SwsSelectionProtocol::OwnerRestoreActiveProp);
-    }
-}
-
-LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-    const bool classicShowDesktopOwnerDispatchMessage =
-        g_classicShowDesktopOwnerDispatchMessage &&
-        msg == g_classicShowDesktopOwnerDispatchMessage;
-    const bool swsOwnerRestoreMessage =
-        g_swsOwnerRestoreMessage && msg == g_swsOwnerRestoreMessage;
-    const bool trayHideVisibilityMessage =
-        msg == WM_WINDOWPOSCHANGED && lParam &&
-        (reinterpret_cast<const WINDOWPOS*>(lParam)->flags & SWP_SHOWWINDOW);
-    if (msg != WM_DESTROY && msg != WM_CLOSE && msg != WM_SYSCOMMAND &&
-        !classicShowDesktopOwnerDispatchMessage &&
-        !swsOwnerRestoreMessage &&
-        !trayHideVisibilityMessage) {
-        return DefWindowProcW_Original(hWnd, msg, wParam, lParam);
-    }
-    if (!IsOurWindow(hWnd)) return DefWindowProcW_Original(hWnd, msg, wParam, lParam);
-    if (swsOwnerRestoreMessage) {
-        HandleSwsOwnerRestore(hWnd, wParam, lParam);
-        return 0;
-    }
-    if (msg == WM_SYSCOMMAND &&
-        ((wParam & 0xFFF0) == SC_MINIMIZE ||
-         (wParam & 0xFFF0) == SC_RESTORE) &&
-        IsNativeShowDesktopPassthroughActive()) {
-        return DefWindowProcW_Original(hWnd, msg, wParam, lParam);
-    }
-    if (trayHideVisibilityMessage) {
-        const LRESULT result =
-            DefWindowProcW_Original(hWnd, msg, wParam, lParam);
-        const DWORD nativeError = GetLastError();
-        ReleaseVisibleTrayHideCloak(hWnd);
-        // Keep Windows' exit error, not the hook's entry error. Both absent
-        // property queries and real retained-cloak cleanup can overwrite it.
-        SetLastError(nativeError);
-        return result;
-    }
-    if (classicShowDesktopOwnerDispatchMessage) {
-        if (!wParam && lParam == kClassicShowDesktopOwnerProbe) {
-            const bool probePending = GetPropW(
-                hWnd, kPropClassicShowDesktopOwnerProbePending) != nullptr;
-            RemovePropW(hWnd, kPropClassicShowDesktopOwnerProbePending);
-            if (probePending) {
-                SetPropW(hWnd, kPropClassicShowDesktopOwnerProtocol,
-                         reinterpret_cast<HANDLE>(
-                             kClassicShowDesktopOwnerProtocolVersion));
-                // The probe proves this window forwards registered messages
-                // to our owner-thread handler. Publish the SWS capability only
-                // now; an injected DLL alone is not sufficient evidence.
-                if (g_swsOwnerRestoreMessage &&
-                    GetWindowThreadProcessId(hWnd, nullptr) ==
-                        GetCurrentThreadId()) {
-                    SetPropW(hWnd, SwsSelectionProtocol::OwnerRestoreMessageProp,
-                             reinterpret_cast<HANDLE>(static_cast<ULONG_PTR>(
-                                 g_swsOwnerRestoreMessage)));
-                }
-            }
-            return 0;
-        }
-        const DWORD requestDeadline = static_cast<DWORD>(wParam);
-        const DWORD currentDeadline = static_cast<DWORD>(
-            reinterpret_cast<ULONG_PTR>(GetPropW(
-                hWnd, kPropClassicShowDesktopOwnerDispatch)));
-        const bool requestCurrent =
-            requestDeadline && requestDeadline == currentDeadline &&
-            IsFutureTick(requestDeadline);
-        if (!requestCurrent) {
-            if (requestDeadline && requestDeadline == currentDeadline) {
-                RemovePropW(hWnd, kPropClassicShowDesktopOwnerDispatch);
-            }
-            if (IsDiagnosticLoggingEnabled()) {
-                Wh_Log(L"Classic Show Desktop ignored stale owner "
-                       L"preparation hwnd=%p",
-                       hWnd);
-            }
-            return 0;
-        }
-
-        // Prepare the target-owned animation and suppress this private
-        // registered message. Explorer performs the real native minimize only
-        // after observing the acknowledgement.
-        const MinimizeKick kick = KickMinimizeAnimation(
-            hWnd, /*desktopFocusOnUnhide=*/true,
-            /*allowUnhide=*/false, SW_MINIMIZE, nullptr);
-        const bool prepared = kick != MinimizeKick::None;
-        if (prepared) {
-            SetPropW(hWnd, kPropClassicShowDesktopOwnerPrepared,
-                     reinterpret_cast<HANDLE>(
-                         static_cast<ULONG_PTR>(requestDeadline)));
-        }
-        if (static_cast<DWORD>(reinterpret_cast<ULONG_PTR>(GetPropW(
-                hWnd, kPropClassicShowDesktopOwnerDispatch))) ==
-            requestDeadline) {
-            RemovePropW(hWnd, kPropClassicShowDesktopOwnerDispatch);
-        }
-        if (IsDiagnosticLoggingEnabled()) {
-            Wh_Log(L"Classic Show Desktop owner preparation %s hwnd=%p",
-                   prepared ? L"accepted" : L"failed", hWnd);
-        }
-        return 0;
-    }
-    if (msg == WM_DESTROY) {
-        RemovePropW(hWnd, kPropCloseBypass);
-        RemovePropW(hWnd, kPropClosed);
-        CleanupWindowData(hWnd);
-    }
-    const bool closeMessage = msg == WM_CLOSE || (msg == WM_SYSCOMMAND && (wParam & 0xFFF0) == SC_CLOSE);
-    if (closeMessage && !IsAnimating(hWnd) && !GetPropW(hWnd, kPropCloseBypass) && !GetPropW(hWnd, kPropClosed) &&
-        g_closeAnimation.load(std::memory_order_relaxed) &&
-        IsAppMainWindow(hWnd) && CanAnimateCloseMessage(hWnd)) {
-        SetPropW(hWnd, kPropClosed, (HANDLE)1);
-        const UINT repost = msg == WM_CLOSE ? WM_CLOSE : WM_SYSCOMMAND;
-        if (RunCloseAnimation(hWnd, repost)) return 0;
-        RemovePropW(hWnd, kPropClosed);
-    }
-    if (msg == WM_SYSCOMMAND) {
-        const UINT cmd = wParam & 0xFFF0;
-        if (cmd == SC_MINIMIZE) {
-            NativeMinimizeBarrier* barrier = CreateNativeMinimizeBarrier();
-            if (!barrier) {
-                if (RetargetLiveMinRestore(hWnd, false) == MinRestoreRetarget::Accepted) {
-                    return 0;
-                }
-                return DefWindowProcW_Original(hWnd, msg, wParam, lParam);
-            }
-            AddRefNativeMinimizeBarrier(barrier);
-            const MinimizeKick kick = KickMinimizeAnimation(
-                hWnd, /*desktopFocusOnUnhide=*/false,
-                /*allowUnhide=*/true, 0, barrier);
-            if (kick == MinimizeKick::Deferred) {
-                CompleteNativeMinimizeBarrier(barrier, NativeMinimizeState::Cancelled);
-                return 0;
-            }
-            if (!BeginNativeMinimizeSubmission(barrier)) {
-                CompleteNativeMinimizeBarrier(barrier, NativeMinimizeState::Cancelled);
-                return 0;
-            }
-            const LRESULT result = DefWindowProcW_Original(hWnd, msg, wParam, lParam);
-            CompleteNativeMinimizeBarrier(barrier, NativeMinimizeState::SyncCompleted);
-            return result;
-        }
-        if (cmd == SC_RESTORE) {
-            if (RetargetLiveMinRestore(hWnd, true) == MinRestoreRetarget::Accepted) return 0;
-            if (IsTaskbarSysCommand(hWnd, lParam) &&
-                ShouldSuppressRedundantMaximizedRestore(hWnd)) {
-                // The animation owner performs endpoint activation. This
-                // cross-process debounce must not mutate foreground state.
-                return 0;
-            }
-            const BOOL restoreMaximized = WindowRestoresMaximized(hWnd);
-            if (IsIconic(hWnd) && PrepareRestoreAnimation(hWnd)) {
-                if (restoreMaximized) {
-                    ArmMaximizedRestoreGuard(
-                        hWnd,
-                        static_cast<DWORD>(AnimConstants::MaximizedRestoreGuardMs));
-                }
-                LRESULT result = DefWindowProcW_Original(hWnd, msg, wParam, lParam);
-                CommitRestoreAnimation(hWnd, restoreMaximized);
-                return result;
-            }
-        }
-    }
-    return DefWindowProcW_Original(hWnd, msg, wParam, lParam);
-}
-BOOL WINAPI SetWindowPlacement_Hook(HWND hWnd, const WINDOWPLACEMENT* placement) {
-    NativeApiLastErrorScope lastError;
-    TransientTauriShowScope transientTauriShow(
-        hWnd, placement && IsTrayHideShowCommand(placement->showCmd));
-    if (placement && IsNativeShowDesktopPassthroughActive() &&
-        (IsShowCmdForWinEvent(placement->showCmd) ||
-         placement->showCmd == SW_HIDE)) {
-        return lastError.Call(SetWindowPlacement_Original, hWnd, placement);
-    }
-    PublishClassicShowDesktopOwnerProtocol(hWnd);
-    if (placement && IsOurWindow(hWnd) &&
-        IsTrayHideShowCommand(placement->showCmd) &&
-        ReadTrayHideCloakToken(hWnd)) {
-        EnsureWinEventThreadStarted();
-        return ShowPersistentlyCloakedTrayWindow(
-            hWnd, placement->showCmd, /*asynchronousSubmission=*/true,
-            [&]() {
-                return lastError.Call(SetWindowPlacement_Original, hWnd, placement);
-            });
-    }
-    if (placement && IsMinimizeCommand(placement->showCmd)) {
-        NativeMinimizeBarrier* barrier = CreateNativeMinimizeBarrier();
-        if (!barrier) {
-            if (RetargetLiveMinRestore(hWnd, false) == MinRestoreRetarget::Accepted) {
-                return TRUE;
-            }
-            return lastError.Call(SetWindowPlacement_Original, hWnd, placement);
-        }
-        AddRefNativeMinimizeBarrier(barrier);
-        if (TryMinimizeAnim(hWnd, barrier, placement->showCmd) == MinimizeKick::Deferred) {
-            CompleteNativeMinimizeBarrier(barrier, NativeMinimizeState::Cancelled);
-            return TRUE;
-        }
-        if (!BeginNativeMinimizeSubmission(barrier)) {
-            CompleteNativeMinimizeBarrier(barrier, NativeMinimizeState::Cancelled);
-            return TRUE;
-        }
-        const BOOL result = lastError.Call(SetWindowPlacement_Original, hWnd, placement);
-        CompleteNativeMinimizeBarrier(
-            barrier, result ? NativeMinimizeState::SyncCompleted
-                            : NativeMinimizeState::Failed);
-        return result;
-    }
-    if (placement && (placement->showCmd == SW_RESTORE || placement->showCmd == SW_SHOWNORMAL) &&
-        RetargetLiveMinRestore(hWnd, true) == MinRestoreRetarget::Accepted) return TRUE;
-    if (placement && placement->showCmd == SW_RESTORE &&
-        IsShellTaskbarRestoreCall(hWnd) &&
-        ShouldSuppressRedundantMaximizedRestore(hWnd)) {
-        // Keep the cross-process redundant-restore guard side-effect free.
-        return TRUE;
-    }
-    if (placement && (placement->showCmd == SW_RESTORE || placement->showCmd == SW_SHOWNORMAL) &&
-        IsIconic(hWnd) && PrepareRestoreAnimation(hWnd)) {
-        const BOOL restoreMaximized =
-            placement->showCmd == SW_RESTORE && WindowRestoresMaximized(hWnd);
-        if (restoreMaximized) {
-            ArmMaximizedRestoreGuard(
-                hWnd,
-                static_cast<DWORD>(AnimConstants::MaximizedRestoreGuardMs));
-        }
-        const LONG_PTR originalExStyle = GetWindowLongPtrW(hWnd, GWL_EXSTYLE);
-        BOOL result = lastError.Call(SetWindowPlacement_Original, hWnd, placement);
-        if (result) CommitRestoreAnimation(hWnd, restoreMaximized);
-        else if (!IsAnimating(hWnd)) {
-            UndoRisingHide(hWnd, originalExStyle, TRUE);
-        }
-        return result;
-    }
-    if (!IsOurWindow(hWnd)) return lastError.Call(SetWindowPlacement_Original, hWnd, placement);
-    if (placement && IsShowCmdForWinEvent(placement->showCmd)) {
-        EnsureWinEventThreadStarted();
-    }
-    if (placement) {
-        LONG_PTR originalStyle = 0;
-        ULONG_PTR launchSnapshotToken = 0;
-        BOOL launchHiddenByCloak = FALSE;
-        BOOL launchAlphaOnlyCompatibility = FALSE;
-        if (PrepareLaunchAnim(
-                hWnd, placement->showCmd, &originalStyle,
-                &launchSnapshotToken, &launchHiddenByCloak,
-                &launchAlphaOnlyCompatibility,
-                L"SetWindowPlacement")) {
-            const BOOL result =
-                lastError.Call(SetWindowPlacement_Original, hWnd, placement);
-            if (!result) {
-                AbortPreparedLaunchAnim(hWnd, originalStyle,
-                                        launchHiddenByCloak);
-            } else {
-                CommitPreparedLaunchShow(
-                    hWnd, originalStyle, launchSnapshotToken,
-                    launchHiddenByCloak, launchAlphaOnlyCompatibility);
-            }
-            return result;
-        }
-    }
-    if (placement && placement->showCmd == SW_HIDE && !GetPropW(hWnd, kPropCloseBypass) &&
-        ShouldTreatHideAsClose(hWnd)) {
-        if (!(placement->flags & WPF_ASYNCWINDOWPLACEMENT)) {
-            return RunCallerOwnedHideAnimation(hWnd, [&]() {
-                return lastError.Call(SetWindowPlacement_Original, hWnd, placement);
-            });
-        }
-        WINDOWPLACEMENT modified = *placement;
-        modified.showCmd = SW_SHOWNA;
-        BOOL applied = lastError.Call(SetWindowPlacement_Original, hWnd, &modified);
-        if (!applied) return FALSE;
-        if (RunCloseAnimation(hWnd, ANIM_DEFER_SW_HIDE)) return TRUE;
-        return lastError.Call(ShowWindow_Original, hWnd, SW_HIDE);
-    }
-    return lastError.Call(SetWindowPlacement_Original, hWnd, placement);
-}
-BOOL WINAPI CloseWindow_Hook(HWND hWnd) {
-    NativeApiLastErrorScope lastError;
-    if (IsNativeShowDesktopPassthroughActive()) {
-        return lastError.Call(CloseWindow_Original, hWnd);
-    }
-    NativeMinimizeBarrier* barrier = CreateNativeMinimizeBarrier();
-    if (!barrier) {
-        if (RetargetLiveMinRestore(hWnd, false) == MinRestoreRetarget::Accepted) {
-            return TRUE;
-        }
-        return lastError.Call(CloseWindow_Original, hWnd);
-    }
-    AddRefNativeMinimizeBarrier(barrier);
-    if (TryMinimizeAnim(hWnd, barrier) == MinimizeKick::Deferred) {
-        CompleteNativeMinimizeBarrier(barrier, NativeMinimizeState::Cancelled);
-        return TRUE;
-    }
-    if (!BeginNativeMinimizeSubmission(barrier)) {
-        CompleteNativeMinimizeBarrier(barrier, NativeMinimizeState::Cancelled);
-        return TRUE;
-    }
-    const BOOL result = lastError.Call(CloseWindow_Original, hWnd);
-    CompleteNativeMinimizeBarrier(
-        barrier, result ? NativeMinimizeState::SyncCompleted
-                        : NativeMinimizeState::Failed);
-    return result;
-}
-DWORD WINAPI LaunchAnimThread(LPVOID lpParam) {
-    LaunchAnimData* ld = (LaunchAnimData*)lpParam;
-    HWND hWnd = ld->hWnd;
-    LONG_PTR originalExStyle = ld->originalExStyle;
-    ULONG_PTR snapshotToken = ld->snapshotToken;
-    const BOOL launchHiddenByCloak = ld->hiddenByCloak;
-    const BOOL launchAlphaOnlyCompatibility =
-        ld->alphaOnlyCompatibility;
-    delete ld;
-    if (!IsLaunchAnimationCurrent(hWnd, snapshotToken)) {
-        std::lock_guard<std::mutex> lock(g_StateMutex);
-        EraseSnapshotIfCurrentLocked(hWnd, snapshotToken);
-        return 0;
-    }
-    if (launchAlphaOnlyCompatibility) {
-        // Match the v1.2.0 Mozilla launch handoff: leave the one pre-show
-        // layered-alpha write alone while the first native show settles.
-        Sleep(60);
-    } else {
-        // Keep the alpha guard asserted while the framework finishes its first
-        // native show. Tauri/WebView2 can rebuild the top-level surface or
-        // style in this interval, which otherwise exposes the real window
-        // before the launch worker reaches StartAnimation.
-        for (int i = 0; i < 6; ++i) {
-            if (!IsWindow(hWnd) ||
-                !IsLaunchAnimationCurrent(hWnd, snapshotToken) ||
-                g_unloading.load(std::memory_order_relaxed)) {
-                break;
-            }
-            if (launchHiddenByCloak) SetWindowCloak(hWnd, TRUE);
-            KeepLaunchWindowTransparent(hWnd);
-            Sleep(10);
-        }
-    }
-    for (int i = 0; !launchHiddenByCloak && i < 30; ++i) {
-        if (!IsWindow(hWnd) ||
-            !IsLaunchAnimationCurrent(hWnd, snapshotToken) ||
-            g_unloading.load(std::memory_order_relaxed)) break;
-        UINT cloaked = 0;
-        if (FAILED(DwmGetWindowAttribute(
-                hWnd, DWMWA_CLOAKED, &cloaked, sizeof(cloaked))) ||
-            !cloaked) {
-            break;
-        }
-        KeepLaunchWindowTransparent(hWnd);
-        Sleep(50);
-    }
-    if (g_unloading.load(std::memory_order_relaxed) || !IsWindow(hWnd) ||
-        !IsLaunchAnimationCurrent(hWnd, snapshotToken) ||
-        IsIconic(hWnd) || !IsWindowVisible(hWnd)) {
-        const bool identityCurrent =
-            IsLaunchAnimationCurrent(hWnd, snapshotToken);
-        if (identityCurrent) {
-            if (launchHiddenByCloak) SetWindowCloak(hWnd, FALSE);
-            RestoreLayeredOpacity(hWnd, originalExStyle);
-            UpdateDwmTransitions(hWnd, TRUE);
-            RefreshDwmChromeAfterUncloak(hWnd, /*nonBlocking=*/true);
-        }
-        std::lock_guard<std::mutex> lock(g_StateMutex);
-        EraseSnapshotIfCurrentLocked(hWnd, snapshotToken);
-        if (identityCurrent) {
-            g_LaunchSeen.erase(hWnd);
-            ClearLaunchAnimationIfCurrent(hWnd, snapshotToken);
-        }
-        return 0;
-    }
-    if (!launchAlphaOnlyCompatibility) {
-        KeepLaunchWindowTransparent(hWnd);
-    }
-    if (launchHiddenByCloak) {
-        // The cloak was installed before the native show. Reassert and commit
-        // it before removing the temporary layered alpha. From this point the
-        // normal rising-animation handoff owns the cloak and removes it only
-        // after the final ghost frame is ready.
-        SetWindowCloak(hWnd, TRUE);
-        FlushDwmOrYield();
-        RestoreLayeredOpacity(hWnd, originalExStyle);
-    }
-    if (!StartAnimation(hWnd, TRUE, originalExStyle, launchHiddenByCloak,
-                        FALSE, 0, nullptr,
-                        FALSE, FALSE, nullptr, 0, -1, FALSE, nullptr, 0,
-                        nullptr, FALSE, snapshotToken)) {
-        const bool identityCurrent =
-            IsLaunchAnimationCurrent(hWnd, snapshotToken);
-        if (identityCurrent) {
-            if (launchHiddenByCloak) SetWindowCloak(hWnd, FALSE);
-            RestoreLayeredOpacity(hWnd, originalExStyle);
-            UpdateDwmTransitions(hWnd, TRUE);
-            RefreshDwmChromeAfterUncloak(hWnd, /*nonBlocking=*/true);
-        }
-        std::lock_guard<std::mutex> lock(g_StateMutex);
-        EraseSnapshotIfCurrentLocked(hWnd, snapshotToken);
-        if (identityCurrent) {
-            g_LaunchSeen.erase(hWnd);
-            ClearLaunchAnimationIfCurrent(hWnd, snapshotToken);
-        }
-    }
-    return 0;
-}
-static BOOL CALLBACK EnumWindowsInitProc(HWND hWnd, LPARAM) {
-    DWORD pid = 0;
-    GetWindowThreadProcessId(hWnd, &pid);
-    if (pid == GetCurrentProcessId()) {
-        if (IsWindowVisible(hWnd)) {
-            EnsureWinEventThreadStarted();
-            return FALSE; 
-        }
-    }
-    return TRUE;
-}
-static void EnsureExplorerForegroundThreadStarted() {
-    if (g_unloading.load(std::memory_order_relaxed) ||
-        !g_switchAnimation.load(std::memory_order_relaxed) ||
-        !IsShellExplorerProcess()) {
-        return;
-    }
-
-    std::lock_guard<std::mutex> lock(g_ExplorerFgThreadMutex);
-    if (g_unloading.load(std::memory_order_relaxed) ||
-        !g_switchAnimation.load(std::memory_order_relaxed) ||
-        !IsShellExplorerProcess()) {
-        return;
-    }
-    if (g_hExplorerFgThread &&
-        WaitForSingleObject(g_hExplorerFgThread, 0) == WAIT_OBJECT_0) {
-        CloseHandle(g_hExplorerFgThread);
-        g_hExplorerFgThread = NULL;
-    }
-    if (g_hExplorerFgThread) return;
-
-    g_explorerAltTabTrackerEnabled.store(true, std::memory_order_relaxed);
-    HANDLE hThread = CreateThread(NULL, 0, ExplorerFgHookThread, NULL, 0, NULL);
-    if (!hThread) {
-        g_explorerAltTabTrackerEnabled.store(false, std::memory_order_relaxed);
-        Wh_Log(L"Explorer FOREGROUND thread failed to start");
-        return;
-    }
-    g_hExplorerFgThread = hThread;
-}
-
-static void StopExplorerForegroundThread() {
-    g_explorerAltTabTrackerEnabled.store(false, std::memory_order_relaxed);
-    HANDLE hThread = NULL;
-    {
-        std::lock_guard<std::mutex> lock(g_ExplorerFgThreadMutex);
-        hThread = g_hExplorerFgThread;
-        g_hExplorerFgThread = NULL;
-    }
-    if (!hThread) return;
-    DWORD tid = GetThreadId(hThread);
-    while (tid && !PostThreadMessageW(tid, WM_QUIT, 0, 0)) {
-        if (WaitForSingleObject(hThread, 10) != WAIT_TIMEOUT) break;
-    }
-    WaitForSingleObject(hThread, INFINITE);
-    CloseHandle(hThread);
-}
-
-void StartSwitchThreads() {
-    EnsureExplorerForegroundThreadStarted();
-    if (!g_unloading.load(std::memory_order_relaxed) &&
-        g_switchAnimation.load(std::memory_order_relaxed)) {
-        EnumWindows(EnumWindowsInitProc, 0);
-    }
-}
-static void StopWinEventThread() {
-    HANDLE hWinEvent = NULL;
-    {
-        std::lock_guard<std::mutex> lock(g_StateMutex);
-        hWinEvent = g_hWinEventThread;
-        g_hWinEventThread = NULL;
-    }
-    if (!hWinEvent) return;
-    DWORD tid = GetThreadId(hWinEvent);
-    while (tid && !PostThreadMessageW(tid, WM_QUIT, 0, 0)) {
-        if (WaitForSingleObject(hWinEvent, 10) != WAIT_TIMEOUT) break;
-    }
-    WaitForSingleObject(hWinEvent, INFINITE);
-    CloseHandle(hWinEvent);
-    g_winEventThreadStarted.store(false, std::memory_order_relaxed);
-}
-void StopSwitchThreads() {
-    g_explorerAltTabTrackerEnabled.store(false, std::memory_order_relaxed);
-    {
-        std::lock_guard<std::mutex> lock(g_AltTabSessionMutex);
-        g_altTabSessionPollRunning.store(false, std::memory_order_relaxed);
-        if (g_hAltTabSessionThread) {
-            WaitForSingleObject(g_hAltTabSessionThread, INFINITE);
-            CloseHandle(g_hAltTabSessionThread);
-            g_hAltTabSessionThread = NULL;
-        }
-    }
-    StopExplorerForegroundThread();
-    if (g_unloading.load(std::memory_order_relaxed) ||
-        !NeedsLocalWinEventThread()) {
-        StopWinEventThread();
-    }
-}
-static DWORD WINAPI ShellOwnershipProbeThread(LPVOID) {
-    const DWORD started = GetTickCount();
-    while (!g_unloading.load(std::memory_order_relaxed)) {
-        const DWORD shellPid = GetShellExplorerProcessId();
-        if (shellPid) {
-            // A secondary explorer.exe can own folder windows without ever
-            // becoming the desktop shell. Once another PID owns the shell,
-            // this process has nothing left to probe for.
-            if (shellPid != GetCurrentProcessId()) return 0;
-            StopWinEventThread();
-            EnsureWinEventThreadStarted();
-            if (g_switchAnimation.load(std::memory_order_relaxed)) {
-                StartSwitchThreads();
-            }
-            return 0;
-        }
-        const DWORD elapsed = GetTickCount() - started;
-        // Custom shells might never publish either Explorer ownership HWND.
-        // Keep the startup recovery bounded instead of polling forever.
-        if (elapsed >= 30000) return 0;
-        Sleep(elapsed < 5000 ? 50 : 500);
-    }
-    return 0;
-}
-BOOL Wh_ModInit() {
-    // Session 0 is isolated from the interactive desktop. Such services can
-    // never own a window that this mod can animate. Chromium/Electron helper
-    // roles likewise don't own their application's top-level window. Avoid
-    // settings/shared-state initialization and API hooks in both cases.
-    if (IsNonInteractiveSessionProcess() ||
-        IsNonWindowHostingHelperProcess()) {
-        return FALSE;
-    }
-    LoadAnimSettings();
-    // Keep hooks available when effects are initially disabled so settings can be toggled live.
-    g_classicShowDesktopOwnerDispatchMessage = RegisterWindowMessageW(
-        L"Windhawk.GlassExplorerTest.WindowsAnimations.ClassicShowDesktopOwnerDispatch.2");
-    if (!g_classicShowDesktopOwnerDispatchMessage) {
-        Wh_Log(L"Failed to register Show Desktop owner dispatch message");
-        return FALSE;
-    }
-    g_swsOwnerRestoreMessage = RegisterWindowMessageW(
-        L"Windhawk.WindowsAnimations.SwsRestore.1");
-    if (!g_swsOwnerRestoreMessage) {
-        Wh_Log(L"SWS owner restore unavailable: message registration failed");
-    }
-    InitSharedMemory();
-    const bool explorerProcess = IsShellExplorerProcess();
-    if (explorerProcess &&
-        (g_minRestoreShuffleEffect.load(std::memory_order_relaxed) ||
-         g_closeShuffleEffect.load(std::memory_order_relaxed))) {
-        // Keep the tiny session-wide shuffle mapping alive even when GPU
-        // warm-up is disabled and the application which consumed the latest
-        // close effect exits immediately afterwards.
-        EnsureSharedEffectShuffleState();
-    }
-    if (IsExplorerProcess()) {
-        WindhawkUtils::SYMBOL_HOOK explorerExeHooks[] = {
-            {
-                {LR"(protected: void __cdecl CTray::_RaiseDesktop(enum RAISEDESKTOPFLAGS))"},
-                &RaiseDesktop_Original,
-                RaiseDesktop_Hook,
-                true,
-            },
-        };
-        if (!WindhawkUtils::HookSymbols(GetModuleHandleW(nullptr),
-                                        explorerExeHooks,
-                                        ARRAYSIZE(explorerExeHooks))) {
-            Wh_Log(L"Optional Show Desktop symbol hook setup failed");
-        } else if (!RaiseDesktop_Original) {
-            Wh_Log(L"Show Desktop symbol unavailable; using Win+D-only "
-                   L"key-state fallback");
-        }
-    }
-    // DefWindowProcW is multiplexed through Glass Explorer's existing hook.
-    WindhawkUtils::SetFunctionHook(ShowWindow, ShowWindow_Hook, &ShowWindow_Original);
-    WindhawkUtils::SetFunctionHook(ShowWindowAsync, ShowWindowAsync_Hook, &ShowWindowAsync_Original);
-    WindhawkUtils::SetFunctionHook(SetWindowPlacement, SetWindowPlacement_Hook, &SetWindowPlacement_Original);
-    WindhawkUtils::SetFunctionHook(CloseWindow, CloseWindow_Hook, &CloseWindow_Original);
-    WindhawkUtils::SetFunctionHook(SetWindowPos, SetWindowPos_Hook, &SetWindowPos_Original);
-    WindhawkUtils::SetFunctionHook(DestroyWindow, DestroyWindow_Hook, &DestroyWindow_Original);
-    // SetWindowCompositionAttribute is observed by Glass Explorer's existing hook.
-    return TRUE;
-}
-
-void Wh_ModAfterInit() {
-    const bool explorerProcess = IsShellExplorerProcess();
-    // Publish only after Windhawk has applied every hook. Explorer uses this
-    // marker to avoid waiting for owner cooperation from a process in which
-    // this mod is absent, stale, or still initializing.
-    EnumWindows(PublishClassicShowDesktopOwnerProtocolEnumProc, 0);
-    if (g_switchAnimation.load(std::memory_order_relaxed)) {
-        StartSwitchThreads();
-    }
-    if (explorerProcess && NeedsLocalWinEventThread()) {
-        EnsureWinEventThreadStarted();
-    } else if (NeedsLocalWinEventThread()) {
-        // Existing windows may need foreground or tray-hide observation. New
-        // windows start it lazily from their first intercepted ShowWindow.
-        EnumWindows(EnumWindowsInitProc, 0);
-    }
-    if (!explorerProcess && IsExplorerProcess()) {
-        StartWorkerThread(ShellOwnershipProbeThread, nullptr);
-    }
-}
-void Wh_ModSettingsChanged() { 
-    // Drop work derived from the old settings before loading replacements.
-    // Clear once more afterwards to close the small window in which an
-    // already-scheduled predictor could have queued the old selection.
-    CancelPendingGpuWarmup();
-    bool wasSwitchAnim = g_switchAnimation.load(std::memory_order_relaxed);
-    bool wasNativeShowDesktop =
-        g_nativeShowDesktopAnimations.load(std::memory_order_relaxed);
-    LoadAnimSettings();
-    CancelPendingGpuWarmup();
-    bool isSwitchAnim = g_switchAnimation.load(std::memory_order_relaxed);
-    bool isNativeShowDesktop =
-        g_nativeShowDesktopAnimations.load(std::memory_order_relaxed);
-    if (IsShellExplorerProcess() &&
-        (g_minRestoreShuffleEffect.load(std::memory_order_relaxed) ||
-         g_closeShuffleEffect.load(std::memory_order_relaxed))) {
-        EnsureSharedEffectShuffleState();
-    }
-    if (IsDiagnosticLoggingEnabled()) {
-        Wh_Log(L"Settings changed switch=%d->%d nativeShowDesktop=%d->%d",
-               wasSwitchAnim, isSwitchAnim, wasNativeShowDesktop,
-               isNativeShowDesktop);
-    }
-
-    if (!g_gpuAcceleration.load(std::memory_order_relaxed) &&
-        !g_closeGpuAcceleration.load(std::memory_order_relaxed)) {
-        ShutdownGpuRenderService();
-        if (IsDiagnosticLoggingEnabled()) {
-            Wh_Log(
-                L"GPU renderer released: both acceleration settings are off");
-        }
-    }
-
-    if (wasNativeShowDesktop != isNativeShowDesktop &&
-        IsShellExplorerProcess()) {
-        PublishNativeShowDesktopPassthrough(0);
-    }
-
-    if (isSwitchAnim && !wasSwitchAnim) {
-        StartSwitchThreads();
-    } 
-    else if (!isSwitchAnim && wasSwitchAnim) {
-        StopSwitchThreads();
-    }
-    if (NeedsLocalWinEventThread()) {
-        if (IsShellExplorerProcess()) {
-            EnsureWinEventThreadStarted();
-        } else {
-            EnumWindows(EnumWindowsInitProc, 0);
-        }
-    } else {
-        StopWinEventThread();
-    }
-}
-void Wh_ModBeforeUninit() {
-    g_unloading.store(true, std::memory_order_relaxed);
-    if (IsShellExplorerProcess()) {
-        // Don't leave other injected processes observing a native passthrough
-        // lease after the shell-side hook has been removed during a reload.
-        PublishNativeShowDesktopPassthrough(0);
-    }
-    {
-        std::lock_guard<std::mutex> lock(
-            g_deferredClassicShowDesktopMutex);
-        g_collectDeferredClassicShowDesktopMinimizes = false;
-        g_deferredClassicShowDesktopMinimizes.clear();
-        ++g_deferredClassicShowDesktopGeneration;
-    }
-    CancelPendingGpuWarmup();
-    // The ownership probe is a registered worker and is the only worker that
-    // can request the separately-owned Explorer foreground thread. Join it
-    // before detaching that thread, in addition to the start-side lock/check.
-    JoinWorkerThreads();
-    ShutdownGpuRenderService();
-    g_gpuWarmupRunning.store(false, std::memory_order_release);
-    StopSwitchThreads();
-}
-
-static BOOL CALLBACK ClearPersistentAnimationPropertiesOnUninit(
-    HWND hWnd, LPARAM currentProcessIdValue) {
-    DWORD windowProcessId = 0;
-    GetWindowThreadProcessId(hWnd, &windowProcessId);
-    if (windowProcessId != static_cast<DWORD>(currentProcessIdValue)) {
-        return TRUE;
-    }
-
-    if (GetPropW(hWnd, kPropExcelCloseAlpha)) {
-        SetExcelCloseTransparency(hWnd, FALSE);
-        UpdateDwmTransitions(hWnd, TRUE);
-    }
-    if (GetPropW(hWnd, kPropTrayHideCloak) && IsWindow(hWnd)) {
-        SetWindowCloak(hWnd, FALSE);
-        UpdateDwmTransitions(hWnd, TRUE);
-    }
-
-    constexpr PCWSTR properties[] = {
-        kPropCloseBypass,
-        kPropClosed,
-        kPropTrayHideCloak,
-        kPropTrayHideShowHandoff,
-        kPropTransientTauriShowTick,
-        kPropMinRestorePair,
-        kPropMaximizedRestoreGuard,
-        kPropLaunchAnimation,
-        kPropTaskbarDockIdentity,
-        kPropClassicShowDesktopOwnerDispatch,
-        kPropClassicShowDesktopOwnerPrepared,
-        kPropClassicShowDesktopOwnerProtocolLegacy,
-        kPropClassicShowDesktopOwnerProtocol,
-        kPropClassicShowDesktopOwnerProbePending,
-        kPropSwitchAnimationActive,
-        kPropAnimationSession,
-        kPropAnimationGhost,
-        SwsSelectionProtocol::OwnerRestoreMessageProp,
-        SwsSelectionProtocol::OwnerRestoreActiveProp,
-    };
-    for (PCWSTR property : properties) {
-        RemovePropW(hWnd, property);
-    }
-    return TRUE;
-}
-
-void Wh_ModUninit() {
-    std::vector<HWND> stuck;
-    {
-        std::lock_guard<std::mutex> lock(g_StateMutex);
-        stuck.assign(g_AnimActive.begin(), g_AnimActive.end());
-        g_AnimActive.clear();
-        g_AnimWantRising.clear();
-        g_AnimRestoreRequestForeground.clear();
-        g_AsyncRestoreReservations.clear();
-    }
-    for (HWND hWnd : stuck) {
-        if (!IsWindow(hWnd)) continue;
-        SetWindowCloak(hWnd, FALSE);
-        SetLayeredWindowAttributes(hWnd, 0, 255, LWA_ALPHA);
-        UpdateDwmTransitions(hWnd, TRUE);
-        RemovePropW(hWnd, kPropCloseBypass);
-        RemovePropW(hWnd, kPropClosed);
-    }
-    // Properties live on the HWND rather than in this DLL, so they survive a
-    // controlled mod reload unless removed explicitly. Workers are already
-    // joined, making it safe to clear this process's remaining bookkeeping.
-    EnumWindows(ClearPersistentAnimationPropertiesOnUninit,
-                static_cast<LPARAM>(GetCurrentProcessId()));
-    {
-        std::lock_guard<std::mutex> lock(g_StateMutex);
-        while (!g_WndSnapshots.empty()) {
-            EraseSnapshotLocked(g_WndSnapshots.begin());
-        }
-        g_WndSnapshotBytes = 0;
-        g_TaskbarDockPositions.clear();
-        g_TaskbarDockFallbackPositions.clear();
-        g_ProcessDockPositions.clear();
-        g_TaskbarDockLookupGenerations.clear();
-        g_TaskbarDockLookupIdentities.clear();
-        g_TaskbarDockLookupStartedTicks.clear();
-        g_TaskbarDockNegativeUntilTicks.clear();
-        g_TaskbarDockPositiveUntilTicks.clear();
-        g_ProcessNameCache.clear(); g_LaunchSeen.clear();
-        g_TaskbarWindowSetSignature = 0;
-        g_TaskbarWindowSetSignatureInitialized = false;
-        g_seenTaskbarLayoutEpoch = 0;
-        g_seenTaskbarExplorerPid = 0;
-    }
-    {
-        std::lock_guard<std::mutex> lock(g_AccentPolicyMutex);
-        g_TranslucentWindowsAccentPolicies.clear();
-    }
-    CloseSharedEffectShuffleState();
-    CloseSharedState();
-}
-
-} // namespace WindowsAnimationEngine
-
-
-
-/*
- * Combined Windhawk lifecycle.
- * Task Switch initializes first, then Glass Explorer.
- */
-BOOL Wh_ModInit() {
-    if (!TaskSwitch::Wh_ModInit()) {
-        return FALSE;
-    }
-    if (!GlassExplorer_ModInit()) {
-        TaskSwitch::Wh_ModBeforeUninit();
-        return FALSE;
-    }
-
-    // The animation engine intentionally opts out of non-interactive/helper
-    // processes. That must not disable the existing Glass Explorer features.
-    WindowsAnimationEngine::DefWindowProcW_Original = DefWindowProcW_Original;
-    g_animationEngineInitialized = WindowsAnimationEngine::Wh_ModInit();
-    return TRUE;
-}
-
-void Wh_ModAfterInit() {
-    TaskSwitch::Wh_ModAfterInit();
-    GlassExplorer_ModAfterInit();
-    if (g_animationEngineInitialized) {
-        WindowsAnimationEngine::Wh_ModAfterInit();
-    }
-}
-
-void Wh_ModBeforeUninit() {
-    if (g_animationEngineInitialized) {
-        WindowsAnimationEngine::Wh_ModBeforeUninit();
-    }
-    TaskSwitch::Wh_ModBeforeUninit();
-}
-
-void Wh_ModUninit() {
-    if (g_animationEngineInitialized) {
-        WindowsAnimationEngine::Wh_ModUninit();
-        g_animationEngineInitialized = false;
-    }
-    GlassExplorer_ModUninit();
-}
-
-BOOL Wh_ModSettingsChanged(BOOL* bReload) {
-    BOOL result = TaskSwitch::Wh_ModSettingsChanged(bReload);
-    GlassExplorer_ModSettingsChanged();
-    if (g_animationEngineInitialized) {
-        WindowsAnimationEngine::Wh_ModSettingsChanged();
-    }
-    return result;
 }
