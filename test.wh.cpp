@@ -51,6 +51,7 @@ envoyez manuellement les lignes pertinentes du journal.
 // ==/WindhawkModSettings==
 
 #include <xamlom.h>
+#include <commctrl.h>
 
 #include <atomic>
 #include <optional>
@@ -10863,6 +10864,35 @@ void TriggerWindowCompositionUpdate(HWND hWnd) {
                  RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
 }
 
+LRESULT CALLBACK MicaFocusPersistenceSubclassProc(HWND hWnd,
+                                                  UINT uMsg,
+                                                  WPARAM wParam,
+                                                  LPARAM lParam,
+                                                  UINT_PTR uIdSubclass,
+                                                  DWORD_PTR dwRefData) {
+    LRESULT result =
+        DefSubclassProc(hWnd, uMsg, wParam, lParam);
+
+    if (uMsg == WM_ACTIVATE) {
+        auto effect = GetEffectiveBackgroundTranslucentEffect();
+        if (effect == BackgroundTranslucentEffect::kMica ||
+            effect == BackgroundTranslucentEffect::kMicaAlt) {
+            // Explorer/Windows can reset the backdrop while changing the
+            // activation state. Reassert the selected Mica backdrop afterward.
+            ApplyBackgroundTranslucentEffect(hWnd);
+        }
+    }
+
+    return result;
+}
+
+void InstallMicaFocusPersistence(HWND hWnd) {
+    if (!SetWindowSubclass(hWnd, MicaFocusPersistenceSubclassProc, 1, 0)) {
+        Wh_Log(L"Failed to install Mica focus persistence subclass: %lu",
+               GetLastError());
+    }
+}
+
 void OnWindowCreated(HWND hWnd, PCSTR funcName) {
     TargetWindowType windowType = GetTargetWindowType(hWnd);
     if (windowType != TargetWindowType::None) {
@@ -10871,6 +10901,7 @@ void OnWindowCreated(HWND hWnd, PCSTR funcName) {
 
         if (windowType == TargetWindowType::FileExplorer) {
             ApplyBackgroundTranslucentEffect(hWnd);
+            InstallMicaFocusPersistence(hWnd);
         }
 
         InitializeForCurrentThread();
@@ -11391,6 +11422,7 @@ void Wh_ModAfterInit() {
                 if (GetTargetWindowType(hTargetWnd) ==
                     TargetWindowType::FileExplorer) {
                     ApplyBackgroundTranslucentEffect(hTargetWnd);
+                    InstallMicaFocusPersistence(hTargetWnd);
                     TriggerWindowCompositionUpdate(hTargetWnd);
                 }
             },
@@ -11427,6 +11459,8 @@ void Wh_ModUninit() {
 
                 if (GetTargetWindowType(hTargetWnd) ==
                     TargetWindowType::FileExplorer) {
+                    RemoveWindowSubclass(hTargetWnd,
+                                          MicaFocusPersistenceSubclassProc, 1);
                     ApplyBackgroundTranslucentEffect(
                         hTargetWnd, BackgroundTranslucentEffect::kDefault);
                     TriggerWindowCompositionUpdate(hTargetWnd);
