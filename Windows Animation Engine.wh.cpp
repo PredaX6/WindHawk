@@ -12315,7 +12315,9 @@ static MinimizeKick KickMinimizeAnimation(HWND hWnd, bool desktopFocusOnUnhide =
     }
     if (!g_minimizeAnimation.load(std::memory_order_relaxed)) return MinimizeKick::None;
     if (!IsWindowVisible(hWnd) || IsIconic(hWnd)) return MinimizeKick::None;
-    if (IsHungAppWindow(hWnd) || !ShouldAnimateWindow(hWnd)) {
+    // Avoid dropping minimize animations based on IsHungAppWindow: Windows
+    // can report a window as hung transiently during desktop-wide transitions.
+    if (!ShouldAnimateWindow(hWnd)) {
         return MinimizeKick::None;
     }
     if (QueueClassicShowDesktopMinimize(hWnd, showCmd)) {
