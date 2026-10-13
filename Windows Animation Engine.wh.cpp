@@ -12754,25 +12754,15 @@ static void RestoreClassicShowDesktopBatchBeforeShell() {
 
     size_t alreadyRestored = 0;
     size_t requested = 0;
-    size_t animated = 0;
     size_t failed = 0;
     bool budgetExhausted = false;
-    std::vector<ClassicShowDesktopRestoreWindow> requestedWindows;
-    try {
-        requestedWindows.reserve(windows.size());
-    } catch (const std::exception&) {
-        // Preserve the native shell fallback if bookkeeping allocation fails.
-        if (IsDiagnosticLoggingEnabled()) {
-            Wh_Log(L"Classic Show Desktop restore batch allocation failed");
-        }
-        return;
-    }
+    bool sentRestoreRequest = false;
 
-    // Submit every owner restore before waiting for any animation to finish.
-    // Waiting inside this loop serialized the effects: each next window was
-    // only asked to restore after the previous window's animation endpoint.
-    // Keep reverse Z-order for the requests so CTray's final ordering remains
-    // authoritative, but let independent window threads animate concurrently.
+    // Submit restore requests in reverse Z-order, with a tiny stagger. This
+    // lets the shell rebuild the intended stacking order while keeping the
+    // animations visually close together. Do not wait for animation endpoints
+    // here: returning promptly lets the original CTray operation run now and
+    // perform its native Show Desktop bookkeeping and final Z-order.
     for (auto it = windows.rbegin(); it != windows.rend(); ++it) {
         if (!IsClassicShowDesktopRestoreBatchCurrent(generation)) {
             break;
@@ -12790,6 +12780,12 @@ static void RestoreClassicShowDesktopBatchBeforeShell() {
             continue;
         }
 
+        // Keep a 5 ms gap between actual requests rather than waiting for an
+        // entire animation to finish. The captured list is top-to-bottom;
+        // reverse iteration allows the shell's final Z-order to settle
+        // without a visible one-by-one animation cascade.
+        if (sentRestoreRequest) Sleep(5);
+
         if (IsDiagnosticLoggingEnabled()) {
             Wh_Log(L"Classic Show Desktop requesting owner restore "
                    L"hwnd=%p target_pid=%lu",
@@ -12797,9 +12793,8 @@ static void RestoreClassicShowDesktopBatchBeforeShell() {
         }
         bool restoreSubmitted = false;
         if (it->threadId == GetCurrentThreadId()) {
-            // A File Explorer window can share CTray's thread. Posting and
-            // waiting here would deadlock that queue, so run the same prepare,
-            // native-state, and commit sequence directly on its owner thread.
+            // A File Explorer window can share CTray's thread. Handle it
+            // directly on its owner thread to avoid queueing behind ourselves.
             const BOOL restoreMaximized = WindowRestoresMaximized(it->hWnd);
             if (PrepareRestoreAnimation(it->hWnd)) {
                 if (restoreMaximized) {
@@ -12825,52 +12820,16 @@ static void RestoreClassicShowDesktopBatchBeforeShell() {
                 continue;
             }
         }
-        requestedWindows.push_back(*it);
+        sentRestoreRequest = true;
         ++requested;
     }
 
-    // Requests are now in flight together. Observe their endpoints only after
-    // dispatching the whole batch, so animation durations overlap instead of
-    // accumulating window by window.
-    for (const auto& window : requestedWindows) {
-        if (!IsClassicShowDesktopRestoreBatchCurrent(generation)) {
-            break;
-        }
-        if (WaitForClassicShowDesktopRestoreEndpoint(
-                window, generation, batchDeadline)) {
-            ++animated;
-        }
-        if (!IsClassicShowDesktopRestoreBatchCurrent(generation)) {
-            break;
-        }
-        if (IsClassicShowDesktopRestoreWindowCurrent(window) &&
-            IsIconic(window.hWnd)) {
-            // A custom window procedure can consume WM_SYSCOMMAND without
-            // reaching DefWindowProc. Preserve the functional restore even if
-            // that application can't use the custom animation path.
-            BOOL restored = TRUE;
-            if (window.threadId == GetCurrentThreadId()) {
-                ShowWindow_Original(window.hWnd, SW_RESTORE);
-            } else {
-                restored = ShowWindowAsync_Original(window.hWnd, SW_RESTORE);
-            }
-            if (!restored) {
-                ++failed;
-            }
-        }
-        if (static_cast<LONG>(GetTickCount() - batchDeadline) >= 0) {
-            budgetExhausted = true;
-            break;
-        }
-    }
-
     if (IsDiagnosticLoggingEnabled()) {
-        Wh_Log(L"Classic Show Desktop owner restore batch completed "
+        Wh_Log(L"Classic Show Desktop owner restore requests dispatched "
                L"generation=%llu windows=%zu already=%zu requested=%zu "
-               L"animated=%zu failed=%zu budget_exhausted=%d",
+               L"failed=%zu budget_exhausted=%d",
                static_cast<unsigned long long>(generation), windows.size(),
-               alreadyRestored, requested, animated, failed,
-               budgetExhausted);
+               alreadyRestored, requested, failed, budgetExhausted);
     }
 }
 
