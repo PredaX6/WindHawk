@@ -1,7 +1,7 @@
 // ==WindhawkMod==
-// @id              glass-explorer-task-switcher-test
-// @name            Glass Explorer + Taches Switch (test)
-// @description     Glass Explorer translucide avec changement de tâche à la molette et aux raccourcis clavier.
+// @id              test
+// @name            test
+// @description     Explorateur Windows translucide avec choix des thèmes Mica et Acrylique.
 // @version         0.2.0
 // @author          TeddySlexique
 // @github          https://github.com/PredaX6/WindHawk
@@ -12,19 +12,15 @@
 
 // ==WindhawkModReadme==
 /*
-# Glass Explorer + Taches Switch
+# test
 
-## Glass Explorer
-# Glass Explorer
+## Thèmes de l’Explorateur Windows
 
-- Transparence DWM configurable :
-  - Défaut Acrylic (SystemBackdrop)
-  - Blur (AccentBlurBehind)
-  - Mica (SystemBackdrop)
-  - MicaAlt (SystemBackdrop)
+Choisissez l’un des deux rendus :
+- **Mica** : matériau natif Windows avec arrière-plan Mica.
+- **Acrylique** : arrière-plan translucide avec flou, associé au style **Translucent Explorer 11**.
 
-- Hook du focus conservé pour supprimer la différence visuelle entre fenêtres actives et inactives.
-- Option pour relancer automatiquement Explorer à l'activation du mod et après chaque changement de paramètres.
+Le style Translucent Explorer 11 (barre de commandes, barre de navigation, onglets et vues) est intégré au mod et appliqué aux éléments XAML de l’Explorateur. Le matériau sélectionné détermine l’effet de fond de la fenêtre.
 
 
 ## Taches Switch
@@ -43,14 +39,12 @@ Les paramètres ci-dessous ajoutent les animations de réduction, restauration, 
 
 // ==WindhawkModSettings==
 /*
-- transparencyType: default
-  $name: Type de transparence
-  $description: Choisissez le rendu de transparence de l'Explorateur.
+- transparencyType: acrylic
+  $name: Thème de l’Explorateur
+  $description: Choisissez le thème Mica ou Acrylique avec le style Translucent Explorer 11.
   $options:
-  - default: Défaut Acrylic (SystemBackdrop)
-  - blur: Blur (AccentBlurBehind)
-  - mica: Mica (SystemBackdrop)
-  - micaAlt: MicaAlt (SystemBackdrop)
+  - acrylic: Acrylique — style Translucent Explorer 11
+  - mica: Mica — matériau natif Windows
 
 - restartExplorerOnSettingsChange: false
   $name: Relancer l'Explorateur Windows à chaque changement
