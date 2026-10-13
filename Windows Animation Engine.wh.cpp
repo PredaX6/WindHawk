@@ -12757,11 +12757,11 @@ static void RestoreClassicShowDesktopBatchBeforeShell() {
             continue;
         }
 
-        // Keep a 5 ms gap between actual requests rather than waiting for an
+        // Keep a 50 ms gap between actual requests rather than waiting for an
         // entire animation to finish. The captured list is top-to-bottom;
         // reverse iteration allows the shell's final Z-order to settle
         // without a visible one-by-one animation cascade.
-        if (sentRestoreRequest) Sleep(5);
+        if (sentRestoreRequest) Sleep(50);
 
         if (IsDiagnosticLoggingEnabled()) {
             Wh_Log(L"Classic Show Desktop requesting owner restore "
