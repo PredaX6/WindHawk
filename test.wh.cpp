@@ -358,23 +358,7 @@ Windows](https://windhawk.net/mods/translucent-windows) mod.
     information about submitting your own theme, refer to the relevant section
     in the mod details.
   $options:
-  - "": None
   - Translucent Explorer11: Translucent Explorer11
-  - MicaBar: MicaBar
-  - NoCommandBar: NoCommandBar
-  - Minimal Explorer11: Minimal Explorer11
-  - Tabless: Tabless
-  - Matter: Matter
-  - WindowGlass: WindowGlass
-  - AddressSearchOnly: AddressSearchOnly
-  - TintedGlass: TintedGlass
-  - LiquidGlass: LiquidGlass
-  - MicaTabless: MicaTabless
-  - OS26 Liquid Glass: OS26 Liquid Glass
-  - OS26 Liquid Glass_variant_Compact: OS26 Liquid Glass (Compact)
-  - ZEUSosX_044: ZEUSosX_044
-  - Compact Explorer11: Compact Explorer11
-  - Float: Float
 - backgroundTranslucentEffect: ""
   $name: Translucent background effect
   $description: >-
@@ -388,13 +372,6 @@ Windows](https://windhawk.net/mods/translucent-windows) mod.
   - mica: Mica
   - micaAlt: Mica Alt
   - none: None
-- backgroundTranslucentEffectRegion: ""
-  $name: Translucent background effect region
-  $description: >-
-    The region where the translucent background effect is applied.
-  $options:
-  - "": Entire window
-  - explorerFrame: File Explorer frame only
 - styleConstants: [""]
   $name: Style constants
   $description: >-
@@ -11787,15 +11764,9 @@ void StopStatsTimer() {
 }
 
 void LoadSettings() {
-    PCWSTR backgroundTranslucentEffectRegion =
-        Wh_GetStringSetting(L"backgroundTranslucentEffectRegion");
+    // Keep the entire window as the fixed translucent effect region.
     g_settings.backgroundTranslucentEffectRegion =
         BackgroundTranslucentEffectRegion::kEntireWindow;
-    if (wcscmp(backgroundTranslucentEffectRegion, L"explorerFrame") == 0) {
-        g_settings.backgroundTranslucentEffectRegion =
-            BackgroundTranslucentEffectRegion::kExplorerFrame;
-    }
-    Wh_FreeStringSetting(backgroundTranslucentEffectRegion);
 
     PCWSTR backgroundTranslucentEffect =
         Wh_GetStringSetting(L"backgroundTranslucentEffect");
