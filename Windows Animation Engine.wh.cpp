@@ -14101,9 +14101,7 @@ void Wh_ModBeforeUninit() {
             g_deferredClassicShowDesktopMutex);
         g_collectDeferredClassicShowDesktopMinimizes = false;
         g_deferredClassicShowDesktopMinimizes.clear();
-        g_classicShowDesktopRestoreWindows.clear();
-        g_classicShowDesktopRestoreGeneration.fetch_add(
-            1, std::memory_order_acq_rel);
+        ++g_deferredClassicShowDesktopGeneration;
     }
     CancelPendingGpuWarmup();
     // The ownership probe is a registered worker and is the only worker that
