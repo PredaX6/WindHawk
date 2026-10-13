@@ -12483,7 +12483,6 @@ static void DrainDeferredClassicShowDesktopMinimizes(
             return left.zOrderRank < right.zOrderRank;
         });
 
-    bool firstWindow = true;
     for (const auto& item : pending) {
         if (g_unloading.load(std::memory_order_relaxed) ||
             !IsWindow(item.hWnd) || !IsWindowVisible(item.hWnd) ||
@@ -12491,10 +12490,8 @@ static void DrainDeferredClassicShowDesktopMinimizes(
             continue;
         }
 
-        // Stagger each window's minimize animation by 500 ms while keeping
-        // Windows' native minimize and Z-order handling intact.
-        if (!firstWindow) Sleep(500);
-        firstWindow = false;
+        // Start each Show Desktop minimize animation immediately, without
+        // adding artificial spacing between windows.
 
         g_localShowDesktopOperationUntilTick.store(
             GetTickCount() + AnimConstants::ShowDesktopHookScopeMs,
@@ -12648,32 +12645,12 @@ static bool CanPrepareRestoreAnimation(HWND hWnd) {
     }
     return true;
 }
-static void WaitForClassicShowDesktopRestoreAnimationSlot() {
-    // A named mutex coordinates restore-animation starts across the injected
-    // processes participating in the same interactive Windows session.
-    static HANDLE spacingMutex = CreateMutexW(
-        nullptr, FALSE,
-        L"Local\\WindHawk.WindowsAnimationEngine.ShowDesktopRestoreSpacing");
-    if (!spacingMutex) {
-        Sleep(500);
-        return;
-    }
-
-    const DWORD waitResult = WaitForSingleObject(spacingMutex, INFINITE);
-    if (waitResult == WAIT_OBJECT_0 || waitResult == WAIT_ABANDONED) {
-        Sleep(500);
-        ReleaseMutex(spacingMutex);
-    } else {
-        Sleep(500);
-    }
-}
+// Show Desktop restore animations are deliberately not serialized or delayed.
+// Each native restore transition can start its animation immediately.
 
 static bool PrepareRestoreAnimation(HWND hWnd) {
     if (!CanPrepareRestoreAnimation(hWnd)) return false;
     const bool classicShowDesktopRestore = IsClassicShowDesktopOperation();
-    if (classicShowDesktopRestore) {
-        WaitForClassicShowDesktopRestoreAnimationSlot();
-    }
     ClassicShowDesktopCaptureClaim classicCaptureClaim;
     // On Show Desktop restoration, let every native window transition start
     // its own animation without waiting for earlier animation ghosts to finish.
