@@ -10094,7 +10094,7 @@ namespace WindowsAnimationEngine {
 struct WindowCompositionAttributeData;
 LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 extern LRESULT (WINAPI *DefWindowProcW_Original)(HWND, UINT, WPARAM, LPARAM);
-void ObserveTranslucentWindowsAccentPolicyCall(
+static void ObserveTranslucentWindowsAccentPolicyCall(
     HWND hWnd, DWORD attribute, void* data, size_t dataSize,
     void* callerAddress, BOOL result);
 } // namespace WindowsAnimationEngine
