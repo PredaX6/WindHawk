@@ -10284,21 +10284,8 @@ public:
             FlushDwmOrYield();
         }
         RemovePropW(data->hRealWnd, kPropClassicShowDesktopRestoreZOrder);
-        const ULONG_PTR foregroundDeadline = reinterpret_cast<ULONG_PTR>(
-            GetPropW(data->hRealWnd,
-                     kPropClassicShowDesktopRestoreForeground));
-        if (foregroundDeadline) {
-            RemovePropW(data->hRealWnd,
-                        kPropClassicShowDesktopRestoreForeground);
-            if (static_cast<LONG>(static_cast<DWORD>(foregroundDeadline) -
-                                  GetTickCount()) > 0 &&
-                IsWindow(data->hRealWnd)) {
-                SetWindowPos_Original(
-                    data->hRealWnd, HWND_TOP, 0, 0, 0, 0,
-                    SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
-                SetForegroundWindow(data->hRealWnd);
-            }
-        }
+        // Foreground is restored once by the batch-level worker after all
+        // Show Desktop restore animations and shell Z-order updates settle.
         if (hGhost) ShowWindow_Original(hGhost, SW_HIDE);
         return true;
     }
@@ -12861,11 +12848,6 @@ static void RestoreClassicShowDesktopBatchBeforeShell() {
         SetPropW(it->hWnd, kPropClassicShowDesktopRestoreZOrder,
                  reinterpret_cast<HANDLE>(
                      static_cast<ULONG_PTR>(preserveZOrderUntil)));
-        if (it->wasForeground) {
-            SetPropW(it->hWnd, kPropClassicShowDesktopRestoreForeground,
-                     reinterpret_cast<HANDLE>(
-                         static_cast<ULONG_PTR>(preserveZOrderUntil)));
-        }
         bool restoreSubmitted = false;
         if (it->threadId == GetCurrentThreadId()) {
             // A File Explorer window can share CTray's thread. Handle it
@@ -12889,8 +12871,6 @@ static void RestoreClassicShowDesktopBatchBeforeShell() {
         }
         if (!restoreSubmitted) {
             RemovePropW(it->hWnd, kPropClassicShowDesktopRestoreZOrder);
-            RemovePropW(it->hWnd,
-                        kPropClassicShowDesktopRestoreForeground);
             if (it->threadId == GetCurrentThreadId()) {
                 ShowWindow_Original(it->hWnd, SW_RESTORE);
             } else if (!ShowWindowAsync_Original(it->hWnd, SW_RESTORE)) {
