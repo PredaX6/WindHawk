@@ -12644,8 +12644,17 @@ static bool CanPrepareRestoreAnimation(HWND hWnd) {
 }
 static bool PrepareRestoreAnimation(HWND hWnd) {
     if (!CanPrepareRestoreAnimation(hWnd)) return false;
+    const bool classicShowDesktopRestore = IsClassicShowDesktopOperation();
     ClassicShowDesktopCaptureClaim classicCaptureClaim;
     if (!classicCaptureClaim.Acquire(hWnd)) return false;
+    if (classicShowDesktopRestore) {
+        // Windows owns the native Show Desktop restore order. Keep the
+        // animation endpoint from promoting this window to HWND_TOP when its
+        // ghost is removed; FinishRising clears this marker after the endpoint.
+        SetPropW(hWnd, kPropClassicShowDesktopRestoreZOrder,
+                 reinterpret_cast<HANDLE>(
+                     static_cast<ULONG_PTR>(GetTickCount() + 30000)));
+    }
     UpdateDwmTransitions(hWnd, FALSE);
     SetWindowCloak(hWnd, TRUE);
     return true;
