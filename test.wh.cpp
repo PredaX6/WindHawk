@@ -10873,13 +10873,13 @@ LRESULT CALLBACK MicaFocusPersistenceSubclassProc(HWND hWnd,
     LRESULT result =
         DefSubclassProc(hWnd, uMsg, wParam, lParam);
 
-    if (uMsg == WM_ACTIVATE) {
+    if (uMsg == WM_ACTIVATE || uMsg == WM_NCACTIVATE) {
         auto effect = GetEffectiveBackgroundTranslucentEffect();
         if (effect == BackgroundTranslucentEffect::kAcrylic ||
             effect == BackgroundTranslucentEffect::kMica ||
             effect == BackgroundTranslucentEffect::kMicaAlt) {
-            // Explorer/Windows can reset the backdrop while changing the
-            // activation state. Reassert the selected Mica backdrop afterward.
+            // Explorer/Windows can change the backdrop during activation and
+            // non-client activation. Reapply the selected effect afterward.
             ApplyBackgroundTranslucentEffect(hWnd);
         }
     }
