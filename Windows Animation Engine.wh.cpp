@@ -2957,9 +2957,27 @@ static void FinalizeAsyncRestoreReservation(HWND hWnd, uint64_t generation,
                    !HasReachedNativeShowState(hWnd, lastSubmittedRising,
                                               restoreMaximized) &&
                    (LONG)(GetTickCount() - deadline) < 0) {
+                // Do not wait for a pending native transition after the user
+                // has already requested the opposite direction. Let the next
+                // loop submit the newest state immediately; the animation can
+                // then start/reverse from that direction instead of timing out.
+                bool latestWantRising = lastSubmittedRising;
+                if (GetAsyncRestoreReservation(hWnd, generation,
+                                              &latestWantRising) &&
+                    latestWantRising != lastSubmittedRising) {
+                    break;
+                }
                 Sleep(10);
             }
             if (!IsWindow(hWnd)) continue;
+            bool latestWantRising = lastSubmittedRising;
+            if (GetAsyncRestoreReservation(hWnd, generation,
+                                           &latestWantRising) &&
+                latestWantRising != lastSubmittedRising) {
+                haveLastSubmission = false;
+                lastSubmissionObserved = false;
+                continue;
+            }
             if (!g_unloading.load(std::memory_order_relaxed) &&
                 HasReachedNativeShowState(hWnd, lastSubmittedRising,
                                           restoreMaximized)) {
