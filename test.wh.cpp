@@ -1,6 +1,6 @@
 // ==WindhawkMod==
 // @id              test
-// @name            Translucent Explorer11
+// @name            Test
 // @description     Ajoute un effet translucide à l’Explorateur de fichiers Windows 11.
 // @version         1.7
 // @author          m417z
