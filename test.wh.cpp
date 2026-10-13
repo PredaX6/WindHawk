@@ -10873,14 +10873,15 @@ LRESULT CALLBACK MicaFocusPersistenceSubclassProc(HWND hWnd,
     LRESULT result =
         DefSubclassProc(hWnd, uMsg, wParam, lParam);
 
-    if (uMsg == WM_ACTIVATE || uMsg == WM_NCACTIVATE) {
+    if (uMsg == WM_NCACTIVATE && !wParam) {
         auto effect = GetEffectiveBackgroundTranslucentEffect();
         if (effect == BackgroundTranslucentEffect::kAcrylic ||
             effect == BackgroundTranslucentEffect::kMica ||
             effect == BackgroundTranslucentEffect::kMicaAlt) {
-            // Explorer/Windows can change the backdrop during activation and
-            // non-client activation. Reapply the selected effect afterward.
-            ApplyBackgroundTranslucentEffect(hWnd);
+            // Keep DWM's active backdrop appearance when Explorer loses focus.
+            // WM_NCACTIVATE with lParam = -1 avoids repainting the non-client
+            // area while restoring the active visual state.
+            PostMessageW(hWnd, WM_NCACTIVATE, TRUE, -1);
         }
     }
 
