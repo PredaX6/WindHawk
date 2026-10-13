@@ -3187,10 +3187,7 @@ static bool IsCloseAnimationWindow(HWND hWnd) {
     return GetWindowRect(hWnd, &rect) &&
            rect.right > rect.left && rect.bottom > rect.top;
 }
-static bool IsCloseAnimationWindow(HWND hWnd); 
-static bool CanAnimateCloseMessage(HWND hWnd) {
-    return IsCloseAnimationWindow(hWnd);
-}
+static bool IsCloseAnimationWindow(HWND hWnd);
 static bool NeedsPersistentTrayHideCloak(HWND hWnd) {
     if (!hWnd || !IsWindow(hWnd)) return false;
     WCHAR className[64]{};
@@ -3295,7 +3292,7 @@ static bool ConsumeTransientTauriShowHideGuard(HWND hWnd) {
 static bool ShouldTreatHideAsClose(HWND hWnd) {
     if (!g_hideAsClose.load(std::memory_order_relaxed) ||
         !g_closeAnimation.load(std::memory_order_relaxed) ||
-        !IsAppMainWindow(hWnd) || CanAnimateCloseMessage(hWnd)) {
+        !IsCloseAnimationWindow(hWnd) || IsAnimating(hWnd)) {
         return false;
     }
     return !ConsumeTransientTauriShowHideGuard(hWnd);
