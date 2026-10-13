@@ -3187,7 +3187,6 @@ static bool IsCloseAnimationWindow(HWND hWnd) {
     return GetWindowRect(hWnd, &rect) &&
            rect.right > rect.left && rect.bottom > rect.top;
 }
-static bool IsCloseAnimationWindow(HWND hWnd);
 static bool NeedsPersistentTrayHideCloak(HWND hWnd) {
     if (!hWnd || !IsWindow(hWnd)) return false;
     WCHAR className[64]{};
