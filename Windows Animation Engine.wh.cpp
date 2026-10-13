@@ -7,25 +7,9 @@
 // @github          https://github.com/redrag2105
 // @donateUrl       https://ko-fi.com/redrag2105
 // @include         *
-// @exclude         TextInputHost.exe
-// @exclude         ShellExperienceHost.exe
-// @exclude         StartMenuExperienceHost.exe
-// @exclude         SearchHost.exe
-// @exclude         dwm.exe
-// @exclude         git.exe
-// @exclude         git-remote-https.exe
-// @exclude         AudioCaptureService.exe
-// @exclude         AIVisualPIPESvr.exe
-// @exclude         GimateServiceHelper.exe
-// @exclude         NVIDIA Web Helper.exe
 // @license         MIT
 // @compilerOptions -ladvapi32 -ld3d11 -ldcomp -ldwmapi -ldxgi -lgdi32 -lole32 -loleaut32 -lshell32 -luuid -luser32
 // ==/WindhawkMod==
-
-// The explicit process exclusions above are pre-injection fast paths for
-// unsupported window hosts and known interactive-session helpers. The runtime
-// session/command-line checks below cover generic helper roles, but they run
-// only after injection has already occurred.
 
 // ==WindhawkModReadme==
 /*
@@ -484,16 +468,6 @@ namespace AnimConstants {
 // surfaces rather than a stable, capturable top-level app frame. Keep them out
 // of snapshot-based effects, but allow ApplicationFrameWindow: packaged app
 // frames can use the regular animation paths once their real surface is ready.
-static constexpr std::wstring_view kGdiExcludedClasses[] = {
-    L"CoreWindow",
-    L"XamlExplorerHostIslandWindow"
-};
-static constexpr std::wstring_view kAlwaysExcludedClasses[] = {
-    L"Xaml_WindowedPopupClass",
-    L"Popup",
-    L"Overlay",
-    L"ToolTip"
-};
 // These classes can use DefWindowProc's close path without first asking the
 // application whether closing is allowed. Never add an app such as Notepad
 // which can veto the initial WM_CLOSE/SC_CLOSE to show an unsaved-work prompt;
@@ -1217,8 +1191,6 @@ static bool IsAltTabSourceCandidate(HWND hWnd) {
     if (exStyle & WS_EX_TOOLWINDOW) return false;
     WCHAR cls[256];
     if (!GetClassNameW(hWnd, cls, ARRAYSIZE(cls))) return false;
-    if (_wcsicmp(cls, L"XamlExplorerHostIslandWindow") == 0) return false;
-    if (_wcsicmp(cls, L"MultitaskingViewFrame") == 0) return false;
     return true;
 }
 static bool IsExplorerProcess() {
@@ -3204,16 +3176,6 @@ static bool IsAppMainWindow(HWND hWnd, bool forSwitch = false) {
     const LONG_PTR exStyle = GetWindowLongPtrW(hWnd, GWL_EXSTYLE);
     if ((style & WS_CHILD) || (exStyle & WS_EX_TOOLWINDOW) || GetWindow(hWnd, GW_OWNER)) return false;
     const auto cls = GetClassNameStr(hWnd);
-    if (ContainsClass(cls, kAlwaysExcludedClasses) || (!forSwitch && ContainsClass(cls, kGdiExcludedClasses))) return false;
-    if (!forSwitch && IsExplorerProcess() &&
-        _wcsicmp(cls.c_str(), L"CabinetWClass") != 0 &&
-        _wcsicmp(cls.c_str(), L"ExploreWClass") != 0) {
-        // Explorer owns the desktop, taskbar, and transient full-monitor shell
-        // surfaces used around lock/power transitions. They can otherwise look
-        // like large unowned app windows and trigger a whole-screen close
-        // animation on resume. Only folder windows are close-animation targets.
-        return false;
-    }
     RECT r{};
     bool isMain = GetWindowRect(hWnd, &r) && r.right - r.left >= 300 && r.bottom - r.top >= 300;
     return isMain;
@@ -11843,24 +11805,8 @@ static bool IsVisibleShowDesktopCandidate(HWND hWnd) {
         return false;
     }
     const std::wstring cls = GetClassNameStr(hWnd);
-    if (ContainsClass(cls, kAlwaysExcludedClasses) ||
-        ContainsClass(cls, kGdiExcludedClasses) ||
-        _wcsicmp(cls.c_str(), L"Progman") == 0 ||
-        _wcsicmp(cls.c_str(), L"WorkerW") == 0 ||
-        _wcsicmp(cls.c_str(), L"Shell_TrayWnd") == 0 ||
-        _wcsicmp(cls.c_str(), L"Shell_SecondaryTrayWnd") == 0) {
-        return false;
-    }
     DWORD windowPid = 0;
     GetWindowThreadProcessId(hWnd, &windowPid);
-    if (IsExplorerProcess() && windowPid == GetCurrentProcessId() &&
-        _wcsicmp(cls.c_str(), L"CabinetWClass") != 0 &&
-        _wcsicmp(cls.c_str(), L"ExploreWClass") != 0) {
-        // Explorer owns the desktop, taskbar, Start/Search hosts and several
-        // transient XAML surfaces. Only its real File Explorer top-level
-        // windows belong in the classic Show Desktop batch.
-        return false;
-    }
     BOOL cloaked = FALSE;
     return FAILED(DwmGetWindowAttribute(hWnd, DWMWA_CLOAKED, &cloaked,
                                         sizeof(cloaked))) ||
