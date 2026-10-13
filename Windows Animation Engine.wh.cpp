@@ -13091,7 +13091,8 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int cmd) {
     TransientTauriShowScope transientTauriShow(
         hWnd, IsTrayHideShowCommand(cmd));
     if (IsNativeShowDesktopPassthroughActive() &&
-        (IsShowCmdForWinEvent(cmd) || cmd == SW_HIDE)) {
+        (IsShowCmdForWinEvent(cmd) || cmd == SW_HIDE) &&
+        cmd != SW_RESTORE && cmd != SW_SHOWNORMAL) {
         return lastError.Call(ShowWindow_Original, hWnd, cmd);
     }
     PublishClassicShowDesktopOwnerProtocol(hWnd);
@@ -13189,7 +13190,8 @@ BOOL WINAPI ShowWindowAsync_Hook(HWND hWnd, int cmd) {
     TransientTauriShowScope transientTauriShow(
         hWnd, IsTrayHideShowCommand(cmd));
     if (IsNativeShowDesktopPassthroughActive() &&
-        (IsShowCmdForWinEvent(cmd) || cmd == SW_HIDE)) {
+        (IsShowCmdForWinEvent(cmd) || cmd == SW_HIDE) &&
+        cmd != SW_RESTORE && cmd != SW_SHOWNORMAL) {
         return lastError.Call(ShowWindowAsync_Original, hWnd, cmd);
     }
     PublishClassicShowDesktopOwnerProtocol(hWnd);
