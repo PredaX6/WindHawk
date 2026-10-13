@@ -12491,9 +12491,9 @@ static void DrainDeferredClassicShowDesktopMinimizes(
             continue;
         }
 
-        // Stagger each window's minimize animation by 200 ms while keeping
+        // Stagger each window's minimize animation by 500 ms while keeping
         // Windows' native minimize and Z-order handling intact.
-        if (!firstWindow) Sleep(200);
+        if (!firstWindow) Sleep(500);
         firstWindow = false;
 
         g_localShowDesktopOperationUntilTick.store(
@@ -12655,16 +12655,16 @@ static void WaitForClassicShowDesktopRestoreAnimationSlot() {
         nullptr, FALSE,
         L"Local\\WindHawk.WindowsAnimationEngine.ShowDesktopRestoreSpacing");
     if (!spacingMutex) {
-        Sleep(100);
+        Sleep(500);
         return;
     }
 
     const DWORD waitResult = WaitForSingleObject(spacingMutex, INFINITE);
     if (waitResult == WAIT_OBJECT_0 || waitResult == WAIT_ABANDONED) {
-        Sleep(100);
+        Sleep(500);
         ReleaseMutex(spacingMutex);
     } else {
-        Sleep(100);
+        Sleep(500);
     }
 }
 
