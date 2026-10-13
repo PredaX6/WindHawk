@@ -12646,7 +12646,14 @@ static bool PrepareRestoreAnimation(HWND hWnd) {
     if (!CanPrepareRestoreAnimation(hWnd)) return false;
     const bool classicShowDesktopRestore = IsClassicShowDesktopOperation();
     ClassicShowDesktopCaptureClaim classicCaptureClaim;
-    if (!classicCaptureClaim.Acquire(hWnd)) return false;
+    // On Show Desktop restoration, let every native window transition start
+    // its own animation without waiting for earlier animation ghosts to finish.
+    // The normal serialization remains in place for minimize captures, where
+    // an existing ghost could contaminate the next desktop snapshot.
+    if (!classicShowDesktopRestore &&
+        !classicCaptureClaim.Acquire(hWnd)) {
+        return false;
+    }
     if (classicShowDesktopRestore) {
         // Windows owns the native Show Desktop restore order. Keep the
         // animation endpoint from promoting this window to HWND_TOP when its
