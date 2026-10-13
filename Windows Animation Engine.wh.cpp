@@ -12639,7 +12639,13 @@ static MinimizeKick TryMinimizeAnim(HWND hWnd, NativeMinimizeBarrier* nativeMini
                                  showCmd, nativeMinimizeBarrier);
 }
 static bool CanPrepareRestoreAnimation(HWND hWnd) {
-    if (!g_restoreAnimation.load(std::memory_order_relaxed) || IsHungAppWindow(hWnd) ||
+    const bool classicShowDesktopRestore = IsClassicShowDesktopOperation();
+    // During a Show Desktop batch, Explorer can report a window as hung while
+    // its UI thread is busy processing the simultaneous restore burst. Do not
+    // use that transient probe to skip the animation; the async restore path
+    // still verifies that the restored bounds are ready before rendering.
+    if (!g_restoreAnimation.load(std::memory_order_relaxed) ||
+        (!classicShowDesktopRestore && IsHungAppWindow(hWnd)) ||
         !IsWindowVisible(hWnd) || !ShouldAnimateWindow(hWnd)) {
         return false;
     }
