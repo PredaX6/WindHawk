@@ -13179,30 +13179,30 @@ static constexpr std::wstring_view kCloseMessageAnimationClasses[] = {
     L"TaskManagerWindow",
     L"WinUIDesktopWin32WindowClass"
 };
-static constexpr PCWSTR kPropCloseBypass = L"windows-animations.CloseBypass";
-static constexpr PCWSTR kPropClosed = L"windows-animations.Closed";
+static constexpr PCWSTR kPropCloseBypass = L"glass-explorer-test.windows-animations.CloseBypass";
+static constexpr PCWSTR kPropClosed = L"glass-explorer-test.windows-animations.Closed";
 static constexpr PCWSTR kPropExcelCloseAlpha =
-    L"windows-animations.ExcelCloseAlphaV1";
+    L"glass-explorer-test.windows-animations.ExcelCloseAlphaV1";
 static constexpr PCWSTR kPropTrayHideCloak =
-    L"windows-animations.TrayHideCloakV1";
+    L"glass-explorer-test.windows-animations.TrayHideCloakV1";
 static constexpr PCWSTR kPropTrayHideShowHandoff =
-    L"windows-animations.TrayHideShowHandoffV1";
+    L"glass-explorer-test.windows-animations.TrayHideShowHandoffV1";
 static constexpr PCWSTR kPropTransientTauriShowTick =
-    L"windows-animations.TransientTauriShowTickV1";
+    L"glass-explorer-test.windows-animations.TransientTauriShowTickV1";
 static constexpr PCWSTR kPropMinRestorePair =
-    L"windows-animations.MinRestorePairV1";
+    L"glass-explorer-test.windows-animations.MinRestorePairV1";
 static constexpr PCWSTR kPropMaximizedRestoreGuard =
-    L"windows-animations.MaximizedRestoreGuardV1";
+    L"glass-explorer-test.windows-animations.MaximizedRestoreGuardV1";
 static constexpr PCWSTR kPropSnapshotCache =
-    L"windows-animations.SnapshotCacheV1";
+    L"glass-explorer-test.windows-animations.SnapshotCacheV1";
 static constexpr PCWSTR kPropLaunchAnimation =
-    L"windows-animations.LaunchAnimationV1";
+    L"glass-explorer-test.windows-animations.LaunchAnimationV1";
 static constexpr PCWSTR kPropTaskbarDockIdentity =
-    L"windows-animations.TaskbarDockIdentityV1";
+    L"glass-explorer-test.windows-animations.TaskbarDockIdentityV1";
 static constexpr PCWSTR kPropSwitchAnimationGhost =
-    L"windows-animations.SwitchAnimationGhostV1";
+    L"glass-explorer-test.windows-animations.SwitchAnimationGhostV1";
 static constexpr PCWSTR kPropSwitchAnimationActive =
-    L"windows-animations.SwitchAnimationActiveV1";
+    L"glass-explorer-test.windows-animations.SwitchAnimationActiveV1";
 // SWS publishes a committed destination on its own input endpoint. Keeping
 // the notification off the target HWND also works across UIPI boundaries.
 namespace SwsSelectionProtocol {
@@ -13221,7 +13221,7 @@ namespace SwsSelectionProtocol {
     constexpr PCWSTR OwnerRestoreActiveProp =
         L"windows-animations.SwsRestoreActiveV1";
     constexpr PCWSTR OwnerAnimationProp =
-        L"windows-animations.AnimationSessionV1";
+        L"glass-explorer-test.windows-animations.AnimationSessionV1";
     constexpr ULONG_PTR Version = 1;
 }
 UINT g_swsOwnerRestoreMessage = 0;
@@ -13236,21 +13236,21 @@ SwsSelectionIdentity g_lastSwsSelection{};
 static constexpr PCWSTR kPropAnimationSession =
     SwsSelectionProtocol::OwnerAnimationProp;
 static constexpr PCWSTR kPropAnimationGhost =
-    L"windows-animations.AnimationGhostV1";
+    L"glass-explorer-test.windows-animations.AnimationGhostV1";
 static constexpr PCWSTR kPropClassicShowDesktopOwnerDispatch =
-    L"windows-animations.ClassicShowDesktopOwnerDispatchV2";
+    L"glass-explorer-test.windows-animations.ClassicShowDesktopOwnerDispatchV2";
 static constexpr PCWSTR kPropClassicShowDesktopRestoreZOrder =
-    L"windows-animations.ClassicShowDesktopRestoreZOrderV1";
+    L"glass-explorer-test.windows-animations.ClassicShowDesktopRestoreZOrderV1";
 static constexpr PCWSTR kPropClassicShowDesktopRestoreForeground =
-    L"windows-animations.ClassicShowDesktopRestoreForegroundV1";
+    L"glass-explorer-test.windows-animations.ClassicShowDesktopRestoreForegroundV1";
 static constexpr PCWSTR kPropClassicShowDesktopOwnerPrepared =
-    L"windows-animations.ClassicShowDesktopOwnerPreparedV2";
+    L"glass-explorer-test.windows-animations.ClassicShowDesktopOwnerPreparedV2";
 static constexpr PCWSTR kPropClassicShowDesktopOwnerProtocolLegacy =
-    L"windows-animations.ClassicShowDesktopOwnerProtocolV1";
+    L"glass-explorer-test.windows-animations.ClassicShowDesktopOwnerProtocolV1";
 static constexpr PCWSTR kPropClassicShowDesktopOwnerProtocol =
-    L"windows-animations.ClassicShowDesktopOwnerProtocolV2";
+    L"glass-explorer-test.windows-animations.ClassicShowDesktopOwnerProtocolV2";
 static constexpr PCWSTR kPropClassicShowDesktopOwnerProbePending =
-    L"windows-animations.ClassicShowDesktopOwnerProbePendingV2";
+    L"glass-explorer-test.windows-animations.ClassicShowDesktopOwnerProbePendingV2";
 static constexpr ULONG_PTR kClassicShowDesktopOwnerProtocolVersion = 2;
 static constexpr LPARAM kClassicShowDesktopOwnerProbe = 0x57415052;
 UINT g_classicShowDesktopOwnerDispatchMessage = 0;
@@ -13347,7 +13347,7 @@ struct alignas(8) SharedAnimState {
 static_assert(sizeof(SharedAnimState) == sizeof(LONG) * 10);
 // Keep incompatible shared-memory layouts isolated from older injected
 // processes which may still be unloading.
-static constexpr PCWSTR kSharedStateName = L"Local\\Windhawk_Anim_State_124";
+static constexpr PCWSTR kSharedStateName = L"Local\\Windhawk_GlassExplorerTest_Anim_State_124";
 static constexpr LONG kSharedStateMagic = 0x5741533C;
 static constexpr LONG kSharedHeartbeatStaleMs = 2500;
 HANDLE g_hMapFile = NULL;
@@ -13421,7 +13421,7 @@ struct SharedEffectShuffleState {
 static_assert(sizeof(SharedEffectShuffleState) == sizeof(LONG) * 6);
 
 static constexpr PCWSTR kSharedEffectShuffleStateName =
-    L"Local\\Windhawk_Anim_Shuffle_131_1";
+    L"Local\\Windhawk_GlassExplorerTest_Anim_Shuffle_131_1";
 static constexpr LONG kSharedEffectShuffleStateMagic = 0x57415351;
 HANDLE g_hSharedEffectShuffleMap = NULL;
 SharedEffectShuffleState* g_pSharedEffectShuffleState = nullptr;
@@ -26658,7 +26658,7 @@ BOOL Wh_ModInit() {
     LoadAnimSettings();
     // Keep hooks available when effects are initially disabled so settings can be toggled live.
     g_classicShowDesktopOwnerDispatchMessage = RegisterWindowMessageW(
-        L"Windhawk.WindowsAnimations.ClassicShowDesktopOwnerDispatch.2");
+        L"Windhawk.GlassExplorerTest.WindowsAnimations.ClassicShowDesktopOwnerDispatch.2");
     if (!g_classicShowDesktopOwnerDispatchMessage) {
         Wh_Log(L"Failed to register Show Desktop owner dispatch message");
         return FALSE;
