@@ -12701,6 +12701,61 @@ static bool IsClassicShowDesktopRestoreBatchCurrent(uint64_t generation) {
            !g_unloading.load(std::memory_order_relaxed);
 }
 
+struct ClassicShowDesktopForegroundRestoreWork {
+    HWND foregroundWindow{};
+    DWORD foregroundProcessId{};
+    DWORD foregroundThreadId{};
+    std::vector<ClassicShowDesktopRestoreWindow> windows;
+};
+
+static DWORD WINAPI ClassicShowDesktopForegroundRestoreThread(
+    LPVOID parameter) {
+    std::unique_ptr<ClassicShowDesktopForegroundRestoreWork> work(
+        static_cast<ClassicShowDesktopForegroundRestoreWork*>(parameter));
+    if (!work || !work->foregroundWindow) return 0;
+
+    // Let every restored window finish its own animation/Z-order handoff
+    // before enforcing the foreground choice captured for this batch.
+    const DWORD deadline = GetTickCount() + 15000;
+    for (;;) {
+        if (g_unloading.load(std::memory_order_relaxed) ||
+            !IsWindow(work->foregroundWindow)) {
+            return 0;
+        }
+        bool animationsPending = false;
+        for (const auto& window : work->windows) {
+            if (IsClassicShowDesktopRestoreWindowCurrent(window) &&
+                FindAnimationGhostForTarget(window.hWnd)) {
+                animationsPending = true;
+                break;
+            }
+        }
+        if (!animationsPending ||
+            static_cast<LONG>(GetTickCount() - deadline) >= 0) {
+            break;
+        }
+        Sleep(25);
+    }
+
+    if (!IsClassicShowDesktopRestoreWindowCurrent(
+            {work->foregroundWindow, work->foregroundProcessId,
+             work->foregroundThreadId, true}) ||
+        IsIconic(work->foregroundWindow) ||
+        !IsWindowVisible(work->foregroundWindow)) {
+        return 0;
+    }
+
+    // Explorer is the shell process initiating Show Desktop. Reassert the
+    // foreground choice once its own stacking operation and animations settle.
+    AllowSetForegroundWindow(work->foregroundProcessId);
+    SetForegroundWindow(work->foregroundWindow);
+    if (IsDiagnosticLoggingEnabled()) {
+        Wh_Log(L"Classic Show Desktop foreground restored hwnd=%p pid=%lu",
+               work->foregroundWindow, work->foregroundProcessId);
+    }
+    return 0;
+}
+
 static void RestoreClassicShowDesktopBatchBeforeShell() {
     uint64_t generation = 0;
     std::vector<ClassicShowDesktopRestoreWindow> windows;
@@ -12750,6 +12805,17 @@ static void RestoreClassicShowDesktopBatchBeforeShell() {
         if (remaining <= 0) break;
         WaitWithSentMessagePump(
             std::min<DWORD>(10, static_cast<DWORD>(remaining)));
+    }
+
+    HWND capturedForegroundWindow = nullptr;
+    DWORD capturedForegroundProcessId = 0;
+    DWORD capturedForegroundThreadId = 0;
+    for (const auto& window : windows) {
+        if (!window.wasForeground) continue;
+        capturedForegroundWindow = window.hWnd;
+        capturedForegroundProcessId = window.processId;
+        capturedForegroundThreadId = window.threadId;
+        break;
     }
 
     size_t alreadyRestored = 0;
@@ -12836,12 +12902,27 @@ static void RestoreClassicShowDesktopBatchBeforeShell() {
         ++requested;
     }
 
+    if (capturedForegroundWindow && requested > 0) {
+        auto* work = new (std::nothrow) ClassicShowDesktopForegroundRestoreWork;
+        if (work) {
+            work->foregroundWindow = capturedForegroundWindow;
+            work->foregroundProcessId = capturedForegroundProcessId;
+            work->foregroundThreadId = capturedForegroundThreadId;
+            work->windows = windows;
+            if (!StartWorkerThread(ClassicShowDesktopForegroundRestoreThread,
+                                   work)) {
+                delete work;
+            }
+        }
+    }
+
     if (IsDiagnosticLoggingEnabled()) {
         Wh_Log(L"Classic Show Desktop owner restore requests dispatched "
                L"generation=%llu windows=%zu already=%zu requested=%zu "
-               L"failed=%zu budget_exhausted=%d",
+               L"failed=%zu budget_exhausted=%d foreground=%p",
                static_cast<unsigned long long>(generation), windows.size(),
-               alreadyRestored, requested, failed, budgetExhausted);
+               alreadyRestored, requested, failed, budgetExhausted,
+               capturedForegroundWindow);
     }
 }
 
