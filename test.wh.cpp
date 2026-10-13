@@ -349,58 +349,7 @@ Windows](https://windhawk.net/mods/translucent-windows) mod.
 */
 // ==/WindhawkModReadme==
 
-// ==WindhawkModSettings==
-/*
-- backgroundTranslucentEffect: acrylicblur
-  $name: Translucent background effect
-  $description: >-
-    The translucent effect to use for the File Explorer background. For
-    additional translucent effects, check out the Translucent Windows mod.
-  $options:
-  - acrylicblur: Acrylique classique — flou AccentBlurBehind
-  - acrylic: Acrylique système — matériau Acrylic
-  - mica: Mica
-  - micaAlt: Mica Alt
-- styleConstants: [""]
-  $name: Style constants
-  $description: >-
-    Some themes support style constants for customization, such as colors. Refer
-    to the theme page for available constants. For technical details, refer to
-    the mod description.
-- controlStyles:
-  - - target: ""
-      $name: Target
-    - styles: [""]
-      $name: Styles
-  $name: Control styles
-- themeResourceVariables: [""]
-  $name: Resource variables
-  $description: >-
-    Use "Key=Value" to override an existing resource with a new value.
 
-    Use "Key@Dark=Value" or "Key@Light=Value" to define theme-aware resources
-    that can be referenced with {ThemeResource Key} in styles.
-
-    The ":=" syntax can be used to set a XAML value. For details, refer to the
-    mod description.
-- explorerFrameContainerHeight: 0
-  $name: Explorer frame container height
-  $description: >-
-    The height of the explorer frame container which includes the tabs, the
-    address bar, and the command bar, set to zero to use the default height.
-- xamlDiagnosticsHandling: alert
-  $name: XAML diagnostics consumer handling
-  $description: >-
-    How to handle other programs (e.g. ExplorerBlurMica) that try to use XAML
-    diagnostics. There can only be one consumer at a time. Block will prevent
-    other programs from using it, which might break them. Allow will let them
-    use it, which might break this mod.
-  $options:
-  - alert: Alert (prompt before blocking)
-  - block: Block other consumers
-  - allow: Allow other consumers
-*/
-// ==/WindhawkModSettings==
 
 #include <xamlom.h>
 
@@ -11712,46 +11661,12 @@ void StopStatsTimer() {
 }
 
 void LoadSettings() {
-    // Keep the entire window as the fixed translucent effect region.
+    // Settings are fixed in code; no user-configurable options are exposed.
     g_settings.backgroundTranslucentEffectRegion =
         BackgroundTranslucentEffectRegion::kEntireWindow;
-
-    PCWSTR backgroundTranslucentEffect =
-        Wh_GetStringSetting(L"backgroundTranslucentEffect");
-    g_settings.backgroundTranslucentEffect.reset();
-    if (wcscmp(backgroundTranslucentEffect, L"default") == 0) {
-        g_settings.backgroundTranslucentEffect =
-            BackgroundTranslucentEffect::kDefault;
-    } else if (wcscmp(backgroundTranslucentEffect, L"acrylicblur") == 0) {
-        g_settings.backgroundTranslucentEffect =
-            BackgroundTranslucentEffect::kBlur;
-    } else if (wcscmp(backgroundTranslucentEffect, L"acrylic") == 0) {
-        g_settings.backgroundTranslucentEffect =
-            BackgroundTranslucentEffect::kAcrylic;
-    } else if (wcscmp(backgroundTranslucentEffect, L"mica") == 0) {
-        g_settings.backgroundTranslucentEffect =
-            BackgroundTranslucentEffect::kMica;
-    } else if (wcscmp(backgroundTranslucentEffect, L"micaAlt") == 0) {
-        g_settings.backgroundTranslucentEffect =
-            BackgroundTranslucentEffect::kMicaAlt;
-    } else if (wcscmp(backgroundTranslucentEffect, L"none") == 0) {
-        g_settings.backgroundTranslucentEffect =
-            BackgroundTranslucentEffect::kNone;
-    }
-    Wh_FreeStringSetting(backgroundTranslucentEffect);
-
-    g_settings.explorerFrameContainerHeight =
-        Wh_GetIntSetting(L"explorerFrameContainerHeight");
-
-    PCWSTR xamlDiagnosticsHandling =
-        Wh_GetStringSetting(L"xamlDiagnosticsHandling");
+    g_settings.backgroundTranslucentEffect = BackgroundTranslucentEffect::kBlur;
+    g_settings.explorerFrameContainerHeight = 0;
     g_settings.xamlDiagnosticsHandling = XamlDiagnosticsHandling::kAlert;
-    if (wcscmp(xamlDiagnosticsHandling, L"block") == 0) {
-        g_settings.xamlDiagnosticsHandling = XamlDiagnosticsHandling::kBlock;
-    } else if (wcscmp(xamlDiagnosticsHandling, L"allow") == 0) {
-        g_settings.xamlDiagnosticsHandling = XamlDiagnosticsHandling::kAllow;
-    }
-    Wh_FreeStringSetting(xamlDiagnosticsHandling);
 }
 
 void LoadThemeSettings() {
