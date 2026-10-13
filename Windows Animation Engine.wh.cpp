@@ -11873,47 +11873,16 @@ struct DeferredClassicShowDesktopMinimize {
     int showCmd{};
     int zOrderRank{};
 };
-struct ClassicShowDesktopRestoreWindow {
-    HWND hWnd{};
-    DWORD processId{};
-    DWORD threadId{};
-    bool wasForeground{};
-};
 std::mutex g_deferredClassicShowDesktopMutex;
 bool g_collectDeferredClassicShowDesktopMinimizes = false;
 uint64_t g_deferredClassicShowDesktopGeneration = 0;
 DWORD g_deferredClassicShowDesktopLastQueuedTick = 0;
 std::vector<DeferredClassicShowDesktopMinimize>
     g_deferredClassicShowDesktopMinimizes;
-std::vector<ClassicShowDesktopRestoreWindow>
-    g_classicShowDesktopRestoreWindows;
-std::atomic<uint64_t> g_classicShowDesktopRestoreGeneration{0};
 static bool PrepareRestoreAnimation(HWND hWnd);
 static bool CommitRestoreAnimation(HWND hWnd, BOOL restoreMaximizedHint);
 static void ScheduleDeferredClassicShowDesktopDrain(uint64_t generation);
 static void RestoreClassicShowDesktopBatchBeforeShell();
-
-static std::vector<ClassicShowDesktopRestoreWindow>
-CaptureClassicShowDesktopRestoreWindows() {
-    std::vector<ClassicShowDesktopRestoreWindow> windows;
-    const HWND foregroundWindow =
-        GetAncestor(GetForegroundWindow(), GA_ROOT);
-    for (HWND hWnd = GetTopWindow(nullptr); hWnd;
-         hWnd = GetWindow(hWnd, GW_HWNDNEXT)) {
-        if (!IsVisibleShowDesktopCandidate(hWnd)) continue;
-        DWORD processId = 0;
-        const DWORD threadId =
-            GetWindowThreadProcessId(hWnd, &processId);
-        if (!processId || !threadId) continue;
-        try {
-            windows.push_back(
-                {hWnd, processId, threadId, hWnd == foregroundWindow});
-        } catch (const std::exception&) {
-            break;
-        }
-    }
-    return windows;
-}
 
 static void __cdecl RaiseDesktop_Hook(void* pThis, int flags) {
     if (!RaiseDesktop_Original) return;
@@ -11957,10 +11926,6 @@ static void __cdecl RaiseDesktop_Hook(void* pThis, int flags) {
     const bool collectDeferredMinimizes = flags == 3;
     uint64_t deferredMinimizeGeneration = 0;
     if (collectDeferredMinimizes) {
-        std::vector<ClassicShowDesktopRestoreWindow> restoreWindows =
-            g_minimizeAnimation.load(std::memory_order_relaxed)
-                ? CaptureClassicShowDesktopRestoreWindows()
-                : std::vector<ClassicShowDesktopRestoreWindow>{};
         std::lock_guard<std::mutex> lock(
             g_deferredClassicShowDesktopMutex);
         g_deferredClassicShowDesktopMinimizes.clear();
@@ -11968,34 +11933,18 @@ static void __cdecl RaiseDesktop_Hook(void* pThis, int flags) {
         deferredMinimizeGeneration =
             ++g_deferredClassicShowDesktopGeneration;
         g_deferredClassicShowDesktopLastQueuedTick = GetTickCount();
-        g_classicShowDesktopRestoreWindows = std::move(restoreWindows);
-        uint64_t restoreGeneration =
-            g_classicShowDesktopRestoreGeneration.fetch_add(
-                1, std::memory_order_acq_rel) +
-            1;
-        if (!restoreGeneration) {
-            restoreGeneration =
-                g_classicShowDesktopRestoreGeneration.fetch_add(
-                    1, std::memory_order_acq_rel) +
-                1;
-        }
         if (IsDiagnosticLoggingEnabled()) {
             Wh_Log(L"Classic Show Desktop queue collection started "
-                   L"generation=%llu restore_generation=%llu "
-                   L"restore_windows=%zu",
+                   L"generation=%llu",
                    static_cast<unsigned long long>(
-                       deferredMinimizeGeneration),
-                   static_cast<unsigned long long>(restoreGeneration),
-                   g_classicShowDesktopRestoreWindows.size());
+                       deferredMinimizeGeneration));
         }
     }
 
     if (flags == 2) {
-        // CTray can change every remembered HWND to the restored state without
-        // routing each transition through the process-local hooks. Restore the
-        // captured classic batch through those owner hooks first, then let the
-        // original shell operation preserve its own Show Desktop bookkeeping
-        // and final Z-order.
+        // Let CTray restore its own remembered windows and manage Z-order.
+        // The mod only intercepts the resulting per-window transitions so
+        // they can be animated; it does not submit restore requests itself.
         RestoreClassicShowDesktopBatchBeforeShell();
     }
 
@@ -12672,245 +12621,12 @@ static void ScheduleDeferredClassicShowDesktopDrain(uint64_t generation) {
     }
 }
 
-static bool IsClassicShowDesktopRestoreWindowCurrent(
-    const ClassicShowDesktopRestoreWindow& window) {
-    if (!window.hWnd || !IsWindow(window.hWnd)) return false;
-    DWORD processId = 0;
-    const DWORD threadId =
-        GetWindowThreadProcessId(window.hWnd, &processId);
-    return processId == window.processId && threadId == window.threadId;
-}
-
-static bool IsClassicShowDesktopRestoreBatchCurrent(uint64_t generation) {
-    return generation &&
-           g_classicShowDesktopRestoreGeneration.load(
-               std::memory_order_acquire) == generation &&
-           !g_unloading.load(std::memory_order_relaxed);
-}
-
-struct ClassicShowDesktopForegroundRestoreWork {
-    HWND foregroundWindow{};
-    DWORD foregroundProcessId{};
-    DWORD foregroundThreadId{};
-    std::vector<ClassicShowDesktopRestoreWindow> windows;
-};
-
-static DWORD WINAPI ClassicShowDesktopForegroundRestoreThread(
-    LPVOID parameter) {
-    std::unique_ptr<ClassicShowDesktopForegroundRestoreWork> work(
-        static_cast<ClassicShowDesktopForegroundRestoreWork*>(parameter));
-    if (!work || !work->foregroundWindow) return 0;
-
-    // Let every restored window finish its own animation/Z-order handoff
-    // before enforcing the foreground choice captured for this batch.
-    const DWORD deadline = GetTickCount() + 15000;
-    for (;;) {
-        if (g_unloading.load(std::memory_order_relaxed) ||
-            !IsWindow(work->foregroundWindow)) {
-            return 0;
-        }
-        bool animationsPending = false;
-        for (const auto& window : work->windows) {
-            if (IsClassicShowDesktopRestoreWindowCurrent(window) &&
-                FindAnimationGhostForTarget(window.hWnd)) {
-                animationsPending = true;
-                break;
-            }
-        }
-        if (!animationsPending ||
-            static_cast<LONG>(GetTickCount() - deadline) >= 0) {
-            break;
-        }
-        Sleep(25);
-    }
-
-    if (!IsClassicShowDesktopRestoreWindowCurrent(
-            {work->foregroundWindow, work->foregroundProcessId,
-             work->foregroundThreadId, true}) ||
-        IsIconic(work->foregroundWindow) ||
-        !IsWindowVisible(work->foregroundWindow)) {
-        return 0;
-    }
-
-    // Explorer is the shell process initiating Show Desktop. Reassert the
-    // foreground choice once its own stacking operation and animations settle.
-    AllowSetForegroundWindow(work->foregroundProcessId);
-    SetForegroundWindow(work->foregroundWindow);
-    if (IsDiagnosticLoggingEnabled()) {
-        Wh_Log(L"Classic Show Desktop foreground restored hwnd=%p pid=%lu",
-               work->foregroundWindow, work->foregroundProcessId);
-    }
-    return 0;
-}
-
 static void RestoreClassicShowDesktopBatchBeforeShell() {
-    uint64_t generation = 0;
-    std::vector<ClassicShowDesktopRestoreWindow> windows;
-    {
-        std::lock_guard<std::mutex> lock(
-            g_deferredClassicShowDesktopMutex);
-        // Keep the captured HWND identities and their cancellation generation
-        // from the same minimize batch.
-        generation = g_classicShowDesktopRestoreGeneration.load(
-            std::memory_order_acquire);
-        windows.swap(g_classicShowDesktopRestoreWindows);
-    }
-    if (!generation || windows.empty() ||
-        !g_restoreAnimation.load(std::memory_order_relaxed) ||
-        !IsClassicShowDesktopRestoreBatchCurrent(generation)) {
-        return;
-    }
-
+    // Intentionally do not issue SW_RESTORE/SC_RESTORE requests here. Windows'
+    // CTray implementation owns restoration order, foreground selection and
+    // final Z-order; the hooks below only animate its native window transitions.
     if (IsDiagnosticLoggingEnabled()) {
-        Wh_Log(L"Classic Show Desktop owner restore batch started "
-               L"generation=%llu windows=%zu",
-               static_cast<unsigned long long>(generation), windows.size());
-    }
-
-    // This one deadline covers both the preceding-animation handoff and every
-    // target-owned restore request below. This handoff can't move behind the
-    // original call: as soon as _RaiseDesktop returns, CTray can expose all real
-    // HWNDs and recreate the duplicate-window/flicker race. Because the hook
-    // therefore runs synchronously on CTray's thread, never restart the budget
-    // per window. Once it expires, the original CTray operation immediately
-    // following this function remains the authoritative native fallback.
-    const DWORD batchDeadline =
-        GetTickCount() + AnimConstants::ClassicShowDesktopWaitMs;
-
-    // A previous target-side minimize can still be removing its session
-    // property when the user invokes the restore half quickly. Don't overlap
-    // that endpoint with the first restore capture.
-    while (IsClassicShowDesktopRestoreBatchCurrent(generation) &&
-           static_cast<LONG>(GetTickCount() - batchDeadline) < 0 &&
-           FindAnyAnimationSessionWindow()) {
-        // Avoid blocking cross-thread SendMessage callers while the preceding
-        // animation publishes its endpoint. Posted input remains ordered
-        // behind this Show Desktop operation.
-        const DWORD now = GetTickCount();
-        const LONG remaining =
-            static_cast<LONG>(batchDeadline - now);
-        if (remaining <= 0) break;
-        WaitWithSentMessagePump(
-            std::min<DWORD>(10, static_cast<DWORD>(remaining)));
-    }
-
-    HWND capturedForegroundWindow = nullptr;
-    DWORD capturedForegroundProcessId = 0;
-    DWORD capturedForegroundThreadId = 0;
-    for (const auto& window : windows) {
-        if (!window.wasForeground) continue;
-        capturedForegroundWindow = window.hWnd;
-        capturedForegroundProcessId = window.processId;
-        capturedForegroundThreadId = window.threadId;
-        break;
-    }
-
-    size_t alreadyRestored = 0;
-    size_t requested = 0;
-    size_t failed = 0;
-    bool budgetExhausted = false;
-    bool sentRestoreRequest = false;
-
-    // Submit restore requests in reverse Z-order, with a tiny stagger. This
-    // lets the shell rebuild the intended stacking order while keeping the
-    // animations visually close together. Do not wait for animation endpoints
-    // here: returning promptly lets the original CTray operation run now and
-    // perform its native Show Desktop bookkeeping and final Z-order.
-    for (auto it = windows.rbegin(); it != windows.rend(); ++it) {
-        if (!IsClassicShowDesktopRestoreBatchCurrent(generation)) {
-            break;
-        }
-        if (static_cast<LONG>(GetTickCount() - batchDeadline) >= 0) {
-            budgetExhausted = true;
-            break;
-        }
-        g_localShowDesktopOperationUntilTick.store(
-            GetTickCount() + AnimConstants::ShowDesktopHookScopeMs,
-            std::memory_order_release);
-        if (!IsClassicShowDesktopRestoreWindowCurrent(*it)) continue;
-        if (!IsIconic(it->hWnd)) {
-            ++alreadyRestored;
-            continue;
-        }
-
-        // Keep a 100 ms gap between actual requests rather than waiting for an
-        // entire animation to finish. The captured list is top-to-bottom;
-        // reverse iteration restores back-to-front, leaving the original
-        // foreground window until last.
-        if (sentRestoreRequest) Sleep(100);
-
-        if (IsDiagnosticLoggingEnabled()) {
-            Wh_Log(L"Classic Show Desktop requesting owner restore "
-                   L"hwnd=%p target_pid=%lu",
-                   it->hWnd, it->processId);
-        }
-        const DWORD preserveZOrderUntil = GetTickCount() + 15000;
-        SetPropW(it->hWnd, kPropClassicShowDesktopRestoreZOrder,
-                 reinterpret_cast<HANDLE>(
-                     static_cast<ULONG_PTR>(preserveZOrderUntil)));
-        bool restoreSubmitted = false;
-        if (it->threadId == GetCurrentThreadId()) {
-            // A File Explorer window can share CTray's thread. Handle it
-            // directly on its owner thread to avoid queueing behind ourselves.
-            const BOOL restoreMaximized = WindowRestoresMaximized(it->hWnd);
-            if (PrepareRestoreAnimation(it->hWnd)) {
-                if (restoreMaximized) {
-                    ArmMaximizedRestoreGuard(
-                        it->hWnd,
-                        static_cast<DWORD>(
-                            AnimConstants::MaximizedRestoreGuardMs));
-                }
-                ShowWindow_Original(it->hWnd, SW_RESTORE);
-                CommitRestoreAnimation(it->hWnd, restoreMaximized);
-                restoreSubmitted = true;
-            }
-        } else {
-            restoreSubmitted =
-                PostMessageW(it->hWnd, WM_SYSCOMMAND, SC_RESTORE,
-                             static_cast<LPARAM>(-1)) != FALSE;
-        }
-        if (!restoreSubmitted) {
-            RemovePropW(it->hWnd, kPropClassicShowDesktopRestoreZOrder);
-            if (it->threadId == GetCurrentThreadId()) {
-                ShowWindow_Original(it->hWnd, SW_RESTORE);
-            } else if (!ShowWindowAsync_Original(it->hWnd, SW_RESTORE)) {
-                ++failed;
-                continue;
-            }
-        }
-        sentRestoreRequest = true;
-        ++requested;
-    }
-
-    if (capturedForegroundWindow && requested > 0) {
-        auto* work = new (std::nothrow) ClassicShowDesktopForegroundRestoreWork;
-        if (work) {
-            work->foregroundWindow = capturedForegroundWindow;
-            work->foregroundProcessId = capturedForegroundProcessId;
-            work->foregroundThreadId = capturedForegroundThreadId;
-            bool prepared = false;
-            try {
-                work->windows = windows;
-                prepared = true;
-            } catch (const std::exception&) {
-                // If the snapshot can't be copied, don't launch a worker that
-                // would restore focus before the other animations settle.
-            }
-            if (!prepared ||
-                !StartWorkerThread(ClassicShowDesktopForegroundRestoreThread,
-                                   work)) {
-                delete work;
-            }
-        }
-    }
-
-    if (IsDiagnosticLoggingEnabled()) {
-        Wh_Log(L"Classic Show Desktop owner restore requests dispatched "
-               L"generation=%llu windows=%zu already=%zu requested=%zu "
-               L"failed=%zu budget_exhausted=%d foreground=%p",
-               static_cast<unsigned long long>(generation), windows.size(),
-               alreadyRestored, requested, failed, budgetExhausted,
-               capturedForegroundWindow);
+        Wh_Log(L"Classic Show Desktop restore delegated to Windows");
     }
 }
 
