@@ -1,6 +1,6 @@
 // ==WindhawkMod==
-// @id              glass-explorer-task-switcher
-// @name            Glass Explorer + Taches Switch
+// @id              glass-explorer-task-switcher-test
+// @name            Glass Explorer + Taches Switch (test)
 // @description     Glass Explorer translucide avec changement de tâche à la molette et aux raccourcis clavier.
 // @version         0.1.0
 // @author          TeddySlexique
