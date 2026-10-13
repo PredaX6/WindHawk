@@ -12908,8 +12908,16 @@ static void RestoreClassicShowDesktopBatchBeforeShell() {
             work->foregroundWindow = capturedForegroundWindow;
             work->foregroundProcessId = capturedForegroundProcessId;
             work->foregroundThreadId = capturedForegroundThreadId;
-            work->windows = windows;
-            if (!StartWorkerThread(ClassicShowDesktopForegroundRestoreThread,
+            bool prepared = false;
+            try {
+                work->windows = windows;
+                prepared = true;
+            } catch (const std::exception&) {
+                // If the snapshot can't be copied, don't launch a worker that
+                // would restore focus before the other animations settle.
+            }
+            if (!prepared ||
+                !StartWorkerThread(ClassicShowDesktopForegroundRestoreThread,
                                    work)) {
                 delete work;
             }
