@@ -351,14 +351,6 @@ Windows](https://windhawk.net/mods/translucent-windows) mod.
 
 // ==WindhawkModSettings==
 /*
-- theme: "Translucent Explorer11"
-  $name: Theme
-  $description: >-
-    Themes are collections of styles. For details about the themes below, or for
-    information about submitting your own theme, refer to the relevant section
-    in the mod details.
-  $options:
-  - Translucent Explorer11: Translucent Explorer11
 - backgroundTranslucentEffect: ""
   $name: Translucent background effect
   $description: >-
@@ -9675,43 +9667,7 @@ void MergeResourceVariables() {
 }
 
 const Theme* GetSelectedTheme() {
-    PCWSTR themeName = Wh_GetStringSetting(L"theme");
-    const Theme* theme = nullptr;
-    if (wcscmp(themeName, L"Translucent Explorer11") == 0) {
-        theme = &g_themeTranslucent_Explorer11;
-    } else if (wcscmp(themeName, L"MicaBar") == 0) {
-        theme = &g_themeMicaBar;
-    } else if (wcscmp(themeName, L"NoCommandBar") == 0) {
-        theme = &g_themeNoCommandBar;
-    } else if (wcscmp(themeName, L"Minimal Explorer11") == 0) {
-        theme = &g_themeMinimal_Explorer11;
-    } else if (wcscmp(themeName, L"Tabless") == 0) {
-        theme = &g_themeTabless;
-    } else if (wcscmp(themeName, L"Matter") == 0) {
-        theme = &g_themeMatter;
-    } else if (wcscmp(themeName, L"WindowGlass") == 0) {
-        theme = &g_themeWindowGlass;
-    } else if (wcscmp(themeName, L"AddressSearchOnly") == 0) {
-        theme = &g_themeAddressSearchOnly;
-    } else if (wcscmp(themeName, L"TintedGlass") == 0) {
-        theme = &g_themeTintedGlass;
-    } else if (wcscmp(themeName, L"LiquidGlass") == 0) {
-        theme = &g_themeLiquidGlass;
-    } else if (wcscmp(themeName, L"MicaTabless") == 0) {
-        theme = &g_themeMicaTabless;
-    } else if (wcscmp(themeName, L"OS26 Liquid Glass") == 0) {
-        theme = &g_themeOS26_Liquid_Glass;
-    } else if (wcscmp(themeName, L"OS26 Liquid Glass_variant_Compact") == 0) {
-        theme = &g_themeOS26_Liquid_Glass_variant_Compact;
-    } else if (wcscmp(themeName, L"ZEUSosX_044") == 0) {
-        theme = &g_themeZEUSosX_044;
-    } else if (wcscmp(themeName, L"Compact Explorer11") == 0) {
-        theme = &g_themeCompact_Explorer11;
-    } else if (wcscmp(themeName, L"Float") == 0) {
-        theme = &g_themeFloat;
-    }
-    Wh_FreeStringSetting(themeName);
-    return theme;
+    return &g_themeTranslucent_Explorer11;
 }
 
 void ProcessAllStylesFromSettings() {
@@ -11674,11 +11630,6 @@ bool StartStatsTimer() {
     g_statsTimer = CreateThreadpoolTimer(
         [](PTP_CALLBACK_INSTANCE, PVOID, PTP_TIMER) {
             Wh_Log(L">");
-
-            string_setting_unique_ptr themeName(Wh_GetStringSetting(L"theme"));
-            if (!*themeName.get()) {
-                return;
-            }
 
             HANDLE mutex =
                 CreateMutex(nullptr, FALSE, L"WindhawkStats_" WH_MOD_ID);
