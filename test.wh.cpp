@@ -9836,14 +9836,32 @@ LRESULT CALLBACK ExplorerTvOnOverlayWndProc(HWND hWnd, UINT message,
 
         const double progress =
             static_cast<double>(elapsed) / kExplorerTvOnDurationMs;
-        // Ease-out curve: fast expansion at first, then settle into place.
-        const double eased = 1.0 - (1.0 - progress) * (1.0 - progress);
         const int fullWidth = state->targetRect.right - state->targetRect.left;
         const int fullHeight = state->targetRect.bottom - state->targetRect.top;
-        const int animatedWidth = static_cast<int>(fullWidth * eased);
-        const int animatedHeight = static_cast<int>(fullHeight * eased);
-        const int width = animatedWidth < 2 ? 2 : animatedWidth;
-        const int height = animatedHeight < 2 ? 2 : animatedHeight;
+
+        // Retro CRT "TV-On": first stretch the image into a horizontal line,
+        // then expand that line vertically until the whole window is visible.
+        // The two phases make the characteristic point -> line -> rectangle
+        // transition without animating Explorer's real HWND.
+        constexpr double kHorizontalPhase = 0.24;
+        double widthProgress;
+        double heightProgress = 0.0;
+        if (progress < kHorizontalPhase) {
+            const double phase =
+                progress / kHorizontalPhase;
+            widthProgress = 1.0 - (1.0 - phase) * (1.0 - phase);
+        } else {
+            widthProgress = 1.0;
+            const double phase =
+                (progress - kHorizontalPhase) / (1.0 - kHorizontalPhase);
+            // A slightly stronger ease-out gives the CRT line a quick,
+            // deliberate vertical snap before settling into the full image.
+            heightProgress = 1.0 - (1.0 - phase) * (1.0 - phase);
+        }
+
+        const int width = std::max(2, static_cast<int>(fullWidth * widthProgress));
+        const int height =
+            std::max(2, static_cast<int>(fullHeight * heightProgress));
         const int x = state->targetRect.left + (fullWidth - width) / 2;
         const int y = state->targetRect.top + (fullHeight - height) / 2;
 
