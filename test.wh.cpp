@@ -9801,6 +9801,37 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
         nCmdShow != SW_SHOWMINIMIZED && nCmdShow != SW_SHOWMINNOACTIVE &&
         nCmdShow != SW_FORCEMINIMIZE;
 
+    // A minimized Explorer window is still considered visible by
+    // IsWindowVisible. Detect restoration separately and seed the region using
+    // the saved normal size, since GetWindowRect reports the minimized bounds.
+    if (requestsVisible && IsIconic(hWnd) &&
+        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer) {
+        WINDOWPLACEMENT placement = {sizeof(placement)};
+        if (GetWindowPlacement(hWnd, &placement)) {
+            const int width = placement.rcNormalPosition.right -
+                              placement.rcNormalPosition.left;
+            const int height = placement.rcNormalPosition.bottom -
+                               placement.rcNormalPosition.top;
+            if (width >= 4 && height >= 4) {
+                const int centerX = width / 2;
+                const int centerY = height / 2;
+                if (SetTvWindowRegion(hWnd, centerX, centerY,
+                                      centerX + 1, centerY + 1)) {
+                    BOOL previousVisibility = ShowWindow_Original(hWnd, nCmdShow);
+                    if (AnimateTvWindowRegion(hWnd, true)) {
+                        return previousVisibility;
+                    }
+
+                    SetWindowRgn(hWnd, nullptr, TRUE);
+                    RedrawWindow(hWnd, nullptr, nullptr,
+                                 RDW_INVALIDATE | RDW_ERASE | RDW_FRAME |
+                                     RDW_ALLCHILDREN | RDW_UPDATENOW);
+                    return previousVisibility;
+                }
+            }
+        }
+    }
+
     if (requestsVisible &&
         GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
         !IsWindowVisible(hWnd) &&
