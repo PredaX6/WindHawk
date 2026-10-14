@@ -10226,6 +10226,7 @@ HWND CreateExplorerTvOnOverlay(HWND target, HBITMAP snapshot,
         targetRect.left, targetRect.top, width, height,
         nullptr, nullptr, GetModuleHandleW(nullptr), nullptr);
     if (!overlay) {
+        DestroyExplorerTvOnRenderer(state);
         delete state;
         DeleteObject(snapshot);
         return nullptr;
