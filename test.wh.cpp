@@ -9790,7 +9790,7 @@ struct ExplorerTvOnOverlay {
 };
 
 constexpr UINT_PTR kExplorerTvOnTimerId = 1;
-constexpr UINT kExplorerTvOnFrameIntervalMs = 7;
+constexpr UINT kExplorerTvOnFrameIntervalMs = 18;
 constexpr int kExplorerTvOnDefaultDurationMs = 1000;
 constexpr int kExplorerTvOnMinDurationMs = 100;
 constexpr int kExplorerTvOnMaxDurationMs = 3000;
