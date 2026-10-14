@@ -9740,6 +9740,17 @@ LRESULT CALLBACK MicaFocusPersistenceSubclassProc(HWND hWnd,
         AnimateTvWindowRegion(hWnd, false);
     }
 
+    // Temporary diagnostics for window lifecycle paths, especially Settings.
+    if (uMsg == WM_CLOSE || uMsg == WM_DESTROY || uMsg == WM_NCDESTROY) {
+        WCHAR className[128] = {};
+        WCHAR windowTitle[256] = {};
+        GetClassNameW(hWnd, className, ARRAYSIZE(className));
+        GetWindowTextW(hWnd, windowTitle, ARRAYSIZE(windowTitle));
+        Wh_Log(L"TV diagnostic: subclass msg=%u hwnd=%08X class=%s title=%s visible=%d iconic=%d",
+               uMsg, (DWORD)(ULONG_PTR)hWnd, className, windowTitle,
+               IsWindowVisible(hWnd), IsIconic(hWnd));
+    }
+
     // Run the CRT-off effect on the real window, without a bitmap overlay.
     if (uMsg == WM_CLOSE && IsWindowVisible(hWnd)) {
         AnimateTvWindowRegion(hWnd, false);
@@ -9907,6 +9918,16 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
         nCmdShow != SW_SHOWMINIMIZED && nCmdShow != SW_SHOWMINNOACTIVE &&
         nCmdShow != SW_FORCEMINIMIZE;
 
+    if (IsAnimatableApplicationWindow(hWnd)) {
+        WCHAR className[128] = {};
+        WCHAR windowTitle[256] = {};
+        GetClassNameW(hWnd, className, ARRAYSIZE(className));
+        GetWindowTextW(hWnd, windowTitle, ARRAYSIZE(windowTitle));
+        Wh_Log(L"TV diagnostic: ShowWindow hwnd=%08X cmd=%d class=%s title=%s visible=%d iconic=%d",
+               (DWORD)(ULONG_PTR)hWnd, nCmdShow, className, windowTitle,
+               IsWindowVisible(hWnd), IsIconic(hWnd));
+    }
+
     // A minimized Explorer window is still considered visible by
     // IsWindowVisible. Detect restoration separately and seed the region using
     // the saved normal size, since GetWindowRect reports the minimized bounds.
@@ -10008,6 +10029,20 @@ HWND WINAPI CreateWindowExW_Hook(DWORD dwExStyle,
     }
 
     OnWindowCreated(hWnd, __FUNCTION__);
+
+    if (IsAnimatableApplicationWindow(hWnd)) {
+        WCHAR className[128] = {};
+        WCHAR windowTitle[256] = {};
+        GetClassNameW(hWnd, className, ARRAYSIZE(className));
+        GetWindowTextW(hWnd, windowTitle, ARRAYSIZE(windowTitle));
+        DWORD processId = 0;
+        GetWindowThreadProcessId(hWnd, &processId);
+        Wh_Log(L"TV diagnostic: created hwnd=%08X pid=%lu class=%s title=%s style=%08X exStyle=%08X visible=%d via=%S",
+               (DWORD)(ULONG_PTR)hWnd, processId, className, windowTitle,
+               (DWORD)GetWindowLongPtrW(hWnd, GWL_STYLE),
+               (DWORD)GetWindowLongPtrW(hWnd, GWL_EXSTYLE),
+               IsWindowVisible(hWnd), __FUNCTION__);
+    }
 
     if (animateInitialShow && IsAnimatableApplicationWindow(hWnd)) {
         ShowWindow_Hook(hWnd, SW_SHOW);
