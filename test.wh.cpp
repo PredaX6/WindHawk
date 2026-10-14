@@ -10475,8 +10475,8 @@ void RenderExplorerTvOnFrame(HWND hWnd, ExplorerTvOnOverlay* state,
             interpolate(from.right, to.right),
             interpolate(from.bottom, to.bottom)
         };
-        const int currentWidth = std::max(1, currentRect.right - currentRect.left);
-        const int currentHeight = std::max(1, currentRect.bottom - currentRect.top);
+        const int currentWidth = static_cast<int>(std::max<LONG>(1, currentRect.right - currentRect.left));
+        const int currentHeight = static_cast<int>(std::max<LONG>(1, currentRect.bottom - currentRect.top));
         const size_t canvasBytes =
             static_cast<size_t>(state->width) * state->height * 4;
         memset(state->frameBits, 0, canvasBytes);
