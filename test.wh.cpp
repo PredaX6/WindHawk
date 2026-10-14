@@ -9765,20 +9765,307 @@ ShowWindow_t ShowWindow_Original;
 // the real window is restored underneath it. The popup itself is resized from
 // the center, avoiding AnimateWindow on Explorer's own HWND.
 struct ExplorerTvOnOverlay {
-    HWND target;
-    HBITMAP bitmap;
-    RECT targetRect;
-    ULONGLONG startTime;
-    int finalShowCmd;
-    UINT_PTR timer;
-    double progress;
+    HWND target{};
+    HBITMAP bitmap{};
+    RECT targetRect{};
+    ULONGLONG startTime{};
+    int finalShowCmd{};
+    UINT_PTR timer{};
+    double progress{};
+    int width{};
+    int height{};
+    std::vector<BYTE> sourcePixels;
+    HDC frameDc{};
+    HBITMAP frameBitmap{};
+    HGDIOBJ previousFrameBitmap{};
+    void* frameBits{};
 };
 
 constexpr UINT_PTR kExplorerTvOnTimerId = 1;
-constexpr UINT kExplorerTvOnFrameIntervalMs = 10;
-constexpr ULONGLONG kExplorerTvOnDurationMs = 280;
+constexpr UINT kExplorerTvOnFrameIntervalMs = 8;
+constexpr ULONGLONG kExplorerTvOnDurationMs = 360;
+constexpr float kExplorerTvOnSquashEnd = 0.42f;
+constexpr float kExplorerTvOnZipEnd = 0.78f;
 constexpr wchar_t kExplorerTvOnOverlayClass[] =
     L"WindhawkExplorerTvOnOverlayWindow";
+
+void DestroyExplorerTvOnRenderer(ExplorerTvOnOverlay* state) {
+    if (!state) return;
+    if (state->frameDc && state->previousFrameBitmap &&
+        state->previousFrameBitmap != HGDI_ERROR) {
+        SelectObject(state->frameDc, state->previousFrameBitmap);
+    }
+    state->previousFrameBitmap = nullptr;
+    state->frameBits = nullptr;
+    if (state->frameBitmap) {
+        DeleteObject(state->frameBitmap);
+        state->frameBitmap = nullptr;
+    }
+    if (state->frameDc) {
+        DeleteDC(state->frameDc);
+        state->frameDc = nullptr;
+    }
+    state->sourcePixels.clear();
+    state->width = 0;
+    state->height = 0;
+}
+
+bool InitializeExplorerTvOnRenderer(ExplorerTvOnOverlay* state) {
+    if (!state || !state->bitmap) return false;
+    DestroyExplorerTvOnRenderer(state);
+
+    BITMAP sourceInfo{};
+    if (!GetObjectW(state->bitmap, sizeof(sourceInfo), &sourceInfo) ||
+        sourceInfo.bmWidth <= 0 || sourceInfo.bmHeight <= 0) {
+        return false;
+    }
+
+    state->width = sourceInfo.bmWidth;
+    state->height = sourceInfo.bmHeight;
+    const size_t pixelCount =
+        static_cast<size_t>(state->width) * static_cast<size_t>(state->height);
+    if (pixelCount > SIZE_MAX / 4) return false;
+    state->sourcePixels.resize(pixelCount * 4);
+
+    BITMAPINFO bmi{};
+    bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    bmi.bmiHeader.biWidth = state->width;
+    bmi.bmiHeader.biHeight = -state->height;
+    bmi.bmiHeader.biPlanes = 1;
+    bmi.bmiHeader.biBitCount = 32;
+    bmi.bmiHeader.biCompression = BI_RGB;
+
+    HDC sourceDc = CreateCompatibleDC(nullptr);
+    if (!sourceDc) {
+        DestroyExplorerTvOnRenderer(state);
+        return false;
+    }
+    const int lines = GetDIBits(sourceDc, state->bitmap, 0, state->height,
+                                state->sourcePixels.data(), &bmi, DIB_RGB_COLORS);
+    DeleteDC(sourceDc);
+    if (lines != state->height) {
+        DestroyExplorerTvOnRenderer(state);
+        return false;
+    }
+
+    // BI_RGB snapshots don't reliably contain an alpha channel. Treat the
+    // captured Explorer image as opaque; transparency is generated per frame.
+    for (size_t i = 0; i < pixelCount; ++i) {
+        state->sourcePixels[i * 4 + 3] = 255;
+    }
+
+    state->frameDc = CreateCompatibleDC(nullptr);
+    if (!state->frameDc) {
+        DestroyExplorerTvOnRenderer(state);
+        return false;
+    }
+    state->frameBitmap = CreateDIBSection(
+        state->frameDc, &bmi, DIB_RGB_COLORS, &state->frameBits, nullptr, 0);
+    if (!state->frameBitmap || !state->frameBits) {
+        DestroyExplorerTvOnRenderer(state);
+        return false;
+    }
+    state->previousFrameBitmap = SelectObject(state->frameDc, state->frameBitmap);
+    if (!state->previousFrameBitmap ||
+        state->previousFrameBitmap == HGDI_ERROR) {
+        state->previousFrameBitmap = nullptr;
+        DestroyExplorerTvOnRenderer(state);
+        return false;
+    }
+    return true;
+}
+
+void DrawExplorerCrtBeam(ExplorerTvOnOverlay* state, float cx, float cy,
+                          float halfLen, float intensity) {
+    if (!state || intensity <= 0.02f || halfLen < 0.25f) return;
+    if (intensity > 1.0f) intensity = 1.0f;
+    constexpr float tip = 1.75f;
+    const int x0 = static_cast<int>(floorf(cx - halfLen - tip));
+    const int x1 = static_cast<int>(ceilf(cx + halfLen + tip));
+    const int y0 = static_cast<int>(floorf(cy - 2.0f));
+    const int y1 = static_cast<int>(ceilf(cy + 2.0f));
+    auto* pixels = static_cast<BYTE*>(state->frameBits);
+    const size_t stride = static_cast<size_t>(state->width) * 4;
+
+    for (int y = y0; y <= y1; ++y) {
+        if (y < 0 || y >= state->height) continue;
+        const float ady = fabsf(static_cast<float>(y) + 0.5f - cy);
+        float gy = 0.0f;
+        if (ady < 0.55f) gy = 1.0f;
+        else if (ady < 1.55f) gy = 1.0f - (ady - 0.55f);
+        if (gy <= 0.0f) continue;
+        BYTE* row = pixels + static_cast<size_t>(y) * stride;
+        for (int x = x0; x <= x1; ++x) {
+            if (x < 0 || x >= state->width) continue;
+            const float adx = fabsf(static_cast<float>(x) + 0.5f - cx);
+            float gx = 1.0f;
+            if (adx > halfLen) {
+                const float t = (adx - halfLen) / tip;
+                if (t >= 1.0f) continue;
+                gx = 1.0f - t;
+            }
+            const float a = gy * gx * intensity;
+            if (a < 0.02f) continue;
+            const float b = (210.0f + 45.0f * gy) * a;
+            const float g = (235.0f + 20.0f * gy) * a;
+            const float r = 255.0f * a;
+            BYTE* d = row + static_cast<size_t>(x) * 4;
+            const float inv = 1.0f - a;
+            d[0] = static_cast<BYTE>(std::min(255.0f, b + d[0] * inv));
+            d[1] = static_cast<BYTE>(std::min(255.0f, g + d[1] * inv));
+            d[2] = static_cast<BYTE>(std::min(255.0f, r + d[2] * inv));
+            d[3] = static_cast<BYTE>(std::min(255.0f, 255.0f * a + d[3] * inv));
+        }
+    }
+}
+
+void DrawExplorerCrtDot(ExplorerTvOnOverlay* state, float cx, float cy,
+                        float intensity) {
+    if (!state || intensity <= 0.02f) return;
+    if (intensity > 1.0f) intensity = 1.0f;
+    const int x0 = static_cast<int>(floorf(cx - 1.5f));
+    const int x1 = static_cast<int>(ceilf(cx + 1.5f));
+    const int y0 = static_cast<int>(floorf(cy - 1.5f));
+    const int y1 = static_cast<int>(ceilf(cy + 1.5f));
+    auto* pixels = static_cast<BYTE*>(state->frameBits);
+    const size_t stride = static_cast<size_t>(state->width) * 4;
+    for (int y = y0; y <= y1; ++y) {
+        if (y < 0 || y >= state->height) continue;
+        BYTE* row = pixels + static_cast<size_t>(y) * stride;
+        for (int x = x0; x <= x1; ++x) {
+            if (x < 0 || x >= state->width) continue;
+            const float dx = static_cast<float>(x) + 0.5f - cx;
+            const float dy = static_cast<float>(y) + 0.5f - cy;
+            const float d2 = dx * dx + dy * dy;
+            float weight = 0.0f;
+            if (d2 <= 0.35f) weight = 1.0f;
+            else if (d2 <= 1.6f) weight = 1.0f - (d2 - 0.35f) / 1.25f;
+            if (weight <= 0.0f) continue;
+            const float a = weight * intensity;
+            BYTE* d = row + static_cast<size_t>(x) * 4;
+            const float inv = 1.0f - a;
+            d[0] = static_cast<BYTE>(std::min(255.0f, 255.0f * a + d[0] * inv));
+            d[1] = static_cast<BYTE>(std::min(255.0f, 255.0f * a + d[1] * inv));
+            d[2] = static_cast<BYTE>(std::min(255.0f, 255.0f * a + d[2] * inv));
+            d[3] = static_cast<BYTE>(std::min(255.0f, 255.0f * a + d[3] * inv));
+        }
+    }
+}
+
+void BlitExplorerCrtVerticalSquash(ExplorerTvOnOverlay* state, int dstH,
+                                   float alpha, float bright) {
+    if (!state || dstH < 1 || alpha <= 0.0f) return;
+    bright = std::max(0.0f, std::min(1.5f, bright));
+    const int dstY = (state->height - dstH) / 2;
+    const size_t stride = static_cast<size_t>(state->width) * 4;
+    auto* dstPixels = static_cast<BYTE*>(state->frameBits);
+    const auto* srcPixels = state->sourcePixels.data();
+    const float invH = 1.0f / static_cast<float>(dstH);
+
+    for (int dy = 0; dy < dstH; ++dy) {
+        const int outY = dstY + dy;
+        const float srcYF =
+            (static_cast<float>(dy) + 0.5f) * invH *
+                static_cast<float>(state->height) - 0.5f;
+        int y0 = static_cast<int>(floorf(srcYF));
+        float fy = srcYF - static_cast<float>(y0);
+        int y1 = y0 + 1;
+        if (y0 < 0) { y0 = 0; fy = 0.0f; }
+        if (y1 >= state->height) y1 = state->height - 1;
+        if (y0 >= state->height) y0 = state->height - 1;
+        const BYTE* row0 = srcPixels + static_cast<size_t>(y0) * stride;
+        const BYTE* row1 = srcPixels + static_cast<size_t>(y1) * stride;
+        BYTE* dstRow = dstPixels + static_cast<size_t>(outY) * stride;
+        const float w0 = 1.0f - fy;
+        const float w1 = fy;
+        for (int x = 0; x < state->width; ++x) {
+            const BYTE* s0 = row0 + static_cast<size_t>(x) * 4;
+            const BYTE* s1 = row1 + static_cast<size_t>(x) * 4;
+            BYTE* d = dstRow + static_cast<size_t>(x) * 4;
+            float b = (static_cast<float>(s0[0]) * w0 +
+                       static_cast<float>(s1[0]) * w1) * bright;
+            float g = (static_cast<float>(s0[1]) * w0 +
+                       static_cast<float>(s1[1]) * w1) * bright;
+            float r = (static_cast<float>(s0[2]) * w0 +
+                       static_cast<float>(s1[2]) * w1) * bright;
+            if (bright > 1.0f) {
+                const float lift = (bright - 1.0f) * 0.65f;
+                b += (255.0f - b) * lift;
+                g += (255.0f - g) * lift;
+                r += (220.0f - r) * lift;
+            }
+            d[0] = static_cast<BYTE>(std::min(255.0f, std::max(0.0f, b * alpha)));
+            d[1] = static_cast<BYTE>(std::min(255.0f, std::max(0.0f, g * alpha)));
+            d[2] = static_cast<BYTE>(std::min(255.0f, std::max(0.0f, r * alpha)));
+            d[3] = static_cast<BYTE>(255.0f * alpha);
+        }
+    }
+}
+
+void RenderExplorerTvOnFrame(HWND hWnd, ExplorerTvOnOverlay* state,
+                             double progress) {
+    if (!state || !state->frameBits || !state->frameDc ||
+        state->width <= 0 || state->height <= 0) return;
+    progress = std::max(0.0, std::min(1.0, progress));
+    state->progress = progress;
+    const size_t bytes =
+        static_cast<size_t>(state->width) * state->height * 4;
+    memset(state->frameBits, 0, bytes);
+
+    // This is the TV-ON direction from the reference engine: reverse the
+    // shutdown renderer so the dot grows into a beam, then into the image.
+    const float offProgress = static_cast<float>(1.0 - progress);
+    const float cx = static_cast<float>(state->width) * 0.5f;
+    const float cy = static_cast<float>(state->height) * 0.5f;
+    if (offProgress < kExplorerTvOnSquashEnd) {
+        const float u = offProgress / kExplorerTvOnSquashEnd;
+        const float punch = u * u * u;
+        constexpr float minH = 2.0f;
+        const float dstHf = static_cast<float>(state->height) * (1.0f - punch) +
+                            minH * punch;
+        const int dstH = std::max(2, static_cast<int>(dstHf + 0.5f));
+        const float bright = 1.0f + punch * 0.85f;
+        constexpr float handoffStart = 10.0f;
+        float contentAlpha = 1.0f;
+        float beamAlpha = 0.0f;
+        if (static_cast<float>(dstH) < handoffStart) {
+            const float t = (static_cast<float>(dstH) - minH) /
+                            (handoffStart - minH);
+            contentAlpha = std::max(0.0f, std::min(1.0f, t));
+            beamAlpha = 1.0f - contentAlpha;
+        }
+        if (contentAlpha > 0.02f) {
+            BlitExplorerCrtVerticalSquash(state, dstH, contentAlpha, bright);
+        }
+        if (beamAlpha > 0.02f) {
+            DrawExplorerCrtBeam(state, cx, cy,
+                                static_cast<float>(state->width) * 0.5f,
+                                beamAlpha);
+        }
+    } else if (offProgress < kExplorerTvOnZipEnd) {
+        const float u = (offProgress - kExplorerTvOnSquashEnd) /
+                        (kExplorerTvOnZipEnd - kExplorerTvOnSquashEnd);
+        const float ease = u * u;
+        const float halfLen =
+            static_cast<float>(state->width) * 0.5f * (1.0f - ease) +
+            1.0f * ease;
+        DrawExplorerCrtBeam(state, cx, cy, halfLen, 1.0f);
+    } else {
+        const float u = (offProgress - kExplorerTvOnZipEnd) /
+                        std::max(0.01f, 1.0f - kExplorerTvOnZipEnd);
+        const float decay = 1.0f - u;
+        if (decay > 0.02f) {
+            DrawExplorerCrtDot(state, cx, cy, decay * decay);
+        }
+    }
+
+    POINT destination{state->targetRect.left, state->targetRect.top};
+    POINT source{0, 0};
+    SIZE size{state->width, state->height};
+    BLENDFUNCTION blend{AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
+    UpdateLayeredWindow(hWnd, nullptr, &destination, &size, state->frameDc,
+                        &source, 0, &blend, ULW_ALPHA);
+}
 
 LRESULT CALLBACK ExplorerTvOnOverlayWndProc(HWND hWnd, UINT message,
                                             WPARAM wParam, LPARAM lParam) {
@@ -9787,50 +10074,7 @@ LRESULT CALLBACK ExplorerTvOnOverlayWndProc(HWND hWnd, UINT message,
 
     if (message == WM_PAINT) {
         PAINTSTRUCT ps{};
-        HDC dc = BeginPaint(hWnd, &ps);
-        if (state && state->bitmap && dc) {
-            RECT clientRect{};
-            GetClientRect(hWnd, &clientRect);
-            HDC bitmapDc = CreateCompatibleDC(dc);
-            if (bitmapDc) {
-                HGDIOBJ previous = SelectObject(bitmapDc, state->bitmap);
-                if (previous && previous != HGDI_ERROR) {
-                    BITMAP bitmapInfo{};
-                    if (GetObjectW(state->bitmap, sizeof(bitmapInfo),
-                                   &bitmapInfo)) {
-                        SetStretchBltMode(dc, HALFTONE);
-                        StretchBlt(dc, 0, 0,
-                                   clientRect.right, clientRect.bottom,
-                                   bitmapDc, 0, 0,
-                                   bitmapInfo.bmWidth, bitmapInfo.bmHeight,
-                                   SRCCOPY);
-                    }
-                    SelectObject(bitmapDc, previous);
-                }
-                DeleteDC(bitmapDc);
-            }
-
-            // A bright phosphor beam overlays the compressed image during
-            // the CRT line phase, matching the reference mod's characteristic
-            // white-hot horizontal line.
-            if (state->progress < 0.58) {
-                const int width = clientRect.right - clientRect.left;
-                const int height = clientRect.bottom - clientRect.top;
-                if (width > 2 && height > 0) {
-                    HPEN beamPen = CreatePen(PS_SOLID, 1, RGB(245, 250, 255));
-                    if (beamPen) {
-                        HGDIOBJ oldPen = SelectObject(dc, beamPen);
-                        const int cy = height / 2;
-                        MoveToEx(dc, 1, cy, nullptr);
-                        LineTo(dc, width - 1, cy);
-                        if (oldPen && oldPen != HGDI_ERROR) {
-                            SelectObject(dc, oldPen);
-                        }
-                        DeleteObject(beamPen);
-                    }
-                }
-            }
-        }
+        BeginPaint(hWnd, &ps);
         EndPaint(hWnd, &ps);
         return 0;
     }
@@ -9842,12 +10086,11 @@ LRESULT CALLBACK ExplorerTvOnOverlayWndProc(HWND hWnd, UINT message,
     if (message == WM_TIMER && wParam == kExplorerTvOnTimerId && state) {
         const ULONGLONG elapsed = GetTickCount64() - state->startTime;
         if (elapsed >= kExplorerTvOnDurationMs) {
+            RenderExplorerTvOnFrame(hWnd, state, 1.0);
             if (state->timer) {
                 KillTimer(hWnd, state->timer);
                 state->timer = 0;
             }
-            // Keep the real Explorer window minimized during the overlay
-            // animation; restore it only when the snapshot animation ends.
             if (IsWindow(state->target) &&
                 (!IsWindowVisible(state->target) || IsIconic(state->target))) {
                 ShowWindow_Original(state->target, state->finalShowCmd);
@@ -9858,43 +10101,7 @@ LRESULT CALLBACK ExplorerTvOnOverlayWndProc(HWND hWnd, UINT message,
 
         const double progress =
             static_cast<double>(elapsed) / kExplorerTvOnDurationMs;
-        state->progress = progress;
-        const int fullWidth = state->targetRect.right - state->targetRect.left;
-        const int fullHeight = state->targetRect.bottom - state->targetRect.top;
-
-        // Follow the reference CRT timing: the point expands into a beam
-        // during the first 22% of the animation, then the beam opens vertically
-        // into the full image over the next 42%. The final portion holds the
-        // restored image steady rather than continuing an artificial zoom.
-        constexpr double kBeamPhase = 0.22;
-        constexpr double kVerticalPhaseEnd = 0.64;
-        double widthProgress = 0.0;
-        double heightProgress = 0.0;
-        if (progress < kBeamPhase) {
-            const double phase = progress / kBeamPhase;
-            widthProgress = phase * phase;
-        } else if (progress < kVerticalPhaseEnd) {
-            widthProgress = 1.0;
-            const double phase =
-                (progress - kBeamPhase) /
-                (kVerticalPhaseEnd - kBeamPhase);
-            const double punch = phase * phase * phase;
-            heightProgress = punch;
-        } else {
-            widthProgress = 1.0;
-            heightProgress = 1.0;
-        }
-
-        const int width = std::max(2, static_cast<int>(fullWidth * widthProgress));
-        const int height =
-            std::max(2, static_cast<int>(fullHeight * heightProgress));
-        const int x = state->targetRect.left + (fullWidth - width) / 2;
-        const int y = state->targetRect.top + (fullHeight - height) / 2;
-
-        SetWindowPos(hWnd, HWND_TOPMOST, x, y, width, height,
-                     SWP_NOACTIVATE | SWP_SHOWWINDOW | SWP_NOREDRAW);
-        RedrawWindow(hWnd, nullptr, nullptr,
-                     RDW_INVALIDATE | RDW_UPDATENOW | RDW_NOERASE);
+        RenderExplorerTvOnFrame(hWnd, state, progress);
         return 0;
     }
 
@@ -9903,8 +10110,10 @@ LRESULT CALLBACK ExplorerTvOnOverlayWndProc(HWND hWnd, UINT message,
             KillTimer(hWnd, state->timer);
             state->timer = 0;
         }
+        DestroyExplorerTvOnRenderer(state);
         if (state->bitmap) {
             DeleteObject(state->bitmap);
+            state->bitmap = nullptr;
         }
         delete state;
         SetWindowLongPtrW(hWnd, GWLP_USERDATA, 0);
@@ -10003,23 +10212,18 @@ HWND CreateExplorerTvOnOverlay(HWND target, HBITMAP snapshot,
 
     const int width = targetRect.right - targetRect.left;
     const int height = targetRect.bottom - targetRect.top;
-    if (width <= 0 || height <= 0) {
+    if (width <= 0 || height <= 0 ||
+        !InitializeExplorerTvOnRenderer(state)) {
+        DestroyExplorerTvOnRenderer(state);
         delete state;
         DeleteObject(snapshot);
         return nullptr;
     }
 
-    const int initialWidth = startFullSize ? width : 2;
-    const int initialHeight = startFullSize ? height : 2;
-    const int initialX =
-        targetRect.left + (width - initialWidth) / 2;
-    const int initialY =
-        targetRect.top + (height - initialHeight) / 2;
-
     HWND overlay = CreateWindowExW(
         WS_EX_LAYERED | WS_EX_TOPMOST | WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE,
         kExplorerTvOnOverlayClass, L"", WS_POPUP,
-        initialX, initialY, initialWidth, initialHeight,
+        targetRect.left, targetRect.top, width, height,
         nullptr, nullptr, GetModuleHandleW(nullptr), nullptr);
     if (!overlay) {
         delete state;
@@ -10029,7 +10233,7 @@ HWND CreateExplorerTvOnOverlay(HWND target, HBITMAP snapshot,
 
     SetWindowLongPtrW(overlay, GWLP_USERDATA,
                       reinterpret_cast<LONG_PTR>(state));
-    SetLayeredWindowAttributes(overlay, 0, 255, LWA_ALPHA);
+    RenderExplorerTvOnFrame(overlay, state, startFullSize ? 1.0 : 0.0);
     ShowWindow(overlay, SW_SHOWNOACTIVATE);
     UpdateWindow(overlay);
     return overlay;
@@ -10130,16 +10334,20 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
         DeleteObject(state->bitmap);
         state->bitmap = explorerSnapshot;
         state->targetRect = capturedRect;
+        if (!InitializeExplorerTvOnRenderer(state)) {
+            DestroyWindow(overlay);
+            ShowWindow_Original(hWnd, nCmdShow);
+            return previousVisibility;
+        }
         ShowWindow_Original(hWnd, SW_HIDE);
 
         const int fullWidth = capturedRect.right - capturedRect.left;
         const int fullHeight = capturedRect.bottom - capturedRect.top;
         SetWindowPos(overlay, HWND_TOPMOST,
-                     capturedRect.left + (fullWidth - 2) / 2,
-                     capturedRect.top + (fullHeight - 2) / 2,
-                     2, 2, SWP_NOACTIVATE | SWP_SHOWWINDOW | SWP_NOREDRAW);
-        RedrawWindow(overlay, nullptr, nullptr,
-                     RDW_INVALIDATE | RDW_UPDATENOW | RDW_NOERASE);
+                     capturedRect.left, capturedRect.top,
+                     fullWidth, fullHeight,
+                     SWP_NOACTIVATE | SWP_SHOWWINDOW | SWP_NOREDRAW);
+        RenderExplorerTvOnFrame(overlay, state, 0.0);
 
         if (!(state->timer = SetTimer(overlay, kExplorerTvOnTimerId,
                                       kExplorerTvOnFrameIntervalMs, nullptr))) {
