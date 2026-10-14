@@ -9769,6 +9769,7 @@ struct ExplorerTvOnOverlay {
     HBITMAP bitmap;
     RECT targetRect;
     ULONGLONG startTime;
+    int finalShowCmd;
 };
 
 constexpr UINT_PTR kExplorerTvOnTimerId = 1;
@@ -9821,8 +9822,9 @@ LRESULT CALLBACK ExplorerTvOnOverlayWndProc(HWND hWnd, UINT message,
             KillTimer(hWnd, kExplorerTvOnTimerId);
             // Keep the real Explorer window minimized during the overlay
             // animation; restore it only when the snapshot animation ends.
-            if (IsWindow(state->target) && IsIconic(state->target)) {
-                ShowWindow_Original(state->target, SW_RESTORE);
+            if (IsWindow(state->target) &&
+                (!IsWindowVisible(state->target) || IsIconic(state->target))) {
+                ShowWindow_Original(state->target, state->finalShowCmd);
             }
             DestroyWindow(hWnd);
             return 0;
@@ -9892,7 +9894,7 @@ HBITMAP TakeExplorerSnapshot(HWND hWnd, RECT* targetRect) {
 }
 
 HWND CreateExplorerTvOnOverlay(HWND target, HBITMAP snapshot,
-                               const RECT& targetRect) {
+                               const RECT& targetRect, int finalShowCmd) {
     if (!snapshot || !EnsureExplorerTvOnOverlayClass()) {
         if (snapshot) {
             DeleteObject(snapshot);
@@ -9901,7 +9903,7 @@ HWND CreateExplorerTvOnOverlay(HWND target, HBITMAP snapshot,
     }
 
     auto* state = new (std::nothrow) ExplorerTvOnOverlay{
-        target, snapshot, targetRect, 0};
+        target, snapshot, targetRect, 0, finalShowCmd};
     if (!state) {
         DeleteObject(snapshot);
         return nullptr;
@@ -9967,7 +9969,8 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
             return ShowWindow_Original(hWnd, nCmdShow);
         }
 
-        HWND overlay = CreateExplorerTvOnOverlay(hWnd, snapshot, targetRect);
+        HWND overlay = CreateExplorerTvOnOverlay(hWnd, snapshot, targetRect,
+                                                 SW_RESTORE);
         if (!overlay) {
             // If the visual overlay cannot be created, preserve normal restore.
             return ShowWindow_Original(hWnd, nCmdShow);
@@ -9985,6 +9988,46 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
         // The window remains minimized until the overlay finishes, preventing
         // Explorer from appearing underneath the expanding snapshot.
         return FALSE;
+    }
+
+    const bool isOpeningRequest =
+        nCmdShow == SW_SHOW || nCmdShow == SW_SHOWNORMAL ||
+        nCmdShow == SW_SHOWDEFAULT;
+    if (isOpeningRequest &&
+        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
+        !IsWindowVisible(hWnd) && !IsIconic(hWnd)) {
+        // A newly opened Explorer window has no pre-minimize snapshot. Show it
+        // once to let its first frame render, capture that frame, then cover it
+        // with the overlay animation. If capture fails, leave it normally shown.
+        BOOL previousVisibility = ShowWindow_Original(hWnd, nCmdShow);
+        UpdateWindow(hWnd);
+        if (!CaptureExplorerBeforeMinimize(hWnd)) {
+            return previousVisibility;
+        }
+
+        RECT targetRect{};
+        HBITMAP snapshot = TakeExplorerSnapshot(hWnd, &targetRect);
+        if (!snapshot) {
+            return previousVisibility;
+        }
+
+        HWND overlay = CreateExplorerTvOnOverlay(hWnd, snapshot, targetRect,
+                                                 nCmdShow);
+        if (!overlay) {
+            return previousVisibility;
+        }
+
+        auto* state = reinterpret_cast<ExplorerTvOnOverlay*>(
+            GetWindowLongPtrW(overlay, GWLP_USERDATA));
+        if (!state || !SetTimer(overlay, kExplorerTvOnTimerId,
+                                kExplorerTvOnFrameIntervalMs, nullptr)) {
+            DestroyWindow(overlay);
+            return previousVisibility;
+        }
+
+        ShowWindow_Original(hWnd, SW_HIDE);
+        state->startTime = GetTickCount64();
+        return previousVisibility;
     }
 
     return ShowWindow_Original(hWnd, nCmdShow);
