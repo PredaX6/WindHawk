@@ -9595,25 +9595,131 @@ void TriggerWindowCompositionUpdate(HWND hWnd) {
                  RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
 }
 
+// Temporarily clip the real Explorer window to create a CRT-style power
+// transition without a captured overlay. The region is removed after opening.
+bool SetTvWindowRegion(HWND hWnd, int left, int top, int right, int bottom) {
+    HRGN region = CreateRectRgn(left, top, right, bottom);
+    if (!region) {
+        return false;
+    }
+
+    if (!SetWindowRgn(hWnd, region, TRUE)) {
+        DeleteObject(region);
+        return false;
+    }
+
+    // SetWindowRgn takes ownership of the region on success.
+    return true;
+}
+
+bool AnimateTvWindowRegion(HWND hWnd, bool opening) {
+    RECT windowRect;
+    if (!GetWindowRect(hWnd, &windowRect)) {
+        return false;
+    }
+
+    const int width = windowRect.right - windowRect.left;
+    const int height = windowRect.bottom - windowRect.top;
+    if (width < 4 || height < 4) {
+        return false;
+    }
+
+    constexpr int kFrames = 12;
+    const int centerX = width / 2;
+    const int centerY = height / 2;
+    bool ok = true;
+
+    auto setFrame = [&](int left, int top, int right, int bottom) {
+        if (!SetTvWindowRegion(hWnd, left, top, right, bottom)) {
+            ok = false;
+        }
+        return ok;
+    };
+
+    if (opening) {
+        // Start as a point, expand into a horizontal scanline, then reveal
+        // the full native window from the center outward.
+        if (!setFrame(centerX, centerY, centerX + 1, centerY + 1)) {
+            return false;
+        }
+
+        for (int i = 1; i <= kFrames && ok; ++i) {
+            int halfWidth = (width * i) / (2 * kFrames);
+            if (halfWidth < 1) halfWidth = 1;
+            setFrame(centerX - halfWidth, centerY, centerX + halfWidth,
+                     centerY + 1);
+            Sleep(8);
+        }
+
+        for (int i = 1; i <= kFrames && ok; ++i) {
+            int halfHeight = (height * i) / (2 * kFrames);
+            if (halfHeight < 1) halfHeight = 1;
+            setFrame(0, centerY - halfHeight, width, centerY + halfHeight);
+            Sleep(8);
+        }
+
+        // Restore the normal rectangular window and force its final repaint.
+        if (ok) {
+            SetWindowRgn(hWnd, nullptr, TRUE);
+            RedrawWindow(hWnd, nullptr, nullptr,
+                         RDW_INVALIDATE | RDW_ERASE | RDW_FRAME |
+                             RDW_ALLCHILDREN | RDW_UPDATENOW);
+        }
+    } else {
+        // Collapse the native window vertically, then horizontally to a point.
+        for (int i = 0; i < kFrames && ok; ++i) {
+            int halfHeight = (height * (kFrames - i - 1)) / (2 * kFrames);
+            if (halfHeight < 1) halfHeight = 1;
+            setFrame(0, centerY - halfHeight, width, centerY + halfHeight);
+            Sleep(8);
+        }
+
+        for (int i = 0; i < kFrames && ok; ++i) {
+            int halfWidth = (width * (kFrames - i - 1)) / (2 * kFrames);
+            if (halfWidth < 1) halfWidth = 1;
+            setFrame(centerX - halfWidth, centerY, centerX + halfWidth,
+                     centerY + 1);
+            Sleep(8);
+        }
+    }
+
+    if (!ok) {
+        SetWindowRgn(hWnd, nullptr, TRUE);
+        RedrawWindow(hWnd, nullptr, nullptr,
+                     RDW_INVALIDATE | RDW_ERASE | RDW_FRAME |
+                         RDW_ALLCHILDREN | RDW_UPDATENOW);
+    }
+
+    return ok;
+}
+
 LRESULT CALLBACK MicaFocusPersistenceSubclassProc(HWND hWnd,
                                                   UINT uMsg,
                                                   WPARAM wParam,
                                                   LPARAM lParam,
                                                   UINT_PTR uIdSubclass,
                                                   DWORD_PTR dwRefData) {
-    // Let Explorer handle closing natively to avoid stale rendered frames.
+    // Run the CRT-off effect on the real window, without a bitmap overlay.
+    if (uMsg == WM_CLOSE && IsWindowVisible(hWnd)) {
+        AnimateTvWindowRegion(hWnd, false);
+    }
 
-    LRESULT result =
-        DefSubclassProc(hWnd, uMsg, wParam, lParam);
+    LRESULT result = DefSubclassProc(hWnd, uMsg, wParam, lParam);
+
+    // If another handler cancels WM_CLOSE, make sure the window is not left
+    // clipped to a point.
+    if (uMsg == WM_CLOSE && IsWindow(hWnd)) {
+        SetWindowRgn(hWnd, nullptr, TRUE);
+        RedrawWindow(hWnd, nullptr, nullptr,
+                     RDW_INVALIDATE | RDW_ERASE | RDW_FRAME |
+                         RDW_ALLCHILDREN | RDW_UPDATENOW);
+    }
 
     if (uMsg == WM_NCACTIVATE && !wParam) {
         auto effect = GetEffectiveBackgroundTranslucentEffect();
         if (effect == BackgroundTranslucentEffect::kAcrylic ||
             effect == BackgroundTranslucentEffect::kMica ||
             effect == BackgroundTranslucentEffect::kMicaAlt) {
-            // Keep DWM's active backdrop appearance when Explorer loses focus.
-            // WM_NCACTIVATE with lParam = -1 avoids repainting the non-client
-            // area while restoring the active visual state.
             PostMessageW(hWnd, WM_NCACTIVATE, TRUE, -1);
         }
     }
@@ -9647,8 +9753,43 @@ void OnWindowCreated(HWND hWnd, PCSTR funcName) {
 using ShowWindow_t = decltype(&ShowWindow);
 ShowWindow_t ShowWindow_Original;
 BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
-    // Explorer's DirectComposition/XAML content can retain stale frames after
-    // AnimateWindow. Preserve the native show path for clean rendering.
+    const bool requestsVisible =
+        nCmdShow != SW_HIDE && nCmdShow != SW_MINIMIZE &&
+        nCmdShow != SW_SHOWMINIMIZED && nCmdShow != SW_SHOWMINNOACTIVE &&
+        nCmdShow != SW_FORCEMINIMIZE;
+
+    if (requestsVisible &&
+        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
+        !IsWindowVisible(hWnd) &&
+        !GetPropW(hWnd, L"WindHawkTestExplorerOpenAnimationDone")) {
+        RECT windowRect;
+        if (GetWindowRect(hWnd, &windowRect)) {
+            const int width = windowRect.right - windowRect.left;
+            const int height = windowRect.bottom - windowRect.top;
+            if (width >= 4 && height >= 4) {
+                SetPropW(hWnd, L"WindHawkTestExplorerOpenAnimationDone",
+                         reinterpret_cast<HANDLE>(static_cast<INT_PTR>(1)));
+
+                // Show the real window through a tiny region, then expand it.
+                const int centerX = width / 2;
+                const int centerY = height / 2;
+                if (SetTvWindowRegion(hWnd, centerX, centerY,
+                                      centerX + 1, centerY + 1)) {
+                    BOOL previousVisibility = ShowWindow_Original(hWnd, nCmdShow);
+                    if (AnimateTvWindowRegion(hWnd, true)) {
+                        return previousVisibility;
+                    }
+
+                    SetWindowRgn(hWnd, nullptr, TRUE);
+                    RedrawWindow(hWnd, nullptr, nullptr,
+                                 RDW_INVALIDATE | RDW_ERASE | RDW_FRAME |
+                                     RDW_ALLCHILDREN | RDW_UPDATENOW);
+                    return previousVisibility;
+                }
+            }
+        }
+    }
+
     return ShowWindow_Original(hWnd, nCmdShow);
 }
 
