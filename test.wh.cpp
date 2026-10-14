@@ -9758,6 +9758,27 @@ using ShowWindow_t = decltype(&ShowWindow);
 ShowWindow_t ShowWindow_Original;
 
 BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
+    // Prototype of the TV-On effect: expand a newly shown Explorer window
+    // from its center. AnimateWindow runs explicitly, independently of the
+    // user's Windows window-animation setting.
+    const bool isOpeningCommand =
+        nCmdShow == SW_SHOW || nCmdShow == SW_SHOWNORMAL ||
+        nCmdShow == SW_SHOWNOACTIVATE || nCmdShow == SW_SHOWNA;
+
+    if (isOpeningCommand &&
+        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
+        !IsWindowVisible(hWnd) && !IsIconic(hWnd)) {
+        if (AnimateWindow(hWnd, 200, AW_CENTER)) {
+            Wh_Log(L"TV-On opening animation played for Explorer %08X",
+                   (DWORD)(ULONG_PTR)hWnd);
+            // ShowWindow returns FALSE when the window was previously hidden.
+            return FALSE;
+        }
+
+        Wh_Log(L"TV-On animation unavailable for Explorer %08X; using normal show",
+               (DWORD)(ULONG_PTR)hWnd);
+    }
+
     // Capture before calling the real API so the bitmap reflects the window
     // immediately before Windows starts minimizing it.
     if (nCmdShow == SW_MINIMIZE || nCmdShow == SW_SHOWMINIMIZED ||
