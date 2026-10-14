@@ -9825,6 +9825,9 @@ struct ExplorerTvOnOverlay {
     HGDIOBJ previousFrameBitmap{};
     void* frameBits{};
     bool timerResolutionRaised{};
+    LARGE_INTEGER startCounter{};
+    LARGE_INTEGER counterFrequency{};
+    bool qpcReady{};
 };
 
 constexpr UINT_PTR kExplorerTvOnTimerId = 1;
@@ -9835,21 +9838,56 @@ constexpr int kExplorerTvOnDefaultFrameIntervalMs = 18;
 constexpr int kExplorerTvOnMinFrameIntervalMs = 1;
 constexpr int kExplorerTvOnMaxFrameIntervalMs = 1000;
 
-// Scale the frame interval with duration to retain a similar frame count.
-// The configured interval acts as the maximum interval.
-UINT GetExplorerTvOnFrameIntervalMs() {
-    const int durationMs = std::clamp(
-        g_settings.explorerTvOnDurationMs,
-        kExplorerTvOnMinDurationMs, kExplorerTvOnMaxDurationMs);
+// Use a high-resolution clock for animation progress, but avoid submitting
+// frames faster than the monitor can display them. The configured interval
+// remains a user-selected upper bound on animation frequency.
+UINT GetExplorerTvOnFrameIntervalMs(HWND hWnd) {
     const int configuredInterval = std::clamp(
         g_settings.explorerTvOnFrameIntervalMs,
         kExplorerTvOnMinFrameIntervalMs, kExplorerTvOnMaxFrameIntervalMs);
-    const int scaledInterval = static_cast<int>(
-        (static_cast<long long>(configuredInterval) * durationMs +
-         kExplorerTvOnDefaultDurationMs / 2) /
-        kExplorerTvOnDefaultDurationMs);
-    return static_cast<UINT>(std::max(1, std::min(
-        configuredInterval, scaledInterval)));
+
+    UINT refreshIntervalMs = 17;
+    const HMONITOR monitor = MonitorFromWindow(hWnd, MONITOR_DEFAULTTONEAREST);
+    MONITORINFOEXW monitorInfo{};
+    monitorInfo.cbSize = sizeof(monitorInfo);
+    DEVMODEW displayMode{};
+    displayMode.dmSize = sizeof(displayMode);
+    if (monitor && GetMonitorInfoW(monitor, &monitorInfo) &&
+        EnumDisplaySettingsW(monitorInfo.szDevice, ENUM_CURRENT_SETTINGS,
+                             &displayMode) &&
+        displayMode.dmDisplayFrequency >= 24 &&
+        displayMode.dmDisplayFrequency <= 1000) {
+        refreshIntervalMs = std::max<UINT>(
+            1, (1000u + displayMode.dmDisplayFrequency / 2) /
+                   displayMode.dmDisplayFrequency);
+    }
+
+    return std::max<UINT>(
+        refreshIntervalMs, static_cast<UINT>(configuredInterval));
+}
+
+void StartExplorerTvOnClock(ExplorerTvOnOverlay* state) {
+    if (!state) return;
+    state->startTime = GetTickCount64();
+    state->qpcReady =
+        QueryPerformanceFrequency(&state->counterFrequency) != FALSE &&
+        QueryPerformanceCounter(&state->startCounter) != FALSE;
+    if (!state->qpcReady) {
+        state->counterFrequency.QuadPart = 0;
+        state->startCounter.QuadPart = 0;
+    }
+}
+
+double GetExplorerTvOnElapsedMs(const ExplorerTvOnOverlay* state) {
+    if (state && state->qpcReady) {
+        LARGE_INTEGER now{};
+        if (QueryPerformanceCounter(&now)) {
+            return std::max(0.0,
+                static_cast<double>(now.QuadPart - state->startCounter.QuadPart) *
+                1000.0 / static_cast<double>(state->counterFrequency.QuadPart));
+        }
+    }
+    return state ? static_cast<double>(GetTickCount64() - state->startTime) : 0.0;
 }
 constexpr int kExplorerTvOnDefaultHorizontalInset = 6;
 constexpr int kExplorerTvOnMinHorizontalInset = 0;
@@ -10154,10 +10192,10 @@ LRESULT CALLBACK ExplorerTvOnOverlayWndProc(HWND hWnd, UINT message,
     }
 
     if (message == WM_TIMER && wParam == kExplorerTvOnTimerId && state) {
-        const ULONGLONG elapsed = GetTickCount64() - state->startTime;
-        const ULONGLONG durationMs = static_cast<ULONGLONG>(
+        const double elapsedMs = GetExplorerTvOnElapsedMs(state);
+        const double durationMs = static_cast<double>(
             g_settings.explorerTvOnDurationMs);
-        if (elapsed >= durationMs) {
+        if (elapsedMs >= durationMs) {
             RenderExplorerTvOnFrame(hWnd, state, 1.0);
             if (state->timer) {
                 KillTimer(hWnd, state->timer);
@@ -10171,8 +10209,7 @@ LRESULT CALLBACK ExplorerTvOnOverlayWndProc(HWND hWnd, UINT message,
             return 0;
         }
 
-        const double progress =
-            static_cast<double>(elapsed) / durationMs;
+        const double progress = elapsedMs / durationMs;
         RenderExplorerTvOnFrame(hWnd, state, progress);
         return 0;
     }
@@ -10361,15 +10398,15 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
             DestroyWindow(overlay);
             return ShowWindow_Original(hWnd, nCmdShow);
         }
+        StartExplorerTvOnClock(state);
         state->timerResolutionRaised = timeBeginPeriod(1) == TIMERR_NOERROR;
         if (!(state->timer = SetTimer(overlay, kExplorerTvOnTimerId,
-                                      GetExplorerTvOnFrameIntervalMs(),
+                                      GetExplorerTvOnFrameIntervalMs(overlay),
                                       nullptr))) {
             DestroyWindow(overlay);
             return ShowWindow_Original(hWnd, nCmdShow);
         }
 
-        state->startTime = GetTickCount64();
         // The window remains minimized until the overlay finishes, preventing
         // Explorer from appearing underneath the expanding snapshot.
         return FALSE;
@@ -10458,15 +10495,15 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
                      SWP_NOACTIVATE | SWP_SHOWWINDOW | SWP_NOREDRAW);
         RenderExplorerTvOnFrame(overlay, state, 0.0);
 
+        StartExplorerTvOnClock(state);
         state->timerResolutionRaised = timeBeginPeriod(1) == TIMERR_NOERROR;
         if (!(state->timer = SetTimer(overlay, kExplorerTvOnTimerId,
-                                      GetExplorerTvOnFrameIntervalMs(),
+                                      GetExplorerTvOnFrameIntervalMs(overlay),
                                       nullptr))) {
             DestroyWindow(overlay);
             return ShowWindow_Original(hWnd, nCmdShow);
         }
 
-        state->startTime = GetTickCount64();
         return previousVisibility;
     }
 
