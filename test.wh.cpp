@@ -47,6 +47,13 @@ envoyez manuellement les lignes pertinentes du journal.
   - acrylic: Acrylique système — matériau Acrylic
   - mica: Mica
   - micaAlt: Mica Alt
+- explorerTvOnDurationMs: 1000
+  $name: Durée de l’animation CRT
+  $description: Durée de l’animation d’ouverture et de fermeture de l’Explorateur, en millisecondes.
+  $type: int
+  $min: 100
+  $max: 3000
+  $suffix: ms
 */
 // ==/WindhawkModSettings==
 
@@ -132,6 +139,7 @@ struct {
     BackgroundTranslucentEffectRegion backgroundTranslucentEffectRegion;
     int explorerFrameContainerHeight;
     XamlDiagnosticsHandling xamlDiagnosticsHandling;
+    int explorerTvOnDurationMs;
 } g_settings;
 
 BackgroundTranslucentEffect g_themeBackgroundTranslucentEffect;
@@ -9783,7 +9791,9 @@ struct ExplorerTvOnOverlay {
 
 constexpr UINT_PTR kExplorerTvOnTimerId = 1;
 constexpr UINT kExplorerTvOnFrameIntervalMs = 7;
-constexpr ULONGLONG kExplorerTvOnDurationMs = 1000;
+constexpr int kExplorerTvOnDefaultDurationMs = 1000;
+constexpr int kExplorerTvOnMinDurationMs = 100;
+constexpr int kExplorerTvOnMaxDurationMs = 3000;
 constexpr float kExplorerTvOnSquashEnd = 0.42f;
 constexpr float kExplorerTvOnZipEnd = 0.78f;
 constexpr wchar_t kExplorerTvOnOverlayClass[] =
@@ -10085,7 +10095,9 @@ LRESULT CALLBACK ExplorerTvOnOverlayWndProc(HWND hWnd, UINT message,
 
     if (message == WM_TIMER && wParam == kExplorerTvOnTimerId && state) {
         const ULONGLONG elapsed = GetTickCount64() - state->startTime;
-        if (elapsed >= kExplorerTvOnDurationMs) {
+        const ULONGLONG durationMs = static_cast<ULONGLONG>(
+            g_settings.explorerTvOnDurationMs);
+        if (elapsed >= durationMs) {
             RenderExplorerTvOnFrame(hWnd, state, 1.0);
             if (state->timer) {
                 KillTimer(hWnd, state->timer);
@@ -10100,7 +10112,7 @@ LRESULT CALLBACK ExplorerTvOnOverlayWndProc(HWND hWnd, UINT message,
         }
 
         const double progress =
-            static_cast<double>(elapsed) / kExplorerTvOnDurationMs;
+            static_cast<double>(elapsed) / durationMs;
         RenderExplorerTvOnFrame(hWnd, state, progress);
         return 0;
     }
@@ -10749,6 +10761,16 @@ void LoadSettings() {
             BackgroundTranslucentEffect::kNone;
     }
     Wh_FreeStringSetting(backgroundTranslucentEffect);
+
+    const int configuredDurationMs =
+        Wh_GetIntSetting(L"explorerTvOnDurationMs");
+    g_settings.explorerTvOnDurationMs = configuredDurationMs > 0
+        ? (configuredDurationMs < kExplorerTvOnMinDurationMs
+               ? kExplorerTvOnMinDurationMs
+               : (configuredDurationMs > kExplorerTvOnMaxDurationMs
+                      ? kExplorerTvOnMaxDurationMs
+                      : configuredDurationMs))
+        : kExplorerTvOnDefaultDurationMs;
 
     // Remaining settings are fixed in code.
     g_settings.explorerFrameContainerHeight = 0;
