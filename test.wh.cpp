@@ -10063,14 +10063,12 @@ void DrawExplorerCrtBeam(ExplorerTvOnOverlay* state, float cx, float cy,
             }
             const float a = gy * gx * intensity;
             if (a < 0.02f) continue;
-            const float b = (210.0f + 45.0f * gy) * a;
-            const float g = (235.0f + 20.0f * gy) * a;
-            const float r = 255.0f * a;
+            // Use a dark CRT beam instead of the original white flash.
             BYTE* d = row + static_cast<size_t>(x) * 4;
             const float inv = 1.0f - a;
-            d[0] = static_cast<BYTE>(std::min(255.0f, b + d[0] * inv));
-            d[1] = static_cast<BYTE>(std::min(255.0f, g + d[1] * inv));
-            d[2] = static_cast<BYTE>(std::min(255.0f, r + d[2] * inv));
+            d[0] = static_cast<BYTE>(d[0] * inv);
+            d[1] = static_cast<BYTE>(d[1] * inv);
+            d[2] = static_cast<BYTE>(d[2] * inv);
             d[3] = static_cast<BYTE>(std::min(255.0f, 255.0f * a + d[3] * inv));
         }
     }
@@ -10101,9 +10099,10 @@ void DrawExplorerCrtDot(ExplorerTvOnOverlay* state, float cx, float cy,
             const float a = weight * intensity;
             BYTE* d = row + static_cast<size_t>(x) * 4;
             const float inv = 1.0f - a;
-            d[0] = static_cast<BYTE>(std::min(255.0f, 255.0f * a + d[0] * inv));
-            d[1] = static_cast<BYTE>(std::min(255.0f, 255.0f * a + d[1] * inv));
-            d[2] = static_cast<BYTE>(std::min(255.0f, 255.0f * a + d[2] * inv));
+            // Fade the CRT dot toward black, not white.
+            d[0] = static_cast<BYTE>(d[0] * inv);
+            d[1] = static_cast<BYTE>(d[1] * inv);
+            d[2] = static_cast<BYTE>(d[2] * inv);
             d[3] = static_cast<BYTE>(std::min(255.0f, 255.0f * a + d[3] * inv));
         }
     }
@@ -10237,7 +10236,7 @@ void RenderExplorerTvOnFrame(HWND hWnd, ExplorerTvOnOverlay* state,
         const float dstHf = static_cast<float>(state->height) * (1.0f - punch) +
                             minH * punch;
         const int dstH = std::max(2, static_cast<int>(dstHf + 0.5f));
-        const float bright = 1.0f + punch * 0.85f;
+        const float bright = 1.0f;  // Avoid a white flash during CRT collapse/expansion.
         constexpr float handoffStart = 10.0f;
         float contentAlpha = 1.0f;
         float beamAlpha = 0.0f;
