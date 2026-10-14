@@ -10301,7 +10301,9 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
             GetWindowLongPtrW(overlay, GWLP_USERDATA));
         if (!state ||
             !(state->timer = SetTimer(overlay, kExplorerTvOnTimerId,
-                                      static_cast<UINT>(g_settings.explorerTvOnFrameIntervalMs), nullptr))) {
+                                      static_cast<UINT>(
+                                          g_settings.explorerTvOnFrameIntervalMs),
+                                      nullptr))) {
             DestroyWindow(overlay);
             return ShowWindow_Original(hWnd, nCmdShow);
         }
@@ -10373,7 +10375,9 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
         RenderExplorerTvOnFrame(overlay, state, 0.0);
 
         if (!(state->timer = SetTimer(overlay, kExplorerTvOnTimerId,
-                                      static_cast<UINT>(g_settings.explorerTvOnFrameIntervalMs), nullptr))) {
+                                      static_cast<UINT>(
+                                          g_settings.explorerTvOnFrameIntervalMs),
+                                      nullptr))) {
             DestroyWindow(overlay);
             return ShowWindow_Original(hWnd, nCmdShow);
         }
