@@ -9657,11 +9657,6 @@ void OnWindowCreated(HWND hWnd, PCSTR funcName) {
 
 
 
-// Captures the composed desktop region so DWM backdrop transparency is
-// preserved in the restore animation, rather than capturing only opaque
-// window pixels.
-HBITMAP CaptureDesktopRegion(const RECT& rect);
-
 // Keeps a snapshot captured immediately before Explorer is minimized.
 // The bitmap is retained in memory for a later restore-animation stage.
 std::mutex g_explorerSnapshotMutex;
@@ -9685,38 +9680,33 @@ bool CaptureExplorerBeforeMinimize(HWND hWnd) {
         return false;
     }
 
-    // Capture only Explorer's own window surface after it has been shown.
-    // Capturing the desktop rectangle also records the backdrop and other
-    // windows behind Explorer, which then appear frozen during the animation.
     HDC windowDc = GetWindowDC(hWnd);
     if (!windowDc) {
-        Wh_Log(L"Pre-minimize window DC acquisition failed for %08X",
-               (DWORD)(ULONG_PTR)hWnd);
         return false;
     }
 
     HDC memoryDc = CreateCompatibleDC(windowDc);
-    HBITMAP snapshot = memoryDc
-        ? CreateCompatibleBitmap(windowDc, width, height)
-        : nullptr;
-    HGDIOBJ previous = snapshot ? SelectObject(memoryDc, snapshot) : nullptr;
-    const bool copied =
-        snapshot && previous && previous != HGDI_ERROR &&
-        BitBlt(memoryDc, 0, 0, width, height, windowDc, 0, 0, SRCCOPY);
+    HBITMAP snapshot = memoryDc ? CreateCompatibleBitmap(windowDc, width, height)
+                                : nullptr;
+    HGDIOBJ oldBitmap = snapshot ? SelectObject(memoryDc, snapshot) : nullptr;
+    const bool captured =
+        snapshot && oldBitmap && oldBitmap != HGDI_ERROR &&
+        BitBlt(memoryDc, 0, 0, width, height, windowDc, 0, 0,
+               SRCCOPY | CAPTUREBLT);
 
-    if (previous && previous != HGDI_ERROR) {
-        SelectObject(memoryDc, previous);
+    if (oldBitmap && oldBitmap != HGDI_ERROR) {
+        SelectObject(memoryDc, oldBitmap);
     }
     if (memoryDc) {
         DeleteDC(memoryDc);
     }
     ReleaseDC(hWnd, windowDc);
 
-    if (!copied) {
+    if (!captured) {
         if (snapshot) {
             DeleteObject(snapshot);
         }
-        Wh_Log(L"Pre-minimize Explorer content capture failed for %08X",
+        Wh_Log(L"Pre-minimize snapshot capture failed for %08X",
                (DWORD)(ULONG_PTR)hWnd);
         return false;
     }
