@@ -9816,6 +9816,11 @@ LRESULT CALLBACK ExplorerTvOnOverlayWndProc(HWND hWnd, UINT message,
         const ULONGLONG elapsed = GetTickCount64() - state->startTime;
         if (elapsed >= kExplorerTvOnDurationMs) {
             KillTimer(hWnd, kExplorerTvOnTimerId);
+            // Keep the real Explorer window minimized during the overlay
+            // animation; restore it only when the snapshot animation ends.
+            if (IsWindow(state->target) && IsIconic(state->target)) {
+                ShowWindow_Original(state->target, SW_RESTORE);
+            }
             DestroyWindow(hWnd);
             return 0;
         }
@@ -9963,20 +9968,23 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
         }
 
         HWND overlay = CreateExplorerTvOnOverlay(hWnd, snapshot, targetRect);
-        BOOL previousVisibility = ShowWindow_Original(hWnd, nCmdShow);
-
-        if (overlay) {
-            auto* state = reinterpret_cast<ExplorerTvOnOverlay*>(
-                GetWindowLongPtrW(overlay, GWLP_USERDATA));
-            if (state) {
-                state->startTime = GetTickCount64();
-                if (!SetTimer(overlay, kExplorerTvOnTimerId,
-                              kExplorerTvOnFrameIntervalMs, nullptr)) {
-                    DestroyWindow(overlay);
-                }
-            }
+        if (!overlay) {
+            // If the visual overlay cannot be created, preserve normal restore.
+            return ShowWindow_Original(hWnd, nCmdShow);
         }
-        return previousVisibility;
+
+        auto* state = reinterpret_cast<ExplorerTvOnOverlay*>(
+            GetWindowLongPtrW(overlay, GWLP_USERDATA));
+        if (!state || !SetTimer(overlay, kExplorerTvOnTimerId,
+                                kExplorerTvOnFrameIntervalMs, nullptr)) {
+            DestroyWindow(overlay);
+            return ShowWindow_Original(hWnd, nCmdShow);
+        }
+
+        state->startTime = GetTickCount64();
+        // The window remains minimized until the overlay finishes, preventing
+        // Explorer from appearing underneath the expanding snapshot.
+        return FALSE;
     }
 
     return ShowWindow_Original(hWnd, nCmdShow);
