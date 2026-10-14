@@ -9718,14 +9718,13 @@ bool CaptureExplorerBeforeMinimize(HWND hWnd) {
         return false;
     }
 
-    // GetWindowRect can include invisible resize borders. Use DWM's visible
-    // frame bounds for the snapshot and crop the window DC by the same offset.
+    // Use DWM's visible frame bounds to avoid invisible resize borders.
+    // Capture the composed desktop pixels rather than the window DC: this
+    // preserves the exact visible Mica, transparency, and backdrop blur.
     RECT visibleRect = windowRect;
     if (SUCCEEDED(DwmGetWindowAttribute(
             hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, &visibleRect,
             sizeof(visibleRect)))) {
-        // Keep the DWM bounds only when they form a valid rectangle inside
-        // the window rectangle, so the source crop stays within the bitmap.
         if (visibleRect.left < windowRect.left ||
             visibleRect.top < windowRect.top ||
             visibleRect.right > windowRect.right ||
@@ -9736,35 +9735,32 @@ bool CaptureExplorerBeforeMinimize(HWND hWnd) {
         }
     }
 
-    // Apply a minimal horizontal inset to compensate for any remaining
-    // edge overdraw observed with the DWM frame bounds.
     constexpr int kHorizontalInset = 1;
     if (visibleRect.right - visibleRect.left > 2 * kHorizontalInset) {
         visibleRect.left += kHorizontalInset;
         visibleRect.right -= kHorizontalInset;
     }
 
-    const int sourceX = visibleRect.left - windowRect.left;
-    const int sourceY = visibleRect.top - windowRect.top;
     const int width = visibleRect.right - visibleRect.left;
     const int height = visibleRect.bottom - visibleRect.top;
     if (width <= 0 || height <= 0) {
         return false;
     }
 
-    HDC windowDc = GetWindowDC(hWnd);
-    if (!windowDc) {
+    HDC screenDc = GetDC(nullptr);
+    if (!screenDc) {
         return false;
     }
 
-    HDC memoryDc = CreateCompatibleDC(windowDc);
-    HBITMAP snapshot = memoryDc ? CreateCompatibleBitmap(windowDc, width, height)
-                                : nullptr;
+    HDC memoryDc = CreateCompatibleDC(screenDc);
+    HBITMAP snapshot = memoryDc
+        ? CreateCompatibleBitmap(screenDc, width, height)
+        : nullptr;
     HGDIOBJ oldBitmap = snapshot ? SelectObject(memoryDc, snapshot) : nullptr;
     const bool captured =
         snapshot && oldBitmap && oldBitmap != HGDI_ERROR &&
-        BitBlt(memoryDc, 0, 0, width, height, windowDc, sourceX, sourceY,
-               SRCCOPY | CAPTUREBLT);
+        BitBlt(memoryDc, 0, 0, width, height, screenDc,
+               visibleRect.left, visibleRect.top, SRCCOPY | CAPTUREBLT);
 
     if (oldBitmap && oldBitmap != HGDI_ERROR) {
         SelectObject(memoryDc, oldBitmap);
@@ -9772,7 +9768,7 @@ bool CaptureExplorerBeforeMinimize(HWND hWnd) {
     if (memoryDc) {
         DeleteDC(memoryDc);
     }
-    ReleaseDC(hWnd, windowDc);
+    ReleaseDC(nullptr, screenDc);
 
     if (!captured) {
         if (snapshot) {
