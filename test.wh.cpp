@@ -9667,15 +9667,15 @@ bool AnimateTvWindowRegion(HWND hWnd, bool opening) {
         }
     } else {
         // Collapse the native window vertically, then horizontally to a point.
-        for (int i = 0; i < kFrames && ok; ++i) {
-            int halfHeight = (height * (kFrames - i - 1)) / (2 * kFrames);
+        for (int i = 1; i <= kFrames && ok; ++i) {
+            int halfHeight = (height * (kFrames - i)) / (2 * kFrames);
             if (halfHeight < 1) halfHeight = 1;
             setFrame(0, centerY - halfHeight, width, centerY + halfHeight);
             Sleep(8);
         }
 
-        for (int i = 0; i < kFrames && ok; ++i) {
-            int halfWidth = (width * (kFrames - i - 1)) / (2 * kFrames);
+        for (int i = 1; i <= kFrames && ok; ++i) {
+            int halfWidth = (width * (kFrames - i)) / (2 * kFrames);
             if (halfWidth < 1) halfWidth = 1;
             setFrame(centerX - halfWidth, centerY, centerX + halfWidth,
                      centerY + 1);
