@@ -9601,11 +9601,7 @@ LRESULT CALLBACK MicaFocusPersistenceSubclassProc(HWND hWnd,
                                                   LPARAM lParam,
                                                   UINT_PTR uIdSubclass,
                                                   DWORD_PTR dwRefData) {
-    // A native center-collapse animation avoids a separately captured overlay,
-    // which could show stale Explorer contents or leave visual artifacts.
-    if (uMsg == WM_CLOSE && IsWindowVisible(hWnd)) {
-        AnimateWindow(hWnd, 150, AW_HIDE | AW_CENTER);
-    }
+    // Let Explorer handle closing natively to avoid stale rendered frames.
 
     LRESULT result =
         DefSubclassProc(hWnd, uMsg, wParam, lParam);
@@ -9651,31 +9647,8 @@ void OnWindowCreated(HWND hWnd, PCSTR funcName) {
 using ShowWindow_t = decltype(&ShowWindow);
 ShowWindow_t ShowWindow_Original;
 BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
-    // Animate only the first visible presentation of a File Explorer window.
-    // Restore/minimize transitions are intentionally left for step 3.2.
-    const bool requestsVisible =
-        nCmdShow != SW_HIDE && nCmdShow != SW_MINIMIZE &&
-        nCmdShow != SW_SHOWMINIMIZED && nCmdShow != SW_SHOWMINNOACTIVE &&
-        nCmdShow != SW_FORCEMINIMIZE;
-    if (requestsVisible &&
-        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
-        !IsWindowVisible(hWnd) &&
-        !GetPropW(hWnd, L"WindHawkTestExplorerOpenAnimationDone")) {
-        SetPropW(hWnd, L"WindHawkTestExplorerOpenAnimationDone",
-                 reinterpret_cast<HANDLE>(static_cast<INT_PTR>(1)));
-        if (AnimateWindow(hWnd, 180, AW_CENTER)) {
-            // AnimateWindow can leave Explorer's client/non-client content
-            // without its usual final repaint. Re-run the native show path and
-            // force a complete repaint once the animation has finished.
-            BOOL previousVisibility = ShowWindow_Original(hWnd, nCmdShow);
-            RedrawWindow(hWnd, nullptr, nullptr,
-                         RDW_INVALIDATE | RDW_ERASE | RDW_FRAME |
-                             RDW_ALLCHILDREN | RDW_UPDATENOW);
-            return previousVisibility;
-        }
-        // If the animation cannot run, preserve the normal ShowWindow path.
-    }
-
+    // Explorer's DirectComposition/XAML content can retain stale frames after
+    // AnimateWindow. Preserve the native show path for clean rendering.
     return ShowWindow_Original(hWnd, nCmdShow);
 }
 
