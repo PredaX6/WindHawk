@@ -9828,9 +9828,11 @@ struct ExplorerTvOnOverlay {
     LARGE_INTEGER startCounter{};
     LARGE_INTEGER counterFrequency{};
     bool qpcReady{};
+    HANDLE animationThread{};
 };
 
-constexpr UINT_PTR kExplorerTvOnTimerId = 1;
+constexpr UINT kExplorerTvOnFrameMessage = WM_APP + 0x3A1;
+constexpr WPARAM kExplorerTvOnProgressScale = 1000000;
 constexpr int kExplorerTvOnDefaultDurationMs = 1000;
 constexpr int kExplorerTvOnMinDurationMs = 100;
 constexpr int kExplorerTvOnMaxDurationMs = 3000;
@@ -10175,6 +10177,79 @@ void RenderExplorerTvOnFrame(HWND hWnd, ExplorerTvOnOverlay* state,
                         &source, 0, &blend, ULW_ALPHA);
 }
 
+struct ExplorerTvOnAnimationThreadParams {
+    HWND overlay{};
+    int durationMs{};
+};
+
+DWORD WINAPI ExplorerTvOnAnimationThreadProc(LPVOID parameter) {
+    auto* params = static_cast<ExplorerTvOnAnimationThreadParams*>(parameter);
+    if (!params) return 0;
+    const HWND overlay = params->overlay;
+    const double durationMs = std::max(1, params->durationMs);
+    delete params;
+
+    LARGE_INTEGER frequency{};
+    LARGE_INTEGER start{};
+    LARGE_INTEGER now{};
+    const bool qpcReady =
+        QueryPerformanceFrequency(&frequency) != FALSE &&
+        QueryPerformanceCounter(&start) != FALSE;
+    const ULONGLONG tickStart = GetTickCount64();
+
+    // Follow Windows Animation Engine's pacing model: QPC-based progress,
+    // synchronous frame delivery, and DWM synchronization between frames.
+    for (;;) {
+        if (!IsWindow(overlay)) break;
+
+        double elapsedMs = 0.0;
+        if (qpcReady && QueryPerformanceCounter(&now)) {
+            elapsedMs = std::max(
+                0.0, static_cast<double>(now.QuadPart - start.QuadPart) *
+                         1000.0 / static_cast<double>(frequency.QuadPart));
+        } else {
+            elapsedMs = static_cast<double>(GetTickCount64() - tickStart);
+        }
+
+        const double progress = std::min(1.0, elapsedMs / durationMs);
+        SendMessageW(
+            overlay, kExplorerTvOnFrameMessage,
+            static_cast<WPARAM>(progress * kExplorerTvOnProgressScale), 0);
+
+        if (progress >= 1.0) break;
+        if (FAILED(DwmFlush())) Sleep(1);
+    }
+
+    return 0;
+}
+
+bool StartExplorerTvOnAnimation(HWND overlay, ExplorerTvOnOverlay* state) {
+    if (!overlay || !state) return false;
+
+    auto* params = new (std::nothrow) ExplorerTvOnAnimationThreadParams{
+        overlay, g_settings.explorerTvOnDurationMs};
+    if (!params) return false;
+
+    HANDLE thread = CreateThread(
+        nullptr, 0, ExplorerTvOnAnimationThreadProc, params,
+        CREATE_SUSPENDED, nullptr);
+    if (!thread) {
+        delete params;
+        return false;
+    }
+
+    state->animationThread = thread;
+    if (ResumeThread(thread) == static_cast<DWORD>(-1)) {
+        TerminateThread(thread, 0);
+        CloseHandle(thread);
+        state->animationThread = nullptr;
+        delete params;
+        return false;
+    }
+
+    return true;
+}
+
 LRESULT CALLBACK ExplorerTvOnOverlayWndProc(HWND hWnd, UINT message,
                                             WPARAM wParam, LPARAM lParam) {
     auto* state = reinterpret_cast<ExplorerTvOnOverlay*>(
@@ -10191,37 +10266,30 @@ LRESULT CALLBACK ExplorerTvOnOverlayWndProc(HWND hWnd, UINT message,
         return 1;
     }
 
-    if (message == WM_TIMER && wParam == kExplorerTvOnTimerId && state) {
-        const double elapsedMs = GetExplorerTvOnElapsedMs(state);
-        const double durationMs = static_cast<double>(
-            g_settings.explorerTvOnDurationMs);
-        if (elapsedMs >= durationMs) {
-            RenderExplorerTvOnFrame(hWnd, state, 1.0);
-            if (state->timer) {
-                KillTimer(hWnd, state->timer);
-                state->timer = 0;
-            }
+    if (message == kExplorerTvOnFrameMessage && state) {
+        const double progress = std::min(
+            1.0, static_cast<double>(wParam) /
+                     static_cast<double>(kExplorerTvOnProgressScale));
+        RenderExplorerTvOnFrame(hWnd, state, progress);
+
+        if (progress >= 1.0) {
             if (IsWindow(state->target) &&
                 (!IsWindowVisible(state->target) || IsIconic(state->target))) {
                 ShowWindow_Original(state->target, state->finalShowCmd);
             }
             DestroyWindow(hWnd);
-            return 0;
         }
-
-        const double progress = elapsedMs / durationMs;
-        RenderExplorerTvOnFrame(hWnd, state, progress);
         return 0;
     }
 
     if (message == WM_NCDESTROY && state) {
-        if (state->timer) {
-            KillTimer(hWnd, state->timer);
-            state->timer = 0;
-        }
         if (state->timerResolutionRaised) {
             timeEndPeriod(1);
             state->timerResolutionRaised = false;
+        }
+        if (state->animationThread) {
+            CloseHandle(state->animationThread);
+            state->animationThread = nullptr;
         }
         DestroyExplorerTvOnRenderer(state);
         if (state->bitmap) {
@@ -10398,11 +10466,7 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
             DestroyWindow(overlay);
             return ShowWindow_Original(hWnd, nCmdShow);
         }
-        StartExplorerTvOnClock(state);
-        state->timerResolutionRaised = timeBeginPeriod(1) == TIMERR_NOERROR;
-        if (!(state->timer = SetTimer(overlay, kExplorerTvOnTimerId,
-                                      GetExplorerTvOnFrameIntervalMs(overlay),
-                                      nullptr))) {
+        if (!StartExplorerTvOnAnimation(overlay, state)) {
             DestroyWindow(overlay);
             return ShowWindow_Original(hWnd, nCmdShow);
         }
@@ -10495,11 +10559,7 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
                      SWP_NOACTIVATE | SWP_SHOWWINDOW | SWP_NOREDRAW);
         RenderExplorerTvOnFrame(overlay, state, 0.0);
 
-        StartExplorerTvOnClock(state);
-        state->timerResolutionRaised = timeBeginPeriod(1) == TIMERR_NOERROR;
-        if (!(state->timer = SetTimer(overlay, kExplorerTvOnTimerId,
-                                      GetExplorerTvOnFrameIntervalMs(overlay),
-                                      nullptr))) {
+        if (!StartExplorerTvOnAnimation(overlay, state)) {
             DestroyWindow(overlay);
             return ShowWindow_Original(hWnd, nCmdShow);
         }
