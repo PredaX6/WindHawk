@@ -9879,6 +9879,7 @@ constexpr WCHAR kExplorerTvOffAnimationProperty[] =
     L"WindhawkExplorerTvOffAnimation-" WH_MOD_ID;
 bool TryStartExplorerTvOffAnimation(HWND hWnd, bool minimize = false);
 bool TryStartExplorerTvOnRestore(HWND hWnd);
+BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow);
 HWND CreateExplorerTvOnOverlay(HWND target, HBITMAP snapshot,
                                const RECT& targetRect, int finalShowCmd,
                                bool startFullSize = false,
@@ -9890,6 +9891,22 @@ LRESULT CALLBACK MicaFocusPersistenceSubclassProc(HWND hWnd,
                                                   LPARAM lParam,
                                                   UINT_PTR uIdSubclass,
                                                   DWORD_PTR dwRefData) {
+    // The maximize button and title-bar double-click normally arrive as
+    // WM_SYSCOMMAND, not as a ShowWindow(SW_MAXIMIZE) call intercepted by
+    // the API hook. Route those visible-state transitions through the same
+    // animation path so both input methods are covered.
+    if (uMsg == WM_SYSCOMMAND &&
+        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
+        IsWindowVisible(hWnd) && !IsIconic(hWnd)) {
+        const UINT command = static_cast<UINT>(wParam) & 0xFFF0;
+        if (command == SC_MAXIMIZE && !IsZoomed(hWnd)) {
+            return ShowWindow_Hook(hWnd, SW_MAXIMIZE);
+        }
+        if (command == SC_RESTORE && IsZoomed(hWnd)) {
+            return ShowWindow_Hook(hWnd, SW_RESTORE);
+        }
+    }
+
     if (uMsg == WM_SYSCOMMAND && (wParam & 0xFFF0) == SC_MINIMIZE) {
         if (TryStartExplorerTvOffAnimation(hWnd, true)) {
             return 0;
@@ -11086,8 +11103,9 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
         if (!explorerSnapshot) {
             return previousVisibility;
         }
+        const int finalShowCmd = isMaximizeTransition ? SW_MAXIMIZE : SW_RESTORE;
         HWND overlay = CreateExplorerTvOnOverlay(
-            hWnd, explorerSnapshot, capturedRect, SW_SHOW, false);
+            hWnd, explorerSnapshot, capturedRect, finalShowCmd, false);
         if (!overlay) {
             return previousVisibility;
         }
