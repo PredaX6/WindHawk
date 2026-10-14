@@ -9612,6 +9612,33 @@ bool SetTvWindowRegion(HWND hWnd, int left, int top, int right, int bottom) {
     return true;
 }
 
+bool IsAnimatableApplicationWindow(HWND hWnd) {
+    if (!IsWindow(hWnd) || GetAncestor(hWnd, GA_ROOT) != hWnd) {
+        return false;
+    }
+
+    const LONG_PTR style = GetWindowLongPtrW(hWnd, GWL_STYLE);
+    const LONG_PTR exStyle = GetWindowLongPtrW(hWnd, GWL_EXSTYLE);
+    if ((style & WS_CHILD) || (exStyle & WS_EX_TOOLWINDOW)) {
+        return false;
+    }
+
+    WCHAR className[128] = {};
+    if (GetClassNameW(hWnd, className, ARRAYSIZE(className))) {
+        // Exclude core desktop and taskbar surfaces; animate ordinary app
+        // windows, including dialogs and windows belonging to other apps.
+        if (_wcsicmp(className, L"Progman") == 0 ||
+            _wcsicmp(className, L"WorkerW") == 0 ||
+            _wcsicmp(className, L"Shell_TrayWnd") == 0 ||
+            _wcsicmp(className, L"Shell_SecondaryTrayWnd") == 0 ||
+            _wcsicmp(className, L"NotifyIconOverflowWindow") == 0) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 bool AnimateTvWindowRegion(HWND hWnd, bool opening) {
     RECT windowRect;
     if (!GetWindowRect(hWnd, &windowRect)) {
@@ -9705,7 +9732,7 @@ LRESULT CALLBACK MicaFocusPersistenceSubclassProc(HWND hWnd,
     const bool minimizeFromSystemCommand =
         uMsg == WM_SYSCOMMAND &&
         (wParam & 0xFFF0) == SC_MINIMIZE &&
-        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
+        IsAnimatableApplicationWindow(hWnd) &&
         IsWindowVisible(hWnd) && !IsIconic(hWnd);
     if (minimizeFromSystemCommand) {
         SetPropW(hWnd, L"WindHawkTestExplorerMinimizeAnimationInProgress",
@@ -9722,7 +9749,7 @@ LRESULT CALLBACK MicaFocusPersistenceSubclassProc(HWND hWnd,
         uMsg == WM_SYSCOMMAND &&
         (wParam & 0xFFF0) == SC_RESTORE &&
         IsIconic(hWnd) &&
-        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer;
+        IsAnimatableApplicationWindow(hWnd);
 
     LRESULT result = DefSubclassProc(hWnd, uMsg, wParam, lParam);
 
@@ -9796,6 +9823,9 @@ void OnWindowCreated(HWND hWnd, PCSTR funcName) {
 
         InitializeForCurrentThread();
         InitializeSettingsAndTap();
+    } else if (IsAnimatableApplicationWindow(hWnd)) {
+        // Animation support is independent from Explorer-specific styling.
+        InstallMicaFocusPersistence(hWnd);
     }
 }
 
@@ -9809,7 +9839,7 @@ BOOL WINAPI SetWindowPos_Hook(HWND hWnd,
                               int cy,
                               UINT uFlags) {
     if ((uFlags & SWP_SHOWWINDOW) &&
-        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
+        IsAnimatableApplicationWindow(hWnd) &&
         !IsWindowVisible(hWnd) &&
         !GetPropW(hWnd, L"WindHawkTestExplorerOpenAnimationDone")) {
         RECT windowRect;
@@ -9853,7 +9883,7 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
     // the temporary region only after minimization, so it cannot remain on the
     // minimized window and interfere with a later restoration.
     if (requestsMinimized &&
-        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
+        IsAnimatableApplicationWindow(hWnd) &&
         IsWindowVisible(hWnd) && !IsIconic(hWnd) &&
         !GetPropW(hWnd, L"WindHawkTestExplorerMinimizeAnimationInProgress")) {
         AnimateTvWindowRegion(hWnd, false);
@@ -9871,7 +9901,7 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
     // IsWindowVisible. Detect restoration separately and seed the region using
     // the saved normal size, since GetWindowRect reports the minimized bounds.
     if (requestsVisible && IsIconic(hWnd) &&
-        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer) {
+        IsAnimatableApplicationWindow(hWnd)) {
         WINDOWPLACEMENT placement = {sizeof(placement)};
         if (GetWindowPlacement(hWnd, &placement)) {
             const int width = placement.rcNormalPosition.right -
@@ -9899,7 +9929,7 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
     }
 
     if (requestsVisible &&
-        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
+        IsAnimatableApplicationWindow(hWnd) &&
         !IsWindowVisible(hWnd) &&
         !GetPropW(hWnd, L"WindHawkTestExplorerOpenAnimationDone")) {
         RECT windowRect;
