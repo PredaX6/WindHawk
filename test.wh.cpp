@@ -9685,12 +9685,38 @@ bool CaptureExplorerBeforeMinimize(HWND hWnd) {
         return false;
     }
 
-    // Capture the screen as composed by DWM. GetWindowDC alone loses the
-    // backdrop material behind the Explorer window and makes the animation
-    // appear opaque even when the final window is translucent.
-    HBITMAP snapshot = CaptureDesktopRegion(windowRect);
-    if (!snapshot) {
-        Wh_Log(L"Pre-minimize desktop snapshot capture failed for %08X",
+    // Capture only Explorer's own window surface after it has been shown.
+    // Capturing the desktop rectangle also records the backdrop and other
+    // windows behind Explorer, which then appear frozen during the animation.
+    HDC windowDc = GetWindowDC(hWnd);
+    if (!windowDc) {
+        Wh_Log(L"Pre-minimize window DC acquisition failed for %08X",
+               (DWORD)(ULONG_PTR)hWnd);
+        return false;
+    }
+
+    HDC memoryDc = CreateCompatibleDC(windowDc);
+    HBITMAP snapshot = memoryDc
+        ? CreateCompatibleBitmap(windowDc, width, height)
+        : nullptr;
+    HGDIOBJ previous = snapshot ? SelectObject(memoryDc, snapshot) : nullptr;
+    const bool copied =
+        snapshot && previous && previous != HGDI_ERROR &&
+        BitBlt(memoryDc, 0, 0, width, height, windowDc, 0, 0, SRCCOPY);
+
+    if (previous && previous != HGDI_ERROR) {
+        SelectObject(memoryDc, previous);
+    }
+    if (memoryDc) {
+        DeleteDC(memoryDc);
+    }
+    ReleaseDC(hWnd, windowDc);
+
+    if (!copied) {
+        if (snapshot) {
+            DeleteObject(snapshot);
+        }
+        Wh_Log(L"Pre-minimize Explorer content capture failed for %08X",
                (DWORD)(ULONG_PTR)hWnd);
         return false;
     }
