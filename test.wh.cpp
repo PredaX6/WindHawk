@@ -49,7 +49,7 @@ envoyez manuellement les lignes pertinentes du journal.
   - micaAlt: Mica Alt
 - explorerTvOnDurationMs: 1000
   $name: Durée de l’animation CRT (ms)
-  $description: Durée en millisecondes, de 100 à 3000. Valeur par défaut : 1000.
+  $description: "Durée en millisecondes, de 100 à 3000. Valeur par défaut : 1000."
 */
 // ==/WindhawkModSettings==
 
