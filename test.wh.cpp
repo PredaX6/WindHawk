@@ -9601,6 +9601,12 @@ LRESULT CALLBACK MicaFocusPersistenceSubclassProc(HWND hWnd,
                                                   LPARAM lParam,
                                                   UINT_PTR uIdSubclass,
                                                   DWORD_PTR dwRefData) {
+    // A native center-collapse animation avoids a separately captured overlay,
+    // which could show stale Explorer contents or leave visual artifacts.
+    if (uMsg == WM_CLOSE && IsWindowVisible(hWnd)) {
+        AnimateWindow(hWnd, 150, AW_HIDE | AW_CENTER);
+    }
+
     LRESULT result =
         DefSubclassProc(hWnd, uMsg, wParam, lParam);
 
@@ -9640,6 +9646,31 @@ void OnWindowCreated(HWND hWnd, PCSTR funcName) {
         InitializeForCurrentThread();
         InitializeSettingsAndTap();
     }
+}
+
+using ShowWindow_t = decltype(&ShowWindow);
+ShowWindow_t ShowWindow_Original;
+BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
+    // Animate only the first visible presentation of a File Explorer window.
+    // Restore/minimize transitions are intentionally left for step 3.2.
+    const bool requestsVisible =
+        nCmdShow != SW_HIDE && nCmdShow != SW_MINIMIZE &&
+        nCmdShow != SW_SHOWMINIMIZED && nCmdShow != SW_SHOWMINNOACTIVE &&
+        nCmdShow != SW_FORCEMINIMIZE;
+    if (requestsVisible &&
+        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
+        !IsWindowVisible(hWnd) &&
+        !GetPropW(hWnd, L"WindHawkTestExplorerOpenAnimationDone")) {
+        SetPropW(hWnd, L"WindHawkTestExplorerOpenAnimationDone",
+                 reinterpret_cast<HANDLE>(static_cast<INT_PTR>(1)));
+        const BOOL wasVisible = IsWindowVisible(hWnd);
+        if (AnimateWindow(hWnd, 180, AW_CENTER)) {
+            return wasVisible;
+        }
+        // If the animation cannot run, preserve the normal ShowWindow path.
+    }
+
+    return ShowWindow_Original(hWnd, nCmdShow);
 }
 
 using CreateWindowExW_t = decltype(&CreateWindowExW);
@@ -10051,6 +10082,9 @@ BOOL Wh_ModInit() {
 
     WindhawkUtils::SetFunctionHook(CreateWindowExW, CreateWindowExW_Hook,
                                    &CreateWindowExW_Original);
+
+    WindhawkUtils::SetFunctionHook(ShowWindow, ShowWindow_Hook,
+                                   &ShowWindow_Original);
 
     WindhawkUtils::SetFunctionHook(DwmSetWindowAttribute,
                                    DwmSetWindowAttribute_Hook,
