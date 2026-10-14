@@ -10505,13 +10505,10 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
             targetRect = visibleRect;
         }
 
-        // Keep the opening overlay consistent with the horizontally inset
-        // snapshot rectangle used by CaptureExplorerBeforeMinimize.
-        const int kHorizontalInset = g_settings.explorerTvOnHorizontalInset;
-        if (targetRect.right - targetRect.left > 2 * kHorizontalInset) {
-            targetRect.left += kHorizontalInset;
-            targetRect.right -= kHorizontalInset;
-        }
+        // Keep the initial cover at the full visible window bounds so the
+        // native frame cannot flash while Explorer is briefly shown for capture.
+        // The animation snapshot applies its horizontal inset after the window
+        // has been hidden again.
 
         HBITMAP desktopSnapshot = CaptureDesktopRegion(targetRect);
         if (!desktopSnapshot) {
