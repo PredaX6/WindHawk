@@ -9702,7 +9702,7 @@ bool CaptureExplorerBeforeMinimize(HWND hWnd) {
 
     // Apply a minimal horizontal inset to compensate for any remaining
     // edge overdraw observed with the DWM frame bounds.
-    constexpr int kHorizontalInset = 2;
+    constexpr int kHorizontalInset = 4;
     if (visibleRect.right - visibleRect.left > 2 * kHorizontalInset) {
         visibleRect.left += kHorizontalInset;
         visibleRect.right -= kHorizontalInset;
@@ -10373,7 +10373,7 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
 
         // Keep the opening overlay consistent with the horizontally inset
         // snapshot rectangle used by CaptureExplorerBeforeMinimize.
-        constexpr int kHorizontalInset = 2;
+        constexpr int kHorizontalInset = 4;
         if (targetRect.right - targetRect.left > 2 * kHorizontalInset) {
             targetRect.left += kHorizontalInset;
             targetRect.right -= kHorizontalInset;
