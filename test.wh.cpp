@@ -9782,7 +9782,7 @@ struct ExplorerTvOnOverlay {
 };
 
 constexpr UINT_PTR kExplorerTvOnTimerId = 1;
-constexpr UINT kExplorerTvOnFrameIntervalMs = 8;
+constexpr UINT kExplorerTvOnFrameIntervalMs = 7;
 constexpr ULONGLONG kExplorerTvOnDurationMs = 360;
 constexpr float kExplorerTvOnSquashEnd = 0.42f;
 constexpr float kExplorerTvOnZipEnd = 0.78f;
