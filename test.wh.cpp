@@ -9615,6 +9615,10 @@ constexpr WCHAR kExplorerTvOffAnimationProperty[] =
     L"WindhawkExplorerTvOffAnimation-" WH_MOD_ID;
 bool TryStartExplorerTvOffAnimation(HWND hWnd, bool minimize = false);
 bool TryStartExplorerTvOnRestore(HWND hWnd);
+HWND CreateExplorerTvOnOverlay(HWND target, HBITMAP snapshot,
+                               const RECT& targetRect, int finalShowCmd,
+                               bool startFullSize = false,
+                               bool isClosing = false);
 
 LRESULT CALLBACK MicaFocusPersistenceSubclassProc(HWND hWnd,
                                                   UINT uMsg,
@@ -10423,8 +10427,8 @@ HBITMAP CaptureDesktopRegion(const RECT& rect) {
 
 HWND CreateExplorerTvOnOverlay(HWND target, HBITMAP snapshot,
                                const RECT& targetRect, int finalShowCmd,
-                               bool startFullSize = false,
-                               bool isClosing = false) {
+                               bool startFullSize,
+                               bool isClosing) {
     if (!snapshot || !EnsureExplorerTvOnOverlayClass()) {
         if (snapshot) {
             DeleteObject(snapshot);
