@@ -48,12 +48,8 @@ envoyez manuellement les lignes pertinentes du journal.
   - mica: Mica
   - micaAlt: Mica Alt
 - explorerTvOnDurationMs: 1000
-  $name: Durée de l’animation CRT
-  $description: Durée de l’animation d’ouverture et de fermeture de l’Explorateur, en millisecondes.
-  $type: int
-  $min: 100
-  $max: 3000
-  $suffix: ms
+  $name: Durée de l’animation CRT (ms)
+  $description: Durée en millisecondes, de 100 à 3000. Valeur par défaut : 1000.
 */
 // ==/WindhawkModSettings==
 
