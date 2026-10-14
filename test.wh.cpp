@@ -9682,8 +9682,28 @@ bool CaptureExplorerBeforeMinimize(HWND hWnd) {
         return false;
     }
 
-    const int width = windowRect.right - windowRect.left;
-    const int height = windowRect.bottom - windowRect.top;
+    // GetWindowRect can include invisible resize borders. Use DWM's visible
+    // frame bounds for the snapshot and crop the window DC by the same offset.
+    RECT visibleRect = windowRect;
+    if (SUCCEEDED(DwmGetWindowAttribute(
+            hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, &visibleRect,
+            sizeof(visibleRect)))) {
+        // Keep the DWM bounds only when they form a valid rectangle inside
+        // the window rectangle, so the source crop stays within the bitmap.
+        if (visibleRect.left < windowRect.left ||
+            visibleRect.top < windowRect.top ||
+            visibleRect.right > windowRect.right ||
+            visibleRect.bottom > windowRect.bottom ||
+            visibleRect.right <= visibleRect.left ||
+            visibleRect.bottom <= visibleRect.top) {
+            visibleRect = windowRect;
+        }
+    }
+
+    const int sourceX = visibleRect.left - windowRect.left;
+    const int sourceY = visibleRect.top - windowRect.top;
+    const int width = visibleRect.right - visibleRect.left;
+    const int height = visibleRect.bottom - visibleRect.top;
     if (width <= 0 || height <= 0) {
         return false;
     }
@@ -9699,7 +9719,7 @@ bool CaptureExplorerBeforeMinimize(HWND hWnd) {
     HGDIOBJ oldBitmap = snapshot ? SelectObject(memoryDc, snapshot) : nullptr;
     const bool captured =
         snapshot && oldBitmap && oldBitmap != HGDI_ERROR &&
-        BitBlt(memoryDc, 0, 0, width, height, windowDc, 0, 0,
+        BitBlt(memoryDc, 0, 0, width, height, windowDc, sourceX, sourceY,
                SRCCOPY | CAPTUREBLT);
 
     if (oldBitmap && oldBitmap != HGDI_ERROR) {
@@ -9729,7 +9749,7 @@ bool CaptureExplorerBeforeMinimize(HWND hWnd) {
         } else {
             g_explorerSnapshots.emplace(hWnd, snapshot);
         }
-        g_explorerSnapshotRects[hWnd] = windowRect;
+        g_explorerSnapshotRects[hWnd] = visibleRect;
     }
 
     if (previousSnapshot) {
@@ -10326,6 +10346,21 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
         RECT targetRect{};
         if (!GetWindowRect(hWnd, &targetRect)) {
             return ShowWindow_Original(hWnd, nCmdShow);
+        }
+
+        // Match the initial overlay to the visible frame, not invisible
+        // resize borders included by GetWindowRect on some Windows versions.
+        RECT visibleRect = targetRect;
+        if (SUCCEEDED(DwmGetWindowAttribute(
+                hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, &visibleRect,
+                sizeof(visibleRect))) &&
+            visibleRect.left >= targetRect.left &&
+            visibleRect.top >= targetRect.top &&
+            visibleRect.right <= targetRect.right &&
+            visibleRect.bottom <= targetRect.bottom &&
+            visibleRect.right > visibleRect.left &&
+            visibleRect.bottom > visibleRect.top) {
+            targetRect = visibleRect;
         }
 
         HBITMAP desktopSnapshot = CaptureDesktopRegion(targetRect);
