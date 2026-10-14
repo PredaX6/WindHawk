@@ -9852,20 +9852,15 @@ LRESULT CALLBACK ExplorerTvOnOverlayWndProc(HWND hWnd, UINT message,
 }
 
 bool EnsureExplorerTvOnOverlayClass() {
-    static bool registered = false;
-    static bool attempted = false;
-    if (attempted) {
-        return registered;
-    }
-    attempted = true;
-
-    WNDCLASSEXW wc{};
-    wc.cbSize = sizeof(wc);
-    wc.lpfnWndProc = ExplorerTvOnOverlayWndProc;
-    wc.hInstance = GetModuleHandleW(nullptr);
-    wc.lpszClassName = kExplorerTvOnOverlayClass;
-    registered = RegisterClassExW(&wc) != 0 ||
-                 GetLastError() == ERROR_CLASS_ALREADY_EXISTS;
+    static const bool registered = [] {
+        WNDCLASSEXW wc{};
+        wc.cbSize = sizeof(wc);
+        wc.lpfnWndProc = ExplorerTvOnOverlayWndProc;
+        wc.hInstance = GetModuleHandleW(nullptr);
+        wc.lpszClassName = kExplorerTvOnOverlayClass;
+        return RegisterClassExW(&wc) != 0 ||
+               GetLastError() == ERROR_CLASS_ALREADY_EXISTS;
+    }();
     return registered;
 }
 
@@ -9951,7 +9946,7 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
     const bool isRestoreRequest =
         nCmdShow == SW_RESTORE || nCmdShow == SW_SHOW ||
         nCmdShow == SW_SHOWNORMAL || nCmdShow == SW_SHOWNA ||
-        nCmdShow == SW_SHOWNOACTIVATE || nCmdShow == SW_SHOWDEFAULT;
+        nCmdShow == SW_SHOWDEFAULT;
     if (isRestoreRequest &&
         GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
         IsIconic(hWnd)) {
