@@ -10038,9 +10038,8 @@ HWND WINAPI CreateWindowInBand_Hook(DWORD dwExStyle,
     // point instead of CreateWindowExW. Strip WS_VISIBLE before creation so
     // the first visible frame is always the start of the TV-on animation.
     const bool animateInitialShow =
-        lpClassName && !IS_INTRESOURCE(lpClassName) &&
-        _wcsicmp(lpClassName, L"CabinetWClass") == 0 &&
-        (dwStyle & WS_VISIBLE) != 0;
+        (dwStyle & WS_VISIBLE) != 0 && (dwStyle & WS_CHILD) == 0 &&
+        (dwExStyle & WS_EX_TOOLWINDOW) == 0;
     if (animateInitialShow) {
         dwStyle &= ~WS_VISIBLE;
     }
@@ -10094,9 +10093,8 @@ HWND WINAPI CreateWindowInBandEx_Hook(DWORD dwExStyle,
     // CreateWindowInBand: WS_VISIBLE would expose the full window before the
     // ShowWindow hook gets a chance to apply the initial region.
     const bool animateInitialShow =
-        lpClassName && !IS_INTRESOURCE(lpClassName) &&
-        _wcsicmp(lpClassName, L"CabinetWClass") == 0 &&
-        (dwStyle & WS_VISIBLE) != 0;
+        (dwStyle & WS_VISIBLE) != 0 && (dwStyle & WS_CHILD) == 0 &&
+        (dwExStyle & WS_EX_TOOLWINDOW) == 0;
     if (animateInitialShow) {
         dwStyle &= ~WS_VISIBLE;
     }
@@ -10427,6 +10425,26 @@ BOOL Wh_ModInit() {
     WindhawkUtils::SetFunctionHook(SetWindowPos, SetWindowPos_Hook,
                                    &SetWindowPos_Original);
 
+    HMODULE user32Module =
+        LoadLibraryEx(L"user32.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
+    if (user32Module) {
+        auto pCreateWindowInBand = (CreateWindowInBand_t)GetProcAddress(
+            user32Module, "CreateWindowInBand");
+        if (pCreateWindowInBand) {
+            WindhawkUtils::SetFunctionHook(pCreateWindowInBand,
+                                           CreateWindowInBand_Hook,
+                                           &CreateWindowInBand_Original);
+        }
+
+        auto pCreateWindowInBandEx = (CreateWindowInBandEx_t)GetProcAddress(
+            user32Module, "CreateWindowInBandEx");
+        if (pCreateWindowInBandEx) {
+            WindhawkUtils::SetFunctionHook(pCreateWindowInBandEx,
+                                           CreateWindowInBandEx_Hook,
+                                           &CreateWindowInBandEx_Original);
+        }
+    }
+
     WCHAR processPath[MAX_PATH] = {};
     GetModuleFileNameW(nullptr, processPath, ARRAYSIZE(processPath));
     PCWSTR processName = wcsrchr(processPath, L'\\');
@@ -10485,26 +10503,7 @@ BOOL Wh_ModInit() {
             }
         }
     
-        HMODULE user32Module =
-            LoadLibraryEx(L"user32.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
-        if (user32Module) {
-            auto pCreateWindowInBand = (CreateWindowInBand_t)GetProcAddress(
-                user32Module, "CreateWindowInBand");
-            if (pCreateWindowInBand) {
-                WindhawkUtils::SetFunctionHook(pCreateWindowInBand,
-                                               CreateWindowInBand_Hook,
-                                               &CreateWindowInBand_Original);
-            }
-    
-            auto pCreateWindowInBandEx = (CreateWindowInBandEx_t)GetProcAddress(
-                user32Module, "CreateWindowInBandEx");
-            if (pCreateWindowInBandEx) {
-                WindhawkUtils::SetFunctionHook(pCreateWindowInBandEx,
-                                               CreateWindowInBandEx_Hook,
-                                               &CreateWindowInBandEx_Original);
-            }
-        }
-    
+
         HMODULE kernelBaseModule = GetModuleHandle(L"kernelbase.dll");
         auto pKernelBaseLoadLibraryExW = (decltype(&LoadLibraryExW))GetProcAddress(
             kernelBaseModule, "LoadLibraryExW");
