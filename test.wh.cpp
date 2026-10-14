@@ -9699,6 +9699,20 @@ LRESULT CALLBACK MicaFocusPersistenceSubclassProc(HWND hWnd,
                                                   LPARAM lParam,
                                                   UINT_PTR uIdSubclass,
                                                   DWORD_PTR dwRefData) {
+    // Animate taskbar/system-command minimization before Windows hides the
+    // window. The property prevents ShowWindow_Hook from running the same
+    // animation a second time if this command reaches ShowWindow internally.
+    const bool minimizeFromSystemCommand =
+        uMsg == WM_SYSCOMMAND &&
+        (wParam & 0xFFF0) == SC_MINIMIZE &&
+        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
+        IsWindowVisible(hWnd) && !IsIconic(hWnd);
+    if (minimizeFromSystemCommand) {
+        SetPropW(hWnd, L"WindHawkTestExplorerMinimizeAnimationInProgress",
+                 reinterpret_cast<HANDLE>(static_cast<INT_PTR>(1)));
+        AnimateTvWindowRegion(hWnd, false);
+    }
+
     // Run the CRT-off effect on the real window, without a bitmap overlay.
     if (uMsg == WM_CLOSE && IsWindowVisible(hWnd)) {
         AnimateTvWindowRegion(hWnd, false);
@@ -9711,6 +9725,11 @@ LRESULT CALLBACK MicaFocusPersistenceSubclassProc(HWND hWnd,
         GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer;
 
     LRESULT result = DefSubclassProc(hWnd, uMsg, wParam, lParam);
+
+    if (minimizeFromSystemCommand) {
+        SetWindowRgn(hWnd, nullptr, TRUE);
+        RemovePropW(hWnd, L"WindHawkTestExplorerMinimizeAnimationInProgress");
+    }
 
     // Explorer can restore from the taskbar through SC_RESTORE without using
     // the hooked ShowWindow path. Apply the clipping region after Windows has
@@ -9835,7 +9854,8 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
     // minimized window and interfere with a later restoration.
     if (requestsMinimized &&
         GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
-        IsWindowVisible(hWnd) && !IsIconic(hWnd)) {
+        IsWindowVisible(hWnd) && !IsIconic(hWnd) &&
+        !GetPropW(hWnd, L"WindHawkTestExplorerMinimizeAnimationInProgress")) {
         AnimateTvWindowRegion(hWnd, false);
         BOOL previousVisibility = ShowWindow_Original(hWnd, nCmdShow);
         SetWindowRgn(hWnd, nullptr, TRUE);
