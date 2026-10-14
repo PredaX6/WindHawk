@@ -49,16 +49,10 @@ envoyez manuellement les lignes pertinentes du journal.
   - micaAlt: Mica Alt
 - explorerTvOnEnabled: true
   $name: Activer les animations CRT
-  $description: Active ou désactive les animations d’ouverture, de restauration et de fermeture de l’Explorateur.
+  $description: Active ou désactive les animations CRT d’ouverture, de réduction, de restauration et de fermeture de l’Explorateur.
 - explorerTvOnDurationMs: 1000
   $name: Durée de l’animation CRT (ms)
   $description: "Durée en millisecondes, de 100 à 3000. Valeur par défaut : 1000."
-- explorerTvOnFrameIntervalMs: 18
-  $name: Intervalle entre les images CRT (ms)
-  $description: "Délai entre deux images de l’animation, en millisecondes. Valeur par défaut : 18. Valeurs autorisées : 1 à 1000."
-- explorerTvOnHorizontalInset: 6
-  $name: Décalage horizontal de l’animation CRT (pixels)
-  $description: "Réduit la largeur de chaque côté de l’animation. Valeur par défaut : 6 pixels. Valeurs autorisées : 0 à 20."
 */
 // ==/WindhawkModSettings==
 
@@ -147,8 +141,6 @@ struct {
     XamlDiagnosticsHandling xamlDiagnosticsHandling;
     bool explorerTvOnEnabled = true;
     int explorerTvOnDurationMs;
-    int explorerTvOnFrameIntervalMs;
-    int explorerTvOnHorizontalInset;
 } g_settings;
 
 BackgroundTranslucentEffect g_themeBackgroundTranslucentEffect;
@@ -9621,7 +9613,7 @@ constexpr WCHAR kExplorerTvOffAllowCloseProperty[] =
     L"WindhawkExplorerTvOffAllowClose-" WH_MOD_ID;
 constexpr WCHAR kExplorerTvOffAnimationProperty[] =
     L"WindhawkExplorerTvOffAnimation-" WH_MOD_ID;
-bool TryStartExplorerTvOffAnimation(HWND hWnd);
+bool TryStartExplorerTvOffAnimation(HWND hWnd, bool minimize = false);
 
 LRESULT CALLBACK MicaFocusPersistenceSubclassProc(HWND hWnd,
                                                   UINT uMsg,
@@ -9727,7 +9719,7 @@ bool CaptureExplorerBeforeMinimize(HWND hWnd) {
 
     // Apply a minimal horizontal inset to compensate for any remaining
     // edge overdraw observed with the DWM frame bounds.
-    const int kHorizontalInset = g_settings.explorerTvOnHorizontalInset;
+    constexpr int kHorizontalInset = 6;
     if (visibleRect.right - visibleRect.left > 2 * kHorizontalInset) {
         visibleRect.left += kHorizontalInset;
         visibleRect.right -= kHorizontalInset;
@@ -9850,6 +9842,7 @@ struct ExplorerTvOnOverlay {
     bool qpcReady{};
     HANDLE animationThread{};
     bool isClosing{};
+    bool isMinimizing{};
 };
 
 constexpr UINT kExplorerTvOnFrameMessage = WM_APP + 0x3A1;
@@ -9857,38 +9850,6 @@ constexpr WPARAM kExplorerTvOnProgressScale = 1000000;
 constexpr int kExplorerTvOnDefaultDurationMs = 1000;
 constexpr int kExplorerTvOnMinDurationMs = 100;
 constexpr int kExplorerTvOnMaxDurationMs = 3000;
-constexpr int kExplorerTvOnDefaultFrameIntervalMs = 18;
-constexpr int kExplorerTvOnMinFrameIntervalMs = 1;
-constexpr int kExplorerTvOnMaxFrameIntervalMs = 1000;
-
-// Use a high-resolution clock for animation progress, but avoid submitting
-// frames faster than the monitor can display them. The configured interval
-// remains a user-selected upper bound on animation frequency.
-UINT GetExplorerTvOnFrameIntervalMs(HWND hWnd) {
-    const int configuredInterval = std::clamp(
-        g_settings.explorerTvOnFrameIntervalMs,
-        kExplorerTvOnMinFrameIntervalMs, kExplorerTvOnMaxFrameIntervalMs);
-
-    UINT refreshIntervalMs = 17;
-    const HMONITOR monitor = MonitorFromWindow(hWnd, MONITOR_DEFAULTTONEAREST);
-    MONITORINFOEXW monitorInfo{};
-    monitorInfo.cbSize = sizeof(monitorInfo);
-    DEVMODEW displayMode{};
-    displayMode.dmSize = sizeof(displayMode);
-    if (monitor && GetMonitorInfoW(monitor, &monitorInfo) &&
-        EnumDisplaySettingsW(monitorInfo.szDevice, ENUM_CURRENT_SETTINGS,
-                             &displayMode) &&
-        displayMode.dmDisplayFrequency >= 24 &&
-        displayMode.dmDisplayFrequency <= 1000) {
-        refreshIntervalMs = std::max<UINT>(
-            1, (1000u + displayMode.dmDisplayFrequency / 2) /
-                   displayMode.dmDisplayFrequency);
-    }
-
-    return std::max<UINT>(
-        refreshIntervalMs, static_cast<UINT>(configuredInterval));
-}
-
 void StartExplorerTvOnClock(ExplorerTvOnOverlay* state) {
     if (!state) return;
     state->startTime = GetTickCount64();
@@ -9912,9 +9873,6 @@ double GetExplorerTvOnElapsedMs(const ExplorerTvOnOverlay* state) {
     }
     return state ? static_cast<double>(GetTickCount64() - state->startTime) : 0.0;
 }
-constexpr int kExplorerTvOnDefaultHorizontalInset = 6;
-constexpr int kExplorerTvOnMinHorizontalInset = 0;
-constexpr int kExplorerTvOnMaxHorizontalInset = 20;
 constexpr float kExplorerTvOnSquashEnd = 0.42f;
 constexpr float kExplorerTvOnZipEnd = 0.78f;
 constexpr wchar_t kExplorerTvOnOverlayClass[] =
@@ -10138,7 +10096,7 @@ void RenderExplorerTvOnFrame(HWND hWnd, ExplorerTvOnOverlay* state,
     if (!state || !state->frameBits || !state->frameDc ||
         state->width <= 0 || state->height <= 0) return;
     progress = std::max(0.0, std::min(1.0, progress));
-    if (state->isClosing) {
+    if (state->isClosing || state->isMinimizing) {
         progress = 1.0 - progress;
     }
     state->progress = progress;
@@ -10298,11 +10256,15 @@ LRESULT CALLBACK ExplorerTvOnOverlayWndProc(HWND hWnd, UINT message,
 
         if (progress >= 1.0) {
             if (IsWindow(state->target)) {
-                if (state->isClosing) {
+                if (state->isClosing || state->isMinimizing) {
                     RemovePropW(state->target, kExplorerTvOffAnimationProperty);
-                    SetPropW(state->target, kExplorerTvOffAllowCloseProperty,
-                             reinterpret_cast<HANDLE>(1));
-                    PostMessageW(state->target, WM_CLOSE, 0, 0);
+                    if (state->isMinimizing) {
+                        ShowWindow_Original(state->target, SW_MINIMIZE);
+                    } else {
+                        SetPropW(state->target, kExplorerTvOffAllowCloseProperty,
+                                 reinterpret_cast<HANDLE>(1));
+                        PostMessageW(state->target, WM_CLOSE, 0, 0);
+                    }
                 } else if (!IsWindowVisible(state->target) || IsIconic(state->target)) {
                     ShowWindow_Original(state->target, state->finalShowCmd);
                 }
@@ -10453,7 +10415,7 @@ HWND CreateExplorerTvOnOverlay(HWND target, HBITMAP snapshot,
     return overlay;
 }
 
-bool TryStartExplorerTvOffAnimation(HWND hWnd) {
+bool TryStartExplorerTvOffAnimation(HWND hWnd, bool minimize) {
     if (!g_settings.explorerTvOnEnabled ||
         GetTargetWindowType(hWnd) != TargetWindowType::FileExplorer ||
         !IsWindowVisible(hWnd) || IsIconic(hWnd)) {
@@ -10477,6 +10439,29 @@ bool TryStartExplorerTvOffAnimation(HWND hWnd) {
         return false;
     }
 
+    if (minimize) {
+        HBITMAP restoreSnapshot = static_cast<HBITMAP>(
+            CopyImage(snapshot, IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION));
+        if (!restoreSnapshot) {
+            std::lock_guard<std::mutex> lock(g_explorerSnapshotMutex);
+            g_explorerSnapshots[hWnd] = snapshot;
+            g_explorerSnapshotRects[hWnd] = targetRect;
+            RemovePropW(hWnd, kExplorerTvOffAnimationProperty);
+            return false;
+        }
+        {
+            std::lock_guard<std::mutex> lock(g_explorerSnapshotMutex);
+            auto old = g_explorerSnapshots.find(hWnd);
+            if (old != g_explorerSnapshots.end()) {
+                DeleteObject(old->second);
+                old->second = restoreSnapshot;
+            } else {
+                g_explorerSnapshots.emplace(hWnd, restoreSnapshot);
+            }
+            g_explorerSnapshotRects[hWnd] = targetRect;
+        }
+    }
+
     HWND overlay = CreateExplorerTvOnOverlay(
         hWnd, snapshot, targetRect, SW_HIDE, false, true);
     if (!overlay) {
@@ -10491,6 +10476,7 @@ bool TryStartExplorerTvOffAnimation(HWND hWnd) {
         RemovePropW(hWnd, kExplorerTvOffAnimationProperty);
         return false;
     }
+    state->isMinimizing = minimize;
 
     // The overlay already covers Explorer, so hide the real window only after
     // the captured frame is on screen. If animation startup fails, restore it.
@@ -10514,6 +10500,10 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
     // immediately before Windows starts minimizing it.
     if (nCmdShow == SW_MINIMIZE || nCmdShow == SW_SHOWMINIMIZED ||
         nCmdShow == SW_SHOWMINNOACTIVE) {
+        if (GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
+            !IsIconic(hWnd) && TryStartExplorerTvOffAnimation(hWnd, true)) {
+            return TRUE;
+        }
         CaptureExplorerBeforeMinimize(hWnd);
         return ShowWindow_Original(hWnd, nCmdShow);
     }
@@ -11050,27 +11040,6 @@ void LoadSettings() {
                       ? kExplorerTvOnMaxDurationMs
                       : configuredDurationMs))
         : kExplorerTvOnDefaultDurationMs;
-
-    const int configuredFrameIntervalMs =
-        Wh_GetIntSetting(L"explorerTvOnFrameIntervalMs");
-    g_settings.explorerTvOnFrameIntervalMs =
-        configuredFrameIntervalMs > 0
-            ? (configuredFrameIntervalMs < kExplorerTvOnMinFrameIntervalMs
-                   ? kExplorerTvOnMinFrameIntervalMs
-                   : (configuredFrameIntervalMs >
-                              kExplorerTvOnMaxFrameIntervalMs
-                          ? kExplorerTvOnMaxFrameIntervalMs
-                          : configuredFrameIntervalMs))
-            : kExplorerTvOnDefaultFrameIntervalMs;
-
-    const int configuredHorizontalInset =
-        Wh_GetIntSetting(L"explorerTvOnHorizontalInset");
-    g_settings.explorerTvOnHorizontalInset =
-        configuredHorizontalInset < kExplorerTvOnMinHorizontalInset
-            ? kExplorerTvOnDefaultHorizontalInset
-            : (configuredHorizontalInset > kExplorerTvOnMaxHorizontalInset
-                   ? kExplorerTvOnMaxHorizontalInset
-                   : configuredHorizontalInset);
 
     // Remaining settings are fixed in code.
     g_settings.explorerFrameContainerHeight = 0;
