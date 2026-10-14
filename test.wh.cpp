@@ -9707,7 +9707,8 @@ std::mutex g_explorerSnapshotMutex;
 std::unordered_map<HWND, HBITMAP> g_explorerSnapshots;
 std::unordered_map<HWND, RECT> g_explorerSnapshotRects;
 
-bool CaptureExplorerBeforeMinimize(HWND hWnd) {
+bool CaptureExplorerBeforeMinimize(HWND hWnd,
+                                   bool captureComposedDesktop = true) {
     if (GetTargetWindowType(hWnd) != TargetWindowType::FileExplorer ||
         !IsWindowVisible(hWnd) || IsIconic(hWnd)) {
         return false;
@@ -9719,8 +9720,8 @@ bool CaptureExplorerBeforeMinimize(HWND hWnd) {
     }
 
     // Use DWM's visible frame bounds to avoid invisible resize borders.
-    // Capture the composed desktop pixels rather than the window DC: this
-    // preserves the exact visible Mica, transparency, and backdrop blur.
+    // Desktop capture preserves the composed backdrop for minimize/close;
+    // opening uses the window DC because its cover overlay is above Explorer.
     RECT visibleRect = windowRect;
     if (SUCCEEDED(DwmGetWindowAttribute(
             hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, &visibleRect,
@@ -9747,20 +9748,27 @@ bool CaptureExplorerBeforeMinimize(HWND hWnd) {
         return false;
     }
 
-    HDC screenDc = GetDC(nullptr);
-    if (!screenDc) {
+    HDC sourceDc = captureComposedDesktop ? GetDC(nullptr) : GetWindowDC(hWnd);
+    if (!sourceDc) {
         return false;
     }
 
-    HDC memoryDc = CreateCompatibleDC(screenDc);
+    const int sourceX = captureComposedDesktop
+        ? visibleRect.left
+        : visibleRect.left - windowRect.left;
+    const int sourceY = captureComposedDesktop
+        ? visibleRect.top
+        : visibleRect.top - windowRect.top;
+
+    HDC memoryDc = CreateCompatibleDC(sourceDc);
     HBITMAP snapshot = memoryDc
-        ? CreateCompatibleBitmap(screenDc, width, height)
+        ? CreateCompatibleBitmap(sourceDc, width, height)
         : nullptr;
     HGDIOBJ oldBitmap = snapshot ? SelectObject(memoryDc, snapshot) : nullptr;
     const bool captured =
         snapshot && oldBitmap && oldBitmap != HGDI_ERROR &&
-        BitBlt(memoryDc, 0, 0, width, height, screenDc,
-               visibleRect.left, visibleRect.top, SRCCOPY | CAPTUREBLT);
+        BitBlt(memoryDc, 0, 0, width, height, sourceDc,
+               sourceX, sourceY, SRCCOPY | CAPTUREBLT);
 
     if (oldBitmap && oldBitmap != HGDI_ERROR) {
         SelectObject(memoryDc, oldBitmap);
@@ -9768,7 +9776,7 @@ bool CaptureExplorerBeforeMinimize(HWND hWnd) {
     if (memoryDc) {
         DeleteDC(memoryDc);
     }
-    ReleaseDC(nullptr, screenDc);
+    ReleaseDC(captureComposedDesktop ? nullptr : hWnd, sourceDc);
 
     if (!captured) {
         if (snapshot) {
@@ -10637,7 +10645,10 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
 
         BOOL previousVisibility = ShowWindow_Original(hWnd, nCmdShow);
         UpdateWindow(hWnd);
-        const bool captured = CaptureExplorerBeforeMinimize(hWnd);
+        // The full-size cover overlay is topmost here, so capture the
+        // Explorer window DC directly rather than accidentally capturing
+        // the desktop image currently displayed by that overlay.
+        const bool captured = CaptureExplorerBeforeMinimize(hWnd, false);
         RECT capturedRect{};
         HBITMAP explorerSnapshot =
             captured ? TakeExplorerSnapshot(hWnd, &capturedRect) : nullptr;
