@@ -9770,22 +9770,14 @@ struct ExplorerTvOnOverlay {
     RECT targetRect;
     ULONGLONG startTime;
     int finalShowCmd;
-    HANDLE timer;
+    UINT_PTR timer;
 };
 
-constexpr UINT kExplorerTvOnTickMessage = WM_APP + 0x351;
-constexpr DWORD kExplorerTvOnFrameIntervalMs = 8;
+constexpr UINT_PTR kExplorerTvOnTimerId = 1;
+constexpr UINT kExplorerTvOnFrameIntervalMs = 10;
 constexpr ULONGLONG kExplorerTvOnDurationMs = 280;
 constexpr wchar_t kExplorerTvOnOverlayClass[] =
     L"WindhawkExplorerTvOnOverlayWindow";
-
-VOID CALLBACK ExplorerTvOnTimerCallback(PVOID parameter,
-                                  BOOLEAN) {
-    HWND hWnd = static_cast<HWND>(parameter);
-    if (hWnd) {
-        PostMessageW(hWnd, kExplorerTvOnTickMessage, 0, 0);
-    }
-}
 
 LRESULT CALLBACK ExplorerTvOnOverlayWndProc(HWND hWnd, UINT message,
                                             WPARAM wParam, LPARAM lParam) {
@@ -9825,13 +9817,12 @@ LRESULT CALLBACK ExplorerTvOnOverlayWndProc(HWND hWnd, UINT message,
         return 1;
     }
 
-    if (message == kExplorerTvOnTickMessage && state) {
+    if (message == WM_TIMER && wParam == kExplorerTvOnTimerId && state) {
         const ULONGLONG elapsed = GetTickCount64() - state->startTime;
         if (elapsed >= kExplorerTvOnDurationMs) {
             if (state->timer) {
-                DeleteTimerQueueTimer(nullptr, state->timer,
-                                      INVALID_HANDLE_VALUE);
-                state->timer = nullptr;
+                KillTimer(hWnd, state->timer);
+                state->timer = 0;
             }
             // Keep the real Explorer window minimized during the overlay
             // animation; restore it only when the snapshot animation ends.
@@ -9865,9 +9856,8 @@ LRESULT CALLBACK ExplorerTvOnOverlayWndProc(HWND hWnd, UINT message,
 
     if (message == WM_NCDESTROY && state) {
         if (state->timer) {
-            DeleteTimerQueueTimer(nullptr, state->timer,
-                                  INVALID_HANDLE_VALUE);
-            state->timer = nullptr;
+            KillTimer(hWnd, state->timer);
+            state->timer = 0;
         }
         if (state->bitmap) {
             DeleteObject(state->bitmap);
@@ -10039,11 +10029,8 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
         auto* state = reinterpret_cast<ExplorerTvOnOverlay*>(
             GetWindowLongPtrW(overlay, GWLP_USERDATA));
         if (!state ||
-            !CreateTimerQueueTimer(&state->timer, nullptr,
-                                   ExplorerTvOnTimerCallback, overlay,
-                                   kExplorerTvOnFrameIntervalMs,
-                                   kExplorerTvOnFrameIntervalMs,
-                                   WT_EXECUTEDEFAULT)) {
+            !(state->timer = SetTimer(overlay, kExplorerTvOnTimerId,
+                                      kExplorerTvOnFrameIntervalMs, nullptr))) {
             DestroyWindow(overlay);
             return ShowWindow_Original(hWnd, nCmdShow);
         }
@@ -10110,11 +10097,8 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
         RedrawWindow(overlay, nullptr, nullptr,
                      RDW_INVALIDATE | RDW_UPDATENOW | RDW_NOERASE);
 
-        if (!CreateTimerQueueTimer(&state->timer, nullptr,
-                                   ExplorerTvOnTimerCallback, overlay,
-                                   kExplorerTvOnFrameIntervalMs,
-                                   kExplorerTvOnFrameIntervalMs,
-                                   WT_EXECUTEDEFAULT)) {
+        if (!(state->timer = SetTimer(overlay, kExplorerTvOnTimerId,
+                                      kExplorerTvOnFrameIntervalMs, nullptr))) {
             DestroyWindow(overlay);
             return ShowWindow_Original(hWnd, nCmdShow);
         }
