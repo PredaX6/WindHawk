@@ -9751,6 +9751,13 @@ LRESULT CALLBACK MicaFocusPersistenceSubclassProc(HWND hWnd,
         IsIconic(hWnd) &&
         IsAnimatableApplicationWindow(hWnd);
 
+    // Prevent a nested ShowWindow call from starting a second restore
+    // animation while this system-command restore is being processed.
+    if (restoreFromSystemMenu) {
+        SetPropW(hWnd, L"WindHawkTestExplorerRestoreAnimationInProgress",
+                 reinterpret_cast<HANDLE>(static_cast<INT_PTR>(1)));
+    }
+
     LRESULT result = DefSubclassProc(hWnd, uMsg, wParam, lParam);
 
     if (minimizeFromSystemCommand) {
@@ -9780,6 +9787,10 @@ LRESULT CALLBACK MicaFocusPersistenceSubclassProc(HWND hWnd,
                 }
             }
         }
+    }
+
+    if (restoreFromSystemMenu && IsWindow(hWnd)) {
+        RemovePropW(hWnd, L"WindHawkTestExplorerRestoreAnimationInProgress");
     }
 
     // If another handler cancels WM_CLOSE, make sure the window is not left
@@ -9901,7 +9912,8 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
     // IsWindowVisible. Detect restoration separately and seed the region using
     // the saved normal size, since GetWindowRect reports the minimized bounds.
     if (requestsVisible && IsIconic(hWnd) &&
-        IsAnimatableApplicationWindow(hWnd)) {
+        IsAnimatableApplicationWindow(hWnd) &&
+        !GetPropW(hWnd, L"WindHawkTestExplorerRestoreAnimationInProgress")) {
         WINDOWPLACEMENT placement = {sizeof(placement)};
         if (GetWindowPlacement(hWnd, &placement)) {
             const int width = placement.rcNormalPosition.right -
