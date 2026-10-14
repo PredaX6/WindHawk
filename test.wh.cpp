@@ -10277,9 +10277,7 @@ LRESULT CALLBACK ExplorerTvOnOverlayWndProc(HWND hWnd, UINT message,
             if (IsWindow(state->target)) {
                 if (state->isClosing || state->isMinimizing) {
                     RemovePropW(state->target, kExplorerTvOffAnimationProperty);
-                    if (state->isMinimizing) {
-                        ShowWindow_Original(state->target, SW_MINIMIZE);
-                    } else {
+                    if (state->isClosing) {
                         SetPropW(state->target, kExplorerTvOffAllowCloseProperty,
                                  reinterpret_cast<HANDLE>(1));
                         PostMessageW(state->target, WM_CLOSE, 0, 0);
@@ -10537,14 +10535,20 @@ bool TryStartExplorerTvOffAnimation(HWND hWnd, bool minimize) {
     }
     state->isMinimizing = minimize;
 
-    // For minimize, leave Explorer visible behind the topmost overlay so the
-    // window manager can minimize a normal visible window when the effect ends.
-    // For close, hide it now to prevent the native frame from flashing.
-    if (!minimize) {
+    // Minimize the real Explorer window before starting the CRT animation.
+    // The topmost overlay remains visible and animates independently.
+    if (minimize) {
+        ShowWindow_Original(hWnd, SW_MINIMIZE);
+    } else {
+        // Hide the real window now to prevent its native frame from flashing.
         ShowWindow_Original(hWnd, SW_HIDE);
     }
     if (!StartExplorerTvOnAnimation(overlay, state)) {
-        if (!minimize) {
+        // If the animation cannot start, restore the original window state so
+        // the caller can continue with the normal minimize/close path.
+        if (minimize) {
+            ShowWindow_Original(hWnd, SW_RESTORE);
+        } else {
             ShowWindow_Original(hWnd, SW_SHOW);
         }
         DestroyWindow(overlay);
