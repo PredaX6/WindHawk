@@ -60,26 +60,125 @@ envoyez manuellement les lignes pertinentes du journal.
   - vertical: Balayage vertical
   - center: Déploiement depuis le centre
   - scanlines: Balayage CRT
+  - fade: Fondu simple
+  - zoomOut: Zoom depuis un point
+  - slideLeft: Glissement depuis la gauche
+  - slideRight: Glissement depuis la droite
+  - slideTop: Glissement depuis le haut
+  - slideBottom: Glissement depuis le bas
+  - wipeLeft: Balayage vers la droite
+  - wipeRight: Balayage vers la gauche
+  - wipeTop: Balayage vers le bas
+  - wipeBottom: Balayage vers le haut
+  - splitH: Ouverture en deux volets horizontaux
+  - splitV: Ouverture en deux volets verticaux
+  - blindsH: Stores horizontaux
+  - blindsV: Stores verticaux
+  - diagonal: Balayage diagonal
+  - circle: Iris circulaire
+  - diamond: Iris en losange
+  - cornerTL: Depuis le coin supérieur gauche
+  - cornerTR: Depuis le coin supérieur droit
+  - cornerBL: Depuis le coin inférieur gauche
+  - cornerBR: Depuis le coin inférieur droit
+  - bounce: Zoom avec rebond
+  - elastic: Zoom élastique
+  - rotate: Rotation simulée
+  - flipH: Bascule horizontale simulée
+  - flipV: Bascule verticale simulée
+  - pixelate: Révélation par blocs
+  - checker: Damier progressif
+  - randomBars: Barres alternées
+  - curtain: Rideau central
+  - wave: Balayage ondulé
+  - focus: Mise au point progressive
+  - glitch: Décalage de bandes
 - explorerCloseAnimation: crt
   $name: Animation de fermeture
   $options:
   - crt: CRT classique
-  - zoom: Réduction par zoom
+  - zoom: Zoom progressif
   - fadeZoom: Fondu avec zoom
-  - horizontal: Fermeture horizontale
-  - vertical: Fermeture verticale
-  - center: Contraction vers le centre
+  - horizontal: Révélation horizontale
+  - vertical: Balayage vertical
+  - center: Déploiement depuis le centre
   - scanlines: Balayage CRT
+  - fade: Fondu simple
+  - zoomOut: Zoom depuis un point
+  - slideLeft: Glissement depuis la gauche
+  - slideRight: Glissement depuis la droite
+  - slideTop: Glissement depuis le haut
+  - slideBottom: Glissement depuis le bas
+  - wipeLeft: Balayage vers la droite
+  - wipeRight: Balayage vers la gauche
+  - wipeTop: Balayage vers le bas
+  - wipeBottom: Balayage vers le haut
+  - splitH: Ouverture en deux volets horizontaux
+  - splitV: Ouverture en deux volets verticaux
+  - blindsH: Stores horizontaux
+  - blindsV: Stores verticaux
+  - diagonal: Balayage diagonal
+  - circle: Iris circulaire
+  - diamond: Iris en losange
+  - cornerTL: Depuis le coin supérieur gauche
+  - cornerTR: Depuis le coin supérieur droit
+  - cornerBL: Depuis le coin inférieur gauche
+  - cornerBR: Depuis le coin inférieur droit
+  - bounce: Zoom avec rebond
+  - elastic: Zoom élastique
+  - rotate: Rotation simulée
+  - flipH: Bascule horizontale simulée
+  - flipV: Bascule verticale simulée
+  - pixelate: Révélation par blocs
+  - checker: Damier progressif
+  - randomBars: Barres alternées
+  - curtain: Rideau central
+  - wave: Balayage ondulé
+  - focus: Mise au point progressive
+  - glitch: Décalage de bandes
 - explorerMinimizeAnimation: crt
   $name: Animation de réduction
   $options:
   - crt: CRT classique
-  - zoom: Zoom vers la barre des tâches (effet visuel)
+  - zoom: Zoom progressif
   - fadeZoom: Fondu avec zoom
-  - horizontal: Fermeture horizontale
-  - vertical: Fermeture verticale
-  - center: Contraction vers le centre
+  - horizontal: Révélation horizontale
+  - vertical: Balayage vertical
+  - center: Déploiement depuis le centre
   - scanlines: Balayage CRT
+  - fade: Fondu simple
+  - zoomOut: Zoom depuis un point
+  - slideLeft: Glissement depuis la gauche
+  - slideRight: Glissement depuis la droite
+  - slideTop: Glissement depuis le haut
+  - slideBottom: Glissement depuis le bas
+  - wipeLeft: Balayage vers la droite
+  - wipeRight: Balayage vers la gauche
+  - wipeTop: Balayage vers le bas
+  - wipeBottom: Balayage vers le haut
+  - splitH: Ouverture en deux volets horizontaux
+  - splitV: Ouverture en deux volets verticaux
+  - blindsH: Stores horizontaux
+  - blindsV: Stores verticaux
+  - diagonal: Balayage diagonal
+  - circle: Iris circulaire
+  - diamond: Iris en losange
+  - cornerTL: Depuis le coin supérieur gauche
+  - cornerTR: Depuis le coin supérieur droit
+  - cornerBL: Depuis le coin inférieur gauche
+  - cornerBR: Depuis le coin inférieur droit
+  - bounce: Zoom avec rebond
+  - elastic: Zoom élastique
+  - rotate: Rotation simulée
+  - flipH: Bascule horizontale simulée
+  - flipV: Bascule verticale simulée
+  - pixelate: Révélation par blocs
+  - checker: Damier progressif
+  - randomBars: Barres alternées
+  - curtain: Rideau central
+  - wave: Balayage ondulé
+  - focus: Mise au point progressive
+  - glitch: Décalage de bandes
 - explorerRestoreAnimation: crt
   $name: Animation de restauration après réduction
   $options:
@@ -90,6 +189,125 @@ envoyez manuellement les lignes pertinentes du journal.
   - vertical: Balayage vertical
   - center: Déploiement depuis le centre
   - scanlines: Balayage CRT
+  - fade: Fondu simple
+  - zoomOut: Zoom depuis un point
+  - slideLeft: Glissement depuis la gauche
+  - slideRight: Glissement depuis la droite
+  - slideTop: Glissement depuis le haut
+  - slideBottom: Glissement depuis le bas
+  - wipeLeft: Balayage vers la droite
+  - wipeRight: Balayage vers la gauche
+  - wipeTop: Balayage vers le bas
+  - wipeBottom: Balayage vers le haut
+  - splitH: Ouverture en deux volets horizontaux
+  - splitV: Ouverture en deux volets verticaux
+  - blindsH: Stores horizontaux
+  - blindsV: Stores verticaux
+  - diagonal: Balayage diagonal
+  - circle: Iris circulaire
+  - diamond: Iris en losange
+  - cornerTL: Depuis le coin supérieur gauche
+  - cornerTR: Depuis le coin supérieur droit
+  - cornerBL: Depuis le coin inférieur gauche
+  - cornerBR: Depuis le coin inférieur droit
+  - bounce: Zoom avec rebond
+  - elastic: Zoom élastique
+  - rotate: Rotation simulée
+  - flipH: Bascule horizontale simulée
+  - flipV: Bascule verticale simulée
+  - pixelate: Révélation par blocs
+  - checker: Damier progressif
+  - randomBars: Barres alternées
+  - curtain: Rideau central
+  - wave: Balayage ondulé
+  - focus: Mise au point progressive
+  - glitch: Décalage de bandes
+- explorerMaximizeAnimation: crt
+  $name: Animation d’agrandissement
+  $options:
+  - crt: CRT classique
+  - zoom: Zoom progressif
+  - fadeZoom: Fondu avec zoom
+  - horizontal: Révélation horizontale
+  - vertical: Balayage vertical
+  - center: Déploiement depuis le centre
+  - scanlines: Balayage CRT
+  - fade: Fondu simple
+  - zoomOut: Zoom depuis un point
+  - slideLeft: Glissement depuis la gauche
+  - slideRight: Glissement depuis la droite
+  - slideTop: Glissement depuis le haut
+  - slideBottom: Glissement depuis le bas
+  - wipeLeft: Balayage vers la droite
+  - wipeRight: Balayage vers la gauche
+  - wipeTop: Balayage vers le bas
+  - wipeBottom: Balayage vers le haut
+  - splitH: Ouverture en deux volets horizontaux
+  - splitV: Ouverture en deux volets verticaux
+  - blindsH: Stores horizontaux
+  - blindsV: Stores verticaux
+  - diagonal: Balayage diagonal
+  - circle: Iris circulaire
+  - diamond: Iris en losange
+  - cornerTL: Depuis le coin supérieur gauche
+  - cornerTR: Depuis le coin supérieur droit
+  - cornerBL: Depuis le coin inférieur gauche
+  - cornerBR: Depuis le coin inférieur droit
+  - bounce: Zoom avec rebond
+  - elastic: Zoom élastique
+  - rotate: Rotation simulée
+  - flipH: Bascule horizontale simulée
+  - flipV: Bascule verticale simulée
+  - pixelate: Révélation par blocs
+  - checker: Damier progressif
+  - randomBars: Barres alternées
+  - curtain: Rideau central
+  - wave: Balayage ondulé
+  - focus: Mise au point progressive
+  - glitch: Décalage de bandes
+- explorerUnmaximizeAnimation: crt
+  $name: Animation de retour à la taille normale
+  $options:
+  - crt: CRT classique
+  - zoom: Zoom progressif
+  - fadeZoom: Fondu avec zoom
+  - horizontal: Révélation horizontale
+  - vertical: Balayage vertical
+  - center: Déploiement depuis le centre
+  - scanlines: Balayage CRT
+  - fade: Fondu simple
+  - zoomOut: Zoom depuis un point
+  - slideLeft: Glissement depuis la gauche
+  - slideRight: Glissement depuis la droite
+  - slideTop: Glissement depuis le haut
+  - slideBottom: Glissement depuis le bas
+  - wipeLeft: Balayage vers la droite
+  - wipeRight: Balayage vers la gauche
+  - wipeTop: Balayage vers le bas
+  - wipeBottom: Balayage vers le haut
+  - splitH: Ouverture en deux volets horizontaux
+  - splitV: Ouverture en deux volets verticaux
+  - blindsH: Stores horizontaux
+  - blindsV: Stores verticaux
+  - diagonal: Balayage diagonal
+  - circle: Iris circulaire
+  - diamond: Iris en losange
+  - cornerTL: Depuis le coin supérieur gauche
+  - cornerTR: Depuis le coin supérieur droit
+  - cornerBL: Depuis le coin inférieur gauche
+  - cornerBR: Depuis le coin inférieur droit
+  - bounce: Zoom avec rebond
+  - elastic: Zoom élastique
+  - rotate: Rotation simulée
+  - flipH: Bascule horizontale simulée
+  - flipV: Bascule verticale simulée
+  - pixelate: Révélation par blocs
+  - checker: Damier progressif
+  - randomBars: Barres alternées
+  - curtain: Rideau central
+  - wave: Balayage ondulé
+  - focus: Mise au point progressive
+  - glitch: Décalage de bandes
 - explorerTvOnDurationMs: 1000
   $name: Durée des animations (ms)
   $description: "Durée en millisecondes, de 100 à 3000. Valeur par défaut : 1000."
@@ -185,6 +403,8 @@ struct {
     int explorerCloseAnimation = 0;
     int explorerMinimizeAnimation = 0;
     int explorerRestoreAnimation = 0;
+    int explorerMaximizeAnimation = 0;
+    int explorerUnmaximizeAnimation = 0;
 } g_settings;
 
 BackgroundTranslucentEffect g_themeBackgroundTranslucentEffect;
@@ -10063,14 +10283,12 @@ void DrawExplorerCrtBeam(ExplorerTvOnOverlay* state, float cx, float cy,
             }
             const float a = gy * gx * intensity;
             if (a < 0.02f) continue;
-            const float b = (210.0f + 45.0f * gy) * a;
-            const float g = (235.0f + 20.0f * gy) * a;
-            const float r = 255.0f * a;
+            // Use a dark CRT beam instead of the original white flash.
             BYTE* d = row + static_cast<size_t>(x) * 4;
             const float inv = 1.0f - a;
-            d[0] = static_cast<BYTE>(std::min(255.0f, b + d[0] * inv));
-            d[1] = static_cast<BYTE>(std::min(255.0f, g + d[1] * inv));
-            d[2] = static_cast<BYTE>(std::min(255.0f, r + d[2] * inv));
+            d[0] = static_cast<BYTE>(d[0] * inv);
+            d[1] = static_cast<BYTE>(d[1] * inv);
+            d[2] = static_cast<BYTE>(d[2] * inv);
             d[3] = static_cast<BYTE>(std::min(255.0f, 255.0f * a + d[3] * inv));
         }
     }
@@ -10101,9 +10319,10 @@ void DrawExplorerCrtDot(ExplorerTvOnOverlay* state, float cx, float cy,
             const float a = weight * intensity;
             BYTE* d = row + static_cast<size_t>(x) * 4;
             const float inv = 1.0f - a;
-            d[0] = static_cast<BYTE>(std::min(255.0f, 255.0f * a + d[0] * inv));
-            d[1] = static_cast<BYTE>(std::min(255.0f, 255.0f * a + d[1] * inv));
-            d[2] = static_cast<BYTE>(std::min(255.0f, 255.0f * a + d[2] * inv));
+            // Fade the CRT dot toward black, not white.
+            d[0] = static_cast<BYTE>(d[0] * inv);
+            d[1] = static_cast<BYTE>(d[1] * inv);
+            d[2] = static_cast<BYTE>(d[2] * inv);
             d[3] = static_cast<BYTE>(std::min(255.0f, 255.0f * a + d[3] * inv));
         }
     }
@@ -10172,56 +10391,111 @@ void RenderExplorerTvOnFrame(HWND hWnd, ExplorerTvOnOverlay* state,
         static_cast<size_t>(state->width) * state->height * 4;
     memset(state->frameBits, 0, bytes);
 
-    // Alternative styles share the same captured frame and layered overlay.
-    // Style 0 retains the original CRT effect unchanged.
+    // Style 0 keeps the original CRT animation; styles 1-39 use independent transforms and reveal masks.
     if (state->animationStyle != 0) {
+        const int style = std::max(1, std::min(39, state->animationStyle));
         const float p = static_cast<float>(progress);
-        float scale = 1.0f;
-        if (state->animationStyle == 1 || state->animationStyle == 2) {
-            scale = 0.18f + 0.82f * p;
-        } else if (state->animationStyle == 5) {
-            scale = 0.05f + 0.95f * p;
+        const float eased = p*p*(3.0f-2.0f*p);
+        const float invP = 1.0f-p;
+        float scaleX=1.0f, scaleY=1.0f, alpha=1.0f, offsetX=0.0f, offsetY=0.0f;
+        switch(style) {
+            case 1: scaleX=0.12f+0.88f*eased; scaleY=0.12f+0.88f*eased; break;
+            case 2: scaleX=0.10f+0.90f*eased; scaleY=0.10f+0.90f*eased; alpha=p; break;
+            case 3: scaleX=eased; break;
+            case 4: scaleY=eased; break;
+            case 5: scaleX=0.04f+0.96f*eased; scaleY=0.04f+0.96f*eased; break;
+            case 6: alpha=p; break;
+            case 7: scaleX=0.05f+0.95f*p; scaleY=0.05f+0.95f*p; offsetX=-state->width*0.35f*invP; break;
+            case 8: scaleX=0.05f+0.95f*p; scaleY=0.05f+0.95f*p; offsetX=state->width*0.35f*invP; break;
+            case 9: scaleX=0.05f+0.95f*p; scaleY=0.05f+0.95f*p; offsetY=-state->height*0.35f*invP; break;
+            case 10: scaleX=0.05f+0.95f*p; scaleY=0.05f+0.95f*p; offsetY=state->height*0.35f*invP; break;
+            case 11: scaleX=0.12f+0.88f*eased; break;
+            case 12: scaleY=0.12f+0.88f*eased; break;
+            case 13: scaleX=eased; scaleY=0.12f+0.88f*eased; break;
+            case 14: scaleY=eased; scaleX=0.12f+0.88f*eased; break;
+            case 15: scaleX=0.1f+0.9f*eased; scaleY=0.1f+0.9f*eased; break;
+            case 16: scaleX=0.1f+0.9f*eased; scaleY=0.1f+0.9f*eased; break;
+            case 17: scaleX=0.1f+0.9f*eased; scaleY=0.1f+0.9f*eased; break;
+            case 18: scaleX=0.1f+0.9f*eased; scaleY=0.1f+0.9f*eased; break;
+            case 19: scaleX=0.08f+0.92f*eased; scaleY=0.08f+0.92f*eased; break;
+            case 20: scaleX=0.08f+0.92f*eased; scaleY=0.08f+0.92f*eased; break;
+            case 21: scaleX=0.08f+0.92f*eased; scaleY=0.08f+0.92f*eased; break;
+            case 22: scaleX=0.08f+0.92f*eased; scaleY=0.08f+0.92f*eased; break;
+            case 23: scaleX=0.08f+0.92f*eased; scaleY=0.08f+0.92f*eased; break;
+            case 24: scaleX=0.05f+0.95f*eased; scaleY=0.05f+0.95f*eased; offsetX=-state->width*0.18f*invP; offsetY=-state->height*0.18f*invP; break;
+            case 25: scaleX=0.05f+0.95f*eased; scaleY=0.05f+0.95f*eased; offsetX=state->width*0.18f*invP; offsetY=-state->height*0.18f*invP; break;
+            case 26: scaleX=0.05f+0.95f*eased; scaleY=0.05f+0.95f*eased; offsetX=-state->width*0.18f*invP; offsetY=state->height*0.18f*invP; break;
+            case 27: scaleX=0.05f+0.95f*eased; scaleY=0.05f+0.95f*eased; offsetX=state->width*0.18f*invP; offsetY=state->height*0.18f*invP; break;
+            case 28: scaleX=0.06f+0.94f*(p<0.82f?p/0.82f:1.0f-(p-0.82f)*0.35f); scaleY=scaleX; break;
+            case 29: scaleX=0.04f+0.96f*(p<0.72f?p/0.72f:1.0f-(p-0.72f)*0.12f); scaleY=scaleX; break;
+            case 30: scaleX=0.08f+0.92f*eased; scaleY=0.08f+0.92f*eased; offsetX=state->width*0.08f*invP; break;
+            case 31: scaleX=0.08f+0.92f*eased; scaleY=0.08f+0.92f*eased; offsetX=-state->width*0.08f*invP; break;
+            case 32: scaleX=0.08f+0.92f*eased; scaleY=0.08f+0.92f*eased; offsetY=state->height*0.08f*invP; break;
+            case 33: scaleX=0.08f+0.92f*eased; scaleY=0.08f+0.92f*eased; offsetY=-state->height*0.08f*invP; break;
+            case 34: scaleX=0.08f+0.92f*eased; scaleY=0.08f+0.92f*eased; break;
+            case 35: scaleX=0.08f+0.92f*eased; scaleY=0.08f+0.92f*eased; break;
+            case 36: scaleX=0.08f+0.92f*eased; scaleY=0.08f+0.92f*eased; break;
+            case 37: scaleX=0.08f+0.92f*eased; scaleY=0.08f+0.92f*eased; break;
+            case 38: scaleX=0.08f+0.92f*eased; scaleY=0.08f+0.92f*eased; break;
+            case 39: scaleX=0.08f+0.92f*eased; scaleY=0.08f+0.92f*eased; break;
+            default: break;
         }
-        const int drawW = std::max(1, static_cast<int>(state->width * scale));
-        const int drawH = std::max(1, static_cast<int>(state->height * scale));
-        const int left = (state->width - drawW) / 2;
-        const int top = (state->height - drawH) / 2;
-        const auto* src = state->sourcePixels.data();
-        auto* dst = static_cast<BYTE*>(state->frameBits);
-        const size_t stride = static_cast<size_t>(state->width) * 4;
-        const float fade = state->animationStyle == 2
-            ? p : (state->animationStyle == 1 ? p : 1.0f);
-        for (int y = 0; y < drawH; ++y) {
-            const int dy = top + y;
-            if (dy < 0 || dy >= state->height) continue;
-            const int sy = std::min(state->height - 1,
-                static_cast<int>((static_cast<long long>(y) * state->height) / drawH));
-            for (int x = 0; x < drawW; ++x) {
-                const int dx = left + x;
-                if (dx < 0 || dx >= state->width) continue;
-                if (state->animationStyle == 3 &&
-                    std::abs(dx - state->width / 2) > state->width * p / 2) continue;
-                if (state->animationStyle == 4 &&
-                    std::abs(dy - state->height / 2) > state->height * p / 2) continue;
-                if (state->animationStyle == 6 && ((dy / 3) % 2) != 0 && p < 0.96f) continue;
-                const int sx = std::min(state->width - 1,
-                    static_cast<int>((static_cast<long long>(x) * state->width) / drawW));
-                const BYTE* source = src + static_cast<size_t>(sy) * stride +
-                                     static_cast<size_t>(sx) * 4;
-                BYTE* target = dst + static_cast<size_t>(dy) * stride +
-                               static_cast<size_t>(dx) * 4;
-                target[0] = static_cast<BYTE>(source[0] * fade);
-                target[1] = static_cast<BYTE>(source[1] * fade);
-                target[2] = static_cast<BYTE>(source[2] * fade);
-                target[3] = static_cast<BYTE>(255.0f * fade);
+        const int drawW=std::max(1,static_cast<int>(state->width*scaleX));
+        const int drawH=std::max(1,static_cast<int>(state->height*scaleY));
+        const int left=(state->width-drawW)/2+static_cast<int>(offsetX);
+        const int top=(state->height-drawH)/2+static_cast<int>(offsetY);
+        const auto* src=state->sourcePixels.data();
+        auto* dst=static_cast<BYTE*>(state->frameBits);
+        const size_t stride=static_cast<size_t>(state->width)*4;
+        for(int y=0;y<drawH;++y) {
+            const int dy=top+y; if(dy<0||dy>=state->height) continue;
+            const int sy=std::min(state->height-1,static_cast<int>((static_cast<long long>(y)*state->height)/drawH));
+            for(int x=0;x<drawW;++x) {
+                const int dx=left+x; if(dx<0||dx>=state->width) continue;
+                const float nx=(static_cast<float>(dx)+0.5f)/state->width;
+                const float ny=(static_cast<float>(dy)+0.5f)/state->height;
+                bool visible=true;
+                switch(style) {
+                    case 3: visible=nx<=p; break;
+                    case 4: visible=ny<=p; break;
+                    case 13: visible=nx>=invP; break;
+                    case 14: visible=nx<=p; break;
+                    case 15: visible=ny>=invP; break;
+                    case 16: visible=ny<=p; break;
+                    case 17: visible=std::abs(nx-0.5f)<=eased*0.5f; break;
+                    case 18: visible=std::abs(ny-0.5f)<=eased*0.5f; break;
+                    case 19: visible=(static_cast<int>(ny*12)<static_cast<int>(p*12))||p>=1.0f; break;
+                    case 20: visible=(static_cast<int>(nx*12)<static_cast<int>(p*12))||p>=1.0f; break;
+                    case 21: visible=nx+ny<=p*2.0f; break;
+                    case 22: visible=(nx-0.5f)*(nx-0.5f)+(ny-0.5f)*(ny-0.5f)<=0.5f*p*p; break;
+                    case 23: visible=std::abs(nx-0.5f)+std::abs(ny-0.5f)<=p; break;
+                    case 24: visible=nx>=invP&&ny>=invP; break;
+                    case 25: visible=nx<=p&&ny>=invP; break;
+                    case 26: visible=nx>=invP&&ny<=p; break;
+                    case 27: visible=nx<=p&&ny<=p; break;
+                    case 33: visible=((dx/8+dy/8)%2==0)||p>0.92f; break;
+                    case 34: visible=(((dx/8)%2)==((dy/8)%2))||p>0.92f; break;
+                    case 35: visible=((dy/5)%2==0)||p>0.92f; break;
+                    case 36: visible=std::abs(nx-0.5f)<=0.5f*p; break;
+                    case 37: visible=ny<=p+0.02f*std::sin(nx*18.0f); break;
+                    case 38: visible=std::abs(nx-0.5f)<=0.08f+p*0.42f&&std::abs(ny-0.5f)<=0.08f+p*0.42f; break;
+                    case 39: visible=(static_cast<int>(ny*18)<static_cast<int>(p*18))||p>=0.96f; break;
+                    default: break;
+                }
+                if(!visible) continue;
+                const int sx=std::min(state->width-1,static_cast<int>((static_cast<long long>(x)*state->width)/drawW));
+                const BYTE* source=src+static_cast<size_t>(sy)*stride+static_cast<size_t>(sx)*4;
+                BYTE* target=dst+static_cast<size_t>(dy)*stride+static_cast<size_t>(dx)*4;
+                target[0]=static_cast<BYTE>(source[0]*alpha);
+                target[1]=static_cast<BYTE>(source[1]*alpha);
+                target[2]=static_cast<BYTE>(source[2]*alpha);
+                target[3]=static_cast<BYTE>(255.0f*alpha);
             }
         }
-        POINT destination{state->targetRect.left, state->targetRect.top};
-        POINT sourcePoint{0, 0};
-        SIZE size{state->width, state->height};
-        BLENDFUNCTION blend{AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
-        UpdateLayeredWindow(hWnd, nullptr, &destination, &size, state->frameDc,
-                            &sourcePoint, 0, &blend, ULW_ALPHA);
+        POINT destination{state->targetRect.left,state->targetRect.top}, sourcePoint{0,0};
+        SIZE size{state->width,state->height};
+        BLENDFUNCTION blend{AC_SRC_OVER,0,255,AC_SRC_ALPHA};
+        UpdateLayeredWindow(hWnd,nullptr,&destination,&size,state->frameDc,&sourcePoint,0,&blend,ULW_ALPHA);
         return;
     }
 
@@ -11194,6 +11468,39 @@ void LoadSettings() {
         else if (wcscmp(value, L"vertical") == 0) style = 4;
         else if (wcscmp(value, L"center") == 0) style = 5;
         else if (wcscmp(value, L"scanlines") == 0) style = 6;
+        else if (wcscmp(value, L"fade") == 0) style = 7;
+        else if (wcscmp(value, L"zoomOut") == 0) style = 8;
+        else if (wcscmp(value, L"slideLeft") == 0) style = 9;
+        else if (wcscmp(value, L"slideRight") == 0) style = 10;
+        else if (wcscmp(value, L"slideTop") == 0) style = 11;
+        else if (wcscmp(value, L"slideBottom") == 0) style = 12;
+        else if (wcscmp(value, L"wipeLeft") == 0) style = 13;
+        else if (wcscmp(value, L"wipeRight") == 0) style = 14;
+        else if (wcscmp(value, L"wipeTop") == 0) style = 15;
+        else if (wcscmp(value, L"wipeBottom") == 0) style = 16;
+        else if (wcscmp(value, L"splitH") == 0) style = 17;
+        else if (wcscmp(value, L"splitV") == 0) style = 18;
+        else if (wcscmp(value, L"blindsH") == 0) style = 19;
+        else if (wcscmp(value, L"blindsV") == 0) style = 20;
+        else if (wcscmp(value, L"diagonal") == 0) style = 21;
+        else if (wcscmp(value, L"circle") == 0) style = 22;
+        else if (wcscmp(value, L"diamond") == 0) style = 23;
+        else if (wcscmp(value, L"cornerTL") == 0) style = 24;
+        else if (wcscmp(value, L"cornerTR") == 0) style = 25;
+        else if (wcscmp(value, L"cornerBL") == 0) style = 26;
+        else if (wcscmp(value, L"cornerBR") == 0) style = 27;
+        else if (wcscmp(value, L"bounce") == 0) style = 28;
+        else if (wcscmp(value, L"elastic") == 0) style = 29;
+        else if (wcscmp(value, L"rotate") == 0) style = 30;
+        else if (wcscmp(value, L"flipH") == 0) style = 31;
+        else if (wcscmp(value, L"flipV") == 0) style = 32;
+        else if (wcscmp(value, L"pixelate") == 0) style = 33;
+        else if (wcscmp(value, L"checker") == 0) style = 34;
+        else if (wcscmp(value, L"randomBars") == 0) style = 35;
+        else if (wcscmp(value, L"curtain") == 0) style = 36;
+        else if (wcscmp(value, L"wave") == 0) style = 37;
+        else if (wcscmp(value, L"focus") == 0) style = 38;
+        else if (wcscmp(value, L"glitch") == 0) style = 39;
         Wh_FreeStringSetting(value);
         return style;
     };
@@ -11201,6 +11508,8 @@ void LoadSettings() {
     g_settings.explorerCloseAnimation = readAnimationStyle(L"explorerCloseAnimation");
     g_settings.explorerMinimizeAnimation = readAnimationStyle(L"explorerMinimizeAnimation");
     g_settings.explorerRestoreAnimation = readAnimationStyle(L"explorerRestoreAnimation");
+    g_settings.explorerMaximizeAnimation = readAnimationStyle(L"explorerMaximizeAnimation");
+    g_settings.explorerUnmaximizeAnimation = readAnimationStyle(L"explorerUnmaximizeAnimation");
 
     const int configuredDurationMs =
         Wh_GetIntSetting(L"explorerTvOnDurationMs");
