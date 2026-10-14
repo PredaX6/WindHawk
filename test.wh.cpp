@@ -53,6 +53,9 @@ envoyez manuellement les lignes pertinentes du journal.
 - explorerTvOnDurationMs: 1000
   $name: Durée de l’animation CRT (ms)
   $description: "Durée en millisecondes, de 100 à 3000. Valeur par défaut : 1000."
+- explorerTvOnFrameIntervalMs: 18
+  $name: Intervalle entre les images CRT (ms)
+  $description: "Délai entre deux images de l’animation, en millisecondes. Valeur par défaut : 18. Valeurs autorisées : 1 à 1000."
 */
 // ==/WindhawkModSettings==
 
@@ -140,6 +143,7 @@ struct {
     XamlDiagnosticsHandling xamlDiagnosticsHandling;
     bool explorerTvOnEnabled = true;
     int explorerTvOnDurationMs;
+    int explorerTvOnFrameIntervalMs;
 } g_settings;
 
 BackgroundTranslucentEffect g_themeBackgroundTranslucentEffect;
@@ -9790,10 +9794,12 @@ struct ExplorerTvOnOverlay {
 };
 
 constexpr UINT_PTR kExplorerTvOnTimerId = 1;
-constexpr UINT kExplorerTvOnFrameIntervalMs = 18;
 constexpr int kExplorerTvOnDefaultDurationMs = 1000;
 constexpr int kExplorerTvOnMinDurationMs = 100;
 constexpr int kExplorerTvOnMaxDurationMs = 3000;
+constexpr int kExplorerTvOnDefaultFrameIntervalMs = 18;
+constexpr int kExplorerTvOnMinFrameIntervalMs = 1;
+constexpr int kExplorerTvOnMaxFrameIntervalMs = 1000;
 constexpr float kExplorerTvOnSquashEnd = 0.42f;
 constexpr float kExplorerTvOnZipEnd = 0.78f;
 constexpr wchar_t kExplorerTvOnOverlayClass[] =
@@ -10295,7 +10301,7 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
             GetWindowLongPtrW(overlay, GWLP_USERDATA));
         if (!state ||
             !(state->timer = SetTimer(overlay, kExplorerTvOnTimerId,
-                                      kExplorerTvOnFrameIntervalMs, nullptr))) {
+                                      static_cast<UINT>(g_settings.explorerTvOnFrameIntervalMs), nullptr))) {
             DestroyWindow(overlay);
             return ShowWindow_Original(hWnd, nCmdShow);
         }
@@ -10367,7 +10373,7 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
         RenderExplorerTvOnFrame(overlay, state, 0.0);
 
         if (!(state->timer = SetTimer(overlay, kExplorerTvOnTimerId,
-                                      kExplorerTvOnFrameIntervalMs, nullptr))) {
+                                      static_cast<UINT>(g_settings.explorerTvOnFrameIntervalMs), nullptr))) {
             DestroyWindow(overlay);
             return ShowWindow_Original(hWnd, nCmdShow);
         }
@@ -10778,6 +10784,18 @@ void LoadSettings() {
                       ? kExplorerTvOnMaxDurationMs
                       : configuredDurationMs))
         : kExplorerTvOnDefaultDurationMs;
+
+    const int configuredFrameIntervalMs =
+        Wh_GetIntSetting(L"explorerTvOnFrameIntervalMs");
+    g_settings.explorerTvOnFrameIntervalMs =
+        configuredFrameIntervalMs > 0
+            ? (configuredFrameIntervalMs < kExplorerTvOnMinFrameIntervalMs
+                   ? kExplorerTvOnMinFrameIntervalMs
+                   : (configuredFrameIntervalMs >
+                              kExplorerTvOnMaxFrameIntervalMs
+                          ? kExplorerTvOnMaxFrameIntervalMs
+                          : configuredFrameIntervalMs))
+            : kExplorerTvOnDefaultFrameIntervalMs;
 
     // Remaining settings are fixed in code.
     g_settings.explorerFrameContainerHeight = 0;
