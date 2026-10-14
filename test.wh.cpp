@@ -1,13 +1,13 @@
 // ==WindhawkMod==
 // @id              test
 // @name            Test
-// @description     Anime l’ouverture, la fermeture, la réduction et la restauration des fenêtres.
+// @description     Ajoute un effet translucide à l’Explorateur de fichiers Windows 11.
 // @version         1.7
 // @author          m417z
 // @github          https://github.com/m417z
 // @twitter         https://twitter.com/m417z
 // @homepage        https://m417z.com/
-// @include         *
+// @include         explorer.exe
 // @architecture    x86-64
 // @compilerOptions -lcomctl32 -ld2d1 -ldwmapi -lgdi32 -lmsimg32 -lole32 -loleaut32 -lruntimeobject -lshlwapi -luxtheme
 // ==/WindhawkMod==
@@ -9595,228 +9595,23 @@ void TriggerWindowCompositionUpdate(HWND hWnd) {
                  RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
 }
 
-// Temporarily clip the real Explorer window to create a CRT-style power
-// transition without a captured overlay. The region is removed after opening.
-bool SetTvWindowRegion(HWND hWnd, int left, int top, int right, int bottom) {
-    HRGN region = CreateRectRgn(left, top, right, bottom);
-    if (!region) {
-        return false;
-    }
-
-    if (!SetWindowRgn(hWnd, region, TRUE)) {
-        DeleteObject(region);
-        return false;
-    }
-
-    // SetWindowRgn takes ownership of the region on success.
-    return true;
-}
-
-bool IsAnimatableApplicationWindow(HWND hWnd) {
-    if (!IsWindow(hWnd) || GetAncestor(hWnd, GA_ROOT) != hWnd) {
-        return false;
-    }
-
-    const LONG_PTR style = GetWindowLongPtrW(hWnd, GWL_STYLE);
-    const LONG_PTR exStyle = GetWindowLongPtrW(hWnd, GWL_EXSTYLE);
-    if ((style & WS_CHILD) || (exStyle & WS_EX_TOOLWINDOW)) {
-        return false;
-    }
-
-    WCHAR className[128] = {};
-    if (GetClassNameW(hWnd, className, ARRAYSIZE(className))) {
-        // Exclude core desktop and taskbar surfaces; animate ordinary app
-        // windows, including dialogs and windows belonging to other apps.
-        if (_wcsicmp(className, L"Progman") == 0 ||
-            _wcsicmp(className, L"WorkerW") == 0 ||
-            _wcsicmp(className, L"Shell_TrayWnd") == 0 ||
-            _wcsicmp(className, L"Shell_SecondaryTrayWnd") == 0 ||
-            _wcsicmp(className, L"NotifyIconOverflowWindow") == 0) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-bool AnimateTvWindowRegion(HWND hWnd, bool opening) {
-    RECT windowRect;
-    if (!GetWindowRect(hWnd, &windowRect)) {
-        return false;
-    }
-
-    const int width = windowRect.right - windowRect.left;
-    const int height = windowRect.bottom - windowRect.top;
-    if (width < 4 || height < 4) {
-        return false;
-    }
-
-    constexpr int kFrames = 12;
-    const int centerX = width / 2;
-    const int centerY = height / 2;
-    bool ok = true;
-
-    auto setFrame = [&](int left, int top, int right, int bottom) {
-        if (!SetTvWindowRegion(hWnd, left, top, right, bottom)) {
-            ok = false;
-        }
-        return ok;
-    };
-
-    if (opening) {
-        // Start as a point, expand into a horizontal scanline, then reveal
-        // the full native window from the center outward.
-        if (!setFrame(centerX, centerY, centerX + 1, centerY + 1)) {
-            return false;
-        }
-
-        for (int i = 1; i <= kFrames && ok; ++i) {
-            int halfWidth = (width * i) / (2 * kFrames);
-            if (halfWidth < 1) halfWidth = 1;
-            setFrame(centerX - halfWidth, centerY, centerX + halfWidth,
-                     centerY + 1);
-            Sleep(8);
-        }
-
-        for (int i = 1; i <= kFrames && ok; ++i) {
-            int halfHeight = (height * i) / (2 * kFrames);
-            if (halfHeight < 1) halfHeight = 1;
-            setFrame(0, centerY - halfHeight, width, centerY + halfHeight);
-            Sleep(8);
-        }
-
-        // Restore the normal rectangular window and force its final repaint.
-        if (ok) {
-            SetWindowRgn(hWnd, nullptr, TRUE);
-            RedrawWindow(hWnd, nullptr, nullptr,
-                         RDW_INVALIDATE | RDW_ERASE | RDW_FRAME |
-                             RDW_ALLCHILDREN | RDW_UPDATENOW);
-        }
-    } else {
-        // Collapse the native window vertically, then horizontally to a point.
-        for (int i = 1; i <= kFrames && ok; ++i) {
-            int halfHeight = (height * (kFrames - i)) / (2 * kFrames);
-            if (halfHeight < 1) halfHeight = 1;
-            setFrame(0, centerY - halfHeight, width, centerY + halfHeight);
-            Sleep(8);
-        }
-
-        for (int i = 1; i <= kFrames && ok; ++i) {
-            int halfWidth = (width * (kFrames - i)) / (2 * kFrames);
-            if (halfWidth < 1) halfWidth = 1;
-            setFrame(centerX - halfWidth, centerY, centerX + halfWidth,
-                     centerY + 1);
-            Sleep(8);
-        }
-    }
-
-    if (!ok) {
-        SetWindowRgn(hWnd, nullptr, TRUE);
-        RedrawWindow(hWnd, nullptr, nullptr,
-                     RDW_INVALIDATE | RDW_ERASE | RDW_FRAME |
-                         RDW_ALLCHILDREN | RDW_UPDATENOW);
-    }
-
-    return ok;
-}
-
 LRESULT CALLBACK MicaFocusPersistenceSubclassProc(HWND hWnd,
                                                   UINT uMsg,
                                                   WPARAM wParam,
                                                   LPARAM lParam,
                                                   UINT_PTR uIdSubclass,
                                                   DWORD_PTR dwRefData) {
-    // Animate taskbar/system-command minimization before Windows hides the
-    // window. The property prevents ShowWindow_Hook from running the same
-    // animation a second time if this command reaches ShowWindow internally.
-    const bool minimizeFromSystemCommand =
-        uMsg == WM_SYSCOMMAND &&
-        (wParam & 0xFFF0) == SC_MINIMIZE &&
-        IsAnimatableApplicationWindow(hWnd) &&
-        IsWindowVisible(hWnd) && !IsIconic(hWnd);
-    if (minimizeFromSystemCommand) {
-        SetPropW(hWnd, L"WindHawkTestExplorerMinimizeAnimationInProgress",
-                 reinterpret_cast<HANDLE>(static_cast<INT_PTR>(1)));
-        AnimateTvWindowRegion(hWnd, false);
-    }
-
-    // Temporary diagnostics for window lifecycle paths, especially Settings.
-    if (uMsg == WM_CLOSE || uMsg == WM_DESTROY || uMsg == WM_NCDESTROY) {
-        WCHAR className[128] = {};
-        WCHAR windowTitle[256] = {};
-        GetClassNameW(hWnd, className, ARRAYSIZE(className));
-        GetWindowTextW(hWnd, windowTitle, ARRAYSIZE(windowTitle));
-        Wh_Log(L"TV diagnostic: subclass msg=%u hwnd=%08X class=%s title=%s visible=%d iconic=%d",
-               uMsg, (DWORD)(ULONG_PTR)hWnd, className, windowTitle,
-               IsWindowVisible(hWnd), IsIconic(hWnd));
-    }
-
-    // Run the CRT-off effect on the real window, without a bitmap overlay.
-    if (uMsg == WM_CLOSE && IsWindowVisible(hWnd)) {
-        AnimateTvWindowRegion(hWnd, false);
-    }
-
-    const bool restoreFromSystemMenu =
-        uMsg == WM_SYSCOMMAND &&
-        (wParam & 0xFFF0) == SC_RESTORE &&
-        IsIconic(hWnd) &&
-        IsAnimatableApplicationWindow(hWnd);
-
-    // Prevent a nested ShowWindow call from starting a second restore
-    // animation while this system-command restore is being processed.
-    if (restoreFromSystemMenu) {
-        SetPropW(hWnd, L"WindHawkTestExplorerRestoreAnimationInProgress",
-                 reinterpret_cast<HANDLE>(static_cast<INT_PTR>(1)));
-    }
-
-    LRESULT result = DefSubclassProc(hWnd, uMsg, wParam, lParam);
-
-    if (minimizeFromSystemCommand) {
-        SetWindowRgn(hWnd, nullptr, TRUE);
-        RemovePropW(hWnd, L"WindHawkTestExplorerMinimizeAnimationInProgress");
-    }
-
-    // Apply the clipping region after Windows has restored the normal
-    // window bounds, then reveal the real window.
-    if (restoreFromSystemMenu && IsWindow(hWnd) && !IsIconic(hWnd)) {
-        RECT restoredRect;
-        if (GetWindowRect(hWnd, &restoredRect)) {
-            const int width = restoredRect.right - restoredRect.left;
-            const int height = restoredRect.bottom - restoredRect.top;
-            if (width >= 4 && height >= 4) {
-                const int centerX = width / 2;
-                const int centerY = height / 2;
-                if (SetTvWindowRegion(hWnd, centerX, centerY,
-                                      centerX + 1, centerY + 1)) {
-                    if (!AnimateTvWindowRegion(hWnd, true)) {
-                        SetWindowRgn(hWnd, nullptr, TRUE);
-                        RedrawWindow(hWnd, nullptr, nullptr,
-                                     RDW_INVALIDATE | RDW_ERASE | RDW_FRAME |
-                                         RDW_ALLCHILDREN | RDW_UPDATENOW);
-                    }
-                }
-            }
-        }
-    }
-
-    if (restoreFromSystemMenu && IsWindow(hWnd)) {
-        RemovePropW(hWnd, L"WindHawkTestExplorerRestoreAnimationInProgress");
-    }
-
-    // If another handler cancels WM_CLOSE, make sure the window is not left
-    // clipped to a point.
-    if (uMsg == WM_CLOSE && IsWindow(hWnd)) {
-        SetWindowRgn(hWnd, nullptr, TRUE);
-        RedrawWindow(hWnd, nullptr, nullptr,
-                     RDW_INVALIDATE | RDW_ERASE | RDW_FRAME |
-                         RDW_ALLCHILDREN | RDW_UPDATENOW);
-    }
+    LRESULT result =
+        DefSubclassProc(hWnd, uMsg, wParam, lParam);
 
     if (uMsg == WM_NCACTIVATE && !wParam) {
         auto effect = GetEffectiveBackgroundTranslucentEffect();
         if (effect == BackgroundTranslucentEffect::kAcrylic ||
             effect == BackgroundTranslucentEffect::kMica ||
             effect == BackgroundTranslucentEffect::kMicaAlt) {
+            // Keep DWM's active backdrop appearance when Explorer loses focus.
+            // WM_NCACTIVATE with lParam = -1 avoids repainting the non-client
+            // area while restoring the active visual state.
             PostMessageW(hWnd, WM_NCACTIVATE, TRUE, -1);
         }
     }
@@ -9844,155 +9639,7 @@ void OnWindowCreated(HWND hWnd, PCSTR funcName) {
 
         InitializeForCurrentThread();
         InitializeSettingsAndTap();
-    } else if (IsAnimatableApplicationWindow(hWnd)) {
-        // Animation support is independent from Explorer-specific styling.
-        InstallMicaFocusPersistence(hWnd);
     }
-}
-
-using SetWindowPos_t = decltype(&SetWindowPos);
-SetWindowPos_t SetWindowPos_Original;
-BOOL WINAPI SetWindowPos_Hook(HWND hWnd,
-                              HWND hWndInsertAfter,
-                              int X,
-                              int Y,
-                              int cx,
-                              int cy,
-                              UINT uFlags) {
-    if ((uFlags & SWP_SHOWWINDOW) &&
-        IsAnimatableApplicationWindow(hWnd) &&
-        !IsWindowVisible(hWnd) &&
-        !GetPropW(hWnd, L"WindHawkTestExplorerOpenAnimationDone")) {
-        RECT windowRect;
-        if (GetWindowRect(hWnd, &windowRect)) {
-            const int width = windowRect.right - windowRect.left;
-            const int height = windowRect.bottom - windowRect.top;
-            if (width >= 4 && height >= 4) {
-                const int centerX = width / 2;
-                const int centerY = height / 2;
-                if (SetTvWindowRegion(hWnd, centerX, centerY,
-                                      centerX + 1, centerY + 1)) {
-                    SetPropW(hWnd, L"WindHawkTestExplorerOpenAnimationDone",
-                             reinterpret_cast<HANDLE>(static_cast<INT_PTR>(1)));
-                    BOOL result = SetWindowPos_Original(
-                        hWnd, hWndInsertAfter, X, Y, cx, cy, uFlags);
-                    if (AnimateTvWindowRegion(hWnd, true)) {
-                        return result;
-                    }
-
-                    SetWindowRgn(hWnd, nullptr, TRUE);
-                    RedrawWindow(hWnd, nullptr, nullptr,
-                                 RDW_INVALIDATE | RDW_ERASE | RDW_FRAME |
-                                     RDW_ALLCHILDREN | RDW_UPDATENOW);
-                    return result;
-                }
-            }
-        }
-    }
-
-    return SetWindowPos_Original(hWnd, hWndInsertAfter, X, Y, cx, cy, uFlags);
-}
-
-using ShowWindow_t = decltype(&ShowWindow);
-ShowWindow_t ShowWindow_Original;
-BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
-    const bool requestsMinimized =
-        nCmdShow == SW_MINIMIZE || nCmdShow == SW_SHOWMINIMIZED ||
-        nCmdShow == SW_SHOWMINNOACTIVE || nCmdShow == SW_FORCEMINIMIZE;
-
-    // Animate the visible Explorer window before Windows minimizes it. Clear
-    // the temporary region only after minimization, so it cannot remain on the
-    // minimized window and interfere with a later restoration.
-    if (requestsMinimized &&
-        IsAnimatableApplicationWindow(hWnd) &&
-        IsWindowVisible(hWnd) && !IsIconic(hWnd) &&
-        !GetPropW(hWnd, L"WindHawkTestExplorerMinimizeAnimationInProgress")) {
-        AnimateTvWindowRegion(hWnd, false);
-        BOOL previousVisibility = ShowWindow_Original(hWnd, nCmdShow);
-        SetWindowRgn(hWnd, nullptr, TRUE);
-        return previousVisibility;
-    }
-
-    const bool requestsVisible =
-        nCmdShow != SW_HIDE && nCmdShow != SW_MINIMIZE &&
-        nCmdShow != SW_SHOWMINIMIZED && nCmdShow != SW_SHOWMINNOACTIVE &&
-        nCmdShow != SW_FORCEMINIMIZE;
-
-    if (IsAnimatableApplicationWindow(hWnd)) {
-        WCHAR className[128] = {};
-        WCHAR windowTitle[256] = {};
-        GetClassNameW(hWnd, className, ARRAYSIZE(className));
-        GetWindowTextW(hWnd, windowTitle, ARRAYSIZE(windowTitle));
-        Wh_Log(L"TV diagnostic: ShowWindow hwnd=%08X cmd=%d class=%s title=%s visible=%d iconic=%d",
-               (DWORD)(ULONG_PTR)hWnd, nCmdShow, className, windowTitle,
-               IsWindowVisible(hWnd), IsIconic(hWnd));
-    }
-
-    // A minimized Explorer window is still considered visible by
-    // IsWindowVisible. Detect restoration separately and seed the region using
-    // the saved normal size, since GetWindowRect reports the minimized bounds.
-    if (requestsVisible && IsIconic(hWnd) &&
-        IsAnimatableApplicationWindow(hWnd) &&
-        !GetPropW(hWnd, L"WindHawkTestExplorerRestoreAnimationInProgress")) {
-        WINDOWPLACEMENT placement = {sizeof(placement)};
-        if (GetWindowPlacement(hWnd, &placement)) {
-            const int width = placement.rcNormalPosition.right -
-                              placement.rcNormalPosition.left;
-            const int height = placement.rcNormalPosition.bottom -
-                               placement.rcNormalPosition.top;
-            if (width >= 4 && height >= 4) {
-                const int centerX = width / 2;
-                const int centerY = height / 2;
-                if (SetTvWindowRegion(hWnd, centerX, centerY,
-                                      centerX + 1, centerY + 1)) {
-                    BOOL previousVisibility = ShowWindow_Original(hWnd, nCmdShow);
-                    if (AnimateTvWindowRegion(hWnd, true)) {
-                        return previousVisibility;
-                    }
-
-                    SetWindowRgn(hWnd, nullptr, TRUE);
-                    RedrawWindow(hWnd, nullptr, nullptr,
-                                 RDW_INVALIDATE | RDW_ERASE | RDW_FRAME |
-                                     RDW_ALLCHILDREN | RDW_UPDATENOW);
-                    return previousVisibility;
-                }
-            }
-        }
-    }
-
-    if (requestsVisible &&
-        IsAnimatableApplicationWindow(hWnd) &&
-        !IsWindowVisible(hWnd) &&
-        !GetPropW(hWnd, L"WindHawkTestExplorerOpenAnimationDone")) {
-        RECT windowRect;
-        if (GetWindowRect(hWnd, &windowRect)) {
-            const int width = windowRect.right - windowRect.left;
-            const int height = windowRect.bottom - windowRect.top;
-            if (width >= 4 && height >= 4) {
-                SetPropW(hWnd, L"WindHawkTestExplorerOpenAnimationDone",
-                         reinterpret_cast<HANDLE>(static_cast<INT_PTR>(1)));
-
-                // Show the real window through a tiny region, then expand it.
-                const int centerX = width / 2;
-                const int centerY = height / 2;
-                if (SetTvWindowRegion(hWnd, centerX, centerY,
-                                      centerX + 1, centerY + 1)) {
-                    BOOL previousVisibility = ShowWindow_Original(hWnd, nCmdShow);
-                    if (AnimateTvWindowRegion(hWnd, true)) {
-                        return previousVisibility;
-                    }
-
-                    SetWindowRgn(hWnd, nullptr, TRUE);
-                    RedrawWindow(hWnd, nullptr, nullptr,
-                                 RDW_INVALIDATE | RDW_ERASE | RDW_FRAME |
-                                     RDW_ALLCHILDREN | RDW_UPDATENOW);
-                    return previousVisibility;
-                }
-            }
-        }
-    }
-
-    return ShowWindow_Original(hWnd, nCmdShow);
 }
 
 using CreateWindowExW_t = decltype(&CreateWindowExW);
@@ -10009,18 +9656,6 @@ HWND WINAPI CreateWindowExW_Hook(DWORD dwExStyle,
                                  HMENU hMenu,
                                  HINSTANCE hInstance,
                                  PVOID lpParam) {
-    // CabinetWClass can be created with WS_VISIBLE, which bypasses the
-    // ShowWindow hook and exposes the full window before the TV-on effect.
-    // Create it hidden first, initialize its backdrop, then reveal it through
-    // the animated ShowWindow path.
-    // Keep visible top-level windows hidden until the animation hook is ready.
-    const bool animateInitialShow =
-        (dwStyle & WS_VISIBLE) != 0 && (dwStyle & WS_CHILD) == 0 &&
-        (dwExStyle & WS_EX_TOOLWINDOW) == 0;
-    if (animateInitialShow) {
-        dwStyle &= ~WS_VISIBLE;
-    }
-
     HWND hWnd = CreateWindowExW_Original(dwExStyle, lpClassName, lpWindowName,
                                          dwStyle, X, Y, nWidth, nHeight,
                                          hWndParent, hMenu, hInstance, lpParam);
@@ -10029,26 +9664,6 @@ HWND WINAPI CreateWindowExW_Hook(DWORD dwExStyle,
     }
 
     OnWindowCreated(hWnd, __FUNCTION__);
-
-    if (IsAnimatableApplicationWindow(hWnd)) {
-        WCHAR className[128] = {};
-        WCHAR windowTitle[256] = {};
-        GetClassNameW(hWnd, className, ARRAYSIZE(className));
-        GetWindowTextW(hWnd, windowTitle, ARRAYSIZE(windowTitle));
-        DWORD processId = 0;
-        GetWindowThreadProcessId(hWnd, &processId);
-        Wh_Log(L"TV diagnostic: created hwnd=%08X pid=%lu class=%s title=%s style=%08X exStyle=%08X visible=%d via=%S",
-               (DWORD)(ULONG_PTR)hWnd, processId, className, windowTitle,
-               (DWORD)GetWindowLongPtrW(hWnd, GWL_STYLE),
-               (DWORD)GetWindowLongPtrW(hWnd, GWL_EXSTYLE),
-               IsWindowVisible(hWnd), __FUNCTION__);
-    }
-
-    if (animateInitialShow && IsAnimatableApplicationWindow(hWnd)) {
-        ShowWindow_Hook(hWnd, SW_SHOW);
-    } else if (animateInitialShow) {
-        ShowWindow_Original(hWnd, SW_SHOW);
-    }
 
     return hWnd;
 }
@@ -10080,16 +9695,6 @@ HWND WINAPI CreateWindowInBand_Hook(DWORD dwExStyle,
                                     HINSTANCE hInstance,
                                     PVOID lpParam,
                                     DWORD dwBand) {
-    // Explorer can create its main window through this undocumented entry
-    // point instead of CreateWindowExW. Strip WS_VISIBLE before creation so
-    // the first visible frame is always the start of the TV-on animation.
-    const bool animateInitialShow =
-        (dwStyle & WS_VISIBLE) != 0 && (dwStyle & WS_CHILD) == 0 &&
-        (dwExStyle & WS_EX_TOOLWINDOW) == 0;
-    if (animateInitialShow) {
-        dwStyle &= ~WS_VISIBLE;
-    }
-
     HWND hWnd = CreateWindowInBand_Original(
         dwExStyle, lpClassName, lpWindowName, dwStyle, X, Y, nWidth, nHeight,
         hWndParent, hMenu, hInstance, lpParam, dwBand);
@@ -10098,10 +9703,6 @@ HWND WINAPI CreateWindowInBand_Hook(DWORD dwExStyle,
     }
 
     OnWindowCreated(hWnd, __FUNCTION__);
-
-    if (animateInitialShow) {
-        ShowWindow_Hook(hWnd, SW_SHOW);
-    }
 
     return hWnd;
 }
@@ -10135,16 +9736,6 @@ HWND WINAPI CreateWindowInBandEx_Hook(DWORD dwExStyle,
                                       PVOID lpParam,
                                       DWORD dwBand,
                                       DWORD dwTypeFlags) {
-    // Cover the extended banded-window creation path for the same reason as
-    // CreateWindowInBand: WS_VISIBLE would expose the full window before the
-    // ShowWindow hook gets a chance to apply the initial region.
-    const bool animateInitialShow =
-        (dwStyle & WS_VISIBLE) != 0 && (dwStyle & WS_CHILD) == 0 &&
-        (dwExStyle & WS_EX_TOOLWINDOW) == 0;
-    if (animateInitialShow) {
-        dwStyle &= ~WS_VISIBLE;
-    }
-
     HWND hWnd = CreateWindowInBandEx_Original(
         dwExStyle, lpClassName, lpWindowName, dwStyle, X, Y, nWidth, nHeight,
         hWndParent, hMenu, hInstance, lpParam, dwBand, dwTypeFlags);
@@ -10153,10 +9744,6 @@ HWND WINAPI CreateWindowInBandEx_Hook(DWORD dwExStyle,
     }
 
     OnWindowCreated(hWnd, __FUNCTION__);
-
-    if (animateInitialShow) {
-        ShowWindow_Hook(hWnd, SW_SHOW);
-    }
 
     return hWnd;
 }
@@ -10465,11 +10052,56 @@ BOOL Wh_ModInit() {
     WindhawkUtils::SetFunctionHook(CreateWindowExW, CreateWindowExW_Hook,
                                    &CreateWindowExW_Original);
 
-    WindhawkUtils::SetFunctionHook(ShowWindow, ShowWindow_Hook,
-                                   &ShowWindow_Original);
+    WindhawkUtils::SetFunctionHook(DwmSetWindowAttribute,
+                                   DwmSetWindowAttribute_Hook,
+                                   &DwmSetWindowAttribute_Original);
 
-    WindhawkUtils::SetFunctionHook(SetWindowPos, SetWindowPos_Hook,
-                                   &SetWindowPos_Original);
+    WindhawkUtils::SetFunctionHook(DwmExtendFrameIntoClientArea,
+                                   DwmExtendFrameIntoClientArea_Hook,
+                                   &DwmExtendFrameIntoClientArea_Original);
+
+    InitTextAlphaLuts();
+
+    WindhawkUtils::SetFunctionHook(BeginPaint, BeginPaint_Hook,
+                                   &BeginPaint_Original);
+
+    WindhawkUtils::SetFunctionHook(EndPaint, EndPaint_Hook, &EndPaint_Original);
+
+    WindhawkUtils::SetFunctionHook(CreateCompatibleDC, CreateCompatibleDC_Hook,
+                                   &CreateCompatibleDC_Original);
+
+    WindhawkUtils::SetFunctionHook(DeleteDC, DeleteDC_Hook, &DeleteDC_Original);
+
+    WindhawkUtils::SetFunctionHook(ExtTextOutW, ExtTextOutW_Hook,
+                                   &ExtTextOutW_Original);
+
+    WindhawkUtils::SetFunctionHook(FillRect, FillRect_Hook, &FillRect_Original);
+
+    WindhawkUtils::SetFunctionHook(PatBlt, PatBlt_Hook, &PatBlt_Original);
+
+    WindhawkUtils::SetFunctionHook(Polyline, Polyline_Hook, &Polyline_Original);
+
+    WindhawkUtils::SetFunctionHook(DrawThemeBackground,
+                                   DrawThemeBackground_Hook,
+                                   &DrawThemeBackground_Original);
+
+    WindhawkUtils::SetFunctionHook(DrawThemeBackgroundEx,
+                                   DrawThemeBackgroundEx_Hook,
+                                   &DrawThemeBackgroundEx_Original);
+
+    HMODULE uxthemeModule = GetModuleHandle(L"uxtheme.dll");
+    if (uxthemeModule) {
+        g_pGetThemeClass = (GetThemeClass_t)GetProcAddress(
+            uxthemeModule, MAKEINTRESOURCEA(74));
+
+        auto pDrawTextWithGlow = (DrawTextWithGlow_t)GetProcAddress(
+            uxthemeModule, MAKEINTRESOURCEA(126));
+        if (pDrawTextWithGlow) {
+            WindhawkUtils::SetFunctionHook(pDrawTextWithGlow,
+                                           DrawTextWithGlow_Hook,
+                                           &DrawTextWithGlow_Original);
+        }
+    }
 
     HMODULE user32Module =
         LoadLibraryEx(L"user32.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
@@ -10491,78 +10123,17 @@ BOOL Wh_ModInit() {
         }
     }
 
-    WCHAR processPath[MAX_PATH] = {};
-    GetModuleFileNameW(nullptr, processPath, ARRAYSIZE(processPath));
-    PCWSTR processName = wcsrchr(processPath, L'\\');
-    processName = processName ? processName + 1 : processPath;
-    const bool isExplorerProcess = _wcsicmp(processName, L"explorer.exe") == 0;
+    HMODULE kernelBaseModule = GetModuleHandle(L"kernelbase.dll");
+    auto pKernelBaseLoadLibraryExW = (decltype(&LoadLibraryExW))GetProcAddress(
+        kernelBaseModule, "LoadLibraryExW");
+    WindhawkUtils::SetFunctionHook(pKernelBaseLoadLibraryExW,
+                                   LoadLibraryExW_Hook,
+                                   &LoadLibraryExW_Original);
 
-    if (isExplorerProcess) {
-        WindhawkUtils::SetFunctionHook(DwmSetWindowAttribute,
-                                       DwmSetWindowAttribute_Hook,
-                                       &DwmSetWindowAttribute_Original);
-    
-        WindhawkUtils::SetFunctionHook(DwmExtendFrameIntoClientArea,
-                                       DwmExtendFrameIntoClientArea_Hook,
-                                       &DwmExtendFrameIntoClientArea_Original);
-    
-        InitTextAlphaLuts();
-    
-        WindhawkUtils::SetFunctionHook(BeginPaint, BeginPaint_Hook,
-                                       &BeginPaint_Original);
-    
-        WindhawkUtils::SetFunctionHook(EndPaint, EndPaint_Hook, &EndPaint_Original);
-    
-        WindhawkUtils::SetFunctionHook(CreateCompatibleDC, CreateCompatibleDC_Hook,
-                                       &CreateCompatibleDC_Original);
-    
-        WindhawkUtils::SetFunctionHook(DeleteDC, DeleteDC_Hook, &DeleteDC_Original);
-    
-        WindhawkUtils::SetFunctionHook(ExtTextOutW, ExtTextOutW_Hook,
-                                       &ExtTextOutW_Original);
-    
-        WindhawkUtils::SetFunctionHook(FillRect, FillRect_Hook, &FillRect_Original);
-    
-        WindhawkUtils::SetFunctionHook(PatBlt, PatBlt_Hook, &PatBlt_Original);
-    
-        WindhawkUtils::SetFunctionHook(Polyline, Polyline_Hook, &Polyline_Original);
-    
-        WindhawkUtils::SetFunctionHook(DrawThemeBackground,
-                                       DrawThemeBackground_Hook,
-                                       &DrawThemeBackground_Original);
-    
-        WindhawkUtils::SetFunctionHook(DrawThemeBackgroundEx,
-                                       DrawThemeBackgroundEx_Hook,
-                                       &DrawThemeBackgroundEx_Original);
-    
-        HMODULE uxthemeModule = GetModuleHandle(L"uxtheme.dll");
-        if (uxthemeModule) {
-            g_pGetThemeClass = (GetThemeClass_t)GetProcAddress(
-                uxthemeModule, MAKEINTRESOURCEA(74));
-    
-            auto pDrawTextWithGlow = (DrawTextWithGlow_t)GetProcAddress(
-                uxthemeModule, MAKEINTRESOURCEA(126));
-            if (pDrawTextWithGlow) {
-                WindhawkUtils::SetFunctionHook(pDrawTextWithGlow,
-                                               DrawTextWithGlow_Hook,
-                                               &DrawTextWithGlow_Original);
-            }
-        }
-    
+    // Hook immediately if DLL is already loaded.
+    HookInitializeXamlDiagnosticsExIfNeeded();
 
-        HMODULE kernelBaseModule = GetModuleHandle(L"kernelbase.dll");
-        auto pKernelBaseLoadLibraryExW = (decltype(&LoadLibraryExW))GetProcAddress(
-            kernelBaseModule, "LoadLibraryExW");
-        WindhawkUtils::SetFunctionHook(pKernelBaseLoadLibraryExW,
-                                       LoadLibraryExW_Hook,
-                                       &LoadLibraryExW_Original);
-    
-        // Hook immediately if DLL is already loaded.
-        HookInitializeXamlDiagnosticsExIfNeeded();
-    
-        HookWindowsUIFileExplorerSymbols();
-    
-    }
+    HookWindowsUIFileExplorerSymbols();
 
 
     return TRUE;
