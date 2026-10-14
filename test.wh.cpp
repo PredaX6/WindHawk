@@ -9807,6 +9807,18 @@ HWND WINAPI CreateWindowExW_Hook(DWORD dwExStyle,
                                  HMENU hMenu,
                                  HINSTANCE hInstance,
                                  PVOID lpParam) {
+    // CabinetWClass can be created with WS_VISIBLE, which bypasses the
+    // ShowWindow hook and exposes the full window before the TV-on effect.
+    // Create it hidden first, initialize its backdrop, then reveal it through
+    // the animated ShowWindow path.
+    const bool animateInitialShow =
+        lpClassName && !IS_INTRESOURCE(lpClassName) &&
+        _wcsicmp(lpClassName, L"CabinetWClass") == 0 &&
+        (dwStyle & WS_VISIBLE) != 0;
+    if (animateInitialShow) {
+        dwStyle &= ~WS_VISIBLE;
+    }
+
     HWND hWnd = CreateWindowExW_Original(dwExStyle, lpClassName, lpWindowName,
                                          dwStyle, X, Y, nWidth, nHeight,
                                          hWndParent, hMenu, hInstance, lpParam);
@@ -9815,6 +9827,10 @@ HWND WINAPI CreateWindowExW_Hook(DWORD dwExStyle,
     }
 
     OnWindowCreated(hWnd, __FUNCTION__);
+
+    if (animateInitialShow) {
+        ShowWindow_Hook(hWnd, SW_SHOW);
+    }
 
     return hWnd;
 }
