@@ -9773,8 +9773,8 @@ struct ExplorerTvOnOverlay {
 };
 
 constexpr UINT_PTR kExplorerTvOnTimerId = 1;
-constexpr UINT kExplorerTvOnFrameIntervalMs = 15;
-constexpr ULONGLONG kExplorerTvOnDurationMs = 220;
+constexpr UINT kExplorerTvOnFrameIntervalMs = 8;
+constexpr ULONGLONG kExplorerTvOnDurationMs = 280;
 constexpr wchar_t kExplorerTvOnOverlayClass[] =
     L"WindhawkExplorerTvOnOverlayWindow";
 
@@ -9844,8 +9844,9 @@ LRESULT CALLBACK ExplorerTvOnOverlayWndProc(HWND hWnd, UINT message,
         const int y = state->targetRect.top + (fullHeight - height) / 2;
 
         SetWindowPos(hWnd, HWND_TOPMOST, x, y, width, height,
-                     SWP_NOACTIVATE | SWP_SHOWWINDOW);
-        InvalidateRect(hWnd, nullptr, FALSE);
+                     SWP_NOACTIVATE | SWP_SHOWWINDOW | SWP_NOREDRAW);
+        RedrawWindow(hWnd, nullptr, nullptr,
+                     RDW_INVALIDATE | RDW_UPDATENOW | RDW_NOERASE);
         return 0;
     }
 
@@ -9893,8 +9894,48 @@ HBITMAP TakeExplorerSnapshot(HWND hWnd, RECT* targetRect) {
     return snapshot;
 }
 
+HBITMAP CaptureDesktopRegion(const RECT& rect) {
+    const int width = rect.right - rect.left;
+    const int height = rect.bottom - rect.top;
+    if (width <= 0 || height <= 0) {
+        return nullptr;
+    }
+
+    HDC screenDc = GetDC(nullptr);
+    if (!screenDc) {
+        return nullptr;
+    }
+
+    HDC memoryDc = CreateCompatibleDC(screenDc);
+    HBITMAP bitmap = memoryDc
+        ? CreateCompatibleBitmap(screenDc, width, height)
+        : nullptr;
+    HGDIOBJ previous = bitmap ? SelectObject(memoryDc, bitmap) : nullptr;
+    const bool copied =
+        bitmap && previous && previous != HGDI_ERROR &&
+        BitBlt(memoryDc, 0, 0, width, height, screenDc,
+               rect.left, rect.top, SRCCOPY | CAPTUREBLT);
+
+    if (previous && previous != HGDI_ERROR) {
+        SelectObject(memoryDc, previous);
+    }
+    if (memoryDc) {
+        DeleteDC(memoryDc);
+    }
+    ReleaseDC(nullptr, screenDc);
+
+    if (!copied) {
+        if (bitmap) {
+            DeleteObject(bitmap);
+        }
+        return nullptr;
+    }
+    return bitmap;
+}
+
 HWND CreateExplorerTvOnOverlay(HWND target, HBITMAP snapshot,
-                               const RECT& targetRect, int finalShowCmd) {
+                               const RECT& targetRect, int finalShowCmd,
+                               bool startFullSize = false) {
     if (!snapshot || !EnsureExplorerTvOnOverlayClass()) {
         if (snapshot) {
             DeleteObject(snapshot);
@@ -9917,10 +9958,12 @@ HWND CreateExplorerTvOnOverlay(HWND target, HBITMAP snapshot,
         return nullptr;
     }
 
-    const int initialWidth = 2;
-    const int initialHeight = 2;
-    const int initialX = targetRect.left + (width - initialWidth) / 2;
-    const int initialY = targetRect.top + (height - initialHeight) / 2;
+    const int initialWidth = startFullSize ? width : 2;
+    const int initialHeight = startFullSize ? height : 2;
+    const int initialX =
+        targetRect.left + (width - initialWidth) / 2;
+    const int initialY =
+        targetRect.top + (height - initialHeight) / 2;
 
     HWND overlay = CreateWindowExW(
         WS_EX_LAYERED | WS_EX_TOPMOST | WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE,
@@ -9996,36 +10039,62 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
     if (isOpeningRequest &&
         GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
         !IsWindowVisible(hWnd) && !IsIconic(hWnd)) {
-        // A newly opened Explorer window has no pre-minimize snapshot. Show it
-        // once to let its first frame render, capture that frame, then cover it
-        // with the overlay animation. If capture fails, leave it normally shown.
+        // Cover the window with a desktop snapshot before showing it. This
+        // prevents the newly opened Explorer window from flashing on screen
+        // before the TV-On animation begins.
+        RECT targetRect{};
+        if (!GetWindowRect(hWnd, &targetRect)) {
+            return ShowWindow_Original(hWnd, nCmdShow);
+        }
+
+        HBITMAP desktopSnapshot = CaptureDesktopRegion(targetRect);
+        if (!desktopSnapshot) {
+            return ShowWindow_Original(hWnd, nCmdShow);
+        }
+
+        HWND overlay = CreateExplorerTvOnOverlay(
+            hWnd, desktopSnapshot, targetRect, nCmdShow, true);
+        if (!overlay) {
+            return ShowWindow_Original(hWnd, nCmdShow);
+        }
+
         BOOL previousVisibility = ShowWindow_Original(hWnd, nCmdShow);
         UpdateWindow(hWnd);
-        if (!CaptureExplorerBeforeMinimize(hWnd)) {
-            return previousVisibility;
-        }
-
-        RECT targetRect{};
-        HBITMAP snapshot = TakeExplorerSnapshot(hWnd, &targetRect);
-        if (!snapshot) {
-            return previousVisibility;
-        }
-
-        HWND overlay = CreateExplorerTvOnOverlay(hWnd, snapshot, targetRect,
-                                                 nCmdShow);
-        if (!overlay) {
-            return previousVisibility;
-        }
+        const bool captured = CaptureExplorerBeforeMinimize(hWnd);
+        RECT capturedRect{};
+        HBITMAP explorerSnapshot =
+            captured ? TakeExplorerSnapshot(hWnd, &capturedRect) : nullptr;
 
         auto* state = reinterpret_cast<ExplorerTvOnOverlay*>(
             GetWindowLongPtrW(overlay, GWLP_USERDATA));
-        if (!state || !SetTimer(overlay, kExplorerTvOnTimerId,
-                                kExplorerTvOnFrameIntervalMs, nullptr)) {
+        if (!state || !explorerSnapshot) {
+            if (explorerSnapshot) {
+                DeleteObject(explorerSnapshot);
+            }
             DestroyWindow(overlay);
             return previousVisibility;
         }
 
+        DeleteObject(state->bitmap);
+        state->bitmap = explorerSnapshot;
+        state->targetRect = capturedRect;
         ShowWindow_Original(hWnd, SW_HIDE);
+
+        const int fullWidth = capturedRect.right - capturedRect.left;
+        const int fullHeight = capturedRect.bottom - capturedRect.top;
+        SetWindowPos(overlay, HWND_TOPMOST,
+                     capturedRect.left + (fullWidth - 2) / 2,
+                     capturedRect.top + (fullHeight - 2) / 2,
+                     2, 2, SWP_NOACTIVATE | SWP_SHOWWINDOW | SWP_NOREDRAW);
+        RedrawWindow(overlay, nullptr, nullptr,
+                     RDW_INVALIDATE | RDW_UPDATENOW | RDW_NOERASE);
+
+        if (!SetTimer(overlay, kExplorerTvOnTimerId,
+                      kExplorerTvOnFrameIntervalMs, nullptr)) {
+            DestroyWindow(overlay);
+            return ShowWindow_Original(hWnd, nCmdShow);
+        }
+
         state->startTime = GetTickCount64();
         return previousVisibility;
     }
