@@ -9597,6 +9597,8 @@ void TriggerWindowCompositionUpdate(HWND hWnd) {
                  RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
 }
 
+void ForgetExplorerSnapshot(HWND hWnd);
+
 LRESULT CALLBACK MicaFocusPersistenceSubclassProc(HWND hWnd,
                                                   UINT uMsg,
                                                   WPARAM wParam,
