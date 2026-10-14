@@ -9753,26 +9753,9 @@ LRESULT CALLBACK MicaFocusPersistenceSubclassProc(HWND hWnd,
 
     // Prevent a nested ShowWindow call from starting a second restore
     // animation while this system-command restore is being processed.
-    bool restoreRegionPrepared = false;
     if (restoreFromSystemMenu) {
         SetPropW(hWnd, L"WindHawkTestExplorerRestoreAnimationInProgress",
                  reinterpret_cast<HANDLE>(static_cast<INT_PTR>(1)));
-
-        // Install the tiny region while the window is still minimized.
-        // Applying it after DefSubclassProc can expose one full-size DWM frame
-        // before the TV-on animation starts.
-        WINDOWPLACEMENT placement = {sizeof(placement)};
-        if (GetWindowPlacement(hWnd, &placement)) {
-            const int width = placement.rcNormalPosition.right -
-                              placement.rcNormalPosition.left;
-            const int height = placement.rcNormalPosition.bottom -
-                               placement.rcNormalPosition.top;
-            if (width >= 4 && height >= 4) {
-                restoreRegionPrepared = SetTvWindowRegion(
-                    hWnd, width / 2, height / 2, width / 2 + 1,
-                    height / 2 + 1);
-            }
-        }
     }
 
     LRESULT result = DefSubclassProc(hWnd, uMsg, wParam, lParam);
@@ -9782,21 +9765,26 @@ LRESULT CALLBACK MicaFocusPersistenceSubclassProc(HWND hWnd,
         RemovePropW(hWnd, L"WindHawkTestExplorerMinimizeAnimationInProgress");
     }
 
-    // Complete the restore animation only if the region was installed
-    // before Windows made the restored window visible.
+    // Apply the clipping region after Windows has restored the normal
+    // window bounds, then reveal the real window.
     if (restoreFromSystemMenu && IsWindow(hWnd) && !IsIconic(hWnd)) {
-        if (restoreRegionPrepared) {
-            if (!AnimateTvWindowRegion(hWnd, true)) {
-                SetWindowRgn(hWnd, nullptr, TRUE);
-                RedrawWindow(hWnd, nullptr, nullptr,
-                             RDW_INVALIDATE | RDW_ERASE | RDW_FRAME |
-                                 RDW_ALLCHILDREN | RDW_UPDATENOW);
+        RECT restoredRect;
+        if (GetWindowRect(hWnd, &restoredRect)) {
+            const int width = restoredRect.right - restoredRect.left;
+            const int height = restoredRect.bottom - restoredRect.top;
+            if (width >= 4 && height >= 4) {
+                const int centerX = width / 2;
+                const int centerY = height / 2;
+                if (SetTvWindowRegion(hWnd, centerX, centerY,
+                                      centerX + 1, centerY + 1)) {
+                    if (!AnimateTvWindowRegion(hWnd, true)) {
+                        SetWindowRgn(hWnd, nullptr, TRUE);
+                        RedrawWindow(hWnd, nullptr, nullptr,
+                                     RDW_INVALIDATE | RDW_ERASE | RDW_FRAME |
+                                         RDW_ALLCHILDREN | RDW_UPDATENOW);
+                    }
+                }
             }
-        } else {
-            SetWindowRgn(hWnd, nullptr, TRUE);
-            RedrawWindow(hWnd, nullptr, nullptr,
-                         RDW_INVALIDATE | RDW_ERASE | RDW_FRAME |
-                             RDW_ALLCHILDREN | RDW_UPDATENOW);
         }
     }
 
