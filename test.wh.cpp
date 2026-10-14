@@ -9776,13 +9776,6 @@ LRESULT CALLBACK ExplorerTvOnOverlayWndProc(HWND hWnd, UINT message,
     auto* state = reinterpret_cast<ExplorerTvOnOverlay*>(
         GetWindowLongPtrW(hWnd, GWLP_USERDATA));
 
-    if (message == WM_NCCREATE) {
-        auto* create = reinterpret_cast<CREATESTRUCTW*>(lParam);
-        state = static_cast<ExplorerTvOnOverlay*>(create->lpCreateParams);
-        SetWindowLongPtrW(hWnd, GWLP_USERDATA,
-                          reinterpret_cast<LONG_PTR>(state));
-    }
-
     if (message == WM_PAINT) {
         PAINTSTRUCT ps{};
         HDC dc = BeginPaint(hWnd, &ps);
@@ -9918,17 +9911,15 @@ HWND CreateExplorerTvOnOverlay(HWND target, HBITMAP snapshot,
         WS_EX_LAYERED | WS_EX_TOPMOST | WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE,
         kExplorerTvOnOverlayClass, L"", WS_POPUP,
         initialX, initialY, initialWidth, initialHeight,
-        nullptr, nullptr, GetModuleHandleW(nullptr), state);
+        nullptr, nullptr, GetModuleHandleW(nullptr), nullptr);
     if (!overlay) {
-        // WM_NCDESTROY owns state after WM_NCCREATE; if creation failed before
-        // WM_NCCREATE, release it here.
-        if (GetLastError() != ERROR_SUCCESS) {
-            delete state;
-            DeleteObject(snapshot);
-        }
+        delete state;
+        DeleteObject(snapshot);
         return nullptr;
     }
 
+    SetWindowLongPtrW(overlay, GWLP_USERDATA,
+                      reinterpret_cast<LONG_PTR>(state));
     SetLayeredWindowAttributes(overlay, 0, 255, LWA_ALPHA);
     ShowWindow(overlay, SW_SHOWNOACTIVATE);
     UpdateWindow(overlay);
