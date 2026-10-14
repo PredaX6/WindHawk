@@ -9862,6 +9862,17 @@ HWND WINAPI CreateWindowInBand_Hook(DWORD dwExStyle,
                                     HINSTANCE hInstance,
                                     PVOID lpParam,
                                     DWORD dwBand) {
+    // Explorer can create its main window through this undocumented entry
+    // point instead of CreateWindowExW. Strip WS_VISIBLE before creation so
+    // the first visible frame is always the start of the TV-on animation.
+    const bool animateInitialShow =
+        lpClassName && !IS_INTRESOURCE(lpClassName) &&
+        _wcsicmp(lpClassName, L"CabinetWClass") == 0 &&
+        (dwStyle & WS_VISIBLE) != 0;
+    if (animateInitialShow) {
+        dwStyle &= ~WS_VISIBLE;
+    }
+
     HWND hWnd = CreateWindowInBand_Original(
         dwExStyle, lpClassName, lpWindowName, dwStyle, X, Y, nWidth, nHeight,
         hWndParent, hMenu, hInstance, lpParam, dwBand);
@@ -9870,6 +9881,10 @@ HWND WINAPI CreateWindowInBand_Hook(DWORD dwExStyle,
     }
 
     OnWindowCreated(hWnd, __FUNCTION__);
+
+    if (animateInitialShow) {
+        ShowWindow_Hook(hWnd, SW_SHOW);
+    }
 
     return hWnd;
 }
@@ -9903,6 +9918,17 @@ HWND WINAPI CreateWindowInBandEx_Hook(DWORD dwExStyle,
                                       PVOID lpParam,
                                       DWORD dwBand,
                                       DWORD dwTypeFlags) {
+    // Cover the extended banded-window creation path for the same reason as
+    // CreateWindowInBand: WS_VISIBLE would expose the full window before the
+    // ShowWindow hook gets a chance to apply the initial region.
+    const bool animateInitialShow =
+        lpClassName && !IS_INTRESOURCE(lpClassName) &&
+        _wcsicmp(lpClassName, L"CabinetWClass") == 0 &&
+        (dwStyle & WS_VISIBLE) != 0;
+    if (animateInitialShow) {
+        dwStyle &= ~WS_VISIBLE;
+    }
+
     HWND hWnd = CreateWindowInBandEx_Original(
         dwExStyle, lpClassName, lpWindowName, dwStyle, X, Y, nWidth, nHeight,
         hWndParent, hMenu, hInstance, lpParam, dwBand, dwTypeFlags);
@@ -9911,6 +9937,10 @@ HWND WINAPI CreateWindowInBandEx_Hook(DWORD dwExStyle,
     }
 
     OnWindowCreated(hWnd, __FUNCTION__);
+
+    if (animateInitialShow) {
+        ShowWindow_Hook(hWnd, SW_SHOW);
+    }
 
     return hWnd;
 }
