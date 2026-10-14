@@ -9754,6 +9754,184 @@ void ClearExplorerSnapshots() {
     }
 }
 
+// A temporary, non-activating popup paints the last Explorer frame while
+// the real window is restored underneath it. The popup itself is resized from
+// the center, avoiding AnimateWindow on Explorer's own HWND.
+struct ExplorerTvOnOverlay {
+    HWND target;
+    HBITMAP bitmap;
+    RECT targetRect;
+    ULONGLONG startTime;
+};
+
+constexpr UINT_PTR kExplorerTvOnTimerId = 1;
+constexpr UINT kExplorerTvOnFrameIntervalMs = 15;
+constexpr ULONGLONG kExplorerTvOnDurationMs = 220;
+constexpr wchar_t kExplorerTvOnOverlayClass[] =
+    L"WindhawkExplorerTvOnOverlayWindow";
+
+LRESULT CALLBACK ExplorerTvOnOverlayWndProc(HWND hWnd, UINT message,
+                                            WPARAM wParam, LPARAM lParam) {
+    auto* state = reinterpret_cast<ExplorerTvOnOverlay*>(
+        GetWindowLongPtrW(hWnd, GWLP_USERDATA));
+
+    if (message == WM_NCCREATE) {
+        auto* create = reinterpret_cast<CREATESTRUCTW*>(lParam);
+        state = static_cast<ExplorerTvOnOverlay*>(create->lpCreateParams);
+        SetWindowLongPtrW(hWnd, GWLP_USERDATA,
+                          reinterpret_cast<LONG_PTR>(state));
+    }
+
+    if (message == WM_PAINT) {
+        PAINTSTRUCT ps{};
+        HDC dc = BeginPaint(hWnd, &ps);
+        if (state && state->bitmap && dc) {
+            RECT clientRect{};
+            GetClientRect(hWnd, &clientRect);
+            HDC bitmapDc = CreateCompatibleDC(dc);
+            if (bitmapDc) {
+                HGDIOBJ previous = SelectObject(bitmapDc, state->bitmap);
+                if (previous && previous != HGDI_ERROR) {
+                    BITMAP bitmapInfo{};
+                    if (GetObjectW(state->bitmap, sizeof(bitmapInfo),
+                                   &bitmapInfo)) {
+                        SetStretchBltMode(dc, HALFTONE);
+                        StretchBlt(dc, 0, 0,
+                                   clientRect.right, clientRect.bottom,
+                                   bitmapDc, 0, 0,
+                                   bitmapInfo.bmWidth, bitmapInfo.bmHeight,
+                                   SRCCOPY);
+                    }
+                    SelectObject(bitmapDc, previous);
+                }
+                DeleteDC(bitmapDc);
+            }
+        }
+        EndPaint(hWnd, &ps);
+        return 0;
+    }
+
+    if (message == WM_ERASEBKGND) {
+        return 1;
+    }
+
+    if (message == WM_TIMER && wParam == kExplorerTvOnTimerId && state) {
+        const ULONGLONG elapsed = GetTickCount64() - state->startTime;
+        if (elapsed >= kExplorerTvOnDurationMs) {
+            KillTimer(hWnd, kExplorerTvOnTimerId);
+            DestroyWindow(hWnd);
+            return 0;
+        }
+
+        const double progress =
+            static_cast<double>(elapsed) / kExplorerTvOnDurationMs;
+        // Ease-out curve: fast expansion at first, then settle into place.
+        const double eased = 1.0 - (1.0 - progress) * (1.0 - progress);
+        const int fullWidth = state->targetRect.right - state->targetRect.left;
+        const int fullHeight = state->targetRect.bottom - state->targetRect.top;
+        const int width = max(2, static_cast<int>(fullWidth * eased));
+        const int height = max(2, static_cast<int>(fullHeight * eased));
+        const int x = state->targetRect.left + (fullWidth - width) / 2;
+        const int y = state->targetRect.top + (fullHeight - height) / 2;
+
+        SetWindowPos(hWnd, HWND_TOPMOST, x, y, width, height,
+                     SWP_NOACTIVATE | SWP_SHOWWINDOW);
+        InvalidateRect(hWnd, nullptr, FALSE);
+        return 0;
+    }
+
+    if (message == WM_NCDESTROY && state) {
+        KillTimer(hWnd, kExplorerTvOnTimerId);
+        if (state->bitmap) {
+            DeleteObject(state->bitmap);
+        }
+        delete state;
+        SetWindowLongPtrW(hWnd, GWLP_USERDATA, 0);
+    }
+
+    return DefWindowProcW(hWnd, message, wParam, lParam);
+}
+
+bool EnsureExplorerTvOnOverlayClass() {
+    static bool registered = false;
+    static bool attempted = false;
+    if (attempted) {
+        return registered;
+    }
+    attempted = true;
+
+    WNDCLASSEXW wc{};
+    wc.cbSize = sizeof(wc);
+    wc.lpfnWndProc = ExplorerTvOnOverlayWndProc;
+    wc.hInstance = GetModuleHandleW(nullptr);
+    wc.lpszClassName = kExplorerTvOnOverlayClass;
+    registered = RegisterClassExW(&wc) != 0 ||
+                 GetLastError() == ERROR_CLASS_ALREADY_EXISTS;
+    return registered;
+}
+
+HBITMAP TakeExplorerSnapshot(HWND hWnd) {
+    std::lock_guard<std::mutex> lock(g_explorerSnapshotMutex);
+    auto it = g_explorerSnapshots.find(hWnd);
+    if (it == g_explorerSnapshots.end()) {
+        return nullptr;
+    }
+
+    HBITMAP snapshot = it->second;
+    g_explorerSnapshots.erase(it);
+    return snapshot;
+}
+
+HWND CreateExplorerTvOnOverlay(HWND target, HBITMAP snapshot,
+                               const RECT& targetRect) {
+    if (!snapshot || !EnsureExplorerTvOnOverlayClass()) {
+        if (snapshot) {
+            DeleteObject(snapshot);
+        }
+        return nullptr;
+    }
+
+    auto* state = new (std::nothrow) ExplorerTvOnOverlay{
+        target, snapshot, targetRect, 0};
+    if (!state) {
+        DeleteObject(snapshot);
+        return nullptr;
+    }
+
+    const int width = targetRect.right - targetRect.left;
+    const int height = targetRect.bottom - targetRect.top;
+    if (width <= 0 || height <= 0) {
+        delete state;
+        DeleteObject(snapshot);
+        return nullptr;
+    }
+
+    const int initialWidth = 2;
+    const int initialHeight = 2;
+    const int initialX = targetRect.left + (width - initialWidth) / 2;
+    const int initialY = targetRect.top + (height - initialHeight) / 2;
+
+    HWND overlay = CreateWindowExW(
+        WS_EX_LAYERED | WS_EX_TOPMOST | WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE,
+        kExplorerTvOnOverlayClass, L"", WS_POPUP,
+        initialX, initialY, initialWidth, initialHeight,
+        nullptr, nullptr, GetModuleHandleW(nullptr), state);
+    if (!overlay) {
+        // WM_NCDESTROY owns state after WM_NCCREATE; if creation failed before
+        // WM_NCCREATE, release it here.
+        if (GetLastError() != ERROR_SUCCESS) {
+            delete state;
+            DeleteObject(snapshot);
+        }
+        return nullptr;
+    }
+
+    SetLayeredWindowAttributes(overlay, 0, 255, LWA_ALPHA);
+    ShowWindow(overlay, SW_SHOWNOACTIVATE);
+    UpdateWindow(overlay);
+    return overlay;
+}
+
 using ShowWindow_t = decltype(&ShowWindow);
 ShowWindow_t ShowWindow_Original;
 
@@ -9763,10 +9941,37 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
     if (nCmdShow == SW_MINIMIZE || nCmdShow == SW_SHOWMINIMIZED ||
         nCmdShow == SW_SHOWMINNOACTIVE) {
         CaptureExplorerBeforeMinimize(hWnd);
+        return ShowWindow_Original(hWnd, nCmdShow);
     }
 
-    // Keep normal showing behavior until a compositor-safe TV-On animation
-    // is implemented. AnimateWindow caused visible-first rendering/artifacts.
+    const bool isRestoreRequest =
+        nCmdShow == SW_RESTORE || nCmdShow == SW_SHOW ||
+        nCmdShow == SW_SHOWNORMAL || nCmdShow == SW_SHOWNA ||
+        nCmdShow == SW_SHOWNOACTIVATE || nCmdShow == SW_SHOWDEFAULT;
+    if (isRestoreRequest &&
+        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
+        IsIconic(hWnd)) {
+        RECT targetRect{};
+        if (GetWindowRect(hWnd, &targetRect)) {
+            HBITMAP snapshot = TakeExplorerSnapshot(hWnd);
+            HWND overlay = CreateExplorerTvOnOverlay(hWnd, snapshot, targetRect);
+            BOOL previousVisibility = ShowWindow_Original(hWnd, nCmdShow);
+
+            if (overlay) {
+                auto* state = reinterpret_cast<ExplorerTvOnOverlay*>(
+                    GetWindowLongPtrW(overlay, GWLP_USERDATA));
+                if (state) {
+                    state->startTime = GetTickCount64();
+                    if (!SetTimer(overlay, kExplorerTvOnTimerId,
+                                  kExplorerTvOnFrameIntervalMs, nullptr)) {
+                        DestroyWindow(overlay);
+                    }
+                }
+            }
+            return previousVisibility;
+        }
+    }
+
     return ShowWindow_Original(hWnd, nCmdShow);
 }
 
