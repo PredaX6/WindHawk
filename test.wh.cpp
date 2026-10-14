@@ -9663,9 +9663,15 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
         !GetPropW(hWnd, L"WindHawkTestExplorerOpenAnimationDone")) {
         SetPropW(hWnd, L"WindHawkTestExplorerOpenAnimationDone",
                  reinterpret_cast<HANDLE>(static_cast<INT_PTR>(1)));
-        const BOOL wasVisible = IsWindowVisible(hWnd);
         if (AnimateWindow(hWnd, 180, AW_CENTER)) {
-            return wasVisible;
+            // AnimateWindow can leave Explorer's client/non-client content
+            // without its usual final repaint. Re-run the native show path and
+            // force a complete repaint once the animation has finished.
+            BOOL previousVisibility = ShowWindow_Original(hWnd, nCmdShow);
+            RedrawWindow(hWnd, nullptr, nullptr,
+                         RDW_INVALIDATE | RDW_ERASE | RDW_FRAME |
+                             RDW_ALLCHILDREN | RDW_UPDATENOW);
+            return previousVisibility;
         }
         // If the animation cannot run, preserve the normal ShowWindow path.
     }
