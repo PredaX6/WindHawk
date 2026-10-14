@@ -10074,7 +10074,8 @@ void RenderExplorerTvOnFrame(HWND hWnd, ExplorerTvOnOverlay* state,
                             0.28f * (1.0f - eased));
     } else {
         const float u = std::max(0.0f, std::min(
-            1.0f, (progress - flashEnd) / (revealEnd - flashEnd)));
+            1.0f, static_cast<float>(progress - flashEnd) /
+                     (revealEnd - flashEnd)));
         const float eased = u * u * (3.0f - 2.0f * u);
         const int dstH = std::max(2, static_cast<int>(
             static_cast<float>(state->height) * eased + 0.5f));
