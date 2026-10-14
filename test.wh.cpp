@@ -10018,54 +10018,75 @@ void RenderExplorerTvOnFrame(HWND hWnd, ExplorerTvOnOverlay* state,
         state->width <= 0 || state->height <= 0) return;
     progress = std::max(0.0, std::min(1.0, progress));
     state->progress = progress;
-    const size_t bytes =
-        static_cast<size_t>(state->width) * state->height * 4;
-    memset(state->frameBits, 0, bytes);
+    const size_t stride = static_cast<size_t>(state->width) * 4;
+    const size_t bytes = stride * static_cast<size_t>(state->height);
+    auto* pixels = static_cast<BYTE*>(state->frameBits);
+    memset(pixels, 0, bytes);
 
-    // This is the TV-ON direction from the reference engine: reverse the
-    // shutdown renderer so the dot grows into a beam, then into the image.
-    const float offProgress = static_cast<float>(1.0 - progress);
+    // TV-On flash: start with a bright white panel and collapse it into a
+    // luminous horizontal beam. Then expand the real Explorer image from that
+    // beam, revealing the final window quickly instead of showing the old
+    // dot-to-image sequence.
+    constexpr float flashEnd = 0.44f;
+    constexpr float revealEnd = 0.92f;
     const float cx = static_cast<float>(state->width) * 0.5f;
     const float cy = static_cast<float>(state->height) * 0.5f;
-    if (offProgress < kExplorerTvOnSquashEnd) {
-        const float u = offProgress / kExplorerTvOnSquashEnd;
-        const float punch = u * u * u;
-        constexpr float minH = 2.0f;
-        const float dstHf = static_cast<float>(state->height) * (1.0f - punch) +
-                            minH * punch;
-        const int dstH = std::max(2, static_cast<int>(dstHf + 0.5f));
-        const float bright = 1.0f + punch * 0.85f;
-        constexpr float handoffStart = 10.0f;
-        float contentAlpha = 1.0f;
-        float beamAlpha = 0.0f;
-        if (static_cast<float>(dstH) < handoffStart) {
-            const float t = (static_cast<float>(dstH) - minH) /
-                            (handoffStart - minH);
-            contentAlpha = std::max(0.0f, std::min(1.0f, t));
-            beamAlpha = 1.0f - contentAlpha;
+
+    if (progress < flashEnd) {
+        const float u = progress / flashEnd;
+        const float eased = u * u * (3.0f - 2.0f * u);
+        const float bandHeight = std::max(
+            2.0f, static_cast<float>(state->height) * (1.0f - eased) + 2.0f * eased);
+        const float halfBand = bandHeight * 0.5f;
+        const float glowRadius = std::max(3.0f, state->height * 0.075f);
+        for (int y = 0; y < state->height; ++y) {
+            const float distance = std::max(0.0f, std::abs(
+                static_cast<float>(y) + 0.5f - cy) - halfBand);
+            const float glow = distance <= 0.0f
+                ? 1.0f
+                : std::max(0.0f, 1.0f - distance / glowRadius) * 0.72f;
+            if (glow <= 0.01f) continue;
+            const BYTE value = static_cast<BYTE>(255.0f * glow);
+            BYTE* row = pixels + static_cast<size_t>(y) * stride;
+            for (int x = 0; x < state->width; ++x) {
+                BYTE* d = row + static_cast<size_t>(x) * 4;
+                d[0] = value;
+                d[1] = value;
+                d[2] = value;
+                d[3] = value;
+            }
         }
-        if (contentAlpha > 0.02f) {
-            BlitExplorerCrtVerticalSquash(state, dstH, contentAlpha, bright);
+
+        // A stronger white core gives the collapsing flash a CRT-like beam.
+        const int coreTop = std::max(0, static_cast<int>(cy - halfBand));
+        const int coreBottom = std::min(state->height,
+            std::max(coreTop + 1, static_cast<int>(cy + halfBand + 1.0f)));
+        for (int y = coreTop; y < coreBottom; ++y) {
+            BYTE* row = pixels + static_cast<size_t>(y) * stride;
+            for (int x = 0; x < state->width; ++x) {
+                BYTE* d = row + static_cast<size_t>(x) * 4;
+                d[0] = d[1] = d[2] = d[3] = 255;
+            }
         }
-        if (beamAlpha > 0.02f) {
+        // Keep the outer edges luminous while the white panel contracts.
+        DrawExplorerCrtBeam(state, cx, cy,
+                            static_cast<float>(state->width) * 0.5f,
+                            0.28f * (1.0f - eased));
+    } else {
+        const float u = std::max(0.0f, std::min(
+            1.0f, (progress - flashEnd) / (revealEnd - flashEnd)));
+        const float eased = u * u * (3.0f - 2.0f * u);
+        const int dstH = std::max(2, static_cast<int>(
+            static_cast<float>(state->height) * eased + 0.5f));
+        const float alpha = std::min(1.0f, 0.45f + u * 0.9f);
+        BlitExplorerCrtVerticalSquash(state, dstH, alpha, 1.0f);
+
+        // A brief residual white glow fades as the real window fills in.
+        const float glowAlpha = (1.0f - eased) * 0.22f;
+        if (glowAlpha > 0.01f) {
             DrawExplorerCrtBeam(state, cx, cy,
                                 static_cast<float>(state->width) * 0.5f,
-                                beamAlpha);
-        }
-    } else if (offProgress < kExplorerTvOnZipEnd) {
-        const float u = (offProgress - kExplorerTvOnSquashEnd) /
-                        (kExplorerTvOnZipEnd - kExplorerTvOnSquashEnd);
-        const float ease = u * u;
-        const float halfLen =
-            static_cast<float>(state->width) * 0.5f * (1.0f - ease) +
-            1.0f * ease;
-        DrawExplorerCrtBeam(state, cx, cy, halfLen, 1.0f);
-    } else {
-        const float u = (offProgress - kExplorerTvOnZipEnd) /
-                        std::max(0.01f, 1.0f - kExplorerTvOnZipEnd);
-        const float decay = 1.0f - u;
-        if (decay > 0.02f) {
-            DrawExplorerCrtDot(state, cx, cy, decay * decay);
+                                glowAlpha);
         }
     }
 
