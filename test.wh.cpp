@@ -1,13 +1,13 @@
 // ==WindhawkMod==
 // @id              test
 // @name            Test
-// @description     Ajoute un effet translucide à l’Explorateur de fichiers Windows 11.
+// @description     Anime l’ouverture, la fermeture, la réduction et la restauration des fenêtres.
 // @version         1.7
 // @author          m417z
 // @github          https://github.com/m417z
 // @twitter         https://twitter.com/m417z
 // @homepage        https://m417z.com/
-// @include         explorer.exe
+// @include         *
 // @architecture    x86-64
 // @compilerOptions -lcomctl32 -ld2d1 -ldwmapi -lgdi32 -lmsimg32 -lole32 -loleaut32 -lruntimeobject -lshlwapi -luxtheme
 // ==/WindhawkMod==
@@ -9981,10 +9981,10 @@ HWND WINAPI CreateWindowExW_Hook(DWORD dwExStyle,
     // ShowWindow hook and exposes the full window before the TV-on effect.
     // Create it hidden first, initialize its backdrop, then reveal it through
     // the animated ShowWindow path.
+    // Keep visible top-level windows hidden until the animation hook is ready.
     const bool animateInitialShow =
-        lpClassName && !IS_INTRESOURCE(lpClassName) &&
-        _wcsicmp(lpClassName, L"CabinetWClass") == 0 &&
-        (dwStyle & WS_VISIBLE) != 0;
+        (dwStyle & WS_VISIBLE) != 0 && (dwStyle & WS_CHILD) == 0 &&
+        (dwExStyle & WS_EX_TOOLWINDOW) == 0;
     if (animateInitialShow) {
         dwStyle &= ~WS_VISIBLE;
     }
@@ -9998,8 +9998,10 @@ HWND WINAPI CreateWindowExW_Hook(DWORD dwExStyle,
 
     OnWindowCreated(hWnd, __FUNCTION__);
 
-    if (animateInitialShow) {
+    if (animateInitialShow && IsAnimatableApplicationWindow(hWnd)) {
         ShowWindow_Hook(hWnd, SW_SHOW);
+    } else if (animateInitialShow) {
+        ShowWindow_Original(hWnd, SW_SHOW);
     }
 
     return hWnd;
@@ -10425,88 +10427,97 @@ BOOL Wh_ModInit() {
     WindhawkUtils::SetFunctionHook(SetWindowPos, SetWindowPos_Hook,
                                    &SetWindowPos_Original);
 
-    WindhawkUtils::SetFunctionHook(DwmSetWindowAttribute,
-                                   DwmSetWindowAttribute_Hook,
-                                   &DwmSetWindowAttribute_Original);
+    WCHAR processPath[MAX_PATH] = {};
+    GetModuleFileNameW(nullptr, processPath, ARRAYSIZE(processPath));
+    PCWSTR processName = wcsrchr(processPath, L'\\');
+    processName = processName ? processName + 1 : processPath;
+    const bool isExplorerProcess = _wcsicmp(processName, L"explorer.exe") == 0;
 
-    WindhawkUtils::SetFunctionHook(DwmExtendFrameIntoClientArea,
-                                   DwmExtendFrameIntoClientArea_Hook,
-                                   &DwmExtendFrameIntoClientArea_Original);
-
-    InitTextAlphaLuts();
-
-    WindhawkUtils::SetFunctionHook(BeginPaint, BeginPaint_Hook,
-                                   &BeginPaint_Original);
-
-    WindhawkUtils::SetFunctionHook(EndPaint, EndPaint_Hook, &EndPaint_Original);
-
-    WindhawkUtils::SetFunctionHook(CreateCompatibleDC, CreateCompatibleDC_Hook,
-                                   &CreateCompatibleDC_Original);
-
-    WindhawkUtils::SetFunctionHook(DeleteDC, DeleteDC_Hook, &DeleteDC_Original);
-
-    WindhawkUtils::SetFunctionHook(ExtTextOutW, ExtTextOutW_Hook,
-                                   &ExtTextOutW_Original);
-
-    WindhawkUtils::SetFunctionHook(FillRect, FillRect_Hook, &FillRect_Original);
-
-    WindhawkUtils::SetFunctionHook(PatBlt, PatBlt_Hook, &PatBlt_Original);
-
-    WindhawkUtils::SetFunctionHook(Polyline, Polyline_Hook, &Polyline_Original);
-
-    WindhawkUtils::SetFunctionHook(DrawThemeBackground,
-                                   DrawThemeBackground_Hook,
-                                   &DrawThemeBackground_Original);
-
-    WindhawkUtils::SetFunctionHook(DrawThemeBackgroundEx,
-                                   DrawThemeBackgroundEx_Hook,
-                                   &DrawThemeBackgroundEx_Original);
-
-    HMODULE uxthemeModule = GetModuleHandle(L"uxtheme.dll");
-    if (uxthemeModule) {
-        g_pGetThemeClass = (GetThemeClass_t)GetProcAddress(
-            uxthemeModule, MAKEINTRESOURCEA(74));
-
-        auto pDrawTextWithGlow = (DrawTextWithGlow_t)GetProcAddress(
-            uxthemeModule, MAKEINTRESOURCEA(126));
-        if (pDrawTextWithGlow) {
-            WindhawkUtils::SetFunctionHook(pDrawTextWithGlow,
-                                           DrawTextWithGlow_Hook,
-                                           &DrawTextWithGlow_Original);
+    if (isExplorerProcess) {
+        WindhawkUtils::SetFunctionHook(DwmSetWindowAttribute,
+                                       DwmSetWindowAttribute_Hook,
+                                       &DwmSetWindowAttribute_Original);
+    
+        WindhawkUtils::SetFunctionHook(DwmExtendFrameIntoClientArea,
+                                       DwmExtendFrameIntoClientArea_Hook,
+                                       &DwmExtendFrameIntoClientArea_Original);
+    
+        InitTextAlphaLuts();
+    
+        WindhawkUtils::SetFunctionHook(BeginPaint, BeginPaint_Hook,
+                                       &BeginPaint_Original);
+    
+        WindhawkUtils::SetFunctionHook(EndPaint, EndPaint_Hook, &EndPaint_Original);
+    
+        WindhawkUtils::SetFunctionHook(CreateCompatibleDC, CreateCompatibleDC_Hook,
+                                       &CreateCompatibleDC_Original);
+    
+        WindhawkUtils::SetFunctionHook(DeleteDC, DeleteDC_Hook, &DeleteDC_Original);
+    
+        WindhawkUtils::SetFunctionHook(ExtTextOutW, ExtTextOutW_Hook,
+                                       &ExtTextOutW_Original);
+    
+        WindhawkUtils::SetFunctionHook(FillRect, FillRect_Hook, &FillRect_Original);
+    
+        WindhawkUtils::SetFunctionHook(PatBlt, PatBlt_Hook, &PatBlt_Original);
+    
+        WindhawkUtils::SetFunctionHook(Polyline, Polyline_Hook, &Polyline_Original);
+    
+        WindhawkUtils::SetFunctionHook(DrawThemeBackground,
+                                       DrawThemeBackground_Hook,
+                                       &DrawThemeBackground_Original);
+    
+        WindhawkUtils::SetFunctionHook(DrawThemeBackgroundEx,
+                                       DrawThemeBackgroundEx_Hook,
+                                       &DrawThemeBackgroundEx_Original);
+    
+        HMODULE uxthemeModule = GetModuleHandle(L"uxtheme.dll");
+        if (uxthemeModule) {
+            g_pGetThemeClass = (GetThemeClass_t)GetProcAddress(
+                uxthemeModule, MAKEINTRESOURCEA(74));
+    
+            auto pDrawTextWithGlow = (DrawTextWithGlow_t)GetProcAddress(
+                uxthemeModule, MAKEINTRESOURCEA(126));
+            if (pDrawTextWithGlow) {
+                WindhawkUtils::SetFunctionHook(pDrawTextWithGlow,
+                                               DrawTextWithGlow_Hook,
+                                               &DrawTextWithGlow_Original);
+            }
         }
+    
+        HMODULE user32Module =
+            LoadLibraryEx(L"user32.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
+        if (user32Module) {
+            auto pCreateWindowInBand = (CreateWindowInBand_t)GetProcAddress(
+                user32Module, "CreateWindowInBand");
+            if (pCreateWindowInBand) {
+                WindhawkUtils::SetFunctionHook(pCreateWindowInBand,
+                                               CreateWindowInBand_Hook,
+                                               &CreateWindowInBand_Original);
+            }
+    
+            auto pCreateWindowInBandEx = (CreateWindowInBandEx_t)GetProcAddress(
+                user32Module, "CreateWindowInBandEx");
+            if (pCreateWindowInBandEx) {
+                WindhawkUtils::SetFunctionHook(pCreateWindowInBandEx,
+                                               CreateWindowInBandEx_Hook,
+                                               &CreateWindowInBandEx_Original);
+            }
+        }
+    
+        HMODULE kernelBaseModule = GetModuleHandle(L"kernelbase.dll");
+        auto pKernelBaseLoadLibraryExW = (decltype(&LoadLibraryExW))GetProcAddress(
+            kernelBaseModule, "LoadLibraryExW");
+        WindhawkUtils::SetFunctionHook(pKernelBaseLoadLibraryExW,
+                                       LoadLibraryExW_Hook,
+                                       &LoadLibraryExW_Original);
+    
+        // Hook immediately if DLL is already loaded.
+        HookInitializeXamlDiagnosticsExIfNeeded();
+    
+        HookWindowsUIFileExplorerSymbols();
+    
     }
-
-    HMODULE user32Module =
-        LoadLibraryEx(L"user32.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
-    if (user32Module) {
-        auto pCreateWindowInBand = (CreateWindowInBand_t)GetProcAddress(
-            user32Module, "CreateWindowInBand");
-        if (pCreateWindowInBand) {
-            WindhawkUtils::SetFunctionHook(pCreateWindowInBand,
-                                           CreateWindowInBand_Hook,
-                                           &CreateWindowInBand_Original);
-        }
-
-        auto pCreateWindowInBandEx = (CreateWindowInBandEx_t)GetProcAddress(
-            user32Module, "CreateWindowInBandEx");
-        if (pCreateWindowInBandEx) {
-            WindhawkUtils::SetFunctionHook(pCreateWindowInBandEx,
-                                           CreateWindowInBandEx_Hook,
-                                           &CreateWindowInBandEx_Original);
-        }
-    }
-
-    HMODULE kernelBaseModule = GetModuleHandle(L"kernelbase.dll");
-    auto pKernelBaseLoadLibraryExW = (decltype(&LoadLibraryExW))GetProcAddress(
-        kernelBaseModule, "LoadLibraryExW");
-    WindhawkUtils::SetFunctionHook(pKernelBaseLoadLibraryExW,
-                                   LoadLibraryExW_Hook,
-                                   &LoadLibraryExW_Original);
-
-    // Hook immediately if DLL is already loaded.
-    HookInitializeXamlDiagnosticsExIfNeeded();
-
-    HookWindowsUIFileExplorerSymbols();
 
 
     return TRUE;
