@@ -10135,6 +10135,12 @@ struct ExplorerTvOnOverlay {
     double progress{};
     int width{};
     int height{};
+    int sourceWidth{};
+    int sourceHeight{};
+    bool animateGeometry{};
+    bool reverseAnimation{};
+    RECT geometryStartRect{};
+    RECT geometryEndRect{};
     std::vector<BYTE> sourcePixels;
     HDC frameDc{};
     HBITMAP frameBitmap{};
@@ -10216,6 +10222,8 @@ bool InitializeExplorerTvOnRenderer(ExplorerTvOnOverlay* state) {
 
     state->width = sourceInfo.bmWidth;
     state->height = sourceInfo.bmHeight;
+    state->sourceWidth = sourceInfo.bmWidth;
+    state->sourceHeight = sourceInfo.bmHeight;
     const size_t pixelCount =
         static_cast<size_t>(state->width) * static_cast<size_t>(state->height);
     if (pixelCount > SIZE_MAX / 4) return false;
@@ -10266,6 +10274,50 @@ bool InitializeExplorerTvOnRenderer(ExplorerTvOnOverlay* state) {
         DestroyExplorerTvOnRenderer(state);
         return false;
     }
+    return true;
+}
+
+bool ResizeExplorerTvOnFrameBuffer(ExplorerTvOnOverlay* state,
+                                   int width, int height) {
+    if (!state || !state->frameDc || width <= 0 || height <= 0) {
+        return false;
+    }
+    if (state->frameBitmap) {
+        if (state->previousFrameBitmap) {
+            SelectObject(state->frameDc, state->previousFrameBitmap);
+            state->previousFrameBitmap = nullptr;
+        }
+        DeleteObject(state->frameBitmap);
+        state->frameBitmap = nullptr;
+        state->frameBits = nullptr;
+    }
+
+    BITMAPINFO bmi{};
+    bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    bmi.bmiHeader.biWidth = width;
+    bmi.bmiHeader.biHeight = -height;
+    bmi.bmiHeader.biPlanes = 1;
+    bmi.bmiHeader.biBitCount = 32;
+    bmi.bmiHeader.biCompression = BI_RGB;
+
+    void* frameBits = nullptr;
+    HBITMAP frameBitmap = CreateDIBSection(
+        state->frameDc, &bmi, DIB_RGB_COLORS, &frameBits, nullptr, 0);
+    if (!frameBitmap || !frameBits) {
+        if (frameBitmap) DeleteObject(frameBitmap);
+        return false;
+    }
+    HGDIOBJ previous = SelectObject(state->frameDc, frameBitmap);
+    if (!previous || previous == HGDI_ERROR) {
+        DeleteObject(frameBitmap);
+        return false;
+    }
+
+    state->frameBitmap = frameBitmap;
+    state->previousFrameBitmap = previous;
+    state->frameBits = frameBits;
+    state->width = width;
+    state->height = height;
     return true;
 }
 
@@ -10400,6 +10452,113 @@ void RenderExplorerTvOnFrame(HWND hWnd, ExplorerTvOnOverlay* state,
     if (!state || !state->frameBits || !state->frameDc ||
         state->width <= 0 || state->height <= 0) return;
     progress = std::max(0.0, std::min(1.0, progress));
+    if (state->animateGeometry) {
+        double geometryProgress = state->reverseAnimation
+            ? 1.0 - progress : progress;
+        geometryProgress = geometryProgress * geometryProgress *
+                           (3.0 - 2.0 * geometryProgress);
+        state->progress = geometryProgress;
+
+        const RECT& from = state->geometryStartRect;
+        const RECT& to = state->geometryEndRect;
+        auto interpolate = [geometryProgress](LONG a, LONG b) {
+            return static_cast<LONG>(
+                std::lround(static_cast<double>(a) +
+                            (static_cast<double>(b) - a) * geometryProgress));
+        };
+        RECT currentRect{
+            interpolate(from.left, to.left),
+            interpolate(from.top, to.top),
+            interpolate(from.right, to.right),
+            interpolate(from.bottom, to.bottom)
+        };
+        const int currentWidth = std::max(1, currentRect.right - currentRect.left);
+        const int currentHeight = std::max(1, currentRect.bottom - currentRect.top);
+        const size_t canvasBytes =
+            static_cast<size_t>(state->width) * state->height * 4;
+        memset(state->frameBits, 0, canvasBytes);
+
+        const int style = std::max(0, std::min(39, state->animationStyle));
+        const float p = static_cast<float>(geometryProgress);
+        const float eased = p * p * (3.0f - 2.0f * p);
+        const float invP = 1.0f - p;
+        const auto* src = state->sourcePixels.data();
+        auto* dst = static_cast<BYTE*>(state->frameBits);
+        const size_t sourceStride = static_cast<size_t>(state->sourceWidth) * 4;
+        const size_t canvasStride = static_cast<size_t>(state->width) * 4;
+        for (int y = 0; y < currentHeight && y < state->height; ++y) {
+            const int sy = std::min(state->sourceHeight - 1,
+                static_cast<int>((static_cast<long long>(y) *
+                                  state->sourceHeight) / currentHeight));
+            for (int x = 0; x < currentWidth && x < state->width; ++x) {
+                const float nx = (static_cast<float>(x) + 0.5f) / currentWidth;
+                const float ny = (static_cast<float>(y) + 0.5f) / currentHeight;
+                bool visible = true;
+                float alpha = 1.0f;
+                switch (style) {
+                    case 2: alpha = p; break;
+                    case 3: visible = nx <= p; break;
+                    case 4: visible = ny <= p; break;
+                    case 6: alpha = p; break;
+                    case 13: visible = nx >= invP; break;
+                    case 14: visible = nx <= p; break;
+                    case 15: visible = ny >= invP; break;
+                    case 16: visible = ny <= p; break;
+                    case 17: visible = std::abs(nx - 0.5f) <= eased * 0.5f; break;
+                    case 18: visible = std::abs(ny - 0.5f) <= eased * 0.5f; break;
+                    case 19: visible = (static_cast<int>(ny * 12) <
+                                         static_cast<int>(p * 12)) || p >= 1.0f; break;
+                    case 20: visible = (static_cast<int>(nx * 12) <
+                                         static_cast<int>(p * 12)) || p >= 1.0f; break;
+                    case 21: visible = nx + ny <= p * 2.0f; break;
+                    case 22: visible = (nx - 0.5f) * (nx - 0.5f) +
+                                       (ny - 0.5f) * (ny - 0.5f) <= 0.5f * p * p; break;
+                    case 23: visible = std::abs(nx - 0.5f) +
+                                       std::abs(ny - 0.5f) <= p; break;
+                    case 24: visible = nx >= invP && ny >= invP; break;
+                    case 25: visible = nx <= p && ny >= invP; break;
+                    case 26: visible = nx >= invP && ny <= p; break;
+                    case 27: visible = nx <= p && ny <= p; break;
+                    case 33: visible = ((x / 8 + y / 8) % 2 == 0) || p > 0.92f; break;
+                    case 34: visible = (((x / 8) % 2) == ((y / 8) % 2)) || p > 0.92f; break;
+                    case 35: visible = ((y / 5) % 2 == 0) || p > 0.92f; break;
+                    case 36: visible = std::abs(nx - 0.5f) <= 0.5f * p; break;
+                    case 37: visible = ny <= p + 0.02f * std::sin(nx * 18.0f); break;
+                    case 38: visible = std::abs(nx - 0.5f) <= 0.08f + p * 0.42f &&
+                                       std::abs(ny - 0.5f) <= 0.08f + p * 0.42f; break;
+                    case 39: visible = static_cast<int>(ny * 18) <
+                                       static_cast<int>(p * 18) || p >= 0.96f; break;
+                    default: break;
+                }
+                if (!visible || alpha <= 0.01f) continue;
+                const int sx = std::min(state->sourceWidth - 1,
+                    static_cast<int>((static_cast<long long>(x) *
+                                      state->sourceWidth) / currentWidth));
+                const BYTE* source = src + static_cast<size_t>(sy) * sourceStride +
+                                     static_cast<size_t>(sx) * 4;
+                BYTE* target = dst + static_cast<size_t>(y) * canvasStride +
+                               static_cast<size_t>(x) * 4;
+                target[0] = static_cast<BYTE>(source[0] * alpha);
+                target[1] = static_cast<BYTE>(source[1] * alpha);
+                target[2] = static_cast<BYTE>(source[2] * alpha);
+                target[3] = static_cast<BYTE>(255.0f * alpha);
+            }
+        }
+
+        POINT destination{currentRect.left, currentRect.top};
+        POINT sourcePoint{0, 0};
+        SIZE size{currentWidth, currentHeight};
+        BLENDFUNCTION blend{AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
+        SetWindowPos(hWnd, HWND_TOPMOST, currentRect.left, currentRect.top,
+                     currentWidth, currentHeight,
+                     SWP_NOACTIVATE | SWP_NOREDRAW);
+        UpdateLayeredWindow(hWnd, nullptr, &destination, &size, state->frameDc,
+                            &sourcePoint, 0, &blend, ULW_ALPHA);
+        return;
+    }
+    if (state->reverseAnimation) {
+        progress = 1.0 - progress;
+    }
     if (state->isClosing || state->isMinimizing) {
         progress = 1.0 - progress;
     }
@@ -11084,45 +11243,86 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
         return previousVisibility;
     }
 
-    // Maximize and restore-to-normal transitions animate the resulting window
-    // frame with their own independent settings.
+    // Animate the actual window contour between its pre-transition and final
+    // rectangles. The captured image is scaled to the interpolated bounds, so
+    // maximize grows from the normal frame and unmaximize contracts back to it.
     const bool isMaximizeTransition = nCmdShow == SW_MAXIMIZE && !wasMaximized;
     const bool isUnmaximizeTransition = nCmdShow == SW_RESTORE && wasMaximized;
     if ((isMaximizeTransition || isUnmaximizeTransition) &&
         GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
         IsWindowVisible(hWnd) && !IsIconic(hWnd)) {
-        const BOOL previousVisibility = ShowWindow_Original(hWnd, nCmdShow);
-        if (!IsWindowVisible(hWnd) || IsIconic(hWnd)) {
-            return previousVisibility;
-        }
         if (!CaptureExplorerBeforeMinimize(hWnd, false)) {
-            return previousVisibility;
+            return ShowWindow_Original(hWnd, nCmdShow);
         }
-        RECT capturedRect{};
-        HBITMAP explorerSnapshot = TakeExplorerSnapshot(hWnd, &capturedRect);
+
+        RECT sourceRect{};
+        HBITMAP explorerSnapshot = TakeExplorerSnapshot(hWnd, &sourceRect);
         if (!explorerSnapshot) {
-            return previousVisibility;
+            return ShowWindow_Original(hWnd, nCmdShow);
         }
-        const int finalShowCmd = isMaximizeTransition ? SW_MAXIMIZE : SW_RESTORE;
+
+        // Put a full-frame cover above Explorer before changing its native size.
         HWND overlay = CreateExplorerTvOnOverlay(
-            hWnd, explorerSnapshot, capturedRect, finalShowCmd, false);
+            hWnd, explorerSnapshot, sourceRect, nCmdShow, true);
         if (!overlay) {
-            return previousVisibility;
+            return ShowWindow_Original(hWnd, nCmdShow);
         }
+
         auto* state = reinterpret_cast<ExplorerTvOnOverlay*>(
             GetWindowLongPtrW(overlay, GWLP_USERDATA));
         if (!state) {
             DestroyWindow(overlay);
+            return ShowWindow_Original(hWnd, nCmdShow);
+        }
+
+        const BOOL previousVisibility = ShowWindow_Original(hWnd, nCmdShow);
+        if (!IsWindow(hWnd) || !IsWindowVisible(hWnd) || IsIconic(hWnd)) {
+            DestroyWindow(overlay);
             return previousVisibility;
         }
+
+        RECT destinationRect{};
+        if (!GetWindowRect(hWnd, &destinationRect)) {
+            ShowWindow_Original(hWnd, SW_HIDE);
+            DestroyWindow(overlay);
+            ShowWindow_Original(hWnd, nCmdShow);
+            return previousVisibility;
+        }
+        RECT visibleRect = destinationRect;
+        if (SUCCEEDED(DwmGetWindowAttribute(
+                hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, &visibleRect,
+                sizeof(visibleRect))) &&
+            visibleRect.right > visibleRect.left &&
+            visibleRect.bottom > visibleRect.top) {
+            destinationRect = visibleRect;
+        }
+
+        ShowWindow_Original(hWnd, SW_HIDE);
+
         state->animationStyle = isMaximizeTransition
             ? g_settings.explorerMaximizeAnimation
             : g_settings.explorerUnmaximizeAnimation;
-        ShowWindow_Original(hWnd, SW_HIDE);
+        state->animateGeometry = true;
+        state->reverseAnimation = isUnmaximizeTransition;
+        state->geometryStartRect = sourceRect;
+        state->geometryEndRect = destinationRect;
+        state->targetRect = destinationRect;
+        const int canvasWidth = std::max(
+            sourceRect.right - sourceRect.left,
+            destinationRect.right - destinationRect.left);
+        const int canvasHeight = std::max(
+            sourceRect.bottom - sourceRect.top,
+            destinationRect.bottom - destinationRect.top);
+        if (!ResizeExplorerTvOnFrameBuffer(state, canvasWidth, canvasHeight)) {
+            DestroyWindow(overlay);
+            ShowWindow_Original(hWnd, nCmdShow);
+            return previousVisibility;
+        }
+
         RenderExplorerTvOnFrame(overlay, state, 0.0);
         if (!StartExplorerTvOnAnimation(overlay, state)) {
             DestroyWindow(overlay);
-            ShowWindow_Original(hWnd, SW_SHOW);
+            ShowWindow_Original(hWnd, nCmdShow);
         }
         return previousVisibility;
     }
