@@ -9642,37 +9642,6 @@ void OnWindowCreated(HWND hWnd, PCSTR funcName) {
     }
 }
 
-using ShowWindow_t = decltype(&ShowWindow);
-ShowWindow_t ShowWindow_Original;
-
-BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
-    // Step 1: animate only the first display of a hidden File Explorer window.
-    // Minimize/restore transitions and all other applications remain untouched.
-    const bool requestsInitialDisplay =
-        nCmdShow == SW_SHOW || nCmdShow == SW_SHOWNORMAL ||
-        nCmdShow == SW_SHOWMAXIMIZED || nCmdShow == SW_SHOWNA ||
-        nCmdShow == SW_SHOWNOACTIVATE || nCmdShow == SW_SHOWDEFAULT;
-
-    constexpr WCHAR kExplorerOpenAnimationDone[] =
-        L"WindHawkTestExplorerOpenAnimationDone";
-
-    if (requestsInitialDisplay &&
-        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
-        !IsWindowVisible(hWnd) && !IsIconic(hWnd) &&
-        !GetPropW(hWnd, kExplorerOpenAnimationDone)) {
-        const BOOL wasVisible = IsWindowVisible(hWnd);
-        if (AnimateWindow(hWnd, 180, AW_BLEND)) {
-            SetPropW(hWnd, kExplorerOpenAnimationDone,
-                     reinterpret_cast<HANDLE>(static_cast<INT_PTR>(1)));
-            return wasVisible;
-        }
-
-        // If the animation is unavailable, keep the native display behavior.
-    }
-
-    return ShowWindow_Original(hWnd, nCmdShow);
-}
-
 using CreateWindowExW_t = decltype(&CreateWindowExW);
 CreateWindowExW_t CreateWindowExW_Original;
 HWND WINAPI CreateWindowExW_Hook(DWORD dwExStyle,
@@ -10082,9 +10051,6 @@ BOOL Wh_ModInit() {
 
     WindhawkUtils::SetFunctionHook(CreateWindowExW, CreateWindowExW_Hook,
                                    &CreateWindowExW_Original);
-
-    WindhawkUtils::SetFunctionHook(ShowWindow, ShowWindow_Hook,
-                                   &ShowWindow_Original);
 
     WindhawkUtils::SetFunctionHook(DwmSetWindowAttribute,
                                    DwmSetWindowAttribute_Hook,
