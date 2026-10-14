@@ -10516,7 +10516,7 @@ bool TryStartExplorerTvOffAnimation(HWND hWnd, bool minimize) {
     }
 
     HWND overlay = CreateExplorerTvOnOverlay(
-        hWnd, snapshot, targetRect, SW_HIDE, false, true);
+        hWnd, snapshot, targetRect, SW_HIDE, false, !minimize);
     if (!overlay) {
         RemovePropW(hWnd, kExplorerTvOffAnimationProperty);
         return false;
