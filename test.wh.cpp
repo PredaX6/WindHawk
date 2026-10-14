@@ -9951,7 +9951,7 @@ HWND CreateExplorerTvOnOverlay(HWND target, HBITMAP snapshot,
     }
 
     auto* state = new (std::nothrow) ExplorerTvOnOverlay{
-        target, snapshot, targetRect, 0, finalShowCmd, nullptr};
+        target, snapshot, targetRect, 0, finalShowCmd, UINT_PTR{0}};
     if (!state) {
         DeleteObject(snapshot);
         return nullptr;
