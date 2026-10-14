@@ -54,7 +54,9 @@ envoyez manuellement les lignes pertinentes du journal.
 #include <commctrl.h>
 
 #include <atomic>
+#include <mutex>
 #include <optional>
+#include <unordered_map>
 #include <vector>
 
 #undef GetCurrentTime
@@ -9604,6 +9606,10 @@ LRESULT CALLBACK MicaFocusPersistenceSubclassProc(HWND hWnd,
     LRESULT result =
         DefSubclassProc(hWnd, uMsg, wParam, lParam);
 
+    if (uMsg == WM_NCDESTROY) {
+        ForgetExplorerSnapshot(hWnd);
+    }
+
     if (uMsg == WM_NCACTIVATE && !wParam) {
         auto effect = GetEffectiveBackgroundTranslucentEffect();
         if (effect == BackgroundTranslucentEffect::kAcrylic ||
@@ -9640,6 +9646,124 @@ void OnWindowCreated(HWND hWnd, PCSTR funcName) {
         InitializeForCurrentThread();
         InitializeSettingsAndTap();
     }
+}
+
+
+
+// Keeps a snapshot captured immediately before Explorer is minimized.
+// The bitmap is retained in memory for a later restore-animation stage.
+std::mutex g_explorerSnapshotMutex;
+std::unordered_map<HWND, HBITMAP> g_explorerSnapshots;
+
+bool CaptureExplorerBeforeMinimize(HWND hWnd) {
+    if (GetTargetWindowType(hWnd) != TargetWindowType::FileExplorer ||
+        !IsWindowVisible(hWnd) || IsIconic(hWnd)) {
+        return false;
+    }
+
+    RECT windowRect{};
+    if (!GetWindowRect(hWnd, &windowRect)) {
+        return false;
+    }
+
+    const int width = windowRect.right - windowRect.left;
+    const int height = windowRect.bottom - windowRect.top;
+    if (width <= 0 || height <= 0) {
+        return false;
+    }
+
+    HDC windowDc = GetWindowDC(hWnd);
+    if (!windowDc) {
+        return false;
+    }
+
+    HDC memoryDc = CreateCompatibleDC(windowDc);
+    HBITMAP snapshot = memoryDc ? CreateCompatibleBitmap(windowDc, width, height)
+                                : nullptr;
+    HGDIOBJ oldBitmap = snapshot ? SelectObject(memoryDc, snapshot) : nullptr;
+    const bool captured =
+        snapshot && oldBitmap && oldBitmap != HGDI_ERROR &&
+        BitBlt(memoryDc, 0, 0, width, height, windowDc, 0, 0,
+               SRCCOPY | CAPTUREBLT);
+
+    if (oldBitmap && oldBitmap != HGDI_ERROR) {
+        SelectObject(memoryDc, oldBitmap);
+    }
+    if (memoryDc) {
+        DeleteDC(memoryDc);
+    }
+    ReleaseDC(hWnd, windowDc);
+
+    if (!captured) {
+        if (snapshot) {
+            DeleteObject(snapshot);
+        }
+        Wh_Log(L"Pre-minimize snapshot capture failed for %08X",
+               (DWORD)(ULONG_PTR)hWnd);
+        return false;
+    }
+
+    HBITMAP previousSnapshot = nullptr;
+    {
+        std::lock_guard<std::mutex> lock(g_explorerSnapshotMutex);
+        auto it = g_explorerSnapshots.find(hWnd);
+        if (it != g_explorerSnapshots.end()) {
+            previousSnapshot = it->second;
+            it->second = snapshot;
+        } else {
+            g_explorerSnapshots.emplace(hWnd, snapshot);
+        }
+    }
+
+    if (previousSnapshot) {
+        DeleteObject(previousSnapshot);
+    }
+
+    Wh_Log(L"Saved pre-minimize Explorer snapshot for %08X (%d x %d)",
+           (DWORD)(ULONG_PTR)hWnd, width, height);
+    return true;
+}
+
+void ForgetExplorerSnapshot(HWND hWnd) {
+    HBITMAP snapshot = nullptr;
+    {
+        std::lock_guard<std::mutex> lock(g_explorerSnapshotMutex);
+        auto it = g_explorerSnapshots.find(hWnd);
+        if (it != g_explorerSnapshots.end()) {
+            snapshot = it->second;
+            g_explorerSnapshots.erase(it);
+        }
+    }
+    if (snapshot) {
+        DeleteObject(snapshot);
+    }
+}
+
+void ClearExplorerSnapshots() {
+    std::unordered_map<HWND, HBITMAP> snapshots;
+    {
+        std::lock_guard<std::mutex> lock(g_explorerSnapshotMutex);
+        snapshots.swap(g_explorerSnapshots);
+    }
+    for (const auto& entry : snapshots) {
+        if (entry.second) {
+            DeleteObject(entry.second);
+        }
+    }
+}
+
+using ShowWindow_t = decltype(&ShowWindow);
+ShowWindow_t ShowWindow_Original;
+
+BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
+    // Capture before calling the real API so the bitmap reflects the window
+    // immediately before Windows starts minimizing it.
+    if (nCmdShow == SW_MINIMIZE || nCmdShow == SW_SHOWMINIMIZED ||
+        nCmdShow == SW_SHOWMINNOACTIVE) {
+        CaptureExplorerBeforeMinimize(hWnd);
+    }
+
+    return ShowWindow_Original(hWnd, nCmdShow);
 }
 
 using CreateWindowExW_t = decltype(&CreateWindowExW);
@@ -10052,6 +10176,9 @@ BOOL Wh_ModInit() {
     WindhawkUtils::SetFunctionHook(CreateWindowExW, CreateWindowExW_Hook,
                                    &CreateWindowExW_Original);
 
+    WindhawkUtils::SetFunctionHook(ShowWindow, ShowWindow_Hook,
+                                   &ShowWindow_Original);
+
     WindhawkUtils::SetFunctionHook(DwmSetWindowAttribute,
                                    DwmSetWindowAttribute_Hook,
                                    &DwmSetWindowAttribute_Original);
@@ -10171,6 +10298,8 @@ void Wh_ModAfterInit() {
 void Wh_ModUninit() {
     Wh_Log(L">");
 
+
+    ClearExplorerSnapshots();
 
     StopImageDownloads();
 
