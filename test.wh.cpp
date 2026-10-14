@@ -9826,6 +9826,22 @@ BOOL WINAPI SetWindowPos_Hook(HWND hWnd,
 using ShowWindow_t = decltype(&ShowWindow);
 ShowWindow_t ShowWindow_Original;
 BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
+    const bool requestsMinimized =
+        nCmdShow == SW_MINIMIZE || nCmdShow == SW_SHOWMINIMIZED ||
+        nCmdShow == SW_SHOWMINNOACTIVE || nCmdShow == SW_FORCEMINIMIZE;
+
+    // Animate the visible Explorer window before Windows minimizes it. Clear
+    // the temporary region only after minimization, so it cannot remain on the
+    // minimized window and interfere with a later restoration.
+    if (requestsMinimized &&
+        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
+        IsWindowVisible(hWnd) && !IsIconic(hWnd)) {
+        AnimateTvWindowRegion(hWnd, false);
+        BOOL previousVisibility = ShowWindow_Original(hWnd, nCmdShow);
+        SetWindowRgn(hWnd, nullptr, TRUE);
+        return previousVisibility;
+    }
+
     const bool requestsVisible =
         nCmdShow != SW_HIDE && nCmdShow != SW_MINIMIZE &&
         nCmdShow != SW_SHOWMINIMIZED && nCmdShow != SW_SHOWMINNOACTIVE &&
