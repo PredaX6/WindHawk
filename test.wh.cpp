@@ -56,6 +56,9 @@ envoyez manuellement les lignes pertinentes du journal.
 - explorerTvOnFrameIntervalMs: 18
   $name: Intervalle entre les images CRT (ms)
   $description: "Délai entre deux images de l’animation, en millisecondes. Valeur par défaut : 18. Valeurs autorisées : 1 à 1000."
+- explorerTvOnHorizontalInset: 6
+  $name: Décalage horizontal de l’animation CRT (pixels)
+  $description: "Réduit la largeur de chaque côté de l’animation. Valeur par défaut : 6 pixels. Valeurs autorisées : 0 à 20."
 */
 // ==/WindhawkModSettings==
 
@@ -144,6 +147,7 @@ struct {
     bool explorerTvOnEnabled = true;
     int explorerTvOnDurationMs;
     int explorerTvOnFrameIntervalMs;
+    int explorerTvOnHorizontalInset;
 } g_settings;
 
 BackgroundTranslucentEffect g_themeBackgroundTranslucentEffect;
@@ -9702,7 +9706,7 @@ bool CaptureExplorerBeforeMinimize(HWND hWnd) {
 
     // Apply a minimal horizontal inset to compensate for any remaining
     // edge overdraw observed with the DWM frame bounds.
-    constexpr int kHorizontalInset = 6;
+    const int kHorizontalInset = g_settings.explorerTvOnHorizontalInset;
     if (visibleRect.right - visibleRect.left > 2 * kHorizontalInset) {
         visibleRect.left += kHorizontalInset;
         visibleRect.right -= kHorizontalInset;
@@ -9828,6 +9832,9 @@ constexpr int kExplorerTvOnMaxDurationMs = 3000;
 constexpr int kExplorerTvOnDefaultFrameIntervalMs = 18;
 constexpr int kExplorerTvOnMinFrameIntervalMs = 1;
 constexpr int kExplorerTvOnMaxFrameIntervalMs = 1000;
+constexpr int kExplorerTvOnDefaultHorizontalInset = 6;
+constexpr int kExplorerTvOnMinHorizontalInset = 0;
+constexpr int kExplorerTvOnMaxHorizontalInset = 20;
 constexpr float kExplorerTvOnSquashEnd = 0.42f;
 constexpr float kExplorerTvOnZipEnd = 0.78f;
 constexpr wchar_t kExplorerTvOnOverlayClass[] =
@@ -10373,7 +10380,7 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
 
         // Keep the opening overlay consistent with the horizontally inset
         // snapshot rectangle used by CaptureExplorerBeforeMinimize.
-        constexpr int kHorizontalInset = 6;
+        const int kHorizontalInset = g_settings.explorerTvOnHorizontalInset;
         if (targetRect.right - targetRect.left > 2 * kHorizontalInset) {
             targetRect.left += kHorizontalInset;
             targetRect.right -= kHorizontalInset;
@@ -10851,6 +10858,15 @@ void LoadSettings() {
                           ? kExplorerTvOnMaxFrameIntervalMs
                           : configuredFrameIntervalMs))
             : kExplorerTvOnDefaultFrameIntervalMs;
+
+    const int configuredHorizontalInset =
+        Wh_GetIntSetting(L"explorerTvOnHorizontalInset");
+    g_settings.explorerTvOnHorizontalInset =
+        configuredHorizontalInset < kExplorerTvOnMinHorizontalInset
+            ? kExplorerTvOnDefaultHorizontalInset
+            : (configuredHorizontalInset > kExplorerTvOnMaxHorizontalInset
+                   ? kExplorerTvOnMaxHorizontalInset
+                   : configuredHorizontalInset);
 
     // Remaining settings are fixed in code.
     g_settings.explorerFrameContainerHeight = 0;
