@@ -9657,6 +9657,7 @@ void OnWindowCreated(HWND hWnd, PCSTR funcName) {
 // The bitmap is retained in memory for a later restore-animation stage.
 std::mutex g_explorerSnapshotMutex;
 std::unordered_map<HWND, HBITMAP> g_explorerSnapshots;
+std::unordered_map<HWND, RECT> g_explorerSnapshotRects;
 
 bool CaptureExplorerBeforeMinimize(HWND hWnd) {
     if (GetTargetWindowType(hWnd) != TargetWindowType::FileExplorer ||
@@ -9716,6 +9717,7 @@ bool CaptureExplorerBeforeMinimize(HWND hWnd) {
         } else {
             g_explorerSnapshots.emplace(hWnd, snapshot);
         }
+        g_explorerSnapshotRects[hWnd] = windowRect;
     }
 
     if (previousSnapshot) {
@@ -9747,6 +9749,7 @@ void ClearExplorerSnapshots() {
     {
         std::lock_guard<std::mutex> lock(g_explorerSnapshotMutex);
         snapshots.swap(g_explorerSnapshots);
+        g_explorerSnapshotRects.clear();
     }
     for (const auto& entry : snapshots) {
         if (entry.second) {
@@ -9866,7 +9869,7 @@ bool EnsureExplorerTvOnOverlayClass() {
     return registered;
 }
 
-HBITMAP TakeExplorerSnapshot(HWND hWnd) {
+HBITMAP TakeExplorerSnapshot(HWND hWnd, RECT* targetRect) {
     std::lock_guard<std::mutex> lock(g_explorerSnapshotMutex);
     auto it = g_explorerSnapshots.find(hWnd);
     if (it == g_explorerSnapshots.end()) {
@@ -9875,6 +9878,13 @@ HBITMAP TakeExplorerSnapshot(HWND hWnd) {
 
     HBITMAP snapshot = it->second;
     g_explorerSnapshots.erase(it);
+    auto rectIt = g_explorerSnapshotRects.find(hWnd);
+    if (rectIt != g_explorerSnapshotRects.end()) {
+        if (targetRect) {
+            *targetRect = rectIt->second;
+        }
+        g_explorerSnapshotRects.erase(rectIt);
+    }
     return snapshot;
 }
 
@@ -9946,24 +9956,33 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
         GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
         IsIconic(hWnd)) {
         RECT targetRect{};
-        if (GetWindowRect(hWnd, &targetRect)) {
-            HBITMAP snapshot = TakeExplorerSnapshot(hWnd);
-            HWND overlay = CreateExplorerTvOnOverlay(hWnd, snapshot, targetRect);
-            BOOL previousVisibility = ShowWindow_Original(hWnd, nCmdShow);
+        HBITMAP snapshot = TakeExplorerSnapshot(hWnd, &targetRect);
+        if (!snapshot) {
+            return ShowWindow_Original(hWnd, nCmdShow);
+        }
 
-            if (overlay) {
-                auto* state = reinterpret_cast<ExplorerTvOnOverlay*>(
-                    GetWindowLongPtrW(overlay, GWLP_USERDATA));
-                if (state) {
-                    state->startTime = GetTickCount64();
-                    if (!SetTimer(overlay, kExplorerTvOnTimerId,
-                                  kExplorerTvOnFrameIntervalMs, nullptr)) {
-                        DestroyWindow(overlay);
-                    }
+        const int snapshotWidth = targetRect.right - targetRect.left;
+        const int snapshotHeight = targetRect.bottom - targetRect.top;
+        if (snapshotWidth <= 0 || snapshotHeight <= 0) {
+            DeleteObject(snapshot);
+            return ShowWindow_Original(hWnd, nCmdShow);
+        }
+
+        HWND overlay = CreateExplorerTvOnOverlay(hWnd, snapshot, targetRect);
+        BOOL previousVisibility = ShowWindow_Original(hWnd, nCmdShow);
+
+        if (overlay) {
+            auto* state = reinterpret_cast<ExplorerTvOnOverlay*>(
+                GetWindowLongPtrW(overlay, GWLP_USERDATA));
+            if (state) {
+                state->startTime = GetTickCount64();
+                if (!SetTimer(overlay, kExplorerTvOnTimerId,
+                              kExplorerTvOnFrameIntervalMs, nullptr)) {
+                    DestroyWindow(overlay);
                 }
             }
-            return previousVisibility;
         }
+        return previousVisibility;
     }
 
     return ShowWindow_Original(hWnd, nCmdShow);
