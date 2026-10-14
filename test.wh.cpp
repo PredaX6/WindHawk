@@ -9945,8 +9945,7 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
 
     const bool isRestoreRequest =
         nCmdShow == SW_RESTORE || nCmdShow == SW_SHOW ||
-        nCmdShow == SW_SHOWNORMAL || nCmdShow == SW_SHOWNA ||
-        nCmdShow == SW_SHOWDEFAULT;
+        nCmdShow == SW_SHOWNORMAL || nCmdShow == SW_SHOWDEFAULT;
     if (isRestoreRequest &&
         GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
         IsIconic(hWnd)) {
