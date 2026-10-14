@@ -10940,6 +10940,7 @@ bool TryStartExplorerTvOffAnimation(HWND hWnd, bool minimize) {
 }
 
 BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
+    const bool wasMaximized = IsZoomed(hWnd) != FALSE;
     if (!g_settings.explorerTvOnEnabled) {
         return ShowWindow_Original(hWnd, nCmdShow);
     }
@@ -11063,6 +11064,48 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
             return ShowWindow_Original(hWnd, nCmdShow);
         }
 
+        return previousVisibility;
+    }
+
+    // Maximize and restore-to-normal transitions animate the resulting window
+    // frame with their own independent settings.
+    const bool isMaximizeTransition = nCmdShow == SW_MAXIMIZE && !wasMaximized;
+    const bool isUnmaximizeTransition = nCmdShow == SW_RESTORE && wasMaximized;
+    if ((isMaximizeTransition || isUnmaximizeTransition) &&
+        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
+        IsWindowVisible(hWnd) && !IsIconic(hWnd)) {
+        const BOOL previousVisibility = ShowWindow_Original(hWnd, nCmdShow);
+        if (!IsWindowVisible(hWnd) || IsIconic(hWnd)) {
+            return previousVisibility;
+        }
+        if (!CaptureExplorerBeforeMinimize(hWnd, false)) {
+            return previousVisibility;
+        }
+        RECT capturedRect{};
+        HBITMAP explorerSnapshot = TakeExplorerSnapshot(hWnd, &capturedRect);
+        if (!explorerSnapshot) {
+            return previousVisibility;
+        }
+        HWND overlay = CreateExplorerTvOnOverlay(
+            hWnd, explorerSnapshot, capturedRect, SW_SHOW, false);
+        if (!overlay) {
+            return previousVisibility;
+        }
+        auto* state = reinterpret_cast<ExplorerTvOnOverlay*>(
+            GetWindowLongPtrW(overlay, GWLP_USERDATA));
+        if (!state) {
+            DestroyWindow(overlay);
+            return previousVisibility;
+        }
+        state->animationStyle = isMaximizeTransition
+            ? g_settings.explorerMaximizeAnimation
+            : g_settings.explorerUnmaximizeAnimation;
+        ShowWindow_Original(hWnd, SW_HIDE);
+        RenderExplorerTvOnFrame(overlay, state, 0.0);
+        if (!StartExplorerTvOnAnimation(overlay, state)) {
+            DestroyWindow(overlay);
+            ShowWindow_Original(hWnd, SW_SHOW);
+        }
         return previousVisibility;
     }
 
