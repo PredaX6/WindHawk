@@ -9758,6 +9758,9 @@ void ClearExplorerSnapshots() {
     }
 }
 
+using ShowWindow_t = decltype(&ShowWindow);
+ShowWindow_t ShowWindow_Original;
+
 // A temporary, non-activating popup paints the last Explorer frame while
 // the real window is restored underneath it. The popup itself is resized from
 // the center, avoiding AnimateWindow on Explorer's own HWND.
@@ -9935,9 +9938,6 @@ HWND CreateExplorerTvOnOverlay(HWND target, HBITMAP snapshot,
     UpdateWindow(overlay);
     return overlay;
 }
-
-using ShowWindow_t = decltype(&ShowWindow);
-ShowWindow_t ShowWindow_Original;
 
 BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
     // Capture before calling the real API so the bitmap reflects the window
