@@ -9771,6 +9771,7 @@ struct ExplorerTvOnOverlay {
     ULONGLONG startTime;
     int finalShowCmd;
     UINT_PTR timer;
+    double progress;
 };
 
 constexpr UINT_PTR kExplorerTvOnTimerId = 1;
@@ -9808,6 +9809,27 @@ LRESULT CALLBACK ExplorerTvOnOverlayWndProc(HWND hWnd, UINT message,
                 }
                 DeleteDC(bitmapDc);
             }
+
+            // A bright phosphor beam overlays the compressed image during
+            // the CRT line phase, matching the reference mod's characteristic
+            // white-hot horizontal line.
+            if (state->progress < 0.58) {
+                const int width = clientRect.right - clientRect.left;
+                const int height = clientRect.bottom - clientRect.top;
+                if (width > 2 && height > 0) {
+                    HPEN beamPen = CreatePen(PS_SOLID, 1, RGB(245, 250, 255));
+                    if (beamPen) {
+                        HGDIOBJ oldPen = SelectObject(dc, beamPen);
+                        const int cy = height / 2;
+                        MoveToEx(dc, 1, cy, nullptr);
+                        LineTo(dc, width - 1, cy);
+                        if (oldPen && oldPen != HGDI_ERROR) {
+                            SelectObject(dc, oldPen);
+                        }
+                        DeleteObject(beamPen);
+                    }
+                }
+            }
         }
         EndPaint(hWnd, &ps);
         return 0;
@@ -9836,27 +9858,31 @@ LRESULT CALLBACK ExplorerTvOnOverlayWndProc(HWND hWnd, UINT message,
 
         const double progress =
             static_cast<double>(elapsed) / kExplorerTvOnDurationMs;
+        state->progress = progress;
         const int fullWidth = state->targetRect.right - state->targetRect.left;
         const int fullHeight = state->targetRect.bottom - state->targetRect.top;
 
-        // Retro CRT "TV-On": first stretch the image into a horizontal line,
-        // then expand that line vertically until the whole window is visible.
-        // The two phases make the characteristic point -> line -> rectangle
-        // transition without animating Explorer's real HWND.
-        constexpr double kHorizontalPhase = 0.24;
-        double widthProgress;
+        // Follow the reference CRT timing: the point expands into a beam
+        // during the first 22% of the animation, then the beam opens vertically
+        // into the full image over the next 42%. The final portion holds the
+        // restored image steady rather than continuing an artificial zoom.
+        constexpr double kBeamPhase = 0.22;
+        constexpr double kVerticalPhaseEnd = 0.64;
+        double widthProgress = 0.0;
         double heightProgress = 0.0;
-        if (progress < kHorizontalPhase) {
-            const double phase =
-                progress / kHorizontalPhase;
-            widthProgress = 1.0 - (1.0 - phase) * (1.0 - phase);
-        } else {
+        if (progress < kBeamPhase) {
+            const double phase = progress / kBeamPhase;
+            widthProgress = phase * phase;
+        } else if (progress < kVerticalPhaseEnd) {
             widthProgress = 1.0;
             const double phase =
-                (progress - kHorizontalPhase) / (1.0 - kHorizontalPhase);
-            // A slightly stronger ease-out gives the CRT line a quick,
-            // deliberate vertical snap before settling into the full image.
-            heightProgress = 1.0 - (1.0 - phase) * (1.0 - phase);
+                (progress - kBeamPhase) /
+                (kVerticalPhaseEnd - kBeamPhase);
+            const double punch = phase * phase * phase;
+            heightProgress = punch;
+        } else {
+            widthProgress = 1.0;
+            heightProgress = 1.0;
         }
 
         const int width = std::max(2, static_cast<int>(fullWidth * widthProgress));
@@ -9969,7 +9995,7 @@ HWND CreateExplorerTvOnOverlay(HWND target, HBITMAP snapshot,
     }
 
     auto* state = new (std::nothrow) ExplorerTvOnOverlay{
-        target, snapshot, targetRect, 0, finalShowCmd, UINT_PTR{0}};
+        target, snapshot, targetRect, 0, finalShowCmd, UINT_PTR{0}, 0.0};
     if (!state) {
         DeleteObject(snapshot);
         return nullptr;
