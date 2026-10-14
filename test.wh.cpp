@@ -9750,6 +9750,49 @@ void OnWindowCreated(HWND hWnd, PCSTR funcName) {
     }
 }
 
+using SetWindowPos_t = decltype(&SetWindowPos);
+SetWindowPos_t SetWindowPos_Original;
+BOOL WINAPI SetWindowPos_Hook(HWND hWnd,
+                              HWND hWndInsertAfter,
+                              int X,
+                              int Y,
+                              int cx,
+                              int cy,
+                              UINT uFlags) {
+    if ((uFlags & SWP_SHOWWINDOW) &&
+        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
+        !IsWindowVisible(hWnd) &&
+        !GetPropW(hWnd, L"WindHawkTestExplorerOpenAnimationDone")) {
+        RECT windowRect;
+        if (GetWindowRect(hWnd, &windowRect)) {
+            const int width = windowRect.right - windowRect.left;
+            const int height = windowRect.bottom - windowRect.top;
+            if (width >= 4 && height >= 4) {
+                const int centerX = width / 2;
+                const int centerY = height / 2;
+                if (SetTvWindowRegion(hWnd, centerX, centerY,
+                                      centerX + 1, centerY + 1)) {
+                    SetPropW(hWnd, L"WindHawkTestExplorerOpenAnimationDone",
+                             reinterpret_cast<HANDLE>(static_cast<INT_PTR>(1)));
+                    BOOL result = SetWindowPos_Original(
+                        hWnd, hWndInsertAfter, X, Y, cx, cy, uFlags);
+                    if (AnimateTvWindowRegion(hWnd, true)) {
+                        return result;
+                    }
+
+                    SetWindowRgn(hWnd, nullptr, TRUE);
+                    RedrawWindow(hWnd, nullptr, nullptr,
+                                 RDW_INVALIDATE | RDW_ERASE | RDW_FRAME |
+                                     RDW_ALLCHILDREN | RDW_UPDATENOW);
+                    return result;
+                }
+            }
+        }
+    }
+
+    return SetWindowPos_Original(hWnd, hWndInsertAfter, X, Y, cx, cy, uFlags);
+}
+
 using ShowWindow_t = decltype(&ShowWindow);
 ShowWindow_t ShowWindow_Original;
 BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
@@ -10251,6 +10294,9 @@ BOOL Wh_ModInit() {
 
     WindhawkUtils::SetFunctionHook(ShowWindow, ShowWindow_Hook,
                                    &ShowWindow_Original);
+
+    WindhawkUtils::SetFunctionHook(SetWindowPos, SetWindowPos_Hook,
+                                   &SetWindowPos_Original);
 
     WindhawkUtils::SetFunctionHook(DwmSetWindowAttribute,
                                    DwmSetWindowAttribute_Hook,
