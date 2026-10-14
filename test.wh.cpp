@@ -55,6 +55,7 @@ envoyez manuellement les lignes pertinentes du journal.
 
 #include <atomic>
 #include <mutex>
+#include <new>
 #include <optional>
 #include <unordered_map>
 #include <vector>
@@ -9829,8 +9830,10 @@ LRESULT CALLBACK ExplorerTvOnOverlayWndProc(HWND hWnd, UINT message,
         const double eased = 1.0 - (1.0 - progress) * (1.0 - progress);
         const int fullWidth = state->targetRect.right - state->targetRect.left;
         const int fullHeight = state->targetRect.bottom - state->targetRect.top;
-        const int width = max(2, static_cast<int>(fullWidth * eased));
-        const int height = max(2, static_cast<int>(fullHeight * eased));
+        const int animatedWidth = static_cast<int>(fullWidth * eased);
+        const int animatedHeight = static_cast<int>(fullHeight * eased);
+        const int width = animatedWidth < 2 ? 2 : animatedWidth;
+        const int height = animatedHeight < 2 ? 2 : animatedHeight;
         const int x = state->targetRect.left + (fullWidth - width) / 2;
         const int y = state->targetRect.top + (fullHeight - height) / 2;
 
