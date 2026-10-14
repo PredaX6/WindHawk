@@ -47,6 +47,9 @@ envoyez manuellement les lignes pertinentes du journal.
   - acrylic: Acrylique système — matériau Acrylic
   - mica: Mica
   - micaAlt: Mica Alt
+- explorerTvOnEnabled: true
+  $name: Activer les animations CRT
+  $description: Active ou désactive les animations d’ouverture et de restauration de l’Explorateur.
 - explorerTvOnDurationMs: 1000
   $name: Durée de l’animation CRT (ms)
   $description: "Durée en millisecondes, de 100 à 3000. Valeur par défaut : 1000."
@@ -135,6 +138,7 @@ struct {
     BackgroundTranslucentEffectRegion backgroundTranslucentEffectRegion;
     int explorerFrameContainerHeight;
     XamlDiagnosticsHandling xamlDiagnosticsHandling;
+    bool explorerTvOnEnabled = true;
     int explorerTvOnDurationMs;
 } g_settings;
 
@@ -10249,6 +10253,10 @@ HWND CreateExplorerTvOnOverlay(HWND target, HBITMAP snapshot,
 }
 
 BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
+    if (!g_settings.explorerTvOnEnabled) {
+        return ShowWindow_Original(hWnd, nCmdShow);
+    }
+
     // Capture before calling the real API so the bitmap reflects the window
     // immediately before Windows starts minimizing it.
     if (nCmdShow == SW_MINIMIZE || nCmdShow == SW_SHOWMINIMIZED ||
@@ -10757,6 +10765,9 @@ void LoadSettings() {
             BackgroundTranslucentEffect::kNone;
     }
     Wh_FreeStringSetting(backgroundTranslucentEffect);
+
+    g_settings.explorerTvOnEnabled =
+        Wh_GetIntSetting(L"explorerTvOnEnabled") != 0;
 
     const int configuredDurationMs =
         Wh_GetIntSetting(L"explorerTvOnDurationMs");
