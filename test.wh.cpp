@@ -9614,6 +9614,7 @@ constexpr WCHAR kExplorerTvOffAllowCloseProperty[] =
 constexpr WCHAR kExplorerTvOffAnimationProperty[] =
     L"WindhawkExplorerTvOffAnimation-" WH_MOD_ID;
 bool TryStartExplorerTvOffAnimation(HWND hWnd, bool minimize = false);
+bool TryStartExplorerTvOnRestore(HWND hWnd);
 
 LRESULT CALLBACK MicaFocusPersistenceSubclassProc(HWND hWnd,
                                                   UINT uMsg,
@@ -9621,6 +9622,20 @@ LRESULT CALLBACK MicaFocusPersistenceSubclassProc(HWND hWnd,
                                                   LPARAM lParam,
                                                   UINT_PTR uIdSubclass,
                                                   DWORD_PTR dwRefData) {
+    if (uMsg == WM_SYSCOMMAND && (wParam & 0xFFF0) == SC_MINIMIZE) {
+        if (TryStartExplorerTvOffAnimation(hWnd, true)) {
+            return 0;
+        }
+    }
+
+    if (uMsg == WM_SYSCOMMAND &&
+        ((wParam & 0xFFF0) == SC_RESTORE ||
+         (wParam & 0xFFF0) == SC_MAXIMIZE) && IsIconic(hWnd)) {
+        if (TryStartExplorerTvOnRestore(hWnd)) {
+            return 0;
+        }
+    }
+
     if (uMsg == WM_CLOSE) {
         if (RemovePropW(hWnd, kExplorerTvOffAllowCloseProperty)) {
             return DefSubclassProc(hWnd, uMsg, wParam, lParam);
@@ -9719,7 +9734,7 @@ bool CaptureExplorerBeforeMinimize(HWND hWnd) {
 
     // Apply a minimal horizontal inset to compensate for any remaining
     // edge overdraw observed with the DWM frame bounds.
-    constexpr int kHorizontalInset = 6;
+    constexpr int kHorizontalInset = 1;
     if (visibleRect.right - visibleRect.left > 2 * kHorizontalInset) {
         visibleRect.left += kHorizontalInset;
         visibleRect.right -= kHorizontalInset;
@@ -10327,6 +10342,46 @@ HBITMAP TakeExplorerSnapshot(HWND hWnd, RECT* targetRect) {
     return snapshot;
 }
 
+bool TryStartExplorerTvOnRestore(HWND hWnd) {
+    if (!g_settings.explorerTvOnEnabled ||
+        GetTargetWindowType(hWnd) != TargetWindowType::FileExplorer ||
+        !IsIconic(hWnd)) {
+        return false;
+    }
+
+    RECT targetRect{};
+    HBITMAP snapshot = TakeExplorerSnapshot(hWnd, &targetRect);
+    if (!snapshot) {
+        return false;
+    }
+
+    const int snapshotWidth = targetRect.right - targetRect.left;
+    const int snapshotHeight = targetRect.bottom - targetRect.top;
+    if (snapshotWidth <= 0 || snapshotHeight <= 0) {
+        DeleteObject(snapshot);
+        return false;
+    }
+
+    HWND overlay = CreateExplorerTvOnOverlay(hWnd, snapshot, targetRect,
+                                             SW_RESTORE);
+    if (!overlay) {
+        return false;
+    }
+
+    auto* state = reinterpret_cast<ExplorerTvOnOverlay*>(
+        GetWindowLongPtrW(overlay, GWLP_USERDATA));
+    if (!state) {
+        DestroyWindow(overlay);
+        return false;
+    }
+    if (!StartExplorerTvOnAnimation(overlay, state)) {
+        DestroyWindow(overlay);
+        return false;
+    }
+
+    return true;
+}
+
 HBITMAP CaptureDesktopRegion(const RECT& rect) {
     const int width = rect.right - rect.left;
     const int height = rect.bottom - rect.top;
@@ -10478,11 +10533,16 @@ bool TryStartExplorerTvOffAnimation(HWND hWnd, bool minimize) {
     }
     state->isMinimizing = minimize;
 
-    // The overlay already covers Explorer, so hide the real window only after
-    // the captured frame is on screen. If animation startup fails, restore it.
-    ShowWindow_Original(hWnd, SW_HIDE);
+    // For minimize, leave Explorer visible behind the topmost overlay so the
+    // window manager can minimize a normal visible window when the effect ends.
+    // For close, hide it now to prevent the native frame from flashing.
+    if (!minimize) {
+        ShowWindow_Original(hWnd, SW_HIDE);
+    }
     if (!StartExplorerTvOnAnimation(overlay, state)) {
-        ShowWindow_Original(hWnd, SW_SHOW);
+        if (!minimize) {
+            ShowWindow_Original(hWnd, SW_SHOW);
+        }
         DestroyWindow(overlay);
         RemovePropW(hWnd, kExplorerTvOffAnimationProperty);
         return false;
@@ -10520,33 +10580,9 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
             return ShowWindow_Original(hWnd, nCmdShow);
         }
 
-        const int snapshotWidth = targetRect.right - targetRect.left;
-        const int snapshotHeight = targetRect.bottom - targetRect.top;
-        if (snapshotWidth <= 0 || snapshotHeight <= 0) {
-            DeleteObject(snapshot);
+        if (!TryStartExplorerTvOnRestore(hWnd)) {
             return ShowWindow_Original(hWnd, nCmdShow);
         }
-
-        HWND overlay = CreateExplorerTvOnOverlay(hWnd, snapshot, targetRect,
-                                                 SW_RESTORE);
-        if (!overlay) {
-            // If the visual overlay cannot be created, preserve normal restore.
-            return ShowWindow_Original(hWnd, nCmdShow);
-        }
-
-        auto* state = reinterpret_cast<ExplorerTvOnOverlay*>(
-            GetWindowLongPtrW(overlay, GWLP_USERDATA));
-        if (!state) {
-            DestroyWindow(overlay);
-            return ShowWindow_Original(hWnd, nCmdShow);
-        }
-        if (!StartExplorerTvOnAnimation(overlay, state)) {
-            DestroyWindow(overlay);
-            return ShowWindow_Original(hWnd, nCmdShow);
-        }
-
-        // The window remains minimized until the overlay finishes, preventing
-        // Explorer from appearing underneath the expanding snapshot.
         return FALSE;
     }
 
