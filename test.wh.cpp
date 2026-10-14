@@ -48,10 +48,50 @@ envoyez manuellement les lignes pertinentes du journal.
   - mica: Mica
   - micaAlt: Mica Alt
 - explorerTvOnEnabled: true
-  $name: Activer les animations CRT
-  $description: Active ou désactive les animations CRT d’ouverture, de réduction, de restauration et de fermeture de l’Explorateur.
+  $name: Activer les animations de fenêtre
+  $description: Active ou désactive les animations personnalisées de l’Explorateur.
+- explorerOpenAnimation: crt
+  $name: Animation d’ouverture
+  $options:
+  - crt: CRT classique
+  - zoom: Zoom progressif
+  - fadeZoom: Fondu avec zoom
+  - horizontal: Révélation horizontale
+  - vertical: Balayage vertical
+  - center: Déploiement depuis le centre
+  - scanlines: Balayage CRT
+- explorerCloseAnimation: crt
+  $name: Animation de fermeture
+  $options:
+  - crt: CRT classique
+  - zoom: Réduction par zoom
+  - fadeZoom: Fondu avec zoom
+  - horizontal: Fermeture horizontale
+  - vertical: Fermeture verticale
+  - center: Contraction vers le centre
+  - scanlines: Balayage CRT
+- explorerMinimizeAnimation: crt
+  $name: Animation de réduction
+  $options:
+  - crt: CRT classique
+  - zoom: Zoom vers la barre des tâches (effet visuel)
+  - fadeZoom: Fondu avec zoom
+  - horizontal: Fermeture horizontale
+  - vertical: Fermeture verticale
+  - center: Contraction vers le centre
+  - scanlines: Balayage CRT
+- explorerRestoreAnimation: crt
+  $name: Animation de restauration après réduction
+  $options:
+  - crt: CRT classique
+  - zoom: Zoom progressif
+  - fadeZoom: Fondu avec zoom
+  - horizontal: Révélation horizontale
+  - vertical: Balayage vertical
+  - center: Déploiement depuis le centre
+  - scanlines: Balayage CRT
 - explorerTvOnDurationMs: 1000
-  $name: Durée de l’animation CRT (ms)
+  $name: Durée des animations (ms)
   $description: "Durée en millisecondes, de 100 à 3000. Valeur par défaut : 1000."
 */
 // ==/WindhawkModSettings==
@@ -141,6 +181,10 @@ struct {
     XamlDiagnosticsHandling xamlDiagnosticsHandling;
     bool explorerTvOnEnabled = true;
     int explorerTvOnDurationMs;
+    int explorerOpenAnimation = 0;
+    int explorerCloseAnimation = 0;
+    int explorerMinimizeAnimation = 0;
+    int explorerRestoreAnimation = 0;
 } g_settings;
 
 BackgroundTranslucentEffect g_themeBackgroundTranslucentEffect;
@@ -9866,6 +9910,7 @@ struct ExplorerTvOnOverlay {
     HANDLE animationThread{};
     bool isClosing{};
     bool isMinimizing{};
+    int animationStyle{};
 };
 
 constexpr UINT kExplorerTvOnFrameMessage = WM_APP + 0x3A1;
@@ -10127,6 +10172,59 @@ void RenderExplorerTvOnFrame(HWND hWnd, ExplorerTvOnOverlay* state,
         static_cast<size_t>(state->width) * state->height * 4;
     memset(state->frameBits, 0, bytes);
 
+    // Alternative styles share the same captured frame and layered overlay.
+    // Style 0 retains the original CRT effect unchanged.
+    if (state->animationStyle != 0) {
+        const float p = static_cast<float>(progress);
+        float scale = 1.0f;
+        if (state->animationStyle == 1 || state->animationStyle == 2) {
+            scale = 0.18f + 0.82f * p;
+        } else if (state->animationStyle == 5) {
+            scale = 0.05f + 0.95f * p;
+        }
+        const int drawW = std::max(1, static_cast<int>(state->width * scale));
+        const int drawH = std::max(1, static_cast<int>(state->height * scale));
+        const int left = (state->width - drawW) / 2;
+        const int top = (state->height - drawH) / 2;
+        const auto* src = state->sourcePixels.data();
+        auto* dst = static_cast<BYTE*>(state->frameBits);
+        const size_t stride = static_cast<size_t>(state->width) * 4;
+        const float fade = state->animationStyle == 2
+            ? p : (state->animationStyle == 1 ? p : 1.0f);
+        for (int y = 0; y < drawH; ++y) {
+            const int dy = top + y;
+            if (dy < 0 || dy >= state->height) continue;
+            const int sy = std::min(state->height - 1,
+                static_cast<int>((static_cast<long long>(y) * state->height) / drawH));
+            for (int x = 0; x < drawW; ++x) {
+                const int dx = left + x;
+                if (dx < 0 || dx >= state->width) continue;
+                if (state->animationStyle == 3 &&
+                    std::abs(dx - state->width / 2) > state->width * p / 2) continue;
+                if (state->animationStyle == 4 &&
+                    std::abs(dy - state->height / 2) > state->height * p / 2) continue;
+                if (state->animationStyle == 6 && ((dy / 3) % 2) != 0 && p < 0.96f) continue;
+                const int sx = std::min(state->width - 1,
+                    static_cast<int>((static_cast<long long>(x) * state->width) / drawW));
+                const BYTE* source = src + static_cast<size_t>(sy) * stride +
+                                     static_cast<size_t>(sx) * 4;
+                BYTE* target = dst + static_cast<size_t>(dy) * stride +
+                               static_cast<size_t>(dx) * 4;
+                target[0] = static_cast<BYTE>(source[0] * fade);
+                target[1] = static_cast<BYTE>(source[1] * fade);
+                target[2] = static_cast<BYTE>(source[2] * fade);
+                target[3] = static_cast<BYTE>(255.0f * fade);
+            }
+        }
+        POINT destination{state->targetRect.left, state->targetRect.top};
+        POINT sourcePoint{0, 0};
+        SIZE size{state->width, state->height};
+        BLENDFUNCTION blend{AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
+        UpdateLayeredWindow(hWnd, nullptr, &destination, &size, state->frameDc,
+                            &sourcePoint, 0, &blend, ULW_ALPHA);
+        return;
+    }
+
     // This is the TV-ON direction from the reference engine: reverse the
     // shutdown renderer so the dot grows into a beam, then into the image.
     const float offProgress = static_cast<float>(1.0 - progress);
@@ -10380,6 +10478,7 @@ bool TryStartExplorerTvOnRestore(HWND hWnd) {
         DestroyWindow(overlay);
         return false;
     }
+    state->animationStyle = g_settings.explorerRestoreAnimation;
     if (!StartExplorerTvOnAnimation(overlay, state)) {
         DestroyWindow(overlay);
         return false;
@@ -10538,6 +10637,9 @@ bool TryStartExplorerTvOffAnimation(HWND hWnd, bool minimize) {
         return false;
     }
     state->isMinimizing = minimize;
+    state->animationStyle = minimize
+        ? g_settings.explorerMinimizeAnimation
+        : g_settings.explorerCloseAnimation;
 
     // Minimize the real Explorer window before starting the CRT animation.
     // The topmost overlay remains visible and animates independently.
@@ -10666,6 +10768,7 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
         DeleteObject(state->bitmap);
         state->bitmap = explorerSnapshot;
         state->targetRect = capturedRect;
+        state->animationStyle = g_settings.explorerOpenAnimation;
         if (!InitializeExplorerTvOnRenderer(state)) {
             DestroyWindow(overlay);
             ShowWindow_Original(hWnd, nCmdShow);
@@ -11081,6 +11184,23 @@ void LoadSettings() {
 
     g_settings.explorerTvOnEnabled =
         Wh_GetIntSetting(L"explorerTvOnEnabled") != 0;
+
+    auto readAnimationStyle = [](PCWSTR settingName) {
+        PCWSTR value = Wh_GetStringSetting(settingName);
+        int style = 0;
+        if (wcscmp(value, L"zoom") == 0) style = 1;
+        else if (wcscmp(value, L"fadeZoom") == 0) style = 2;
+        else if (wcscmp(value, L"horizontal") == 0) style = 3;
+        else if (wcscmp(value, L"vertical") == 0) style = 4;
+        else if (wcscmp(value, L"center") == 0) style = 5;
+        else if (wcscmp(value, L"scanlines") == 0) style = 6;
+        Wh_FreeStringSetting(value);
+        return style;
+    };
+    g_settings.explorerOpenAnimation = readAnimationStyle(L"explorerOpenAnimation");
+    g_settings.explorerCloseAnimation = readAnimationStyle(L"explorerCloseAnimation");
+    g_settings.explorerMinimizeAnimation = readAnimationStyle(L"explorerMinimizeAnimation");
+    g_settings.explorerRestoreAnimation = readAnimationStyle(L"explorerRestoreAnimation");
 
     const int configuredDurationMs =
         Wh_GetIntSetting(L"explorerTvOnDurationMs");
