@@ -9704,7 +9704,37 @@ LRESULT CALLBACK MicaFocusPersistenceSubclassProc(HWND hWnd,
         AnimateTvWindowRegion(hWnd, false);
     }
 
+    const bool restoreFromSystemMenu =
+        uMsg == WM_SYSCOMMAND &&
+        (wParam & 0xFFF0) == SC_RESTORE &&
+        IsIconic(hWnd) &&
+        GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer;
+
     LRESULT result = DefSubclassProc(hWnd, uMsg, wParam, lParam);
+
+    // Explorer can restore from the taskbar through SC_RESTORE without using
+    // the hooked ShowWindow path. Apply the clipping region after Windows has
+    // restored the normal window bounds, then reveal the real window.
+    if (restoreFromSystemMenu && IsWindow(hWnd) && !IsIconic(hWnd)) {
+        RECT restoredRect;
+        if (GetWindowRect(hWnd, &restoredRect)) {
+            const int width = restoredRect.right - restoredRect.left;
+            const int height = restoredRect.bottom - restoredRect.top;
+            if (width >= 4 && height >= 4) {
+                const int centerX = width / 2;
+                const int centerY = height / 2;
+                if (SetTvWindowRegion(hWnd, centerX, centerY,
+                                      centerX + 1, centerY + 1)) {
+                    if (!AnimateTvWindowRegion(hWnd, true)) {
+                        SetWindowRgn(hWnd, nullptr, TRUE);
+                        RedrawWindow(hWnd, nullptr, nullptr,
+                                     RDW_INVALIDATE | RDW_ERASE | RDW_FRAME |
+                                         RDW_ALLCHILDREN | RDW_UPDATENOW);
+                    }
+                }
+            }
+        }
+    }
 
     // If another handler cancels WM_CLOSE, make sure the window is not left
     // clipped to a point.
