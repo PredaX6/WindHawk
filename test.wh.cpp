@@ -49,7 +49,7 @@ envoyez manuellement les lignes pertinentes du journal.
   - micaAlt: Mica Alt
 - explorerTvOnEnabled: true
   $name: Activer les animations CRT
-  $description: Active ou désactive les animations d’ouverture et de restauration de l’Explorateur.
+  $description: Active ou désactive les animations d’ouverture, de restauration et de fermeture de l’Explorateur.
 - explorerTvOnDurationMs: 1000
   $name: Durée de l’animation CRT (ms)
   $description: "Durée en millisecondes, de 100 à 3000. Valeur par défaut : 1000."
@@ -9617,16 +9617,36 @@ void TriggerWindowCompositionUpdate(HWND hWnd) {
 
 void ForgetExplorerSnapshot(HWND hWnd);
 
+constexpr WCHAR kExplorerTvOffAllowCloseProperty[] =
+    L"WindhawkExplorerTvOffAllowClose-" WH_MOD_ID;
+constexpr WCHAR kExplorerTvOffAnimationProperty[] =
+    L"WindhawkExplorerTvOffAnimation-" WH_MOD_ID;
+bool TryStartExplorerTvOffAnimation(HWND hWnd);
+
 LRESULT CALLBACK MicaFocusPersistenceSubclassProc(HWND hWnd,
                                                   UINT uMsg,
                                                   WPARAM wParam,
                                                   LPARAM lParam,
                                                   UINT_PTR uIdSubclass,
                                                   DWORD_PTR dwRefData) {
+    if (uMsg == WM_CLOSE) {
+        if (RemovePropW(hWnd, kExplorerTvOffAllowCloseProperty)) {
+            return DefSubclassProc(hWnd, uMsg, wParam, lParam);
+        }
+        if (GetPropW(hWnd, kExplorerTvOffAnimationProperty)) {
+            return 0;
+        }
+        if (TryStartExplorerTvOffAnimation(hWnd)) {
+            return 0;
+        }
+    }
+
     LRESULT result =
         DefSubclassProc(hWnd, uMsg, wParam, lParam);
 
     if (uMsg == WM_NCDESTROY) {
+        RemovePropW(hWnd, kExplorerTvOffAllowCloseProperty);
+        RemovePropW(hWnd, kExplorerTvOffAnimationProperty);
         ForgetExplorerSnapshot(hWnd);
     }
 
@@ -9829,6 +9849,7 @@ struct ExplorerTvOnOverlay {
     LARGE_INTEGER counterFrequency{};
     bool qpcReady{};
     HANDLE animationThread{};
+    bool isClosing{};
 };
 
 constexpr UINT kExplorerTvOnFrameMessage = WM_APP + 0x3A1;
@@ -10117,6 +10138,9 @@ void RenderExplorerTvOnFrame(HWND hWnd, ExplorerTvOnOverlay* state,
     if (!state || !state->frameBits || !state->frameDc ||
         state->width <= 0 || state->height <= 0) return;
     progress = std::max(0.0, std::min(1.0, progress));
+    if (state->isClosing) {
+        progress = 1.0 - progress;
+    }
     state->progress = progress;
     const size_t bytes =
         static_cast<size_t>(state->width) * state->height * 4;
@@ -10273,9 +10297,15 @@ LRESULT CALLBACK ExplorerTvOnOverlayWndProc(HWND hWnd, UINT message,
         RenderExplorerTvOnFrame(hWnd, state, progress);
 
         if (progress >= 1.0) {
-            if (IsWindow(state->target) &&
-                (!IsWindowVisible(state->target) || IsIconic(state->target))) {
-                ShowWindow_Original(state->target, state->finalShowCmd);
+            if (IsWindow(state->target)) {
+                if (state->isClosing) {
+                    RemovePropW(state->target, kExplorerTvOffAnimationProperty);
+                    SetPropW(state->target, kExplorerTvOffAllowCloseProperty,
+                             reinterpret_cast<HANDLE>(1));
+                    PostMessageW(state->target, WM_CLOSE, 0, 0);
+                } else if (!IsWindowVisible(state->target) || IsIconic(state->target)) {
+                    ShowWindow_Original(state->target, state->finalShowCmd);
+                }
             }
             DestroyWindow(hWnd);
         }
@@ -10376,7 +10406,8 @@ HBITMAP CaptureDesktopRegion(const RECT& rect) {
 
 HWND CreateExplorerTvOnOverlay(HWND target, HBITMAP snapshot,
                                const RECT& targetRect, int finalShowCmd,
-                               bool startFullSize = false) {
+                               bool startFullSize = false,
+                               bool isClosing = false) {
     if (!snapshot || !EnsureExplorerTvOnOverlayClass()) {
         if (snapshot) {
             DeleteObject(snapshot);
@@ -10390,6 +10421,7 @@ HWND CreateExplorerTvOnOverlay(HWND target, HBITMAP snapshot,
         DeleteObject(snapshot);
         return nullptr;
     }
+    state->isClosing = isClosing;
 
     const int width = targetRect.right - targetRect.left;
     const int height = targetRect.bottom - targetRect.top;
@@ -10419,6 +10451,58 @@ HWND CreateExplorerTvOnOverlay(HWND target, HBITMAP snapshot,
     ShowWindow(overlay, SW_SHOWNOACTIVATE);
     UpdateWindow(overlay);
     return overlay;
+}
+
+bool TryStartExplorerTvOffAnimation(HWND hWnd) {
+    if (!g_settings.explorerTvOnEnabled ||
+        GetTargetWindowType(hWnd) != TargetWindowType::FileExplorer ||
+        !IsWindowVisible(hWnd) || IsIconic(hWnd)) {
+        return false;
+    }
+
+    if (!SetPropW(hWnd, kExplorerTvOffAnimationProperty,
+                  reinterpret_cast<HANDLE>(1))) {
+        return false;
+    }
+
+    if (!CaptureExplorerBeforeMinimize(hWnd)) {
+        RemovePropW(hWnd, kExplorerTvOffAnimationProperty);
+        return false;
+    }
+
+    RECT targetRect{};
+    HBITMAP snapshot = TakeExplorerSnapshot(hWnd, &targetRect);
+    if (!snapshot) {
+        RemovePropW(hWnd, kExplorerTvOffAnimationProperty);
+        return false;
+    }
+
+    HWND overlay = CreateExplorerTvOnOverlay(
+        hWnd, snapshot, targetRect, SW_HIDE, false, true);
+    if (!overlay) {
+        RemovePropW(hWnd, kExplorerTvOffAnimationProperty);
+        return false;
+    }
+
+    auto* state = reinterpret_cast<ExplorerTvOnOverlay*>(
+        GetWindowLongPtrW(overlay, GWLP_USERDATA));
+    if (!state) {
+        DestroyWindow(overlay);
+        RemovePropW(hWnd, kExplorerTvOffAnimationProperty);
+        return false;
+    }
+
+    // The overlay already covers Explorer, so hide the real window only after
+    // the captured frame is on screen. If animation startup fails, restore it.
+    ShowWindow_Original(hWnd, SW_HIDE);
+    if (!StartExplorerTvOnAnimation(overlay, state)) {
+        ShowWindow_Original(hWnd, SW_SHOW);
+        DestroyWindow(overlay);
+        RemovePropW(hWnd, kExplorerTvOffAnimationProperty);
+        return false;
+    }
+
+    return true;
 }
 
 BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
