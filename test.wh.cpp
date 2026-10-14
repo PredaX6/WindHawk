@@ -22,9 +22,9 @@
 
 // ==WindhawkModReadme==
 /*
-# Translucent Explorer11
+# Test Mod Complet
 
-Ajoute un fond translucide à l’Explorateur de fichiers Windows 11.
+Ajoute un fond translucide à l’Explorateur windows.
 
 Choisissez l’effet : Acrylique flou, Acrylique, Mica ou Mica Alt.
 
