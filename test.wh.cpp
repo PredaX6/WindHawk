@@ -10453,10 +10453,13 @@ void RenderExplorerTvOnFrame(HWND hWnd, ExplorerTvOnOverlay* state,
         state->width <= 0 || state->height <= 0) return;
     progress = std::max(0.0, std::min(1.0, progress));
     if (state->animateGeometry) {
-        double geometryProgress = state->reverseAnimation
-            ? 1.0 - progress : progress;
+        // Geometry always travels from the captured source bounds to the
+        // native destination bounds. Only the selected visual effect reverses.
+        double geometryProgress = progress;
         geometryProgress = geometryProgress * geometryProgress *
                            (3.0 - 2.0 * geometryProgress);
+        const double effectProgress = state->reverseAnimation
+            ? 1.0 - progress : progress;
         state->progress = geometryProgress;
 
         const RECT& from = state->geometryStartRect;
@@ -10479,7 +10482,7 @@ void RenderExplorerTvOnFrame(HWND hWnd, ExplorerTvOnOverlay* state,
         memset(state->frameBits, 0, canvasBytes);
 
         const int style = std::max(0, std::min(39, state->animationStyle));
-        const float p = static_cast<float>(geometryProgress);
+        const float p = static_cast<float>(effectProgress);
         const float eased = p * p * (3.0f - 2.0f * p);
         const float invP = 1.0f - p;
         const auto* src = state->sourcePixels.data();
