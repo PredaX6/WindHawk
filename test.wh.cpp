@@ -9,7 +9,7 @@
 // @homepage        https://m417z.com/
 // @include         explorer.exe
 // @architecture    x86-64
-// @compilerOptions -lcomctl32 -ld2d1 -ldwmapi -lgdi32 -lmsimg32 -lole32 -loleaut32 -lruntimeobject -lshlwapi -luxtheme
+// @compilerOptions -lcomctl32 -ld2d1 -ldwmapi -lgdi32 -lmsimg32 -lole32 -loleaut32 -lruntimeobject -lshlwapi -luxtheme -lwinmm
 // ==/WindhawkMod==
 
 // Source code is published under The GNU General Public License v3.0.
@@ -64,6 +64,7 @@ envoyez manuellement les lignes pertinentes du journal.
 
 #include <xamlom.h>
 #include <commctrl.h>
+#include <mmsystem.h>
 
 #include <atomic>
 #include <mutex>
@@ -9823,6 +9824,7 @@ struct ExplorerTvOnOverlay {
     HBITMAP frameBitmap{};
     HGDIOBJ previousFrameBitmap{};
     void* frameBits{};
+    bool timerResolutionRaised{};
 };
 
 constexpr UINT_PTR kExplorerTvOnTimerId = 1;
@@ -9832,6 +9834,23 @@ constexpr int kExplorerTvOnMaxDurationMs = 3000;
 constexpr int kExplorerTvOnDefaultFrameIntervalMs = 18;
 constexpr int kExplorerTvOnMinFrameIntervalMs = 1;
 constexpr int kExplorerTvOnMaxFrameIntervalMs = 1000;
+
+// Scale the frame interval with duration to retain a similar frame count.
+// The configured interval acts as the maximum interval.
+UINT GetExplorerTvOnFrameIntervalMs() {
+    const int durationMs = std::clamp(
+        g_settings.explorerTvOnDurationMs,
+        kExplorerTvOnMinDurationMs, kExplorerTvOnMaxDurationMs);
+    const int configuredInterval = std::clamp(
+        g_settings.explorerTvOnFrameIntervalMs,
+        kExplorerTvOnMinFrameIntervalMs, kExplorerTvOnMaxFrameIntervalMs);
+    const int scaledInterval = static_cast<int>(
+        (static_cast<long long>(configuredInterval) * durationMs +
+         kExplorerTvOnDefaultDurationMs / 2) /
+        kExplorerTvOnDefaultDurationMs);
+    return static_cast<UINT>(std::max(1, std::min(
+        configuredInterval, scaledInterval)));
+}
 constexpr int kExplorerTvOnDefaultHorizontalInset = 6;
 constexpr int kExplorerTvOnMinHorizontalInset = 0;
 constexpr int kExplorerTvOnMaxHorizontalInset = 20;
@@ -10163,6 +10182,10 @@ LRESULT CALLBACK ExplorerTvOnOverlayWndProc(HWND hWnd, UINT message,
             KillTimer(hWnd, state->timer);
             state->timer = 0;
         }
+        if (state->timerResolutionRaised) {
+            timeEndPeriod(1);
+            state->timerResolutionRaised = false;
+        }
         DestroyExplorerTvOnRenderer(state);
         if (state->bitmap) {
             DeleteObject(state->bitmap);
@@ -10334,10 +10357,13 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
 
         auto* state = reinterpret_cast<ExplorerTvOnOverlay*>(
             GetWindowLongPtrW(overlay, GWLP_USERDATA));
-        if (!state ||
-            !(state->timer = SetTimer(overlay, kExplorerTvOnTimerId,
-                                      static_cast<UINT>(
-                                          g_settings.explorerTvOnFrameIntervalMs),
+        if (!state) {
+            DestroyWindow(overlay);
+            return ShowWindow_Original(hWnd, nCmdShow);
+        }
+        state->timerResolutionRaised = timeBeginPeriod(1) == TIMERR_NOERROR;
+        if (!(state->timer = SetTimer(overlay, kExplorerTvOnTimerId,
+                                      GetExplorerTvOnFrameIntervalMs(),
                                       nullptr))) {
             DestroyWindow(overlay);
             return ShowWindow_Original(hWnd, nCmdShow);
@@ -10432,9 +10458,9 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
                      SWP_NOACTIVATE | SWP_SHOWWINDOW | SWP_NOREDRAW);
         RenderExplorerTvOnFrame(overlay, state, 0.0);
 
+        state->timerResolutionRaised = timeBeginPeriod(1) == TIMERR_NOERROR;
         if (!(state->timer = SetTimer(overlay, kExplorerTvOnTimerId,
-                                      static_cast<UINT>(
-                                          g_settings.explorerTvOnFrameIntervalMs),
+                                      GetExplorerTvOnFrameIntervalMs(),
                                       nullptr))) {
             DestroyWindow(overlay);
             return ShowWindow_Original(hWnd, nCmdShow);
