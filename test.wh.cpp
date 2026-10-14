@@ -9661,7 +9661,7 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
         !IsWindowVisible(hWnd) && !IsIconic(hWnd) &&
         !GetPropW(hWnd, kExplorerOpenAnimationDone)) {
         const BOOL wasVisible = IsWindowVisible(hWnd);
-        if (AnimateWindow(hWnd, 180, AW_CENTER)) {
+        if (AnimateWindow(hWnd, 180, AW_BLEND)) {
             SetPropW(hWnd, kExplorerOpenAnimationDone,
                      reinterpret_cast<HANDLE>(static_cast<INT_PTR>(1)));
             return wasVisible;
