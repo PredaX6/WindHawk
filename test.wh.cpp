@@ -9700,6 +9700,14 @@ bool CaptureExplorerBeforeMinimize(HWND hWnd) {
         }
     }
 
+    // Apply a minimal horizontal inset to compensate for any remaining
+    // edge overdraw observed with the DWM frame bounds.
+    constexpr int kHorizontalInset = 2;
+    if (visibleRect.right - visibleRect.left > 2 * kHorizontalInset) {
+        visibleRect.left += kHorizontalInset;
+        visibleRect.right -= kHorizontalInset;
+    }
+
     const int sourceX = visibleRect.left - windowRect.left;
     const int sourceY = visibleRect.top - windowRect.top;
     const int width = visibleRect.right - visibleRect.left;
@@ -10361,6 +10369,14 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
             visibleRect.right > visibleRect.left &&
             visibleRect.bottom > visibleRect.top) {
             targetRect = visibleRect;
+        }
+
+        // Keep the opening overlay consistent with the horizontally inset
+        // snapshot rectangle used by CaptureExplorerBeforeMinimize.
+        constexpr int kHorizontalInset = 2;
+        if (targetRect.right - targetRect.left > 2 * kHorizontalInset) {
+            targetRect.left += kHorizontalInset;
+            targetRect.right -= kHorizontalInset;
         }
 
         HBITMAP desktopSnapshot = CaptureDesktopRegion(targetRect);
