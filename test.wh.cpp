@@ -11897,18 +11897,11 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
             return previousVisibility;
         }
 
-        // Use only the final DWM-visible frame bounds for the arrival capture.
-        // Capture that exact screen rectangle directly; do not route through the
-        // minimize-snapshot helper, which also updates shared snapshot state and
-        // can preserve bounds from a different window state.
-        RECT animationDestinationRect = destinationRect;
-        HBITMAP destinationBitmap =
-            CaptureDesktopRegion(animationDestinationRect, false, 1.0);
-        if (!destinationBitmap ||
-            animationDestinationRect.right <= animationDestinationRect.left ||
-            animationDestinationRect.bottom <= animationDestinationRect.top) {
-            if (destinationBitmap) {
-                DeleteObject(destinationBitmap);
+        // The zoom animation deliberately uses only the single pre-transition
+        // Explorer capture loaded above. Do not capture a second destination
+        // frame: stretching the original capture through both halves avoids
+        // switching images mid-animation and keeps the transition consistent.
+
             }
             ShowWindow_Original(hWnd, SW_HIDE);
             if (changedTransitionSetting) {
@@ -11944,21 +11937,16 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
                                   sizeof(previousTransitionsDisabled));
         }
 
-        // Precompute blur only for the one captured frame. The same source
-        // image and its blurred variant are reused during both animation halves.
+        // Precompute blur once from the sole pre-transition capture. Reuse this
+        // exact bitmap for both the contraction and expansion phases.
         state->blurredSourcePixels = state->sourcePixels;
         ApplyExplorerSnapshotBlur(state->blurredSourcePixels,
                                   state->sourceWidth, state->sourceHeight, 8);
-        state->blurredDestinationPixels = state->destinationPixels;
-        ApplyExplorerSnapshotBlur(state->blurredDestinationPixels,
-                                  state->destinationWidth,
-                                  state->destinationHeight, 8);
         state->renderPixels.resize(state->sourcePixels.size());
 
-        // One two-phase zoom, with a true source-window capture for contraction
-        // and a separate final-window capture for expansion.
-        state->animateCenterZoom = true;
-        state->animateSingleCaptureBounceZoom = false;
+        // One captured window image drives the complete two-phase zoom.
+        state->animateCenterZoom = false;
+        state->animateSingleCaptureBounceZoom = true;
         const int centerZoomDurationMs = g_settings.explorerMaximizeDurationMs;
         state->animationDurationMs = centerZoomDurationMs;
         state->animateGeometry = false;
