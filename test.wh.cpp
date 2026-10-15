@@ -10506,7 +10506,11 @@ void RenderExplorerTvOnFrame(HWND hWnd, ExplorerTvOnOverlay* state,
         // animation. It contracts to 10% of its initial dimensions (90% smaller)
         // around its center, then zooms from that point to the final window
         // bounds. Blur increases continuously from 0% to 80% over the full run.
-        constexpr double kContractionTimeFraction = 0.5;
+        // Maximize: contraction gets 2/3 of the timeline, so the final zoom
+        // expands at twice the speed. Restore: contraction gets 1/3, so the
+        // zoom toward the restored size takes twice as long.
+        const double kContractionTimeFraction =
+            state->reverseAnimation ? (1.0 / 3.0) : (2.0 / 3.0);
         const bool expanding = progress >= kContractionTimeFraction;
         const double segmentProgress = expanding
             ? (progress - kContractionTimeFraction) /
@@ -10520,8 +10524,12 @@ void RenderExplorerTvOnFrame(HWND hWnd, ExplorerTvOnOverlay* state,
         RECT contractedRect{};
         const LONG sourceWidth = fullRect.right - fullRect.left;
         const LONG sourceHeight = fullRect.bottom - fullRect.top;
-        const LONG sourceCenterX = fullRect.left + sourceWidth / 2;
-        const LONG sourceCenterY = fullRect.top + sourceHeight / 2;
+        // Both phases meet at the destination window's center, preventing a
+        // positional jump when restoring to a normal window away from screen center.
+        const LONG sourceCenterX = maximizedRect.left +
+                                   (maximizedRect.right - maximizedRect.left) / 2;
+        const LONG sourceCenterY = maximizedRect.top +
+                                   (maximizedRect.bottom - maximizedRect.top) / 2;
         const LONG contractedWidth = std::max<LONG>(
             1, static_cast<LONG>(std::lround(sourceWidth * 0.10)));
         const LONG contractedHeight = std::max<LONG>(
@@ -10560,7 +10568,7 @@ void RenderExplorerTvOnFrame(HWND hWnd, ExplorerTvOnOverlay* state,
         // Blend the original capture with a pre-blurred copy. Precomputing the
         // blur avoids running a blur filter over the full image on every frame.
         if (state->blurredSourcePixels.size() == state->sourcePixels.size()) {
-            const float blurAmount = static_cast<float>(0.80 * progress);
+            const float blurAmount = static_cast<float>(progress);
             state->renderPixels.resize(state->sourcePixels.size());
             for (size_t i = 0; i + 3 < state->sourcePixels.size(); i += 4) {
                 for (int channel = 0; channel < 3; ++channel) {
@@ -11537,7 +11545,11 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
             sourceCaptureRect = dwmSourceRect;
         }
 
-        HBITMAP sourceBitmap = CaptureDesktopRegion(sourceCaptureRect, false);
+        // The animation bitmap and its geometry must use exactly the same
+        // visible-frame rectangle. Keep sourceRect separately for the cover,
+        // which must also hide the native resize borders.
+        const RECT animationSourceRect = sourceCaptureRect;
+        HBITMAP sourceBitmap = CaptureDesktopRegion(animationSourceRect, false);
         if (!sourceBitmap) {
             return ShowWindow_Original(hWnd, nCmdShow);
         }
@@ -11648,6 +11660,16 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
             return previousVisibility;
         }
 
+        RECT animationDestinationRect = destinationRect;
+        RECT dwmDestinationRect{};
+        if (SUCCEEDED(DwmGetWindowAttribute(
+                hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, &dwmDestinationRect,
+                sizeof(dwmDestinationRect))) &&
+            dwmDestinationRect.right > dwmDestinationRect.left &&
+            dwmDestinationRect.bottom > dwmDestinationRect.top) {
+            animationDestinationRect = dwmDestinationRect;
+        }
+
         ShowWindow_Original(hWnd, SW_HIDE);
         if (changedTransitionSetting) {
             DwmSetWindowAttribute(hWnd, DWMWA_TRANSITIONS_FORCEDISABLED,
@@ -11655,8 +11677,8 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
                                   sizeof(previousTransitionsDisabled));
         }
 
-        // Keep one capture for both the contraction and expansion. Build a
-        // blurred version once; each frame blends from 0% blur to 80% blur.
+        // Keep one window-only capture for both phases. Precompute the fully
+        // blurred copy once; blur progresses from 0% to 100% over the animation.
         state->blurredSourcePixels = state->sourcePixels;
         ApplyExplorerSnapshotBlur(state->blurredSourcePixels,
                                   state->sourceWidth, state->sourceHeight, 8);
@@ -11667,20 +11689,21 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
         const int centerZoomDurationMs = g_settings.explorerMaximizeDurationMs;
         state->animationDurationMs = centerZoomDurationMs;
         state->animateGeometry = false;
-        state->geometryStartRect = sourceRect;
-        state->geometryEndRect = destinationRect;
-        state->targetRect = sourceRect;
-        const LONG centerX = destinationRect.left +
-                             (destinationRect.right - destinationRect.left) / 2;
-        const LONG centerY = destinationRect.top +
-                             (destinationRect.bottom - destinationRect.top) / 2;
+        state->reverseAnimation = isUnmaximizeTransition;
+        state->geometryStartRect = animationSourceRect;
+        state->geometryEndRect = animationDestinationRect;
+        state->targetRect = animationSourceRect;
+        const LONG centerX = animationDestinationRect.left +
+                             (animationDestinationRect.right - animationDestinationRect.left) / 2;
+        const LONG centerY = animationDestinationRect.top +
+                             (animationDestinationRect.bottom - animationDestinationRect.top) / 2;
         state->centerZoomPointRect = RECT{
             centerX - 1, centerY - 1, centerX + 1, centerY + 1};
 
-        const int sourceWidth = sourceRect.right - sourceRect.left;
-        const int sourceHeight = sourceRect.bottom - sourceRect.top;
-        const int destinationWidth = destinationRect.right - destinationRect.left;
-        const int destinationHeight = destinationRect.bottom - destinationRect.top;
+        const int sourceWidth = animationSourceRect.right - animationSourceRect.left;
+        const int sourceHeight = animationSourceRect.bottom - animationSourceRect.top;
+        const int destinationWidth = animationDestinationRect.right - animationDestinationRect.left;
+        const int destinationHeight = animationDestinationRect.bottom - animationDestinationRect.top;
         const int canvasWidth = std::max(sourceWidth, destinationWidth);
         const int canvasHeight = std::max(sourceHeight, destinationHeight);
         if (!ResizeExplorerTvOnFrameBuffer(state, canvasWidth, canvasHeight)) {
@@ -11689,7 +11712,8 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
             return previousVisibility;
         }
 
-        SetWindowPos(overlay, HWND_TOPMOST, sourceRect.left, sourceRect.top,
+        SetWindowPos(overlay, HWND_TOPMOST,
+                     animationSourceRect.left, animationSourceRect.top,
                      sourceWidth, sourceHeight,
                      SWP_NOACTIVATE | SWP_NOREDRAW | SWP_SHOWWINDOW);
         RenderExplorerTvOnFrame(overlay, state, 0.0);
