@@ -9943,11 +9943,10 @@ bool CaptureExplorerBeforeMinimize(HWND hWnd,
         visibleRect = dwmVisibleRect;
     }
 
-    constexpr int kHorizontalInset = 1;
-    if (visibleRect.right - visibleRect.left > 2 * kHorizontalInset) {
-        visibleRect.left += kHorizontalInset;
-        visibleRect.right -= kHorizontalInset;
-    }
+    // Keep the complete visible window frame in the snapshot. Insetting the
+    // capture here cropped the left and right edges and made the saved
+    // minimize/restore and maximize/restore snapshots inconsistent with their
+    // recorded rectangles.
 
     const int width = visibleRect.right - visibleRect.left;
     const int height = visibleRect.bottom - visibleRect.top;
@@ -9974,8 +9973,12 @@ bool CaptureExplorerBeforeMinimize(HWND hWnd,
     HGDIOBJ oldBitmap = snapshot ? SelectObject(memoryDc, snapshot) : nullptr;
     const bool captured =
         snapshot && oldBitmap && oldBitmap != HGDI_ERROR &&
+        // Do not include unrelated layered windows that may overlap Explorer.
+        // The desktop DC still supplies the DWM-composed Explorer frame,
+        // including its visible backdrop materials, while SRCCOPY avoids
+        // compositing other layered overlays into the saved window image.
         BitBlt(memoryDc, 0, 0, width, height, sourceDc,
-               sourceX, sourceY, SRCCOPY | CAPTUREBLT);
+               sourceX, sourceY, SRCCOPY);
 
     if (oldBitmap && oldBitmap != HGDI_ERROR) {
         SelectObject(memoryDc, oldBitmap);
