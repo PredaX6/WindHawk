@@ -11506,14 +11506,16 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
             destinationRect = visibleRect;
         }
 
-        // The cover has hidden the native transition. Hide it only for the
-        // synchronous desktop copy, then restore it immediately; unlike the
-        // previous flow, there is no 16 ms uncovered interval in which the
-        // maximized window can be presented to the user.
-        ShowWindow(overlay, SW_HIDE);
-        HBITMAP destinationBitmap = CaptureDesktopRegion(destinationRect);
-        ShowWindow(overlay, SW_SHOWNOACTIVATE);
-        UpdateWindow(overlay);
+        // Capture the newly-sized Explorer window directly from its own DC
+        // while the opaque cover remains visible. Hiding the cover even for a
+        // synchronous desktop copy can let DWM present the maximized window
+        // for one frame, producing the brief native-size flash.
+        RECT capturedDestinationRect{};
+        const bool destinationCaptured =
+            CaptureExplorerBeforeMinimize(hWnd, false);
+        HBITMAP destinationBitmap = destinationCaptured
+            ? TakeExplorerSnapshot(hWnd, &capturedDestinationRect)
+            : nullptr;
         ShowWindow_Original(hWnd, SW_HIDE);
         if (changedTransitionSetting) {
             DwmSetWindowAttribute(hWnd, DWMWA_TRANSITIONS_FORCEDISABLED,
@@ -11531,6 +11533,12 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
             return previousVisibility;
         }
         DeleteObject(destinationBitmap);
+        // Use the exact bounds associated with the captured pixels, including
+        // DWM's visible-frame inset, so image dimensions and zoom geometry agree.
+        if (capturedDestinationRect.right > capturedDestinationRect.left &&
+            capturedDestinationRect.bottom > capturedDestinationRect.top) {
+            destinationRect = capturedDestinationRect;
+        }
 
         // Blur both captured states once. The real Explorer window is revealed
         // only after the overlay finishes, so the final desktop remains sharp.
