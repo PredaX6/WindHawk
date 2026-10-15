@@ -10740,21 +10740,16 @@ void RenderExplorerTvOnFrame(HWND hWnd, ExplorerTvOnOverlay* state,
         // the final-state capture expands back to full size.
         const float blurAmount = static_cast<float>(
             expandingFinalWindow ? 1.0 - phaseProgress : phaseProgress);
-        const BYTE* sourcePixels = sharpPixels.data();
-        if (blurredPixels.size() == sharpPixels.size()) {
-            state->renderPixels.resize(sharpPixels.size());
-            for (size_t i = 0; i + 3 < sharpPixels.size(); i += 4) {
-                for (int channel = 0; channel < 3; ++channel) {
-                    const float sharp = sharpPixels[i + channel];
-                    const float blurred = blurredPixels[i + channel];
-                    state->renderPixels[i + channel] = static_cast<BYTE>(
-                        std::clamp(sharp + (blurred - sharp) * blurAmount,
-                                   0.0f, 255.0f));
-                }
-                state->renderPixels[i + 3] = 255;
-            }
-            sourcePixels = state->renderPixels.data();
-        }
+        // Use the pre-blurred capture directly for every in-flight frame.
+        // Blending sharp and blurred full-resolution buffers on every frame was
+        // adding a second O(width*height) pass and causing visible frame drops.
+        // The native window is revealed only after the final frame, so it
+        // supplies the sharp endpoint without requiring a costly per-frame
+        // unblur operation.
+        const BYTE* sourcePixels =
+            blurredPixels.size() == sharpPixels.size()
+                ? blurredPixels.data()
+                : sharpPixels.data();
 
         const size_t canvasStride = static_cast<size_t>(state->width) * 4;
         auto* dst = static_cast<BYTE*>(state->frameBits);
