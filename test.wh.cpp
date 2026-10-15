@@ -11301,23 +11301,26 @@ bool TryStartExplorerTvOnRestore(HWND hWnd) {
 HBITMAP CaptureDesktopRegion(const RECT& rect,
                               bool includeLayeredWindows = true,
                               double scale = 1.0) {
-    // DWM_EXTENDED_FRAME_BOUNDS are physical screen coordinates. Ensure the
-    // desktop DC uses the same coordinate space even if the calling Explorer
-    // thread inherited DPI virtualization from another window.
-    DPI_AWARENESS_CONTEXT previousDpiContext =
-        SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
-
     const int sourceWidth = rect.right - rect.left;
     const int sourceHeight = rect.bottom - rect.top;
     if (sourceWidth <= 0 || sourceHeight <= 0) {
         return nullptr;
     }
+
+    // DWM_EXTENDED_FRAME_BOUNDS are physical screen coordinates. Ensure the
+    // desktop DC uses the same coordinate space even if the calling Explorer
+    // thread inherited DPI virtualization from another window.
+    DPI_AWARENESS_CONTEXT previousDpiContext =
+        SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
     scale = std::clamp(scale, 0.1, 1.0);
     const int width = std::max(1, static_cast<int>(std::lround(sourceWidth * scale)));
     const int height = std::max(1, static_cast<int>(std::lround(sourceHeight * scale)));
 
     HDC screenDc = GetDC(nullptr);
     if (!screenDc) {
+        if (previousDpiContext) {
+            SetThreadDpiAwarenessContext(previousDpiContext);
+        }
         return nullptr;
     }
 
