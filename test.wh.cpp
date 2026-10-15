@@ -241,8 +241,6 @@ envoyez manuellement les lignes pertinentes du journal.
 - explorerMaximizeTransitionDurationMs: 1000
   $name: Durée du zoom central
   $description: "Durée totale en millisecondes, de 100 à 3000. Valeur par défaut : 1000."
-  $name: Durée de l’animation de retour à la taille normale
-  $description: "Durée en millisecondes, de 100 à 3000. Valeur par défaut : 1000."
 */
 // ==/WindhawkModSettings==
 
@@ -11077,8 +11075,8 @@ HBITMAP CaptureDesktopRegion(const RECT& rect) {
 
 HWND CreateExplorerTvOnOverlay(HWND target, HBITMAP snapshot,
                                const RECT& targetRect, int finalShowCmd,
-                               bool startFullSize,
-                               bool isClosing) {
+                               bool startFullSize = false,
+                               bool isClosing = false) {
     if (!snapshot || !EnsureExplorerTvOnOverlayClass()) {
         if (snapshot) {
             DeleteObject(snapshot);
