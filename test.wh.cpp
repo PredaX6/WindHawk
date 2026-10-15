@@ -11518,6 +11518,11 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
         // native window: waiting for a compositor frame here can reintroduce
         // the one-frame maximized-window flash.
         HBITMAP destinationBitmap = CaptureDesktopRegion(destinationRect);
+        // Hide Explorer immediately after the synchronous composed-frame copy,
+        // before restoring the cover. This minimizes the interval in which the
+        // native maximized/restored frame could be exposed and prevents it from
+        // flashing between the capture and the first zoom frame.
+        ShowWindow_Original(hWnd, SW_HIDE);
         // Reposition the still-hidden cover before showing it. Showing it at
         // its old source-sized bounds first leaves part of the maximized
         // window uncovered for a frame, causing the pre-animation flash.
@@ -11527,7 +11532,6 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
                      SWP_NOACTIVATE | SWP_NOREDRAW);
         ShowWindow(overlay, SW_SHOWNOACTIVATE);
         UpdateWindow(overlay);
-        ShowWindow_Original(hWnd, SW_HIDE);
         if (changedTransitionSetting) {
             DwmSetWindowAttribute(hWnd, DWMWA_TRANSITIONS_FORCEDISABLED,
                                   &previousTransitionsDisabled,
