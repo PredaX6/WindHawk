@@ -10479,57 +10479,40 @@ void RenderExplorerTvOnFrame(HWND hWnd, ExplorerTvOnOverlay* state,
             ? state->destinationWidth : state->sourceWidth;
         const int sourceHeight = expandingFinalWindow
             ? state->destinationHeight : state->sourceHeight;
-        const size_t sourceStride = static_cast<size_t>(sourceWidth) * 4;
         const size_t canvasStride = static_cast<size_t>(state->width) * 4;
         memset(state->frameBits, 0,
                static_cast<size_t>(state->width) * state->height * 4);
 
-        // The source image contracts to a tiny central point during phase one;
-        // the independently captured final image expands from that same point.
-        // Bilinear sampling avoids the nearest-neighbour shimmer during scaling.
+        // Use GDI's optimized stretch path, then apply uniform premultiplied
+        // alpha. This reduces per-frame CPU work on large maximized windows.
         const float alpha = expandingFinalWindow
             ? static_cast<float>(0.22 + 0.78 * eased)
             : static_cast<float>(1.0 - 0.78 * eased);
+        BITMAPINFO sourceInfo{};
+        sourceInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+        sourceInfo.bmiHeader.biWidth = sourceWidth;
+        sourceInfo.bmiHeader.biHeight = -sourceHeight;
+        sourceInfo.bmiHeader.biPlanes = 1;
+        sourceInfo.bmiHeader.biBitCount = 32;
+        sourceInfo.bmiHeader.biCompression = BI_RGB;
+        SetStretchBltMode(state->frameDc, HALFTONE);
+        SetBrushOrgEx(state->frameDc, 0, 0, nullptr);
+        const int copied = StretchDIBits(
+            state->frameDc, 0, 0, drawWidth, drawHeight,
+            0, 0, sourceWidth, sourceHeight, sourcePixels,
+            &sourceInfo, DIB_RGB_COLORS, SRCCOPY);
+        if (copied == GDI_ERROR) {
+            return;
+        }
+
         auto* dst = static_cast<BYTE*>(state->frameBits);
         for (int y = 0; y < drawHeight; ++y) {
-            const float sourceY = std::max(0.0f, std::min(
-                static_cast<float>(sourceHeight - 1),
-                (static_cast<float>(y) + 0.5f) * sourceHeight /
-                    static_cast<float>(currentHeight) - 0.5f));
-            const int y0 = static_cast<int>(sourceY);
-            const int y1 = std::min(sourceHeight - 1, y0 + 1);
-            const float fy = sourceY - y0;
-            BYTE* dstRow = dst + static_cast<size_t>(y) * canvasStride;
+            BYTE* row = dst + static_cast<size_t>(y) * canvasStride;
             for (int x = 0; x < drawWidth; ++x) {
-                const float sourceX = std::max(0.0f, std::min(
-                    static_cast<float>(sourceWidth - 1),
-                    (static_cast<float>(x) + 0.5f) * sourceWidth /
-                        static_cast<float>(currentWidth) - 0.5f));
-                const int x0 = static_cast<int>(sourceX);
-                const int x1 = std::min(sourceWidth - 1, x0 + 1);
-                const float fx = sourceX - x0;
-                const BYTE* p00 = sourcePixels +
-                    static_cast<size_t>(y0) * sourceStride +
-                    static_cast<size_t>(x0) * 4;
-                const BYTE* p10 = sourcePixels +
-                    static_cast<size_t>(y0) * sourceStride +
-                    static_cast<size_t>(x1) * 4;
-                const BYTE* p01 = sourcePixels +
-                    static_cast<size_t>(y1) * sourceStride +
-                    static_cast<size_t>(x0) * 4;
-                const BYTE* p11 = sourcePixels +
-                    static_cast<size_t>(y1) * sourceStride +
-                    static_cast<size_t>(x1) * 4;
-                BYTE* pixel = dstRow + static_cast<size_t>(x) * 4;
-                for (int channel = 0; channel < 3; ++channel) {
-                    const float top = p00[channel] * (1.0f - fx) +
-                                      p10[channel] * fx;
-                    const float bottom = p01[channel] * (1.0f - fx) +
-                                         p11[channel] * fx;
-                    pixel[channel] = static_cast<BYTE>(std::max(
-                        0.0f, std::min(255.0f,
-                            (top * (1.0f - fy) + bottom * fy) * alpha)));
-                }
+                BYTE* pixel = row + static_cast<size_t>(x) * 4;
+                pixel[0] = static_cast<BYTE>(pixel[0] * alpha);
+                pixel[1] = static_cast<BYTE>(pixel[1] * alpha);
+                pixel[2] = static_cast<BYTE>(pixel[2] * alpha);
                 pixel[3] = static_cast<BYTE>(255.0f * alpha);
             }
         }
@@ -11373,11 +11356,32 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
             return ShowWindow_Original(hWnd, nCmdShow);
         }
 
+        // Suppress the native maximize/restore transition so the custom zoom
+        // is the only visible animation. Preserve the window's previous setting.
+        BOOL previousTransitionsDisabled = FALSE;
+        const bool havePreviousTransitionSetting =
+            SUCCEEDED(DwmGetWindowAttribute(
+                hWnd, DWMWA_TRANSITIONS_FORCEDISABLED,
+                &previousTransitionsDisabled,
+                sizeof(previousTransitionsDisabled)));
+        const BOOL disableNativeTransitions = TRUE;
+        const bool changedTransitionSetting =
+            havePreviousTransitionSetting &&
+            SUCCEEDED(DwmSetWindowAttribute(
+                hWnd, DWMWA_TRANSITIONS_FORCEDISABLED,
+                &disableNativeTransitions,
+                sizeof(disableNativeTransitions)));
+
         // The destination must be captured from the real, DWM-composed window.
         // Hide the source cover briefly while Windows establishes the final size.
         ShowWindow(overlay, SW_HIDE);
         const BOOL previousVisibility = ShowWindow_Original(hWnd, nCmdShow);
         if (!IsWindow(hWnd) || !IsWindowVisible(hWnd) || IsIconic(hWnd)) {
+            if (changedTransitionSetting) {
+                DwmSetWindowAttribute(hWnd, DWMWA_TRANSITIONS_FORCEDISABLED,
+                                      &previousTransitionsDisabled,
+                                      sizeof(previousTransitionsDisabled));
+            }
             DestroyWindow(overlay);
             return previousVisibility;
         }
@@ -11386,6 +11390,11 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
         RECT destinationRect{};
         if (!GetWindowRect(hWnd, &destinationRect)) {
             ShowWindow_Original(hWnd, SW_HIDE);
+            if (changedTransitionSetting) {
+                DwmSetWindowAttribute(hWnd, DWMWA_TRANSITIONS_FORCEDISABLED,
+                                      &previousTransitionsDisabled,
+                                      sizeof(previousTransitionsDisabled));
+            }
             DestroyWindow(overlay);
             ShowWindow_Original(hWnd, nCmdShow);
             return previousVisibility;
@@ -11401,6 +11410,11 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
 
         HBITMAP destinationBitmap = CaptureDesktopRegion(destinationRect);
         ShowWindow_Original(hWnd, SW_HIDE);
+        if (changedTransitionSetting) {
+            DwmSetWindowAttribute(hWnd, DWMWA_TRANSITIONS_FORCEDISABLED,
+                                  &previousTransitionsDisabled,
+                                  sizeof(previousTransitionsDisabled));
+        }
         if (!destinationBitmap ||
             !LoadExplorerSnapshotPixels(destinationBitmap,
                                         state->destinationPixels,
