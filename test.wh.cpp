@@ -1,12 +1,11 @@
 // ==WindhawkMod==
 // @id              test
 // @name            Test
-// @description     Ajoute un effet translucide à l’Explorateur de fichiers Windows 11.
+// @description     Ajout d'effet translucide à l’Explorateur de fichier et d'animation de transition aux fenêtres.
 // @version         1.7
-// @author          m417z
-// @github          https://github.com/m417z
-// @twitter         https://twitter.com/m417z
-// @homepage        https://m417z.com/
+// @author          TeddySlexique
+// @github          https://github.com/PredaX6
+// @homepage        https://github.com/
 // @include         explorer.exe
 // @architecture    x86-64
 // @compilerOptions -lcomctl32 -ld2d1 -ldwmapi -lgdi32 -lmsimg32 -lole32 -loleaut32 -lruntimeobject -lshlwapi -luxtheme -lwinmm
