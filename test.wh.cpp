@@ -11406,17 +11406,44 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
             return ShowWindow_Original(hWnd, nCmdShow);
         }
 
+        // Keep an opaque desktop cover over the entire area that can be
+        // occupied by Explorer during the transition. Hiding the original
+        // source-sized overlay before ShowWindow caused the maximized window
+        // to flash onscreen before the zoom animation started.
+        RECT coverRect = sourceRect;
+        if (isMaximizeTransition) {
+            const HMONITOR monitor = MonitorFromWindow(hWnd, MONITOR_DEFAULTTONEAREST);
+            MONITORINFO monitorInfo{};
+            monitorInfo.cbSize = sizeof(monitorInfo);
+            if (monitor && GetMonitorInfoW(monitor, &monitorInfo) &&
+                monitorInfo.rcWork.right > monitorInfo.rcWork.left &&
+                monitorInfo.rcWork.bottom > monitorInfo.rcWork.top) {
+                coverRect = monitorInfo.rcWork;
+            }
+        }
+
+        HBITMAP coverBitmap = CaptureDesktopRegion(coverRect);
+        if (!coverBitmap) {
+            DeleteObject(sourceBitmap);
+            return ShowWindow_Original(hWnd, nCmdShow);
+        }
+
         HWND overlay = CreateExplorerTvOnOverlay(
-            hWnd, sourceBitmap, sourceRect, nCmdShow, true);
+            hWnd, coverBitmap, coverRect, nCmdShow, true);
         if (!overlay) {
+            DeleteObject(sourceBitmap);
             return ShowWindow_Original(hWnd, nCmdShow);
         }
         auto* state = reinterpret_cast<ExplorerTvOnOverlay*>(
             GetWindowLongPtrW(overlay, GWLP_USERDATA));
-        if (!state) {
+        if (!state ||
+            !LoadExplorerSnapshotPixels(sourceBitmap, state->sourcePixels,
+                                        state->sourceWidth, state->sourceHeight)) {
+            DeleteObject(sourceBitmap);
             DestroyWindow(overlay);
             return ShowWindow_Original(hWnd, nCmdShow);
         }
+        DeleteObject(sourceBitmap);
 
         // Suppress the native maximize/restore transition so the custom zoom
         // is the only visible animation. Preserve the window's previous setting.
@@ -11434,9 +11461,9 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
                 &disableNativeTransitions,
                 sizeof(disableNativeTransitions)));
 
-        // The destination must be captured from the real, DWM-composed window.
-        // Hide the source cover briefly while Windows establishes the final size.
-        ShowWindow(overlay, SW_HIDE);
+        // Keep the cover visible while Windows establishes the final size.
+        // It spans the maximized work area (or the full previous maximized
+        // bounds when restoring), so the native window cannot flash around it.
         const BOOL previousVisibility = ShowWindow_Original(hWnd, nCmdShow);
         if (!IsWindow(hWnd) || !IsWindowVisible(hWnd) || IsIconic(hWnd)) {
             if (changedTransitionSetting) {
@@ -11479,7 +11506,14 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
             destinationRect = visibleRect;
         }
 
+        // The cover has hidden the native transition. Hide it only for the
+        // synchronous desktop copy, then restore it immediately; unlike the
+        // previous flow, there is no 16 ms uncovered interval in which the
+        // maximized window can be presented to the user.
+        ShowWindow(overlay, SW_HIDE);
         HBITMAP destinationBitmap = CaptureDesktopRegion(destinationRect);
+        ShowWindow(overlay, SW_SHOWNOACTIVATE);
+        UpdateWindow(overlay);
         ShowWindow_Original(hWnd, SW_HIDE);
         if (changedTransitionSetting) {
             DwmSetWindowAttribute(hWnd, DWMWA_TRANSITIONS_FORCEDISABLED,
