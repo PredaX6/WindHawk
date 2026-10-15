@@ -11747,8 +11747,11 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
         const bool expectedMaximized = isMaximizeTransition;
         RECT lastStableRect{};
         int stableRectSamples = 0;
+        bool destinationFrameSettled = false;
         const ULONGLONG settleStart = GetTickCount64();
-        while (GetTickCount64() - settleStart < 800) {
+        // Some Explorer/DirectComposition layouts need longer than a single
+        // frame to commit the maximized/restored bounds and backdrop.
+        while (GetTickCount64() - settleStart < 1600) {
             RedrawWindow(hWnd, nullptr, nullptr,
                          RDW_INVALIDATE | RDW_UPDATENOW | RDW_ALLCHILDREN);
             UpdateWindow(hWnd);
@@ -11802,7 +11805,8 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
                 // then remain identical for several compositor intervals.
                 // This prevents capturing the normal-size window and desktop
                 // surroundings as the supposed maximized arrival frame.
-                if (reachedRequestedSize && stableRectSamples >= 3) {
+                if (reachedRequestedSize && stableRectSamples >= 4) {
+                    destinationFrameSettled = true;
                     break;
                 }
             } else {
@@ -11812,10 +11816,25 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
         }
         DwmFlush();
 
+        // Never animate from a stale/normal-size frame if Explorer did not
+        // reach and settle at the requested native size. That was causing the
+        // arrival capture to contain the old window and surrounding desktop.
+        if (!destinationFrameSettled ||
+            (IsZoomed(hWnd) != FALSE) != expectedMaximized) {
+            if (changedTransitionSetting) {
+                DwmSetWindowAttribute(hWnd, DWMWA_TRANSITIONS_FORCEDISABLED,
+                                      &previousTransitionsDisabled,
+                                      sizeof(previousTransitionsDisabled));
+            }
+            DestroyWindow(overlay);
+            DwmFlush();
+            return previousVisibility;
+        }
+
         // Record the final native window bounds, then capture only that window's
-        // composed desktop region. The cover is a layered window; using SRCCOPY
-        // without CAPTUREBLT excludes the cover while retaining the underlying
-        // DWM-composed Explorer frame (including its blur/Mica appearance).
+        // DWM-visible frame region. The capture is rejected if DWM cannot supply
+        // physical screen coordinates, rather than mixing DPI-virtualized
+        // GetWindowRect coordinates with the physical desktop DC.
         RECT destinationRect{};
         if (!GetWindowRect(hWnd, &destinationRect)) {
             ShowWindow_Original(hWnd, SW_HIDE);
@@ -11829,12 +11848,15 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
             return previousVisibility;
         }
         RECT visibleDestinationRect{};
-        if (SUCCEEDED(DwmGetWindowAttribute(
-                hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, &visibleDestinationRect,
-                sizeof(visibleDestinationRect))) &&
+        const HRESULT destinationBoundsResult = DwmGetWindowAttribute(
+            hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, &visibleDestinationRect,
+            sizeof(visibleDestinationRect));
+        if (SUCCEEDED(destinationBoundsResult) &&
             visibleDestinationRect.right > visibleDestinationRect.left &&
             visibleDestinationRect.bottom > visibleDestinationRect.top) {
             destinationRect = visibleDestinationRect;
+        } else {
+            destinationRect = RECT{};
         }
         if (destinationRect.right <= destinationRect.left ||
             destinationRect.bottom <= destinationRect.top) {
