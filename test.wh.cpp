@@ -10510,9 +10510,9 @@ void RenderExplorerTvOnFrame(HWND hWnd, ExplorerTvOnOverlay* state,
         // capture of the final window. This prevents the normal-size image from
         // being stretched to fill the maximized screen (and vice versa).
         // Blur is precomputed for both captures and blended in during motion.
-        // Maximize: contraction gets 2/3 of the timeline; restore: 1/3.
-        const double kContractionTimeFraction =
-            state->reverseAnimation ? (1.0 / 3.0) : (2.0 / 3.0);
+        // Both directions use equal time for contraction and expansion.
+        // The single duration setting controls the complete two-phase animation.
+        const double kContractionTimeFraction = 0.5;
         const bool expanding = progress >= kContractionTimeFraction;
         const double segmentProgress = expanding
             ? (progress - kContractionTimeFraction) /
