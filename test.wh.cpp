@@ -10562,15 +10562,14 @@ void RenderExplorerTvOnFrame(HWND hWnd, ExplorerTvOnOverlay* state,
     progress = std::max(0.0, std::min(1.0, progress));
     if (state->animateSingleCaptureBounceZoom) {
         if (state->sourcePixels.empty() || state->sourceWidth <= 0 ||
-            state->sourceHeight <= 0 || state->destinationPixels.empty() ||
-            state->destinationWidth <= 0 || state->destinationHeight <= 0) {
+            state->sourceHeight <= 0) {
             return;
         }
 
-        // Contract the pre-transition window capture, then expand a separate
-        // capture of the final window. This prevents the normal-size image from
-        // being stretched to fill the maximized screen (and vice versa).
-        // Blur is precomputed for both captures and blended in during motion.
+        // Use the exact same fresh pre-transition window capture for both
+        // halves. Only its displayed rectangle changes; the bitmap never
+        // switches to a second capture when the zoom changes direction.
+        // Blur is precomputed once from that same bitmap.
         // Both directions use equal time for contraction and expansion.
         // The single duration setting controls the complete two-phase animation.
         const double kContractionTimeFraction = 0.5;
@@ -10623,14 +10622,10 @@ void RenderExplorerTvOnFrame(HWND hWnd, ExplorerTvOnOverlay* state,
             1, currentRect.bottom - currentRect.top));
         const int drawWidth = std::min(currentWidth, state->width);
         const int drawHeight = std::min(currentHeight, state->height);
-        const std::vector<BYTE>& framePixels = expanding
-            ? state->destinationPixels : state->sourcePixels;
-        const std::vector<BYTE>& blurredFramePixels = expanding
-            ? state->blurredDestinationPixels : state->blurredSourcePixels;
-        const int frameSourceWidth = expanding
-            ? state->destinationWidth : state->sourceWidth;
-        const int frameSourceHeight = expanding
-            ? state->destinationHeight : state->sourceHeight;
+        const std::vector<BYTE>& framePixels = state->sourcePixels;
+        const std::vector<BYTE>& blurredFramePixels = state->blurredSourcePixels;
+        const int frameSourceWidth = state->sourceWidth;
+        const int frameSourceHeight = state->sourceHeight;
         const size_t canvasStride = static_cast<size_t>(state->width) * 4;
         auto* dst = static_cast<BYTE*>(state->frameBits);
 
@@ -10641,7 +10636,8 @@ void RenderExplorerTvOnFrame(HWND hWnd, ExplorerTvOnOverlay* state,
         // Blend the selected window-only capture with its pre-blurred copy.
         // Each half uses its own snapshot and native dimensions.
         if (blurredFramePixels.size() == framePixels.size()) {
-            const float blurAmount = static_cast<float>(progress);
+            const float blurAmount = static_cast<float>(
+                expanding ? 1.0 - segmentProgress : segmentProgress);
             state->renderPixels.resize(framePixels.size());
             for (size_t i = 0; i + 3 < framePixels.size(); i += 4) {
                 for (int channel = 0; channel < 3; ++channel) {
@@ -11634,21 +11630,12 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
         // The animation bitmap and its geometry must use exactly the same
         // visible-frame rectangle. Keep sourceRect separately for the cover,
         // which must also hide the native resize borders.
-        HBITMAP cachedMaximizedBitmap = nullptr;
-        if (isUnmaximizeTransition) {
-            RECT cachedMaximizedRect{};
-            cachedMaximizedBitmap =
-                CopyExplorerMaximizedSnapshot(hWnd, &cachedMaximizedRect);
-            if (cachedMaximizedBitmap) {
-                // Use exactly the same maximized pixels and bounds that were
-                // captured for the previous maximize zoom-in.
-                sourceCaptureRect = cachedMaximizedRect;
-            }
-        }
+        // Take one fresh, window-bounds-only capture immediately before
+        // the transition. Reuse these exact pixels for both the zoom-out and
+        // zoom-in halves; do not substitute a cached or post-transition image.
         const RECT animationSourceRect = sourceCaptureRect;
-        HBITMAP sourceBitmap = cachedMaximizedBitmap
-            ? cachedMaximizedBitmap
-            : CaptureDesktopRegion(animationSourceRect, false, 0.8);
+        HBITMAP sourceBitmap =
+            CaptureDesktopRegion(animationSourceRect, false, 1.0);
         if (!sourceBitmap) {
             return ShowWindow_Original(hWnd, nCmdShow);
         }
@@ -11769,28 +11756,8 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
             animationDestinationRect = dwmDestinationRect;
         }
 
-        HBITMAP destinationBitmap =
-            CaptureDesktopRegion(animationDestinationRect, false, 0.8);
-        if (!destinationBitmap ||
-            !LoadExplorerSnapshotPixels(destinationBitmap, state->destinationPixels,
-                                        state->destinationWidth,
-                                        state->destinationHeight)) {
-            if (destinationBitmap) DeleteObject(destinationBitmap);
-            if (changedTransitionSetting) {
-                DwmSetWindowAttribute(hWnd, DWMWA_TRANSITIONS_FORCEDISABLED,
-                                      &previousTransitionsDisabled,
-                                      sizeof(previousTransitionsDisabled));
-            }
-            DestroyWindow(overlay);
-            return previousVisibility;
-        }
-        if (isMaximizeTransition) {
-            // Preserve a copy of the maximized window frame. The next restore
-            // animation will reuse these exact pixels for its zoom-out phase.
-            SaveExplorerMaximizedSnapshot(
-                hWnd, destinationBitmap, animationDestinationRect);
-        }
-        DeleteObject(destinationBitmap);
+        // Do not capture the post-transition window: the animation must keep
+        // using the single pre-transition bitmap for its entire duration.
 
         ShowWindow_Original(hWnd, SW_HIDE);
         if (changedTransitionSetting) {
@@ -11799,17 +11766,16 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
                                   sizeof(previousTransitionsDisabled));
         }
 
-        // Precompute both blurred captures once. This keeps each frame cheap
-        // while preserving the composed transparency/blur/Mica appearance.
+        // Precompute blur only for the one captured frame. The same source
+        // image and its blurred variant are reused during both animation halves.
         state->blurredSourcePixels = state->sourcePixels;
         ApplyExplorerSnapshotBlur(state->blurredSourcePixels,
                                   state->sourceWidth, state->sourceHeight, 8);
-        state->blurredDestinationPixels = state->destinationPixels;
-        ApplyExplorerSnapshotBlur(state->blurredDestinationPixels,
-                                  state->destinationWidth,
-                                  state->destinationHeight, 8);
-        state->renderPixels.resize(std::max(state->sourcePixels.size(),
-                                            state->destinationPixels.size()));
+        state->blurredDestinationPixels.clear();
+        state->destinationPixels.clear();
+        state->destinationWidth = 0;
+        state->destinationHeight = 0;
+        state->renderPixels.resize(state->sourcePixels.size());
 
         state->animateCenterZoom = false;
         state->animateSingleCaptureBounceZoom = true;
