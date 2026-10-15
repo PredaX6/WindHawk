@@ -10475,8 +10475,14 @@ void RenderExplorerTvOnFrame(HWND hWnd, ExplorerTvOnOverlay* state,
         const int sourceHeight = expandingFinalWindow
             ? state->destinationHeight : state->sourceHeight;
         const size_t canvasStride = static_cast<size_t>(state->width) * 4;
-        memset(state->frameBits, 0,
-               static_cast<size_t>(state->width) * state->height * 4);
+        auto* dst = static_cast<BYTE*>(state->frameBits);
+        // UpdateLayeredWindow only consumes the visible frame dimensions;
+        // clearing the full maximum-sized canvas on every tick wastes memory
+        // bandwidth, especially when animating a 4K maximized window.
+        for (int y = 0; y < drawHeight; ++y) {
+            memset(dst + static_cast<size_t>(y) * canvasStride, 0,
+                   static_cast<size_t>(drawWidth) * 4);
+        }
 
         // Use GDI's optimized stretch path, then apply uniform premultiplied
         // alpha. This reduces per-frame CPU work on large maximized windows.
@@ -10500,7 +10506,6 @@ void RenderExplorerTvOnFrame(HWND hWnd, ExplorerTvOnOverlay* state,
             return;
         }
 
-        auto* dst = static_cast<BYTE*>(state->frameBits);
         for (int y = 0; y < drawHeight; ++y) {
             BYTE* row = dst + static_cast<size_t>(y) * canvasStride;
             for (int x = 0; x < drawWidth; ++x) {
@@ -10516,8 +10521,8 @@ void RenderExplorerTvOnFrame(HWND hWnd, ExplorerTvOnOverlay* state,
         POINT sourcePoint{0, 0};
         SIZE size{drawWidth, drawHeight};
         BLENDFUNCTION blend{AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
-        SetWindowPos(hWnd, HWND_TOPMOST, currentRect.left, currentRect.top,
-                     drawWidth, drawHeight, SWP_NOACTIVATE | SWP_NOREDRAW);
+        // UpdateLayeredWindow already updates position and size; avoid a
+        // second window-position operation on every animation frame.
         UpdateLayeredWindow(hWnd, nullptr, &destination, &size, state->frameDc,
                             &sourcePoint, 0, &blend, ULW_ALPHA);
         return;
