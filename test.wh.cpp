@@ -10724,12 +10724,38 @@ void RenderExplorerTvOnFrame(HWND hWnd, ExplorerTvOnOverlay* state,
         const int drawWidth = std::min(currentWidth, state->width);
         const int drawHeight = std::min(currentHeight, state->height);
 
-        const BYTE* sourcePixels = expandingFinalWindow
-            ? state->destinationPixels.data() : state->sourcePixels.data();
+        const std::vector<BYTE>& sharpPixels = expandingFinalWindow
+            ? state->destinationPixels : state->sourcePixels;
+        const std::vector<BYTE>& blurredPixels = expandingFinalWindow
+            ? state->blurredDestinationPixels : state->blurredSourcePixels;
         const int sourceWidth = expandingFinalWindow
             ? state->destinationWidth : state->sourceWidth;
         const int sourceHeight = expandingFinalWindow
             ? state->destinationHeight : state->sourceHeight;
+        if (sharpPixels.empty() || sourceWidth <= 0 || sourceHeight <= 0) {
+            return;
+        }
+
+        // Increase blur while the first window contracts, then remove it as
+        // the final-state capture expands back to full size.
+        const float blurAmount = static_cast<float>(
+            expandingFinalWindow ? 1.0 - phaseProgress : phaseProgress);
+        const BYTE* sourcePixels = sharpPixels.data();
+        if (blurredPixels.size() == sharpPixels.size()) {
+            state->renderPixels.resize(sharpPixels.size());
+            for (size_t i = 0; i + 3 < sharpPixels.size(); i += 4) {
+                for (int channel = 0; channel < 3; ++channel) {
+                    const float sharp = sharpPixels[i + channel];
+                    const float blurred = blurredPixels[i + channel];
+                    state->renderPixels[i + channel] = static_cast<BYTE>(
+                        std::clamp(sharp + (blurred - sharp) * blurAmount,
+                                   0.0f, 255.0f));
+                }
+                state->renderPixels[i + 3] = 255;
+            }
+            sourcePixels = state->renderPixels.data();
+        }
+
         const size_t canvasStride = static_cast<size_t>(state->width) * 4;
         auto* dst = static_cast<BYTE*>(state->frameBits);
 
