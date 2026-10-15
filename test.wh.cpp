@@ -10387,6 +10387,64 @@ void BlitExplorerCrtVerticalSquash(ExplorerTvOnOverlay* state, int dstH,
     }
 }
 
+// Apply a small separable box blur once to the captured frames. Doing this
+// during setup (rather than per animation frame) gives the zoom a soft look
+// without adding a costly blur pass to every rendered frame.
+void ApplyExplorerSnapshotBlur(std::vector<BYTE>& pixels,
+                               int width, int height, int radius = 2) {
+    if (width <= 0 || height <= 0 || pixels.size() <
+        static_cast<size_t>(width) * static_cast<size_t>(height) * 4) {
+        return;
+    }
+    radius = std::max(1, std::min(4, radius));
+    std::vector<BYTE> temporary(pixels.size());
+    const size_t stride = static_cast<size_t>(width) * 4;
+
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+            unsigned int sums[3]{};
+            unsigned int count = 0;
+            for (int dx = -radius; dx <= radius; ++dx) {
+                const int sx = std::max(0, std::min(width - 1, x + dx));
+                const BYTE* p = pixels.data() + static_cast<size_t>(y) * stride +
+                                static_cast<size_t>(sx) * 4;
+                for (int channel = 0; channel < 3; ++channel) {
+                    sums[channel] += p[channel];
+                }
+                ++count;
+            }
+            BYTE* out = temporary.data() + static_cast<size_t>(y) * stride +
+                        static_cast<size_t>(x) * 4;
+            for (int channel = 0; channel < 3; ++channel) {
+                out[channel] = static_cast<BYTE>(sums[channel] / count);
+            }
+            out[3] = 255;
+        }
+    }
+
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+            unsigned int sums[3]{};
+            unsigned int count = 0;
+            for (int dy = -radius; dy <= radius; ++dy) {
+                const int sy = std::max(0, std::min(height - 1, y + dy));
+                const BYTE* p = temporary.data() + static_cast<size_t>(sy) * stride +
+                                static_cast<size_t>(x) * 4;
+                for (int channel = 0; channel < 3; ++channel) {
+                    sums[channel] += p[channel];
+                }
+                ++count;
+            }
+            BYTE* out = pixels.data() + static_cast<size_t>(y) * stride +
+                        static_cast<size_t>(x) * 4;
+            for (int channel = 0; channel < 3; ++channel) {
+                out[channel] = static_cast<BYTE>(sums[channel] / count);
+            }
+            out[3] = 255;
+        }
+    }
+}
+
 bool LoadExplorerSnapshotPixels(HBITMAP bitmap,
                                   std::vector<BYTE>& pixels,
                                   int& width, int& height) {
@@ -10481,13 +10539,8 @@ void RenderExplorerTvOnFrame(HWND hWnd, ExplorerTvOnOverlay* state,
             ? state->destinationHeight : state->sourceHeight;
         const size_t canvasStride = static_cast<size_t>(state->width) * 4;
         auto* dst = static_cast<BYTE*>(state->frameBits);
-        // UpdateLayeredWindow only consumes the visible frame dimensions;
-        // clearing the full maximum-sized canvas on every tick wastes memory
-        // bandwidth, especially when animating a 4K maximized window.
-        for (int y = 0; y < drawHeight; ++y) {
-            memset(dst + static_cast<size_t>(y) * canvasStride, 0,
-                   static_cast<size_t>(drawWidth) * 4);
-        }
+        // StretchDIBits overwrites every visible pixel, so a separate clear
+        // pass is unnecessary and would add a full-frame memory walk each tick.
 
         // Use GDI's optimized stretch path, then apply uniform premultiplied
         // alpha. This reduces per-frame CPU work on large maximized windows.
@@ -11431,6 +11484,13 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
             return previousVisibility;
         }
         DeleteObject(destinationBitmap);
+
+        // Blur both captured states once. The real Explorer window is revealed
+        // only after the overlay finishes, so the final desktop remains sharp.
+        ApplyExplorerSnapshotBlur(state->sourcePixels,
+                                  state->sourceWidth, state->sourceHeight, 2);
+        ApplyExplorerSnapshotBlur(state->destinationPixels,
+                                  state->destinationWidth, state->destinationHeight, 2);
 
         state->animateCenterZoom = true;
         // This single setting controls the complete central-zoom sequence
