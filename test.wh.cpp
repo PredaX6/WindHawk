@@ -10068,6 +10068,7 @@ struct ExplorerTvOnOverlay {
     int sourceHeight{};
     bool animateGeometry{};
     bool animateCenterZoom{};
+    bool animateSingleCaptureBounceZoom{};
     int centerZoomPhaseDurationMs = 1000;
     int animationDurationMs = 2000;
     bool reverseAnimation{};
@@ -10493,6 +10494,102 @@ void RenderExplorerTvOnFrame(HWND hWnd, ExplorerTvOnOverlay* state,
     if (!state || !state->frameBits || !state->frameDc ||
         state->width <= 0 || state->height <= 0) return;
     progress = std::max(0.0, std::min(1.0, progress));
+    if (state->animateSingleCaptureBounceZoom) {
+        if (state->sourcePixels.empty() || state->sourceWidth <= 0 ||
+            state->sourceHeight <= 0) {
+            return;
+        }
+
+        // One snapshot captured at the user's maximize click is used for the
+        // entire motion. The window first contracts to 50% to build momentum,
+        // then expands to the maximized bounds at twice the contraction speed.
+        // A 2:1 time split gives the expansion twice the speed over the same
+        // scale distance.
+        constexpr double kContractionTimeFraction = 2.0 / 3.0;
+        const bool expanding = progress >= kContractionTimeFraction;
+        const double segmentProgress = expanding
+            ? (progress - kContractionTimeFraction) /
+                  (1.0 - kContractionTimeFraction)
+            : progress / kContractionTimeFraction;
+        const double eased = segmentProgress * segmentProgress *
+                             (3.0 - 2.0 * segmentProgress);
+
+        const RECT& fullRect = state->geometryStartRect;
+        const RECT& maximizedRect = state->geometryEndRect;
+        RECT halfRect{};
+        const LONG sourceCenterX = fullRect.left +
+                                   (fullRect.right - fullRect.left) / 2;
+        const LONG sourceCenterY = fullRect.top +
+                                   (fullRect.bottom - fullRect.top) / 2;
+        const LONG halfWidth = std::max<LONG>(
+            1, (fullRect.right - fullRect.left) / 2);
+        const LONG halfHeight = std::max<LONG>(
+            1, (fullRect.bottom - fullRect.top) / 2);
+        halfRect.left = sourceCenterX - halfWidth / 2;
+        halfRect.right = halfRect.left + halfWidth;
+        halfRect.top = sourceCenterY - halfHeight / 2;
+        halfRect.bottom = halfRect.top + halfHeight;
+
+        const RECT& from = expanding ? halfRect : fullRect;
+        const RECT& to = expanding ? maximizedRect : halfRect;
+        auto interpolate = [eased](LONG a, LONG b) {
+            return static_cast<LONG>(std::lround(
+                static_cast<double>(a) +
+                (static_cast<double>(b) - a) * eased));
+        };
+        RECT currentRect{
+            interpolate(from.left, to.left),
+            interpolate(from.top, to.top),
+            interpolate(from.right, to.right),
+            interpolate(from.bottom, to.bottom)
+        };
+        const int currentWidth = static_cast<int>(std::max<LONG>(
+            1, currentRect.right - currentRect.left));
+        const int currentHeight = static_cast<int>(std::max<LONG>(
+            1, currentRect.bottom - currentRect.top));
+        const int drawWidth = std::min(currentWidth, state->width);
+        const int drawHeight = std::min(currentHeight, state->height);
+        const size_t canvasStride = static_cast<size_t>(state->width) * 4;
+        auto* dst = static_cast<BYTE*>(state->frameBits);
+
+        // Clear the complete backing DIB each frame to prevent stale pixels
+        // from producing black rectangles when the overlay grows.
+        memset(dst, 0, canvasStride * static_cast<size_t>(state->height));
+
+        BITMAPINFO sourceInfo{};
+        sourceInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+        sourceInfo.bmiHeader.biWidth = state->sourceWidth;
+        sourceInfo.bmiHeader.biHeight = -state->sourceHeight;
+        sourceInfo.bmiHeader.biPlanes = 1;
+        sourceInfo.bmiHeader.biBitCount = 32;
+        sourceInfo.bmiHeader.biCompression = BI_RGB;
+        SetStretchBltMode(state->frameDc, HALFTONE);
+        SetBrushOrgEx(state->frameDc, 0, 0, nullptr);
+        const int copied = StretchDIBits(
+            state->frameDc, 0, 0, drawWidth, drawHeight,
+            0, 0, state->sourceWidth, state->sourceHeight,
+            state->sourcePixels.data(), &sourceInfo, DIB_RGB_COLORS, SRCCOPY);
+        if (copied == GDI_ERROR) {
+            return;
+        }
+
+        // Keep the captured frame opaque throughout the animation so its
+        // original transparency/blur/Mica appearance remains visible.
+        for (int y = 0; y < drawHeight; ++y) {
+            BYTE* row = dst + static_cast<size_t>(y) * canvasStride;
+            for (int x = 0; x < drawWidth; ++x) {
+                row[static_cast<size_t>(x) * 4 + 3] = 255;
+            }
+        }
+
+        POINT destination{currentRect.left, currentRect.top};
+        POINT sourcePoint{0, 0};
+        SIZE size{drawWidth, drawHeight};
+        BLENDFUNCTION blend{AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
+        UpdateLayeredWindow(hWnd, nullptr, &destination, &size, state->frameDc,
+                            &sourcePoint, 0, &blend, ULW_ALPHA);
+        return;
+    }
     if (state->animateCenterZoom) {
         if (state->destinationPixels.empty() ||
             state->destinationWidth <= 0 || state->destinationHeight <= 0) {
@@ -11544,46 +11641,53 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
         // the screen DC to provide the composed Explorer frame underneath the
         // cover without ever exposing it on screen. CAPTUREBLT would capture
         // the cover itself and hiding the cover here caused the persistent flash.
-        HBITMAP destinationBitmap =
-            CaptureDesktopRegion(destinationRect, false);
-        // The native frame stays hidden behind the cover until the destination
-        // snapshot is ready, so no uncovered compositor frame can flash.
+        HBITMAP destinationBitmap = isMaximizeTransition
+            ? nullptr
+            : CaptureDesktopRegion(destinationRect, false);
+
+        // Hide the real window behind the cover before releasing the DWM
+        // transition override. For maximize, no second screenshot is taken:
+        // the click-time window capture is deliberately the only animation
+        // image, stretched from its original bounds to the maximized work area.
         ShowWindow_Original(hWnd, SW_HIDE);
         if (changedTransitionSetting) {
             DwmSetWindowAttribute(hWnd, DWMWA_TRANSITIONS_FORCEDISABLED,
                                   &previousTransitionsDisabled,
                                   sizeof(previousTransitionsDisabled));
         }
-        if (!destinationBitmap ||
-            !LoadExplorerSnapshotPixels(destinationBitmap,
-                                        state->destinationPixels,
-                                        state->destinationWidth,
-                                        state->destinationHeight)) {
+        if (isUnmaximizeTransition &&
+            (!destinationBitmap ||
+             !LoadExplorerSnapshotPixels(destinationBitmap,
+                                         state->destinationPixels,
+                                         state->destinationWidth,
+                                         state->destinationHeight))) {
             if (destinationBitmap) DeleteObject(destinationBitmap);
             DestroyWindow(overlay);
             ShowWindow_Original(hWnd, nCmdShow);
             return previousVisibility;
         }
-        DeleteObject(destinationBitmap);
-        // Use the exact bounds associated with the captured pixels, including
-        // DWM's visible-frame inset, so image dimensions and zoom geometry agree.
-        if (capturedDestinationRect.right > capturedDestinationRect.left &&
+        if (destinationBitmap) DeleteObject(destinationBitmap);
+        // Use the exact bounds associated with the final capture when restoring.
+        if (isUnmaximizeTransition &&
+            capturedDestinationRect.right > capturedDestinationRect.left &&
             capturedDestinationRect.bottom > capturedDestinationRect.top) {
             destinationRect = capturedDestinationRect;
         }
 
-        // Blur both captured states once. The real Explorer window is revealed
-        // only after the overlay finishes, so the final desktop remains sharp.
+        // Blur the click-time snapshot once; maximize uses this same image for
+        // both contraction and expansion. Restore retains its separate final
+        // snapshot so it can reproduce the actual normal-size compositor frame.
         ApplyExplorerSnapshotBlur(state->sourcePixels,
                                   state->sourceWidth, state->sourceHeight, 2);
-        ApplyExplorerSnapshotBlur(state->destinationPixels,
-                                  state->destinationWidth, state->destinationHeight, 2);
+        if (isUnmaximizeTransition) {
+            ApplyExplorerSnapshotBlur(state->destinationPixels,
+                                      state->destinationWidth,
+                                      state->destinationHeight, 2);
+        }
 
-        state->animateCenterZoom = true;
-        // This single setting controls the complete central-zoom sequence
-        // for both maximize and restore-to-normal.
-        const int centerZoomDurationMs =
-            g_settings.explorerMaximizeDurationMs;
+        state->animateCenterZoom = isUnmaximizeTransition;
+        state->animateSingleCaptureBounceZoom = isMaximizeTransition;
+        const int centerZoomDurationMs = g_settings.explorerMaximizeDurationMs;
         state->animationDurationMs = centerZoomDurationMs;
         state->animateGeometry = false;
         state->geometryStartRect = sourceRect;
