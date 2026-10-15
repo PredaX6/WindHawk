@@ -11506,16 +11506,22 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
             destinationRect = visibleRect;
         }
 
-        // Capture the newly-sized Explorer window directly from its own DC
-        // while the opaque cover remains visible. Hiding the cover even for a
-        // synchronous desktop copy can let DWM present the maximized window
-        // for one frame, producing the brief native-size flash.
-        RECT capturedDestinationRect{};
-        const bool destinationCaptured =
-            CaptureExplorerBeforeMinimize(hWnd, false);
-        HBITMAP destinationBitmap = destinationCaptured
-            ? TakeExplorerSnapshot(hWnd, &capturedDestinationRect)
-            : nullptr;
+        // A window DC does not contain DWM-composited backdrop materials:
+        // Mica, Acrylic and blur are applied by the desktop compositor. Capture
+        // the actual screen composition instead, with the cover hidden only for
+        // the synchronous copy. Do not wait for another frame between hiding
+        // the cover and copying; restore it immediately afterwards to minimize
+        // the chance of exposing the native maximized window.
+        RECT capturedDestinationRect = destinationRect;
+        ShowWindow(overlay, SW_HIDE);
+        DwmFlush();
+        HBITMAP destinationBitmap = CaptureDesktopRegion(destinationRect);
+        ShowWindow(overlay, SW_SHOWNOACTIVATE);
+        SetWindowPos(overlay, HWND_TOPMOST, coverRect.left, coverRect.top,
+                     coverRect.right - coverRect.left,
+                     coverRect.bottom - coverRect.top,
+                     SWP_NOACTIVATE | SWP_NOREDRAW | SWP_SHOWWINDOW);
+        UpdateWindow(overlay);
         ShowWindow_Original(hWnd, SW_HIDE);
         if (changedTransitionSetting) {
             DwmSetWindowAttribute(hWnd, DWMWA_TRANSITIONS_FORCEDISABLED,
