@@ -233,11 +233,6 @@ envoyez manuellement les lignes pertinentes du journal.
 - explorerRestoreDurationMs: 1000
   $name: Durée de l’animation de restauration après réduction
   $description: "Durée en millisecondes, de 100 à 3000. Valeur par défaut : 1000."
-- explorerMaximizeTransition: centralZoom
-  $name: Animation d’agrandissement et de retour
-  $description: Réduit la fenêtre vers un point central, puis fait apparaître l’état final depuis ce point.
-  $options:
-  - centralZoom: Zoom central en deux phases
 - explorerMaximizeTransitionDurationMs: 1000
   $name: Durée du zoom central
   $description: "Durée totale en millisecondes, de 100 à 3000. Valeur par défaut : 1000."
