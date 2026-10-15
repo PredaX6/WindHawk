@@ -233,9 +233,6 @@ envoyez manuellement les lignes pertinentes du journal.
 - explorerRestoreDurationMs: 1000
   $name: Durée de l’animation de restauration après réduction
   $description: "Durée en millisecondes, de 100 à 3000. Valeur par défaut : 1000."
-- explorerMaximizeTransitionDurationMs: 1000
-  $name: Durée du zoom central
-  $description: "Durée en millisecondes de la réduction vers le point central, de 100 à 3000. Valeur par défaut : 1000."
 - explorerMaximizeAnimationDurationMs: 1000
   $name: Durée de l’animation d’agrandissement/restauration
   $description: "Durée en millisecondes du zoom entre le point central et la taille finale, de 100 à 3000. Valeur par défaut : 1000."
@@ -10445,11 +10442,8 @@ void RenderExplorerTvOnFrame(HWND hWnd, ExplorerTvOnOverlay* state,
             return;
         }
 
-        const double centralPhaseFraction =
-            static_cast<double>(std::max(kExplorerTvOnMinDurationMs,
-                                         std::min(kExplorerTvOnMaxDurationMs,
-                                                  state->centerZoomPhaseDurationMs))) /
-            std::max(1.0, static_cast<double>(state->animationDurationMs));
+        // The single configured duration covers both halves of the central zoom.
+        const double centralPhaseFraction = 0.5;
         const bool expandingFinalWindow = progress >= centralPhaseFraction;
         const double phaseProgress = expandingFinalWindow
             ? (progress - centralPhaseFraction) /
@@ -11439,10 +11433,7 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
         DeleteObject(destinationBitmap);
 
         state->animateCenterZoom = true;
-        state->centerZoomPhaseDurationMs = g_settings.explorerMaximizeDurationMs;
-        state->animationDurationMs =
-            g_settings.explorerMaximizeDurationMs +
-            g_settings.explorerUnmaximizeDurationMs;
+        state->animationDurationMs = g_settings.explorerUnmaximizeDurationMs;
         state->animateGeometry = false;
         state->geometryStartRect = sourceRect;
         state->geometryEndRect = destinationRect;
@@ -11941,9 +11932,8 @@ void LoadSettings() {
     g_settings.explorerRestoreDurationMs =
         readAnimationDuration(L"explorerRestoreDurationMs");
     g_settings.explorerMaximizeDurationMs =
-        readAnimationDuration(L"explorerMaximizeTransitionDurationMs");
-    g_settings.explorerUnmaximizeDurationMs =
         readAnimationDuration(L"explorerMaximizeAnimationDurationMs");
+    g_settings.explorerUnmaximizeDurationMs = g_settings.explorerMaximizeDurationMs;
 
     // Remaining settings are fixed in code.
     g_settings.explorerFrameContainerHeight = 0;
