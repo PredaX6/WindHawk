@@ -11355,6 +11355,104 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
         IsWindowVisible(hWnd) && !IsIconic(hWnd)) {
         if (!CaptureExplorerBeforeMinimize(hWnd, true)) {
             return ShowWindow_Original(hWnd, nCmdShow);
+        }
+
+        RECT sourceRect{};
+        HBITMAP sourceBitmap = TakeExplorerSnapshot(hWnd, &sourceRect);
+        if (!sourceBitmap) {
+            return ShowWindow_Original(hWnd, nCmdShow);
+        }
+
+        HWND overlay = CreateExplorerTvOnOverlay(
+            hWnd, sourceBitmap, sourceRect, nCmdShow, true);
+        if (!overlay) {
+            return ShowWindow_Original(hWnd, nCmdShow);
+        }
+        auto* state = reinterpret_cast<ExplorerTvOnOverlay*>(
+            GetWindowLongPtrW(overlay, GWLP_USERDATA));
+        if (!state) {
+            DestroyWindow(overlay);
+            return ShowWindow_Original(hWnd, nCmdShow);
+        }
+
+        // The destination must be captured from the real, DWM-composed window.
+        // Hide the source cover briefly while Windows establishes the final size.
+        ShowWindow(overlay, SW_HIDE);
+        const BOOL previousVisibility = ShowWindow_Original(hWnd, nCmdShow);
+        if (!IsWindow(hWnd) || !IsWindowVisible(hWnd) || IsIconic(hWnd)) {
+            DestroyWindow(overlay);
+            return previousVisibility;
+        }
+        DwmFlush();
+
+        RECT destinationRect{};
+        if (!GetWindowRect(hWnd, &destinationRect)) {
+            ShowWindow_Original(hWnd, SW_HIDE);
+            DestroyWindow(overlay);
+            ShowWindow_Original(hWnd, nCmdShow);
+            return previousVisibility;
+        }
+        RECT visibleRect = destinationRect;
+        if (SUCCEEDED(DwmGetWindowAttribute(
+                hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, &visibleRect,
+                sizeof(visibleRect))) &&
+            visibleRect.right > visibleRect.left &&
+            visibleRect.bottom > visibleRect.top) {
+            destinationRect = visibleRect;
+        }
+
+        HBITMAP destinationBitmap = CaptureDesktopRegion(destinationRect);
+        ShowWindow_Original(hWnd, SW_HIDE);
+        if (!destinationBitmap ||
+            !LoadExplorerSnapshotPixels(destinationBitmap,
+                                        state->destinationPixels,
+                                        state->destinationWidth,
+                                        state->destinationHeight)) {
+            if (destinationBitmap) DeleteObject(destinationBitmap);
+            DestroyWindow(overlay);
+            ShowWindow_Original(hWnd, nCmdShow);
+            return previousVisibility;
+        }
+        DeleteObject(destinationBitmap);
+
+        state->animateCenterZoom = true;
+        state->animateGeometry = false;
+        state->geometryStartRect = sourceRect;
+        state->geometryEndRect = destinationRect;
+        state->targetRect = sourceRect;
+        const LONG centerX = destinationRect.left +
+                             (destinationRect.right - destinationRect.left) / 2;
+        const LONG centerY = destinationRect.top +
+                             (destinationRect.bottom - destinationRect.top) / 2;
+        state->centerZoomPointRect = RECT{
+            centerX - 1, centerY - 1, centerX + 1, centerY + 1};
+
+        const int sourceWidth = sourceRect.right - sourceRect.left;
+        const int sourceHeight = sourceRect.bottom - sourceRect.top;
+        const int destinationWidth = destinationRect.right - destinationRect.left;
+        const int destinationHeight = destinationRect.bottom - destinationRect.top;
+        const int canvasWidth = std::max(sourceWidth, destinationWidth);
+        const int canvasHeight = std::max(sourceHeight, destinationHeight);
+        if (!ResizeExplorerTvOnFrameBuffer(state, canvasWidth, canvasHeight)) {
+            DestroyWindow(overlay);
+            ShowWindow_Original(hWnd, nCmdShow);
+            return previousVisibility;
+        }
+
+        SetWindowPos(overlay, HWND_TOPMOST, sourceRect.left, sourceRect.top,
+                     sourceWidth, sourceHeight,
+                     SWP_NOACTIVATE | SWP_NOREDRAW | SWP_SHOWWINDOW);
+        RenderExplorerTvOnFrame(overlay, state, 0.0);
+        if (!StartExplorerTvOnAnimation(
+                overlay, state,
+                g_settings.explorerMaximizeDurationMs)) {
+            DestroyWindow(overlay);
+            ShowWindow_Original(hWnd, nCmdShow);
+        }
+        return previousVisibility;
+    }
+
+    return ShowWindow_Original(hWnd, nCmdShow);
 }
 
 using CreateWindowExW_t = decltype(&CreateWindowExW);
