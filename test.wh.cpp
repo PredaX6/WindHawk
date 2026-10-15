@@ -11447,6 +11447,15 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
             DestroyWindow(overlay);
             return previousVisibility;
         }
+        // Force Explorer's XAML/DirectComposition content to repaint before
+        // taking the maximized/restored desktop snapshot. A single DwmFlush can
+        // complete before all child surfaces have presented their new frame,
+        // which leaves black tiles in the zoom-in image on some systems.
+        RedrawWindow(hWnd, nullptr, nullptr,
+                     RDW_INVALIDATE | RDW_UPDATENOW | RDW_ALLCHILDREN);
+        UpdateWindow(hWnd);
+        DwmFlush();
+        Sleep(16);
         DwmFlush();
 
         RECT destinationRect{};
