@@ -11514,7 +11514,9 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
         // the chance of exposing the native maximized window.
         RECT capturedDestinationRect = destinationRect;
         ShowWindow(overlay, SW_HIDE);
-        DwmFlush();
+        // Keep this capture synchronous and do not flush after uncovering the
+        // native window: waiting for a compositor frame here can reintroduce
+        // the one-frame maximized-window flash.
         HBITMAP destinationBitmap = CaptureDesktopRegion(destinationRect);
         ShowWindow(overlay, SW_SHOWNOACTIVATE);
         SetWindowPos(overlay, HWND_TOPMOST, coverRect.left, coverRect.top,
