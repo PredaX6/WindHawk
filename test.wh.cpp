@@ -11434,6 +11434,14 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
             DeleteObject(sourceBitmap);
             return ShowWindow_Original(hWnd, nCmdShow);
         }
+
+        // Ensure the opaque cover has actually reached the DWM-composed
+        // desktop before changing Explorer's native size. ShowWindow and
+        // UpdateWindow alone only update the overlay's surface; without a
+        // compositor barrier, the native maximized/restored frame can win the
+        // first presentation and flash before the custom animation.
+        DwmFlush();
+
         auto* state = reinterpret_cast<ExplorerTvOnOverlay*>(
             GetWindowLongPtrW(overlay, GWLP_USERDATA));
         if (!state ||
