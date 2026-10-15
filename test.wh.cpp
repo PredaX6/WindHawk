@@ -11805,7 +11805,7 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
                 // then remain identical for several compositor intervals.
                 // This prevents capturing the normal-size window and desktop
                 // surroundings as the supposed maximized arrival frame.
-                if (reachedRequestedSize && stableRectSamples >= 4) {
+                if (reachedRequestedSize && stableRectSamples >= 8) {
                     destinationFrameSettled = true;
                     break;
                 }
