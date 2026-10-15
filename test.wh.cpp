@@ -11768,20 +11768,41 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
                     currentRect = currentVisibleRect;
                 }
 
-                if (currentRect.left == lastStableRect.left &&
+                const int sourceWidthForSettle =
+                    sourceRect.right - sourceRect.left;
+                const int sourceHeightForSettle =
+                    sourceRect.bottom - sourceRect.top;
+                const int currentWidthForSettle =
+                    currentRect.right - currentRect.left;
+                const int currentHeightForSettle =
+                    currentRect.bottom - currentRect.top;
+
+                // IsZoomed can change before DWM has committed the new frame
+                // bounds. Do not treat a stable *old* rectangle as the final
+                // destination: require a real size change in the expected
+                // direction before counting stable compositor samples.
+                const bool reachedRequestedSize = isMaximizeTransition
+                    ? (currentWidthForSettle > sourceWidthForSettle + 20 ||
+                       currentHeightForSettle > sourceHeightForSettle + 20)
+                    : (currentWidthForSettle < sourceWidthForSettle - 20 ||
+                       currentHeightForSettle < sourceHeightForSettle - 20);
+
+                if (reachedRequestedSize &&
+                    currentRect.left == lastStableRect.left &&
                     currentRect.top == lastStableRect.top &&
                     currentRect.right == lastStableRect.right &&
                     currentRect.bottom == lastStableRect.bottom) {
                     ++stableRectSamples;
                 } else {
                     lastStableRect = currentRect;
-                    stableRectSamples = 0;
+                    stableRectSamples = reachedRequestedSize ? 0 : -1;
                 }
 
-                // Require several compositor intervals with identical visible
-                // bounds so the destination capture corresponds to the final
-                // maximized/restored frame, not an intermediate layout.
-                if (stableRectSamples >= 3) {
+                // Require the requested geometry to have actually changed and
+                // then remain identical for several compositor intervals.
+                // This prevents capturing the normal-size window and desktop
+                // surroundings as the supposed maximized arrival frame.
+                if (reachedRequestedSize && stableRectSamples >= 3) {
                     break;
                 }
             } else {
