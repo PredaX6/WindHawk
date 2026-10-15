@@ -10539,11 +10539,15 @@ void RenderExplorerTvOnFrame(HWND hWnd, ExplorerTvOnOverlay* state,
             ? state->destinationHeight : state->sourceHeight;
         const size_t canvasStride = static_cast<size_t>(state->width) * 4;
         auto* dst = static_cast<BYTE*>(state->frameBits);
-        // StretchDIBits overwrites every visible pixel, so a separate clear
-        // pass is unnecessary and would add a full-frame memory walk each tick.
+
+        // Clear the entire backing DIB, not only the currently visible area.
+        // The DIB is larger than the layered window during the center zoom;
+        // stale pixels outside a smaller frame could otherwise reappear as
+        // black blocks when the window expands again.
+        memset(dst, 0, canvasStride * static_cast<size_t>(state->height));
 
         // Use GDI's optimized stretch path, then apply uniform premultiplied
-        // alpha. This reduces per-frame CPU work on large maximized windows.
+        // alpha.
         const float alpha = expandingFinalWindow
             ? static_cast<float>(0.22 + 0.78 * eased)
             : static_cast<float>(1.0 - 0.78 * eased);
