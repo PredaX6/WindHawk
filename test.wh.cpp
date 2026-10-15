@@ -11053,8 +11053,8 @@ HBITMAP CaptureDesktopRegion(const RECT& rect) {
 
 HWND CreateExplorerTvOnOverlay(HWND target, HBITMAP snapshot,
                                const RECT& targetRect, int finalShowCmd,
-                               bool startFullSize = false,
-                               bool isClosing = false) {
+                               bool startFullSize,
+                               bool isClosing) {
     if (!snapshot || !EnsureExplorerTvOnOverlayClass()) {
         if (snapshot) {
             DeleteObject(snapshot);
