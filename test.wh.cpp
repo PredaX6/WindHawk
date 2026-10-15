@@ -9930,21 +9930,17 @@ bool CaptureExplorerBeforeMinimize(HWND hWnd,
         return false;
     }
 
-    // Use DWM's visible frame bounds to avoid invisible resize borders.
-    // Desktop capture preserves the composed backdrop for minimize/close;
-    // opening uses the window DC because its cover overlay is above Explorer.
+    // DWM provides the visible frame in physical screen pixels. Prefer these
+    // bounds for desktop captures; comparing them against GetWindowRect can mix
+    // DPI-virtualized and physical coordinates and crop the wrong screen region.
     RECT visibleRect = windowRect;
+    RECT dwmVisibleRect{};
     if (SUCCEEDED(DwmGetWindowAttribute(
-            hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, &visibleRect,
-            sizeof(visibleRect)))) {
-        if (visibleRect.left < windowRect.left ||
-            visibleRect.top < windowRect.top ||
-            visibleRect.right > windowRect.right ||
-            visibleRect.bottom > windowRect.bottom ||
-            visibleRect.right <= visibleRect.left ||
-            visibleRect.bottom <= visibleRect.top) {
-            visibleRect = windowRect;
-        }
+            hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, &dwmVisibleRect,
+            sizeof(dwmVisibleRect))) &&
+        dwmVisibleRect.right > dwmVisibleRect.left &&
+        dwmVisibleRect.bottom > dwmVisibleRect.top) {
+        visibleRect = dwmVisibleRect;
     }
 
     constexpr int kHorizontalInset = 1;
@@ -11509,19 +11505,13 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
             ShowWindow_Original(hWnd, nCmdShow);
             return previousVisibility;
         }
-        // Accept DWM's visible bounds only when they are contained in the
-        // window bounds returned by GetWindowRect. Mixing coordinate spaces
-        // (for example, DPI-virtualized window coordinates and physical DWM
-        // coordinates) can otherwise make the snapshot cover a much larger
-        // area than Explorer itself.
-        RECT visibleRect = destinationRect;
+        // Use DWM's physical visible-frame bounds for the desktop capture.
+        // GetWindowRect may be DPI-virtualized, so do not require the DWM bounds
+        // to fit inside it before selecting the capture rectangle.
+        RECT visibleRect{};
         if (SUCCEEDED(DwmGetWindowAttribute(
                 hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, &visibleRect,
                 sizeof(visibleRect))) &&
-            visibleRect.left >= destinationRect.left &&
-            visibleRect.top >= destinationRect.top &&
-            visibleRect.right <= destinationRect.right &&
-            visibleRect.bottom <= destinationRect.bottom &&
             visibleRect.right > visibleRect.left &&
             visibleRect.bottom > visibleRect.top) {
             destinationRect = visibleRect;
