@@ -11433,7 +11433,11 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
         DeleteObject(destinationBitmap);
 
         state->animateCenterZoom = true;
-        state->animationDurationMs = g_settings.explorerUnmaximizeDurationMs;
+        // This single setting controls the complete central-zoom sequence
+        // for both maximize and restore-to-normal.
+        const int centerZoomDurationMs =
+            g_settings.explorerMaximizeDurationMs;
+        state->animationDurationMs = centerZoomDurationMs;
         state->animateGeometry = false;
         state->geometryStartRect = sourceRect;
         state->geometryEndRect = destinationRect;
@@ -11462,8 +11466,7 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
                      SWP_NOACTIVATE | SWP_NOREDRAW | SWP_SHOWWINDOW);
         RenderExplorerTvOnFrame(overlay, state, 0.0);
         if (!StartExplorerTvOnAnimation(
-                overlay, state,
-                state->animationDurationMs)) {
+                overlay, state, centerZoomDurationMs)) {
             DestroyWindow(overlay);
             ShowWindow_Original(hWnd, nCmdShow);
         }
