@@ -9917,6 +9917,10 @@ void OnWindowCreated(HWND hWnd, PCSTR funcName) {
 std::mutex g_explorerSnapshotMutex;
 std::unordered_map<HWND, HBITMAP> g_explorerSnapshots;
 std::unordered_map<HWND, RECT> g_explorerSnapshotRects;
+// Keep the exact maximized-frame capture so the zoom-out during restoration
+// reuses the same pixels that were used for the zoom-in during maximization.
+std::unordered_map<HWND, HBITMAP> g_explorerMaximizedSnapshots;
+std::unordered_map<HWND, RECT> g_explorerMaximizedSnapshotRects;
 
 bool CaptureExplorerBeforeMinimize(HWND hWnd,
                                    bool captureComposedDesktop = true) {
@@ -10021,6 +10025,7 @@ bool CaptureExplorerBeforeMinimize(HWND hWnd,
 
 void ForgetExplorerSnapshot(HWND hWnd) {
     HBITMAP snapshot = nullptr;
+    HBITMAP maximizedSnapshot = nullptr;
     {
         std::lock_guard<std::mutex> lock(g_explorerSnapshotMutex);
         auto it = g_explorerSnapshots.find(hWnd);
@@ -10028,23 +10033,79 @@ void ForgetExplorerSnapshot(HWND hWnd) {
             snapshot = it->second;
             g_explorerSnapshots.erase(it);
         }
+        g_explorerSnapshotRects.erase(hWnd);
+
+        auto maximizedIt = g_explorerMaximizedSnapshots.find(hWnd);
+        if (maximizedIt != g_explorerMaximizedSnapshots.end()) {
+            maximizedSnapshot = maximizedIt->second;
+            g_explorerMaximizedSnapshots.erase(maximizedIt);
+        }
+        g_explorerMaximizedSnapshotRects.erase(hWnd);
     }
     if (snapshot) {
         DeleteObject(snapshot);
     }
+    if (maximizedSnapshot) {
+        DeleteObject(maximizedSnapshot);
+    }
+}
+
+void SaveExplorerMaximizedSnapshot(HWND hWnd, HBITMAP snapshot,
+                                   const RECT& snapshotRect) {
+    if (!snapshot) return;
+    HBITMAP copy = static_cast<HBITMAP>(
+        CopyImage(snapshot, IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION));
+    if (!copy) return;
+
+    HBITMAP previous = nullptr;
+    {
+        std::lock_guard<std::mutex> lock(g_explorerSnapshotMutex);
+        auto it = g_explorerMaximizedSnapshots.find(hWnd);
+        if (it != g_explorerMaximizedSnapshots.end()) {
+            previous = it->second;
+            it->second = copy;
+        } else {
+            g_explorerMaximizedSnapshots.emplace(hWnd, copy);
+        }
+        g_explorerMaximizedSnapshotRects[hWnd] = snapshotRect;
+    }
+    if (previous) DeleteObject(previous);
+}
+
+HBITMAP CopyExplorerMaximizedSnapshot(HWND hWnd, RECT* snapshotRect) {
+    std::lock_guard<std::mutex> lock(g_explorerSnapshotMutex);
+    auto it = g_explorerMaximizedSnapshots.find(hWnd);
+    if (it == g_explorerMaximizedSnapshots.end()) return nullptr;
+
+    HBITMAP copy = static_cast<HBITMAP>(
+        CopyImage(it->second, IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION));
+    if (copy && snapshotRect) {
+        auto rectIt = g_explorerMaximizedSnapshotRects.find(hWnd);
+        if (rectIt != g_explorerMaximizedSnapshotRects.end()) {
+            *snapshotRect = rectIt->second;
+        } else {
+            DeleteObject(copy);
+            copy = nullptr;
+        }
+    }
+    return copy;
 }
 
 void ClearExplorerSnapshots() {
     std::unordered_map<HWND, HBITMAP> snapshots;
+    std::unordered_map<HWND, HBITMAP> maximizedSnapshots;
     {
         std::lock_guard<std::mutex> lock(g_explorerSnapshotMutex);
         snapshots.swap(g_explorerSnapshots);
+        maximizedSnapshots.swap(g_explorerMaximizedSnapshots);
         g_explorerSnapshotRects.clear();
+        g_explorerMaximizedSnapshotRects.clear();
     }
     for (const auto& entry : snapshots) {
-        if (entry.second) {
-            DeleteObject(entry.second);
-        }
+        if (entry.second) DeleteObject(entry.second);
+    }
+    for (const auto& entry : maximizedSnapshots) {
+        if (entry.second) DeleteObject(entry.second);
     }
 }
 
@@ -11573,8 +11634,21 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
         // The animation bitmap and its geometry must use exactly the same
         // visible-frame rectangle. Keep sourceRect separately for the cover,
         // which must also hide the native resize borders.
+        HBITMAP cachedMaximizedBitmap = nullptr;
+        if (isUnmaximizeTransition) {
+            RECT cachedMaximizedRect{};
+            cachedMaximizedBitmap =
+                CopyExplorerMaximizedSnapshot(hWnd, &cachedMaximizedRect);
+            if (cachedMaximizedBitmap) {
+                // Use exactly the same maximized pixels and bounds that were
+                // captured for the previous maximize zoom-in.
+                sourceCaptureRect = cachedMaximizedRect;
+            }
+        }
         const RECT animationSourceRect = sourceCaptureRect;
-        HBITMAP sourceBitmap = CaptureDesktopRegion(animationSourceRect, false, 0.8);
+        HBITMAP sourceBitmap = cachedMaximizedBitmap
+            ? cachedMaximizedBitmap
+            : CaptureDesktopRegion(animationSourceRect, false, 0.8);
         if (!sourceBitmap) {
             return ShowWindow_Original(hWnd, nCmdShow);
         }
@@ -11709,6 +11783,12 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
             }
             DestroyWindow(overlay);
             return previousVisibility;
+        }
+        if (isMaximizeTransition) {
+            // Preserve a copy of the maximized window frame. The next restore
+            // animation will reuse these exact pixels for its zoom-out phase.
+            SaveExplorerMaximizedSnapshot(
+                hWnd, destinationBitmap, animationDestinationRect);
         }
         DeleteObject(destinationBitmap);
 
