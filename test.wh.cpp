@@ -11606,34 +11606,20 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
     if ((isMaximizeTransition || isUnmaximizeTransition) &&
         GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
         IsWindowVisible(hWnd) && !IsIconic(hWnd)) {
-        // Keep geometry in the same coordinate space as GetWindowRect, but
-        // capture pixels from DWM's visible frame bounds. GetWindowRect can be
-        // DPI-virtualized while GetDC(nullptr) addresses physical desktop pixels;
-        // using the former directly for BitBlt can select an oversized screen
-        // region instead of the Explorer window.
+        // Use GetWindowRect consistently for both the capture dimensions and
+        // animation geometry. Mixing GetWindowRect with DWM's differently
+        // bounded frame rectangle can offset or enlarge the captured image.
         RECT sourceRect{};
         if (!GetWindowRect(hWnd, &sourceRect) ||
             sourceRect.right <= sourceRect.left ||
             sourceRect.bottom <= sourceRect.top) {
             return ShowWindow_Original(hWnd, nCmdShow);
         }
-        RECT sourceCaptureRect = sourceRect;
-        RECT dwmSourceRect{};
-        if (SUCCEEDED(DwmGetWindowAttribute(
-                hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, &dwmSourceRect,
-                sizeof(dwmSourceRect))) &&
-            dwmSourceRect.right > dwmSourceRect.left &&
-            dwmSourceRect.bottom > dwmSourceRect.top) {
-            sourceCaptureRect = dwmSourceRect;
-        }
 
-        // The animation bitmap and its geometry must use exactly the same
-        // visible-frame rectangle. Keep sourceRect separately for the cover,
-        // which must also hide the native resize borders.
-        // Take one fresh, window-bounds-only capture immediately before
-        // the transition. Reuse these exact pixels for both the zoom-out and
-        // zoom-in halves; do not substitute a cached or post-transition image.
-        const RECT animationSourceRect = sourceCaptureRect;
+        // Capture only the source window's rectangle, not the monitor or desktop.
+        // SRCCOPY deliberately omits the layered cover while preserving the
+        // DWM-composed pixels underneath it, including transparency/blur/Mica.
+        const RECT animationSourceRect = sourceRect;
         HBITMAP sourceBitmap =
             CaptureDesktopRegion(animationSourceRect, false, 1.0);
         if (!sourceBitmap) {
@@ -11746,18 +11732,40 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
             return previousVisibility;
         }
 
-        RECT animationDestinationRect = destinationRect;
-        RECT dwmDestinationRect{};
-        if (SUCCEEDED(DwmGetWindowAttribute(
-                hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, &dwmDestinationRect,
-                sizeof(dwmDestinationRect))) &&
-            dwmDestinationRect.right > dwmDestinationRect.left &&
-            dwmDestinationRect.bottom > dwmDestinationRect.top) {
-            animationDestinationRect = dwmDestinationRect;
+        // Capture the final window itself before hiding it. This is the
+        // second half of the same central-zoom animation: the pre-transition
+        // capture contracts to the center, then this final-state capture grows
+        // back out to the real maximized/restored window.
+        const RECT animationDestinationRect = destinationRect;
+        HBITMAP destinationBitmap =
+            CaptureDesktopRegion(animationDestinationRect, false, 1.0);
+        if (!destinationBitmap) {
+            ShowWindow_Original(hWnd, SW_HIDE);
+            if (changedTransitionSetting) {
+                DwmSetWindowAttribute(hWnd, DWMWA_TRANSITIONS_FORCEDISABLED,
+                                      &previousTransitionsDisabled,
+                                      sizeof(previousTransitionsDisabled));
+            }
+            DestroyWindow(overlay);
+            ShowWindow_Original(hWnd, nCmdShow);
+            return previousVisibility;
         }
-
-        // Do not capture the post-transition window: the animation must keep
-        // using the single pre-transition bitmap for its entire duration.
+        if (!LoadExplorerSnapshotPixels(destinationBitmap,
+                                        state->destinationPixels,
+                                        state->destinationWidth,
+                                        state->destinationHeight)) {
+            DeleteObject(destinationBitmap);
+            ShowWindow_Original(hWnd, SW_HIDE);
+            if (changedTransitionSetting) {
+                DwmSetWindowAttribute(hWnd, DWMWA_TRANSITIONS_FORCEDISABLED,
+                                      &previousTransitionsDisabled,
+                                      sizeof(previousTransitionsDisabled));
+            }
+            DestroyWindow(overlay);
+            ShowWindow_Original(hWnd, nCmdShow);
+            return previousVisibility;
+        }
+        DeleteObject(destinationBitmap);
 
         ShowWindow_Original(hWnd, SW_HIDE);
         if (changedTransitionSetting) {
@@ -11771,14 +11779,16 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
         state->blurredSourcePixels = state->sourcePixels;
         ApplyExplorerSnapshotBlur(state->blurredSourcePixels,
                                   state->sourceWidth, state->sourceHeight, 8);
-        state->blurredDestinationPixels.clear();
-        state->destinationPixels.clear();
-        state->destinationWidth = 0;
-        state->destinationHeight = 0;
+        state->blurredDestinationPixels = state->destinationPixels;
+        ApplyExplorerSnapshotBlur(state->blurredDestinationPixels,
+                                  state->destinationWidth,
+                                  state->destinationHeight, 8);
         state->renderPixels.resize(state->sourcePixels.size());
 
-        state->animateCenterZoom = false;
-        state->animateSingleCaptureBounceZoom = true;
+        // One two-phase zoom, with a true source-window capture for contraction
+        // and a separate final-window capture for expansion.
+        state->animateCenterZoom = true;
+        state->animateSingleCaptureBounceZoom = false;
         const int centerZoomDurationMs = g_settings.explorerMaximizeDurationMs;
         state->animationDurationMs = centerZoomDurationMs;
         state->animateGeometry = false;
