@@ -10501,10 +10501,10 @@ void RenderExplorerTvOnFrame(HWND hWnd, ExplorerTvOnOverlay* state,
         }
 
         // One snapshot captured at the user's maximize click is used for the
-        // entire motion. The window first contracts to 50% to build momentum,
-        // then expands to the maximized bounds at twice the contraction speed.
-        // A 2:1 time split gives the expansion twice the speed over the same
-        // scale distance.
+        // entire motion. The window first contracts to 90% of its initial size
+        // around its center to build momentum, then expands to the maximized
+        // bounds. Keep the 2:1 time split so the zoom phase has twice the
+        // temporal pace of the contraction phase.
         constexpr double kContractionTimeFraction = 2.0 / 3.0;
         const bool expanding = progress >= kContractionTimeFraction;
         const double segmentProgress = expanding
@@ -10516,22 +10516,22 @@ void RenderExplorerTvOnFrame(HWND hWnd, ExplorerTvOnOverlay* state,
 
         const RECT& fullRect = state->geometryStartRect;
         const RECT& maximizedRect = state->geometryEndRect;
-        RECT halfRect{};
-        const LONG sourceCenterX = fullRect.left +
-                                   (fullRect.right - fullRect.left) / 2;
-        const LONG sourceCenterY = fullRect.top +
-                                   (fullRect.bottom - fullRect.top) / 2;
-        const LONG halfWidth = std::max<LONG>(
-            1, (fullRect.right - fullRect.left) / 2);
-        const LONG halfHeight = std::max<LONG>(
-            1, (fullRect.bottom - fullRect.top) / 2);
-        halfRect.left = sourceCenterX - halfWidth / 2;
-        halfRect.right = halfRect.left + halfWidth;
-        halfRect.top = sourceCenterY - halfHeight / 2;
-        halfRect.bottom = halfRect.top + halfHeight;
+        RECT contractedRect{};
+        const LONG sourceWidth = fullRect.right - fullRect.left;
+        const LONG sourceHeight = fullRect.bottom - fullRect.top;
+        const LONG sourceCenterX = fullRect.left + sourceWidth / 2;
+        const LONG sourceCenterY = fullRect.top + sourceHeight / 2;
+        const LONG contractedWidth = std::max<LONG>(
+            1, static_cast<LONG>(std::lround(sourceWidth * 0.90)));
+        const LONG contractedHeight = std::max<LONG>(
+            1, static_cast<LONG>(std::lround(sourceHeight * 0.90)));
+        contractedRect.left = sourceCenterX - contractedWidth / 2;
+        contractedRect.right = contractedRect.left + contractedWidth;
+        contractedRect.top = sourceCenterY - contractedHeight / 2;
+        contractedRect.bottom = contractedRect.top + contractedHeight;
 
-        const RECT& from = expanding ? halfRect : fullRect;
-        const RECT& to = expanding ? maximizedRect : halfRect;
+        const RECT& from = expanding ? contractedRect : fullRect;
+        const RECT& to = expanding ? maximizedRect : contractedRect;
         auto interpolate = [eased](LONG a, LONG b) {
             return static_cast<LONG>(std::lround(
                 static_cast<double>(a) +
