@@ -11518,11 +11518,14 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
         // native window: waiting for a compositor frame here can reintroduce
         // the one-frame maximized-window flash.
         HBITMAP destinationBitmap = CaptureDesktopRegion(destinationRect);
-        ShowWindow(overlay, SW_SHOWNOACTIVATE);
+        // Reposition the still-hidden cover before showing it. Showing it at
+        // its old source-sized bounds first leaves part of the maximized
+        // window uncovered for a frame, causing the pre-animation flash.
         SetWindowPos(overlay, HWND_TOPMOST, coverRect.left, coverRect.top,
                      coverRect.right - coverRect.left,
                      coverRect.bottom - coverRect.top,
-                     SWP_NOACTIVATE | SWP_NOREDRAW | SWP_SHOWWINDOW);
+                     SWP_NOACTIVATE | SWP_NOREDRAW);
+        ShowWindow(overlay, SW_SHOWNOACTIVATE);
         UpdateWindow(overlay);
         ShowWindow_Original(hWnd, SW_HIDE);
         if (changedTransitionSetting) {
