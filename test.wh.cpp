@@ -11892,21 +11892,13 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
             return previousVisibility;
         }
 
-        // Capture the final Explorer frame during the same synchronous turn.
-        // Do not flush DWM while the cover is hidden: forcing a compositor
-        // presentation here exposes the native maximized/restored window for
-        // one visible frame before the central-zoom animation.
-        ShowWindow(overlay, SW_HIDE);
+        // Capture the final Explorer frame while the cover stays visible.
+        // CaptureDesktopRegion(..., false) uses SRCCOPY without CAPTUREBLT,
+        // which excludes layered overlays from the desktop copy. Keeping this
+        // cover visible avoids exposing the native frame for a compositor
+        // interval, eliminating the brief flash before the zoom animation.
         HBITMAP destinationBitmap =
             CaptureDesktopRegion(destinationRect, false, 1.0);
-        ShowWindow(overlay, SW_SHOWNA);
-        SetWindowPos(overlay, HWND_TOPMOST,
-                     coverRect.left, coverRect.top,
-                     coverRect.right - coverRect.left,
-                     coverRect.bottom - coverRect.top,
-                     SWP_NOACTIVATE | SWP_NOREDRAW | SWP_SHOWWINDOW);
-        // Flush only after the cover has been restored, never in the exposed
-        // interval between hiding it and capturing the destination frame.
         DwmFlush();
 
         if (!destinationBitmap ||
