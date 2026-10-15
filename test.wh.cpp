@@ -11079,7 +11079,8 @@ bool TryStartExplorerTvOnRestore(HWND hWnd) {
     return true;
 }
 
-HBITMAP CaptureDesktopRegion(const RECT& rect) {
+HBITMAP CaptureDesktopRegion(const RECT& rect,
+                              bool includeLayeredWindows = true) {
     const int width = rect.right - rect.left;
     const int height = rect.bottom - rect.top;
     if (width <= 0 || height <= 0) {
@@ -11096,10 +11097,13 @@ HBITMAP CaptureDesktopRegion(const RECT& rect) {
         ? CreateCompatibleBitmap(screenDc, width, height)
         : nullptr;
     HGDIOBJ previous = bitmap ? SelectObject(memoryDc, bitmap) : nullptr;
+    const DWORD captureRop = includeLayeredWindows
+        ? (SRCCOPY | CAPTUREBLT)
+        : SRCCOPY;
     const bool copied =
         bitmap && previous && previous != HGDI_ERROR &&
         BitBlt(memoryDc, 0, 0, width, height, screenDc,
-               rect.left, rect.top, SRCCOPY | CAPTUREBLT);
+               rect.left, rect.top, captureRop);
 
     if (previous && previous != HGDI_ERROR) {
         SelectObject(memoryDc, previous);
@@ -11521,25 +11525,16 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
         // the cover and copying; restore it immediately afterwards to minimize
         // the chance of exposing the native maximized window.
         RECT capturedDestinationRect = destinationRect;
-        ShowWindow(overlay, SW_HIDE);
-        // Keep this capture synchronous and do not flush after uncovering the
-        // native window: waiting for a compositor frame here can reintroduce
-        // the one-frame maximized-window flash.
-        HBITMAP destinationBitmap = CaptureDesktopRegion(destinationRect);
-        // Hide Explorer immediately after the synchronous composed-frame copy,
-        // before restoring the cover. This minimizes the interval in which the
-        // native maximized/restored frame could be exposed and prevents it from
-        // flashing between the capture and the first zoom frame.
+        // Keep the cover overlay visible while capturing the final native
+        // window. A plain SRCCOPY deliberately omits layered windows, allowing
+        // the screen DC to provide the composed Explorer frame underneath the
+        // cover without ever exposing it on screen. CAPTUREBLT would capture
+        // the cover itself and hiding the cover here caused the persistent flash.
+        HBITMAP destinationBitmap =
+            CaptureDesktopRegion(destinationRect, false);
+        // The native frame stays hidden behind the cover until the destination
+        // snapshot is ready, so no uncovered compositor frame can flash.
         ShowWindow_Original(hWnd, SW_HIDE);
-        // Reposition the still-hidden cover before showing it. Showing it at
-        // its old source-sized bounds first leaves part of the maximized
-        // window uncovered for a frame, causing the pre-animation flash.
-        SetWindowPos(overlay, HWND_TOPMOST, coverRect.left, coverRect.top,
-                     coverRect.right - coverRect.left,
-                     coverRect.bottom - coverRect.top,
-                     SWP_NOACTIVATE | SWP_NOREDRAW);
-        ShowWindow(overlay, SW_SHOWNOACTIVATE);
-        UpdateWindow(overlay);
         if (changedTransitionSetting) {
             DwmSetWindowAttribute(hWnd, DWMWA_TRANSITIONS_FORCEDISABLED,
                                   &previousTransitionsDisabled,
