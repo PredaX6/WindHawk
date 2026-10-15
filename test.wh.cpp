@@ -11739,15 +11739,56 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
             DestroyWindow(overlay);
             return previousVisibility;
         }
-        // Force Explorer's XAML/DirectComposition content to repaint before
-        // taking the maximized/restored desktop snapshot. A single DwmFlush can
-        // complete before all child surfaces have presented their new frame,
-        // which leaves black tiles in the zoom-in image on some systems.
-        RedrawWindow(hWnd, nullptr, nullptr,
-                     RDW_INVALIDATE | RDW_UPDATENOW | RDW_ALLCHILDREN);
-        UpdateWindow(hWnd);
-        DwmFlush();
-        Sleep(16);
+        // Wait until Windows has actually reached the requested size and the
+        // DWM-visible frame stops changing. ShowWindow may return before the
+        // restored/maximized layout and DirectComposition child surfaces finish
+        // presenting; capturing immediately can record the old window plus
+        // surrounding desktop as the supposed destination frame.
+        const bool expectedMaximized = isMaximizeTransition;
+        RECT lastStableRect{};
+        int stableRectSamples = 0;
+        const ULONGLONG settleStart = GetTickCount64();
+        while (GetTickCount64() - settleStart < 800) {
+            RedrawWindow(hWnd, nullptr, nullptr,
+                         RDW_INVALIDATE | RDW_UPDATENOW | RDW_ALLCHILDREN);
+            UpdateWindow(hWnd);
+            DwmFlush();
+
+            RECT currentRect{};
+            if (IsWindow(hWnd) && IsWindowVisible(hWnd) &&
+                !IsIconic(hWnd) &&
+                (IsZoomed(hWnd) != FALSE) == expectedMaximized &&
+                GetWindowRect(hWnd, &currentRect)) {
+                RECT currentVisibleRect{};
+                if (SUCCEEDED(DwmGetWindowAttribute(
+                        hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, &currentVisibleRect,
+                        sizeof(currentVisibleRect))) &&
+                    currentVisibleRect.right > currentVisibleRect.left &&
+                    currentVisibleRect.bottom > currentVisibleRect.top) {
+                    currentRect = currentVisibleRect;
+                }
+
+                if (currentRect.left == lastStableRect.left &&
+                    currentRect.top == lastStableRect.top &&
+                    currentRect.right == lastStableRect.right &&
+                    currentRect.bottom == lastStableRect.bottom) {
+                    ++stableRectSamples;
+                } else {
+                    lastStableRect = currentRect;
+                    stableRectSamples = 0;
+                }
+
+                // Require several compositor intervals with identical visible
+                // bounds so the destination capture corresponds to the final
+                // maximized/restored frame, not an intermediate layout.
+                if (stableRectSamples >= 3) {
+                    break;
+                }
+            } else {
+                stableRectSamples = 0;
+            }
+            Sleep(8);
+        }
         DwmFlush();
 
         // Record the final native window bounds, then capture only that window's
@@ -11787,19 +11828,13 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
             return previousVisibility;
         }
 
-        // Capture only the visible frame bounds of the final Explorer window,
-        // not a DPI-virtualized GetWindowRect region that can include adjacent
-        // desktop content. This retains the actual composed blur/Mica pixels
-        // while excluding everything outside the window's visible frame.
-        // Capture the arrival frame with the same DWM-visible-frame path used
-        // for the starting window snapshot. This keeps the bitmap restricted
-        // to Explorer's visible bounds instead of accidentally sampling the
-        // full monitor/work area, and preserves the composed blur/Mica pixels.
-        RECT animationDestinationRect{};
-        HBITMAP destinationBitmap = nullptr;
-        if (CaptureExplorerBeforeMinimize(hWnd, true)) {
-            destinationBitmap = TakeExplorerSnapshot(hWnd, &animationDestinationRect);
-        }
+        // Use only the final DWM-visible frame bounds for the arrival capture.
+        // Capture that exact screen rectangle directly; do not route through the
+        // minimize-snapshot helper, which also updates shared snapshot state and
+        // can preserve bounds from a different window state.
+        RECT animationDestinationRect = destinationRect;
+        HBITMAP destinationBitmap =
+            CaptureDesktopRegion(animationDestinationRect, false, 1.0);
         if (!destinationBitmap ||
             animationDestinationRect.right <= animationDestinationRect.left ||
             animationDestinationRect.bottom <= animationDestinationRect.top) {
