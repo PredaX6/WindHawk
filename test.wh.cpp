@@ -11301,6 +11301,12 @@ bool TryStartExplorerTvOnRestore(HWND hWnd) {
 HBITMAP CaptureDesktopRegion(const RECT& rect,
                               bool includeLayeredWindows = true,
                               double scale = 1.0) {
+    // DWM_EXTENDED_FRAME_BOUNDS are physical screen coordinates. Ensure the
+    // desktop DC uses the same coordinate space even if the calling Explorer
+    // thread inherited DPI virtualization from another window.
+    DPI_AWARENESS_CONTEXT previousDpiContext =
+        SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+
     const int sourceWidth = rect.right - rect.left;
     const int sourceHeight = rect.bottom - rect.top;
     if (sourceWidth <= 0 || sourceHeight <= 0) {
@@ -11344,6 +11350,9 @@ HBITMAP CaptureDesktopRegion(const RECT& rect,
         DeleteDC(memoryDc);
     }
     ReleaseDC(nullptr, screenDc);
+    if (previousDpiContext) {
+        SetThreadDpiAwarenessContext(previousDpiContext);
+    }
 
     if (!copied) {
         if (bitmap) {
@@ -11815,6 +11824,20 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
             Sleep(8);
         }
         DwmFlush();
+
+        // Geometry can settle before Explorer's DirectComposition content and
+        // backdrop materials have presented their final frame. Give DWM a few
+        // additional presentation intervals, refreshing only Explorer while
+        // the opaque cover remains above it, before capturing the arrival.
+        if (destinationFrameSettled) {
+            for (int frame = 0; frame < 4; ++frame) {
+                RedrawWindow(hWnd, nullptr, nullptr,
+                             RDW_INVALIDATE | RDW_UPDATENOW | RDW_ALLCHILDREN);
+                UpdateWindow(hWnd);
+                DwmFlush();
+                Sleep(16);
+            }
+        }
 
         // Never animate from a stale/normal-size frame if Explorer did not
         // reach and settle at the requested native size. That was causing the
