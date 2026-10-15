@@ -11399,12 +11399,24 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
     if ((isMaximizeTransition || isUnmaximizeTransition) &&
         GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
         IsWindowVisible(hWnd) && !IsIconic(hWnd)) {
-        if (!CaptureExplorerBeforeMinimize(hWnd, true)) {
+        // Capture only Explorer's visible frame. Do not reuse the minimize
+        // snapshot path here: its cached rectangle can be stale, and a mismatch
+        // between the cached bitmap and the current window bounds makes the zoom
+        // appear to contain the whole desktop or an incorrectly scaled region.
+        RECT sourceRect{};
+        if (!GetWindowRect(hWnd, &sourceRect)) {
             return ShowWindow_Original(hWnd, nCmdShow);
         }
+        RECT sourceVisibleRect{};
+        if (SUCCEEDED(DwmGetWindowAttribute(
+                hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, &sourceVisibleRect,
+                sizeof(sourceVisibleRect))) &&
+            sourceVisibleRect.right > sourceVisibleRect.left &&
+            sourceVisibleRect.bottom > sourceVisibleRect.top) {
+            sourceRect = sourceVisibleRect;
+        }
 
-        RECT sourceRect{};
-        HBITMAP sourceBitmap = TakeExplorerSnapshot(hWnd, &sourceRect);
+        HBITMAP sourceBitmap = CaptureDesktopRegion(sourceRect, false);
         if (!sourceBitmap) {
             return ShowWindow_Original(hWnd, nCmdShow);
         }
