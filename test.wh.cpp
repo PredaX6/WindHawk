@@ -11897,27 +11897,29 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
             return previousVisibility;
         }
 
-        // The zoom animation deliberately uses only the single pre-transition
-        // Explorer capture loaded above. Do not capture a second destination
-        // frame: stretching the original capture through both halves avoids
-        // switching images mid-animation and keeps the transition consistent.
+        // Capture the final Explorer frame from the exact destination window bounds.
+        // Temporarily hide the cover only for the synchronous desktop capture, then
+        // restore it immediately; the native transition remains disabled.
+        ShowWindow(overlay, SW_HIDE);
+        DwmFlush();
+        HBITMAP destinationBitmap =
+            CaptureDesktopRegion(destinationRect, false, 1.0);
+        ShowWindow(overlay, SW_SHOWNA);
+        SetWindowPos(overlay, HWND_TOPMOST,
+                     coverRect.left, coverRect.top,
+                     coverRect.right - coverRect.left,
+                     coverRect.bottom - coverRect.top,
+                     SWP_NOACTIVATE | SWP_NOREDRAW | SWP_SHOWWINDOW);
+        DwmFlush();
 
-            }
-            ShowWindow_Original(hWnd, SW_HIDE);
-            if (changedTransitionSetting) {
-                DwmSetWindowAttribute(hWnd, DWMWA_TRANSITIONS_FORCEDISABLED,
-                                      &previousTransitionsDisabled,
-                                      sizeof(previousTransitionsDisabled));
-            }
-            DestroyWindow(overlay);
-            ShowWindow_Original(hWnd, nCmdShow);
-            return previousVisibility;
-        }
-        if (!LoadExplorerSnapshotPixels(destinationBitmap,
+        if (!destinationBitmap ||
+            !LoadExplorerSnapshotPixels(destinationBitmap,
                                         state->destinationPixels,
                                         state->destinationWidth,
                                         state->destinationHeight)) {
-            DeleteObject(destinationBitmap);
+            if (destinationBitmap) {
+                DeleteObject(destinationBitmap);
+            }
             ShowWindow_Original(hWnd, SW_HIDE);
             if (changedTransitionSetting) {
                 DwmSetWindowAttribute(hWnd, DWMWA_TRANSITIONS_FORCEDISABLED,
@@ -11937,25 +11939,31 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
                                   sizeof(previousTransitionsDisabled));
         }
 
-        // Precompute blur once from the sole pre-transition capture. Reuse this
-        // exact bitmap for both the contraction and expansion phases.
+        // Precompute blur for each real window capture; the expansion phase uses
+        // the final-state image, not a stretched copy of the starting window.
         state->blurredSourcePixels = state->sourcePixels;
         ApplyExplorerSnapshotBlur(state->blurredSourcePixels,
                                   state->sourceWidth, state->sourceHeight, 8);
-        state->renderPixels.resize(state->sourcePixels.size());
+        state->blurredDestinationPixels = state->destinationPixels;
+        ApplyExplorerSnapshotBlur(state->blurredDestinationPixels,
+                                  state->destinationWidth,
+                                  state->destinationHeight, 8);
+        state->renderPixels.resize(std::max(state->sourcePixels.size(),
+                                             state->destinationPixels.size()));
 
-        // One captured window image drives the complete two-phase zoom.
-        state->animateCenterZoom = false;
-        state->animateSingleCaptureBounceZoom = true;
+        // One central zoom consists of a contraction using the source capture,
+        // followed by an expansion using the destination capture.
+        state->animateCenterZoom = true;
+        state->animateSingleCaptureBounceZoom = false;
         const int centerZoomDurationMs = g_settings.explorerMaximizeDurationMs;
         state->animationDurationMs = centerZoomDurationMs;
         state->animateGeometry = false;
         state->reverseAnimation = isUnmaximizeTransition;
-        state->geometryStartRect = animationSourceRect;
-        state->geometryEndRect = animationDestinationRect;
+        state->geometryStartRect = sourceRect;
+        state->geometryEndRect = destinationRect;
         state->targetRect = animationSourceRect;
         const RECT& maximizedRect = isUnmaximizeTransition
-            ? animationSourceRect : animationDestinationRect;
+            ? sourceRect : destinationRect;
         const LONG centerX = maximizedRect.left +
                              (maximizedRect.right - maximizedRect.left) / 2;
         const LONG centerY = maximizedRect.top +
@@ -11963,10 +11971,10 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
         state->centerZoomPointRect = RECT{
             centerX - 1, centerY - 1, centerX + 1, centerY + 1};
 
-        const int sourceWidth = animationSourceRect.right - animationSourceRect.left;
-        const int sourceHeight = animationSourceRect.bottom - animationSourceRect.top;
-        const int destinationWidth = animationDestinationRect.right - animationDestinationRect.left;
-        const int destinationHeight = animationDestinationRect.bottom - animationDestinationRect.top;
+        const int sourceWidth = sourceRect.right - sourceRect.left;
+        const int sourceHeight = sourceRect.bottom - sourceRect.top;
+        const int destinationWidth = destinationRect.right - destinationRect.left;
+        const int destinationHeight = destinationRect.bottom - destinationRect.top;
         const int canvasWidth = std::max(sourceWidth, destinationWidth);
         const int canvasHeight = std::max(sourceHeight, destinationHeight);
         if (!ResizeExplorerTvOnFrameBuffer(state, canvasWidth, canvasHeight)) {
@@ -11976,8 +11984,9 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
         }
 
         SetWindowPos(overlay, HWND_TOPMOST,
-                     animationSourceRect.left, animationSourceRect.top,
-                     sourceWidth, sourceHeight,
+                     coverRect.left, coverRect.top,
+                     coverRect.right - coverRect.left,
+                     coverRect.bottom - coverRect.top,
                      SWP_NOACTIVATE | SWP_NOREDRAW | SWP_SHOWWINDOW);
         RenderExplorerTvOnFrame(overlay, state, 0.0);
         if (!StartExplorerTvOnAnimation(
