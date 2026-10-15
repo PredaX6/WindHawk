@@ -11632,19 +11632,30 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
     if ((isMaximizeTransition || isUnmaximizeTransition) &&
         GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
         IsWindowVisible(hWnd) && !IsIconic(hWnd)) {
-        // Use GetWindowRect consistently for both the capture dimensions and
-        // animation geometry. Mixing GetWindowRect with DWM's differently
-        // bounded frame rectangle can offset or enlarge the captured image.
+        // Use DWM's visible frame bounds for both screen capture and animation
+        // geometry. GetWindowRect may be DPI-virtualized while the desktop DC
+        // uses physical pixels; mixing those coordinate spaces can capture
+        // surrounding windows and wallpaper instead of Explorer alone.
         RECT sourceRect{};
-        if (!GetWindowRect(hWnd, &sourceRect) ||
-            sourceRect.right <= sourceRect.left ||
+        if (!GetWindowRect(hWnd, &sourceRect)) {
+            return ShowWindow_Original(hWnd, nCmdShow);
+        }
+        RECT visibleSourceRect{};
+        if (SUCCEEDED(DwmGetWindowAttribute(
+                hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, &visibleSourceRect,
+                sizeof(visibleSourceRect))) &&
+            visibleSourceRect.right > visibleSourceRect.left &&
+            visibleSourceRect.bottom > visibleSourceRect.top) {
+            sourceRect = visibleSourceRect;
+        }
+        if (sourceRect.right <= sourceRect.left ||
             sourceRect.bottom <= sourceRect.top) {
             return ShowWindow_Original(hWnd, nCmdShow);
         }
 
-        // Capture only the source window's rectangle, not the monitor or desktop.
-        // SRCCOPY deliberately omits the layered cover while preserving the
-        // DWM-composed pixels underneath it, including transparency/blur/Mica.
+        // Capture only the visible Explorer frame from the composed desktop.
+        // SRCCOPY omits the layered cover while preserving the DWM-composed
+        // pixels in the window area, including transparency/blur/Mica.
         const RECT animationSourceRect = sourceRect;
         HBITMAP sourceBitmap =
             CaptureDesktopRegion(animationSourceRect, false, 1.0);
@@ -11744,8 +11755,26 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
         // without CAPTUREBLT excludes the cover while retaining the underlying
         // DWM-composed Explorer frame (including its blur/Mica appearance).
         RECT destinationRect{};
-        if (!GetWindowRect(hWnd, &destinationRect) ||
-            destinationRect.right <= destinationRect.left ||
+        if (!GetWindowRect(hWnd, &destinationRect)) {
+            ShowWindow_Original(hWnd, SW_HIDE);
+            if (changedTransitionSetting) {
+                DwmSetWindowAttribute(hWnd, DWMWA_TRANSITIONS_FORCEDISABLED,
+                                      &previousTransitionsDisabled,
+                                      sizeof(previousTransitionsDisabled));
+            }
+            DestroyWindow(overlay);
+            ShowWindow_Original(hWnd, nCmdShow);
+            return previousVisibility;
+        }
+        RECT visibleDestinationRect{};
+        if (SUCCEEDED(DwmGetWindowAttribute(
+                hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, &visibleDestinationRect,
+                sizeof(visibleDestinationRect))) &&
+            visibleDestinationRect.right > visibleDestinationRect.left &&
+            visibleDestinationRect.bottom > visibleDestinationRect.top) {
+            destinationRect = visibleDestinationRect;
+        }
+        if (destinationRect.right <= destinationRect.left ||
             destinationRect.bottom <= destinationRect.top) {
             ShowWindow_Original(hWnd, SW_HIDE);
             if (changedTransitionSetting) {
@@ -11758,10 +11787,10 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
             return previousVisibility;
         }
 
-        // Capture the final window itself before hiding it. This is the
-        // second half of the same central-zoom animation: the pre-transition
-        // capture contracts to the center, then this final-state capture grows
-        // back out to the real maximized/restored window.
+        // Capture only the visible frame bounds of the final Explorer window,
+        // not a DPI-virtualized GetWindowRect region that can include adjacent
+        // desktop content. This retains the actual composed blur/Mica pixels
+        // while excluding everything outside the window's visible frame.
         const RECT animationDestinationRect = destinationRect;
         HBITMAP destinationBitmap =
             CaptureDesktopRegion(animationDestinationRect, false, 1.0);
