@@ -11509,10 +11509,19 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
             ShowWindow_Original(hWnd, nCmdShow);
             return previousVisibility;
         }
+        // Accept DWM's visible bounds only when they are contained in the
+        // window bounds returned by GetWindowRect. Mixing coordinate spaces
+        // (for example, DPI-virtualized window coordinates and physical DWM
+        // coordinates) can otherwise make the snapshot cover a much larger
+        // area than Explorer itself.
         RECT visibleRect = destinationRect;
         if (SUCCEEDED(DwmGetWindowAttribute(
                 hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, &visibleRect,
                 sizeof(visibleRect))) &&
+            visibleRect.left >= destinationRect.left &&
+            visibleRect.top >= destinationRect.top &&
+            visibleRect.right <= destinationRect.right &&
+            visibleRect.bottom <= destinationRect.bottom &&
             visibleRect.right > visibleRect.left &&
             visibleRect.bottom > visibleRect.top) {
             destinationRect = visibleRect;
