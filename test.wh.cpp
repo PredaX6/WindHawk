@@ -11496,25 +11496,28 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
     if ((isMaximizeTransition || isUnmaximizeTransition) &&
         GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
         IsWindowVisible(hWnd) && !IsIconic(hWnd)) {
-        // Capture only Explorer's visible frame. Do not reuse the minimize
-        // snapshot path here: its cached rectangle can be stale, and a mismatch
-        // between the cached bitmap and the current window bounds makes the zoom
-        // appear to contain the whole desktop or an incorrectly scaled region.
-        // Use GetWindowRect consistently with the desktop DC coordinates.
-        // DWMWA_EXTENDED_FRAME_BOUNDS can return physical-pixel coordinates
-        // that do not match the coordinate space used by GetDC(nullptr) in
-        // this process; mixing them can capture an incorrectly sized region.
-        // GetWindowRect also retains the complete window bounds for the zoom.
+        // Keep geometry in the same coordinate space as GetWindowRect, but
+        // capture pixels from DWM's visible frame bounds. GetWindowRect can be
+        // DPI-virtualized while GetDC(nullptr) addresses physical desktop pixels;
+        // using the former directly for BitBlt can select an oversized screen
+        // region instead of the Explorer window.
         RECT sourceRect{};
-        if (!GetWindowRect(hWnd, &sourceRect)) {
-            return ShowWindow_Original(hWnd, nCmdShow);
-        }
-        if (sourceRect.right <= sourceRect.left ||
+        if (!GetWindowRect(hWnd, &sourceRect) ||
+            sourceRect.right <= sourceRect.left ||
             sourceRect.bottom <= sourceRect.top) {
             return ShowWindow_Original(hWnd, nCmdShow);
         }
+        RECT sourceCaptureRect = sourceRect;
+        RECT dwmSourceRect{};
+        if (SUCCEEDED(DwmGetWindowAttribute(
+                hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, &dwmSourceRect,
+                sizeof(dwmSourceRect))) &&
+            dwmSourceRect.right > dwmSourceRect.left &&
+            dwmSourceRect.bottom > dwmSourceRect.top) {
+            sourceCaptureRect = dwmSourceRect;
+        }
 
-        HBITMAP sourceBitmap = CaptureDesktopRegion(sourceRect, false);
+        HBITMAP sourceBitmap = CaptureDesktopRegion(sourceCaptureRect, false);
         if (!sourceBitmap) {
             return ShowWindow_Original(hWnd, nCmdShow);
         }
@@ -11624,21 +11627,22 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
             return previousVisibility;
         }
 
-        // A window DC does not contain DWM-composited backdrop materials:
-        // Mica, Acrylic and blur are applied by the desktop compositor. Capture
-        // the actual screen composition instead, with the cover hidden only for
-        // the synchronous copy. Do not wait for another frame between hiding
-        // the cover and copying; restore it immediately afterwards to minimize
-        // the chance of exposing the native maximized window.
+        // Capture the composed destination frame for BOTH directions. A window
+        // DC omits DWM's Mica/Acrylic/blur materials, so use the desktop DC and
+        // crop it to the destination window's DWM frame bounds. Keep the cover
+        // visible; SRCCOPY excludes the layered cover and avoids a screen flash.
+        RECT destinationCaptureRect = destinationRect;
+        RECT dwmDestinationRect{};
+        if (SUCCEEDED(DwmGetWindowAttribute(
+                hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, &dwmDestinationRect,
+                sizeof(dwmDestinationRect))) &&
+            dwmDestinationRect.right > dwmDestinationRect.left &&
+            dwmDestinationRect.bottom > dwmDestinationRect.top) {
+            destinationCaptureRect = dwmDestinationRect;
+        }
         RECT capturedDestinationRect = destinationRect;
-        // Keep the cover overlay visible while capturing the final native
-        // window. A plain SRCCOPY deliberately omits layered windows, allowing
-        // the screen DC to provide the composed Explorer frame underneath the
-        // cover without ever exposing it on screen. CAPTUREBLT would capture
-        // the cover itself and hiding the cover here caused the persistent flash.
-        HBITMAP destinationBitmap = isMaximizeTransition
-            ? nullptr
-            : CaptureDesktopRegion(destinationRect, false);
+        HBITMAP destinationBitmap =
+            CaptureDesktopRegion(destinationCaptureRect, false);
 
         // Hide the real window behind the cover before releasing the DWM
         // transition override. For maximize, no second screenshot is taken:
@@ -11650,38 +11654,31 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
                                   &previousTransitionsDisabled,
                                   sizeof(previousTransitionsDisabled));
         }
-        if (isUnmaximizeTransition &&
-            (!destinationBitmap ||
-             !LoadExplorerSnapshotPixels(destinationBitmap,
-                                         state->destinationPixels,
-                                         state->destinationWidth,
-                                         state->destinationHeight))) {
+        if (!destinationBitmap ||
+            !LoadExplorerSnapshotPixels(destinationBitmap,
+                                        state->destinationPixels,
+                                        state->destinationWidth,
+                                        state->destinationHeight)) {
             if (destinationBitmap) DeleteObject(destinationBitmap);
             DestroyWindow(overlay);
             ShowWindow_Original(hWnd, nCmdShow);
             return previousVisibility;
         }
-        if (destinationBitmap) DeleteObject(destinationBitmap);
-        // Use the exact bounds associated with the final capture when restoring.
-        if (isUnmaximizeTransition &&
-            capturedDestinationRect.right > capturedDestinationRect.left &&
-            capturedDestinationRect.bottom > capturedDestinationRect.top) {
-            destinationRect = capturedDestinationRect;
-        }
+        DeleteObject(destinationBitmap);
 
-        // Blur the click-time snapshot once; maximize uses this same image for
-        // both contraction and expansion. Restore retains its separate final
-        // snapshot so it can reproduce the actual normal-size compositor frame.
+        // Use one identical two-phase central zoom for maximize and restore:
+        // the outgoing window capture contracts to the center, then the freshly
+        // captured destination window expands from that same point. The pixel
+        // captures may be physical-pixel sized; geometry remains in the window
+        // coordinate space and the renderer scales each image to its own phase.
         ApplyExplorerSnapshotBlur(state->sourcePixels,
                                   state->sourceWidth, state->sourceHeight, 2);
-        if (isUnmaximizeTransition) {
-            ApplyExplorerSnapshotBlur(state->destinationPixels,
-                                      state->destinationWidth,
-                                      state->destinationHeight, 2);
-        }
+        ApplyExplorerSnapshotBlur(state->destinationPixels,
+                                  state->destinationWidth,
+                                  state->destinationHeight, 2);
 
-        state->animateCenterZoom = isUnmaximizeTransition;
-        state->animateSingleCaptureBounceZoom = isMaximizeTransition;
+        state->animateCenterZoom = true;
+        state->animateSingleCaptureBounceZoom = false;
         const int centerZoomDurationMs = g_settings.explorerMaximizeDurationMs;
         state->animationDurationMs = centerZoomDurationMs;
         state->animateGeometry = false;
