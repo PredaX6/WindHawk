@@ -11791,10 +11791,21 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
         // not a DPI-virtualized GetWindowRect region that can include adjacent
         // desktop content. This retains the actual composed blur/Mica pixels
         // while excluding everything outside the window's visible frame.
-        const RECT animationDestinationRect = destinationRect;
-        HBITMAP destinationBitmap =
-            CaptureDesktopRegion(animationDestinationRect, false, 1.0);
-        if (!destinationBitmap) {
+        // Capture the arrival frame with the same DWM-visible-frame path used
+        // for the starting window snapshot. This keeps the bitmap restricted
+        // to Explorer's visible bounds instead of accidentally sampling the
+        // full monitor/work area, and preserves the composed blur/Mica pixels.
+        RECT animationDestinationRect{};
+        HBITMAP destinationBitmap = nullptr;
+        if (CaptureExplorerBeforeMinimize(hWnd, true)) {
+            destinationBitmap = TakeExplorerSnapshot(hWnd, &animationDestinationRect);
+        }
+        if (!destinationBitmap ||
+            animationDestinationRect.right <= animationDestinationRect.left ||
+            animationDestinationRect.bottom <= animationDestinationRect.top) {
+            if (destinationBitmap) {
+                DeleteObject(destinationBitmap);
+            }
             ShowWindow_Original(hWnd, SW_HIDE);
             if (changedTransitionSetting) {
                 DwmSetWindowAttribute(hWnd, DWMWA_TRANSITIONS_FORCEDISABLED,
