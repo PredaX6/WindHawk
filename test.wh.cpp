@@ -235,7 +235,10 @@ envoyez manuellement les lignes pertinentes du journal.
   $description: "Durée en millisecondes, de 100 à 3000. Valeur par défaut : 1000."
 - explorerMaximizeTransitionDurationMs: 1000
   $name: Durée du zoom central
-  $description: "Durée totale en millisecondes, de 100 à 3000. Valeur par défaut : 1000."
+  $description: "Durée en millisecondes de la réduction vers le point central, de 100 à 3000. Valeur par défaut : 1000."
+- explorerMaximizeAnimationDurationMs: 1000
+  $name: Durée de l’animation d’agrandissement/restauration
+  $description: "Durée en millisecondes du zoom entre le point central et la taille finale, de 100 à 3000. Valeur par défaut : 1000."
 */
 // ==/WindhawkModSettings==
 
@@ -10069,6 +10072,8 @@ struct ExplorerTvOnOverlay {
     int sourceHeight{};
     bool animateGeometry{};
     bool animateCenterZoom{};
+    int centerZoomPhaseDurationMs = 1000;
+    int animationDurationMs = 2000;
     bool reverseAnimation{};
     RECT geometryStartRect{};
     RECT geometryEndRect{};
@@ -10440,10 +10445,16 @@ void RenderExplorerTvOnFrame(HWND hWnd, ExplorerTvOnOverlay* state,
             return;
         }
 
-        const bool expandingFinalWindow = progress >= 0.5;
+        const double centralPhaseFraction =
+            static_cast<double>(std::max(kExplorerTvOnMinDurationMs,
+                                         std::min(kExplorerTvOnMaxDurationMs,
+                                                  state->centerZoomPhaseDurationMs))) /
+            std::max(1.0, static_cast<double>(state->animationDurationMs));
+        const bool expandingFinalWindow = progress >= centralPhaseFraction;
         const double phaseProgress = expandingFinalWindow
-            ? (progress - 0.5) * 2.0
-            : progress * 2.0;
+            ? (progress - centralPhaseFraction) /
+                  std::max(0.000001, 1.0 - centralPhaseFraction)
+            : progress / std::max(0.000001, centralPhaseFraction);
         const double eased = phaseProgress * phaseProgress *
                              (3.0 - 2.0 * phaseProgress);
         const RECT& from = expandingFinalWindow
@@ -11428,6 +11439,10 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
         DeleteObject(destinationBitmap);
 
         state->animateCenterZoom = true;
+        state->centerZoomPhaseDurationMs = g_settings.explorerMaximizeDurationMs;
+        state->animationDurationMs =
+            g_settings.explorerMaximizeDurationMs +
+            g_settings.explorerUnmaximizeDurationMs;
         state->animateGeometry = false;
         state->geometryStartRect = sourceRect;
         state->geometryEndRect = destinationRect;
@@ -11457,7 +11472,7 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
         RenderExplorerTvOnFrame(overlay, state, 0.0);
         if (!StartExplorerTvOnAnimation(
                 overlay, state,
-                g_settings.explorerMaximizeDurationMs)) {
+                state->animationDurationMs)) {
             DestroyWindow(overlay);
             ShowWindow_Original(hWnd, nCmdShow);
         }
@@ -11928,7 +11943,7 @@ void LoadSettings() {
     g_settings.explorerMaximizeDurationMs =
         readAnimationDuration(L"explorerMaximizeTransitionDurationMs");
     g_settings.explorerUnmaximizeDurationMs =
-        g_settings.explorerMaximizeDurationMs;
+        readAnimationDuration(L"explorerMaximizeAnimationDurationMs");
 
     // Remaining settings are fixed in code.
     g_settings.explorerFrameContainerHeight = 0;
