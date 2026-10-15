@@ -10569,7 +10569,7 @@ void RenderExplorerTvOnFrame(HWND hWnd, ExplorerTvOnOverlay* state,
             state->frameDc, 0, 0, drawWidth, drawHeight,
             0, 0, state->sourceWidth, state->sourceHeight,
             state->sourcePixels.data(), &sourceInfo, DIB_RGB_COLORS, SRCCOPY);
-        if (copied == GDI_ERROR) {
+        if (copied == static_cast<int>(GDI_ERROR)) {
             return;
         }
 
@@ -10660,7 +10660,7 @@ void RenderExplorerTvOnFrame(HWND hWnd, ExplorerTvOnOverlay* state,
             state->frameDc, 0, 0, drawWidth, drawHeight,
             0, 0, sourceWidth, sourceHeight, sourcePixels,
             &sourceInfo, DIB_RGB_COLORS, SRCCOPY);
-        if (copied == GDI_ERROR) {
+        if (copied == static_cast<int>(GDI_ERROR)) {
             return;
         }
 
@@ -11500,17 +11500,18 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
         // snapshot path here: its cached rectangle can be stale, and a mismatch
         // between the cached bitmap and the current window bounds makes the zoom
         // appear to contain the whole desktop or an incorrectly scaled region.
+        // Use GetWindowRect consistently with the desktop DC coordinates.
+        // DWMWA_EXTENDED_FRAME_BOUNDS can return physical-pixel coordinates
+        // that do not match the coordinate space used by GetDC(nullptr) in
+        // this process; mixing them can capture an incorrectly sized region.
+        // GetWindowRect also retains the complete window bounds for the zoom.
         RECT sourceRect{};
         if (!GetWindowRect(hWnd, &sourceRect)) {
             return ShowWindow_Original(hWnd, nCmdShow);
         }
-        RECT sourceVisibleRect{};
-        if (SUCCEEDED(DwmGetWindowAttribute(
-                hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, &sourceVisibleRect,
-                sizeof(sourceVisibleRect))) &&
-            sourceVisibleRect.right > sourceVisibleRect.left &&
-            sourceVisibleRect.bottom > sourceVisibleRect.top) {
-            sourceRect = sourceVisibleRect;
+        if (sourceRect.right <= sourceRect.left ||
+            sourceRect.bottom <= sourceRect.top) {
+            return ShowWindow_Original(hWnd, nCmdShow);
         }
 
         HBITMAP sourceBitmap = CaptureDesktopRegion(sourceRect, false);
@@ -11605,8 +11606,13 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
         Sleep(16);
         DwmFlush();
 
+        // Keep the destination capture in the same coordinate space as
+        // CaptureDesktopRegion(GetDC(nullptr)); mixing DWM physical bounds
+        // with GetWindowRect can make the captured image wider than Explorer.
         RECT destinationRect{};
-        if (!GetWindowRect(hWnd, &destinationRect)) {
+        if (!GetWindowRect(hWnd, &destinationRect) ||
+            destinationRect.right <= destinationRect.left ||
+            destinationRect.bottom <= destinationRect.top) {
             ShowWindow_Original(hWnd, SW_HIDE);
             if (changedTransitionSetting) {
                 DwmSetWindowAttribute(hWnd, DWMWA_TRANSITIONS_FORCEDISABLED,
@@ -11616,17 +11622,6 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
             DestroyWindow(overlay);
             ShowWindow_Original(hWnd, nCmdShow);
             return previousVisibility;
-        }
-        // Use DWM's physical visible-frame bounds for the desktop capture.
-        // GetWindowRect may be DPI-virtualized, so do not require the DWM bounds
-        // to fit inside it before selecting the capture rectangle.
-        RECT visibleRect{};
-        if (SUCCEEDED(DwmGetWindowAttribute(
-                hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, &visibleRect,
-                sizeof(visibleRect))) &&
-            visibleRect.right > visibleRect.left &&
-            visibleRect.bottom > visibleRect.top) {
-            destinationRect = visibleRect;
         }
 
         // A window DC does not contain DWM-composited backdrop materials:
