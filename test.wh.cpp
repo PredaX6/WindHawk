@@ -233,96 +233,14 @@ envoyez manuellement les lignes pertinentes du journal.
 - explorerRestoreDurationMs: 1000
   $name: Durée de l’animation de restauration après réduction
   $description: "Durée en millisecondes, de 100 à 3000. Valeur par défaut : 1000."
-- explorerMaximizeAnimation: crt
-  $name: Animation d’agrandissement
+- explorerMaximizeTransition: centralZoom
+  $name: Animation d’agrandissement et de retour
+  $description: Réduit la fenêtre vers un point central, puis fait apparaître l’état final depuis ce point.
   $options:
-  - crt: CRT classique
-  - zoom: Zoom progressif
-  - fadeZoom: Fondu avec zoom
-  - horizontal: Révélation horizontale
-  - vertical: Balayage vertical
-  - center: Déploiement depuis le centre
-  - scanlines: Balayage CRT
-  - fade: Fondu simple
-  - zoomOut: Zoom depuis un point
-  - slideLeft: Glissement depuis la gauche
-  - slideRight: Glissement depuis la droite
-  - slideTop: Glissement depuis le haut
-  - slideBottom: Glissement depuis le bas
-  - wipeLeft: Balayage vers la droite
-  - wipeRight: Balayage vers la gauche
-  - wipeTop: Balayage vers le bas
-  - wipeBottom: Balayage vers le haut
-  - splitH: Ouverture en deux volets horizontaux
-  - splitV: Ouverture en deux volets verticaux
-  - blindsH: Stores horizontaux
-  - blindsV: Stores verticaux
-  - diagonal: Balayage diagonal
-  - circle: Iris circulaire
-  - diamond: Iris en losange
-  - cornerTL: Depuis le coin supérieur gauche
-  - cornerTR: Depuis le coin supérieur droit
-  - cornerBL: Depuis le coin inférieur gauche
-  - cornerBR: Depuis le coin inférieur droit
-  - bounce: Zoom avec rebond
-  - elastic: Zoom élastique
-  - rotate: Rotation simulée
-  - flipH: Bascule horizontale simulée
-  - flipV: Bascule verticale simulée
-  - pixelate: Révélation par blocs
-  - checker: Damier progressif
-  - randomBars: Barres alternées
-  - curtain: Rideau central
-  - wave: Balayage ondulé
-  - focus: Mise au point progressive
-  - glitch: Décalage de bandes
-- explorerMaximizeDurationMs: 1000
-  $name: Durée de l’animation d’agrandissement
-  $description: "Durée en millisecondes, de 100 à 3000. Valeur par défaut : 1000."
-- explorerUnmaximizeAnimation: crt
-  $name: Animation de retour à la taille normale
-  $options:
-  - crt: CRT classique
-  - zoom: Zoom progressif
-  - fadeZoom: Fondu avec zoom
-  - horizontal: Révélation horizontale
-  - vertical: Balayage vertical
-  - center: Déploiement depuis le centre
-  - scanlines: Balayage CRT
-  - fade: Fondu simple
-  - zoomOut: Zoom depuis un point
-  - slideLeft: Glissement depuis la gauche
-  - slideRight: Glissement depuis la droite
-  - slideTop: Glissement depuis le haut
-  - slideBottom: Glissement depuis le bas
-  - wipeLeft: Balayage vers la droite
-  - wipeRight: Balayage vers la gauche
-  - wipeTop: Balayage vers le bas
-  - wipeBottom: Balayage vers le haut
-  - splitH: Ouverture en deux volets horizontaux
-  - splitV: Ouverture en deux volets verticaux
-  - blindsH: Stores horizontaux
-  - blindsV: Stores verticaux
-  - diagonal: Balayage diagonal
-  - circle: Iris circulaire
-  - diamond: Iris en losange
-  - cornerTL: Depuis le coin supérieur gauche
-  - cornerTR: Depuis le coin supérieur droit
-  - cornerBL: Depuis le coin inférieur gauche
-  - cornerBR: Depuis le coin inférieur droit
-  - bounce: Zoom avec rebond
-  - elastic: Zoom élastique
-  - rotate: Rotation simulée
-  - flipH: Bascule horizontale simulée
-  - flipV: Bascule verticale simulée
-  - pixelate: Révélation par blocs
-  - checker: Damier progressif
-  - randomBars: Barres alternées
-  - curtain: Rideau central
-  - wave: Balayage ondulé
-  - focus: Mise au point progressive
-  - glitch: Décalage de bandes
-- explorerUnmaximizeDurationMs: 1000
+  - centralZoom: Zoom central en deux phases
+- explorerMaximizeTransitionDurationMs: 1000
+  $name: Durée du zoom central
+  $description: "Durée totale en millisecondes, de 100 à 3000. Valeur par défaut : 1000."
   $name: Durée de l’animation de retour à la taille normale
   $description: "Durée en millisecondes, de 100 à 3000. Valeur par défaut : 1000."
 */
@@ -10157,10 +10075,15 @@ struct ExplorerTvOnOverlay {
     int sourceWidth{};
     int sourceHeight{};
     bool animateGeometry{};
+    bool animateCenterZoom{};
     bool reverseAnimation{};
     RECT geometryStartRect{};
     RECT geometryEndRect{};
+    RECT centerZoomPointRect{};
     std::vector<BYTE> sourcePixels;
+    std::vector<BYTE> destinationPixels;
+    int destinationWidth{};
+    int destinationHeight{};
     HDC frameDc{};
     HBITMAP frameBitmap{};
     HGDIOBJ previousFrameBitmap{};
@@ -10225,6 +10148,9 @@ void DestroyExplorerTvOnRenderer(ExplorerTvOnOverlay* state) {
         state->frameDc = nullptr;
     }
     state->sourcePixels.clear();
+    state->destinationPixels.clear();
+    state->destinationWidth = 0;
+    state->destinationHeight = 0;
     state->width = 0;
     state->height = 0;
 }
@@ -10466,11 +10392,160 @@ void BlitExplorerCrtVerticalSquash(ExplorerTvOnOverlay* state, int dstH,
     }
 }
 
+bool LoadExplorerSnapshotPixels(HBITMAP bitmap,
+                                  std::vector<BYTE>& pixels,
+                                  int& width, int& height) {
+    if (!bitmap) return false;
+    BITMAP info{};
+    if (!GetObjectW(bitmap, sizeof(info), &info) ||
+        info.bmWidth <= 0 || info.bmHeight <= 0) {
+        return false;
+    }
+
+    width = info.bmWidth;
+    height = info.bmHeight;
+    const size_t pixelCount = static_cast<size_t>(width) *
+                              static_cast<size_t>(height);
+    if (pixelCount > SIZE_MAX / 4) return false;
+    pixels.resize(pixelCount * 4);
+
+    BITMAPINFO bmi{};
+    bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    bmi.bmiHeader.biWidth = width;
+    bmi.bmiHeader.biHeight = -height;
+    bmi.bmiHeader.biPlanes = 1;
+    bmi.bmiHeader.biBitCount = 32;
+    bmi.bmiHeader.biCompression = BI_RGB;
+
+    HDC dc = CreateCompatibleDC(nullptr);
+    if (!dc) {
+        pixels.clear();
+        return false;
+    }
+    const int lines = GetDIBits(dc, bitmap, 0, height, pixels.data(),
+                                &bmi, DIB_RGB_COLORS);
+    DeleteDC(dc);
+    if (lines != height) {
+        pixels.clear();
+        return false;
+    }
+
+    for (size_t i = 0; i < pixelCount; ++i) {
+        pixels[i * 4 + 3] = 255;
+    }
+    return true;
+}
+
 void RenderExplorerTvOnFrame(HWND hWnd, ExplorerTvOnOverlay* state,
                              double progress) {
     if (!state || !state->frameBits || !state->frameDc ||
         state->width <= 0 || state->height <= 0) return;
     progress = std::max(0.0, std::min(1.0, progress));
+    if (state->animateCenterZoom) {
+        if (state->destinationPixels.empty() ||
+            state->destinationWidth <= 0 || state->destinationHeight <= 0) {
+            return;
+        }
+
+        const bool expandingFinalWindow = progress >= 0.5;
+        const double phaseProgress = expandingFinalWindow
+            ? (progress - 0.5) * 2.0
+            : progress * 2.0;
+        const double eased = phaseProgress * phaseProgress *
+                             (3.0 - 2.0 * phaseProgress);
+        const RECT& from = expandingFinalWindow
+            ? state->centerZoomPointRect : state->geometryStartRect;
+        const RECT& to = expandingFinalWindow
+            ? state->geometryEndRect : state->centerZoomPointRect;
+        auto interpolate = [eased](LONG a, LONG b) {
+            return static_cast<LONG>(std::lround(
+                static_cast<double>(a) +
+                (static_cast<double>(b) - a) * eased));
+        };
+        RECT currentRect{
+            interpolate(from.left, to.left),
+            interpolate(from.top, to.top),
+            interpolate(from.right, to.right),
+            interpolate(from.bottom, to.bottom)
+        };
+        const int currentWidth = static_cast<int>(std::max<LONG>(
+            1, currentRect.right - currentRect.left));
+        const int currentHeight = static_cast<int>(std::max<LONG>(
+            1, currentRect.bottom - currentRect.top));
+        const int drawWidth = std::min(currentWidth, state->width);
+        const int drawHeight = std::min(currentHeight, state->height);
+
+        const BYTE* sourcePixels = expandingFinalWindow
+            ? state->destinationPixels.data() : state->sourcePixels.data();
+        const int sourceWidth = expandingFinalWindow
+            ? state->destinationWidth : state->sourceWidth;
+        const int sourceHeight = expandingFinalWindow
+            ? state->destinationHeight : state->sourceHeight;
+        const size_t sourceStride = static_cast<size_t>(sourceWidth) * 4;
+        const size_t canvasStride = static_cast<size_t>(state->width) * 4;
+        memset(state->frameBits, 0,
+               static_cast<size_t>(state->width) * state->height * 4);
+
+        // The source image contracts to a tiny central point during phase one;
+        // the independently captured final image expands from that same point.
+        // Bilinear sampling avoids the nearest-neighbour shimmer during scaling.
+        const float alpha = expandingFinalWindow
+            ? static_cast<float>(0.22 + 0.78 * eased)
+            : static_cast<float>(1.0 - 0.78 * eased);
+        auto* dst = static_cast<BYTE*>(state->frameBits);
+        for (int y = 0; y < drawHeight; ++y) {
+            const float sourceY = std::max(0.0f, std::min(
+                static_cast<float>(sourceHeight - 1),
+                (static_cast<float>(y) + 0.5f) * sourceHeight /
+                    static_cast<float>(currentHeight) - 0.5f));
+            const int y0 = static_cast<int>(sourceY);
+            const int y1 = std::min(sourceHeight - 1, y0 + 1);
+            const float fy = sourceY - y0;
+            BYTE* dstRow = dst + static_cast<size_t>(y) * canvasStride;
+            for (int x = 0; x < drawWidth; ++x) {
+                const float sourceX = std::max(0.0f, std::min(
+                    static_cast<float>(sourceWidth - 1),
+                    (static_cast<float>(x) + 0.5f) * sourceWidth /
+                        static_cast<float>(currentWidth) - 0.5f));
+                const int x0 = static_cast<int>(sourceX);
+                const int x1 = std::min(sourceWidth - 1, x0 + 1);
+                const float fx = sourceX - x0;
+                const BYTE* p00 = sourcePixels +
+                    static_cast<size_t>(y0) * sourceStride +
+                    static_cast<size_t>(x0) * 4;
+                const BYTE* p10 = sourcePixels +
+                    static_cast<size_t>(y0) * sourceStride +
+                    static_cast<size_t>(x1) * 4;
+                const BYTE* p01 = sourcePixels +
+                    static_cast<size_t>(y1) * sourceStride +
+                    static_cast<size_t>(x0) * 4;
+                const BYTE* p11 = sourcePixels +
+                    static_cast<size_t>(y1) * sourceStride +
+                    static_cast<size_t>(x1) * 4;
+                BYTE* pixel = dstRow + static_cast<size_t>(x) * 4;
+                for (int channel = 0; channel < 3; ++channel) {
+                    const float top = p00[channel] * (1.0f - fx) +
+                                      p10[channel] * fx;
+                    const float bottom = p01[channel] * (1.0f - fx) +
+                                         p11[channel] * fx;
+                    pixel[channel] = static_cast<BYTE>(std::max(
+                        0.0f, std::min(255.0f,
+                            (top * (1.0f - fy) + bottom * fy) * alpha)));
+                }
+                pixel[3] = static_cast<BYTE>(255.0f * alpha);
+            }
+        }
+
+        POINT destination{currentRect.left, currentRect.top};
+        POINT sourcePoint{0, 0};
+        SIZE size{drawWidth, drawHeight};
+        BLENDFUNCTION blend{AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
+        SetWindowPos(hWnd, HWND_TOPMOST, currentRect.left, currentRect.top,
+                     drawWidth, drawHeight, SWP_NOACTIVATE | SWP_NOREDRAW);
+        UpdateLayeredWindow(hWnd, nullptr, &destination, &size, state->frameDc,
+                            &sourcePoint, 0, &blend, ULW_ALPHA);
+        return;
+    }
     if (state->animateGeometry) {
         // Geometry always travels from the captured source bounds to the
         // native destination bounds. Only the selected visual effect reverses.
@@ -11270,19 +11345,114 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
         return previousVisibility;
     }
 
-    // Animate the actual window contour between its pre-transition and final
-    // rectangles. The captured image is scaled to the interpolated bounds, so
-    // maximize grows from the normal frame and unmaximize contracts back to it.
+    // Use one shared two-phase central zoom for both maximize and restore-to-normal.
+    // Capture the current composed frame, then capture the final composed frame
+    // after Windows has established the requested native size.
     const bool isMaximizeTransition = nCmdShow == SW_MAXIMIZE && !wasMaximized;
     const bool isUnmaximizeTransition = nCmdShow == SW_RESTORE && wasMaximized;
     if ((isMaximizeTransition || isUnmaximizeTransition) &&
         GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
         IsWindowVisible(hWnd) && !IsIconic(hWnd)) {
-        // Capture the composed desktop while Explorer is still visible.
-        // This preserves DWM-rendered transparency, blur, and Mica in the
-        // snapshot used for the maximize/unmaximize geometry animation.
         if (!CaptureExplorerBeforeMinimize(hWnd, true)) {
             return ShowWindow_Original(hWnd, nCmdShow);
+        }
+
+        RECT sourceRect{};
+        HBITMAP sourceBitmap = TakeExplorerSnapshot(hWnd, &sourceRect);
+        if (!sourceBitmap) {
+            return ShowWindow_Original(hWnd, nCmdShow);
+        }
+
+        HWND overlay = CreateExplorerTvOnOverlay(
+            hWnd, sourceBitmap, sourceRect, nCmdShow, true);
+        if (!overlay) {
+            return ShowWindow_Original(hWnd, nCmdShow);
+        }
+        auto* state = reinterpret_cast<ExplorerTvOnOverlay*>(
+            GetWindowLongPtrW(overlay, GWLP_USERDATA));
+        if (!state) {
+            DestroyWindow(overlay);
+            return ShowWindow_Original(hWnd, nCmdShow);
+        }
+
+        // The destination must be captured from the real, DWM-composed window.
+        // Hide the source cover briefly while Windows establishes the final size.
+        ShowWindow(overlay, SW_HIDE);
+        const BOOL previousVisibility = ShowWindow_Original(hWnd, nCmdShow);
+        if (!IsWindow(hWnd) || !IsWindowVisible(hWnd) || IsIconic(hWnd)) {
+            DestroyWindow(overlay);
+            return previousVisibility;
+        }
+        DwmFlush();
+
+        RECT destinationRect{};
+        if (!GetWindowRect(hWnd, &destinationRect)) {
+            ShowWindow_Original(hWnd, SW_HIDE);
+            DestroyWindow(overlay);
+            ShowWindow_Original(hWnd, nCmdShow);
+            return previousVisibility;
+        }
+        RECT visibleRect = destinationRect;
+        if (SUCCEEDED(DwmGetWindowAttribute(
+                hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, &visibleRect,
+                sizeof(visibleRect))) &&
+            visibleRect.right > visibleRect.left &&
+            visibleRect.bottom > visibleRect.top) {
+            destinationRect = visibleRect;
+        }
+
+        HBITMAP destinationBitmap = CaptureDesktopRegion(destinationRect);
+        ShowWindow_Original(hWnd, SW_HIDE);
+        if (!destinationBitmap ||
+            !LoadExplorerSnapshotPixels(destinationBitmap,
+                                        state->destinationPixels,
+                                        state->destinationWidth,
+                                        state->destinationHeight)) {
+            if (destinationBitmap) DeleteObject(destinationBitmap);
+            DestroyWindow(overlay);
+            ShowWindow_Original(hWnd, nCmdShow);
+            return previousVisibility;
+        }
+        DeleteObject(destinationBitmap);
+
+        state->animateCenterZoom = true;
+        state->animateGeometry = false;
+        state->geometryStartRect = sourceRect;
+        state->geometryEndRect = destinationRect;
+        state->targetRect = sourceRect;
+        const LONG centerX = destinationRect.left +
+                             (destinationRect.right - destinationRect.left) / 2;
+        const LONG centerY = destinationRect.top +
+                             (destinationRect.bottom - destinationRect.top) / 2;
+        state->centerZoomPointRect = RECT{
+            centerX - 1, centerY - 1, centerX + 1, centerY + 1};
+
+        const int sourceWidth = sourceRect.right - sourceRect.left;
+        const int sourceHeight = sourceRect.bottom - sourceRect.top;
+        const int destinationWidth = destinationRect.right - destinationRect.left;
+        const int destinationHeight = destinationRect.bottom - destinationRect.top;
+        const int canvasWidth = std::max(sourceWidth, destinationWidth);
+        const int canvasHeight = std::max(sourceHeight, destinationHeight);
+        if (!ResizeExplorerTvOnFrameBuffer(state, canvasWidth, canvasHeight)) {
+            DestroyWindow(overlay);
+            ShowWindow_Original(hWnd, nCmdShow);
+            return previousVisibility;
+        }
+
+        SetWindowPos(overlay, HWND_TOPMOST, sourceRect.left, sourceRect.top,
+                     sourceWidth, sourceHeight,
+                     SWP_NOACTIVATE | SWP_NOREDRAW | SWP_SHOWWINDOW);
+        RenderExplorerTvOnFrame(overlay, state, 0.0);
+        if (!StartExplorerTvOnAnimation(
+                overlay, state,
+                g_settings.explorerMaximizeDurationMs)) {
+            DestroyWindow(overlay);
+            ShowWindow_Original(hWnd, nCmdShow);
+        }
+        return previousVisibility;
+    }
+
+    return ShowWindow_Original(hWnd, nCmdShow);
         }
 
         RECT sourceRect{};
@@ -11802,8 +11972,6 @@ void LoadSettings() {
     g_settings.explorerCloseAnimation = readAnimationStyle(L"explorerCloseAnimation");
     g_settings.explorerMinimizeAnimation = readAnimationStyle(L"explorerMinimizeAnimation");
     g_settings.explorerRestoreAnimation = readAnimationStyle(L"explorerRestoreAnimation");
-    g_settings.explorerMaximizeAnimation = readAnimationStyle(L"explorerMaximizeAnimation");
-    g_settings.explorerUnmaximizeAnimation = readAnimationStyle(L"explorerUnmaximizeAnimation");
 
     const auto readAnimationDuration = [](PCWSTR settingName) {
         const int configuredDurationMs = Wh_GetIntSetting(settingName);
@@ -11824,9 +11992,9 @@ void LoadSettings() {
     g_settings.explorerRestoreDurationMs =
         readAnimationDuration(L"explorerRestoreDurationMs");
     g_settings.explorerMaximizeDurationMs =
-        readAnimationDuration(L"explorerMaximizeDurationMs");
+        readAnimationDuration(L"explorerMaximizeTransitionDurationMs");
     g_settings.explorerUnmaximizeDurationMs =
-        readAnimationDuration(L"explorerUnmaximizeDurationMs");
+        g_settings.explorerMaximizeDurationMs;
 
     // Remaining settings are fixed in code.
     g_settings.explorerFrameContainerHeight = 0;
