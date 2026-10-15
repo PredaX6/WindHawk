@@ -10477,10 +10477,6 @@ void RenderExplorerTvOnFrame(HWND hWnd, ExplorerTvOnOverlay* state,
         };
         const int currentWidth = static_cast<int>(std::max<LONG>(1, currentRect.right - currentRect.left));
         const int currentHeight = static_cast<int>(std::max<LONG>(1, currentRect.bottom - currentRect.top));
-        const size_t canvasBytes =
-            static_cast<size_t>(state->width) * state->height * 4;
-        memset(state->frameBits, 0, canvasBytes);
-
         const int style = std::max(0, std::min(39, state->animationStyle));
         const float p = static_cast<float>(effectProgress);
         const float eased = p * p * (3.0f - 2.0f * p);
@@ -10490,6 +10486,10 @@ void RenderExplorerTvOnFrame(HWND hWnd, ExplorerTvOnOverlay* state,
         const size_t sourceStride = static_cast<size_t>(state->sourceWidth) * 4;
         const size_t canvasStride = static_cast<size_t>(state->width) * 4;
         for (int y = 0; y < currentHeight && y < state->height; ++y) {
+            // Clear only the visible row. The animation is monotonic, and
+            // UpdateLayeredWindow clips to the interpolated window dimensions.
+            memset(dst + static_cast<size_t>(y) * canvasStride, 0,
+                   static_cast<size_t>(currentWidth) * 4);
             const int sy = std::min(state->sourceHeight - 1,
                 static_cast<int>((static_cast<long long>(y) *
                                   state->sourceHeight) / currentHeight));
@@ -11254,7 +11254,10 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
     if ((isMaximizeTransition || isUnmaximizeTransition) &&
         GetTargetWindowType(hWnd) == TargetWindowType::FileExplorer &&
         IsWindowVisible(hWnd) && !IsIconic(hWnd)) {
-        if (!CaptureExplorerBeforeMinimize(hWnd, false)) {
+        // Capture the composed desktop while Explorer is still visible.
+        // This preserves DWM-rendered transparency, blur, and Mica in the
+        // snapshot used for the maximize/unmaximize geometry animation.
+        if (!CaptureExplorerBeforeMinimize(hWnd, true)) {
             return ShowWindow_Original(hWnd, nCmdShow);
         }
 
