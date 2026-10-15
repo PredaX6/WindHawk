@@ -93,6 +93,9 @@ envoyez manuellement les lignes pertinentes du journal.
   - wave: Balayage ondulé
   - focus: Mise au point progressive
   - glitch: Décalage de bandes
+- explorerOpenDurationMs: 1000
+  $name: Durée de l’animation d’ouverture
+  $description: "Durée en millisecondes, de 100 à 3000. Valeur par défaut : 1000."
 - explorerCloseAnimation: crt
   $name: Animation de fermeture
   $options:
@@ -136,6 +139,9 @@ envoyez manuellement les lignes pertinentes du journal.
   - wave: Balayage ondulé
   - focus: Mise au point progressive
   - glitch: Décalage de bandes
+- explorerCloseDurationMs: 1000
+  $name: Durée de l’animation de fermeture
+  $description: "Durée en millisecondes, de 100 à 3000. Valeur par défaut : 1000."
 - explorerMinimizeAnimation: crt
   $name: Animation de réduction
   $options:
@@ -179,6 +185,9 @@ envoyez manuellement les lignes pertinentes du journal.
   - wave: Balayage ondulé
   - focus: Mise au point progressive
   - glitch: Décalage de bandes
+- explorerMinimizeDurationMs: 1000
+  $name: Durée de l’animation de réduction
+  $description: "Durée en millisecondes, de 100 à 3000. Valeur par défaut : 1000."
 - explorerRestoreAnimation: crt
   $name: Animation de restauration après réduction
   $options:
@@ -222,6 +231,9 @@ envoyez manuellement les lignes pertinentes du journal.
   - wave: Balayage ondulé
   - focus: Mise au point progressive
   - glitch: Décalage de bandes
+- explorerRestoreDurationMs: 1000
+  $name: Durée de l’animation de restauration après réduction
+  $description: "Durée en millisecondes, de 100 à 3000. Valeur par défaut : 1000."
 - explorerMaximizeAnimation: crt
   $name: Animation d’agrandissement
   $options:
@@ -265,6 +277,9 @@ envoyez manuellement les lignes pertinentes du journal.
   - wave: Balayage ondulé
   - focus: Mise au point progressive
   - glitch: Décalage de bandes
+- explorerMaximizeDurationMs: 1000
+  $name: Durée de l’animation d’agrandissement
+  $description: "Durée en millisecondes, de 100 à 3000. Valeur par défaut : 1000."
 - explorerUnmaximizeAnimation: crt
   $name: Animation de retour à la taille normale
   $options:
@@ -308,8 +323,8 @@ envoyez manuellement les lignes pertinentes du journal.
   - wave: Balayage ondulé
   - focus: Mise au point progressive
   - glitch: Décalage de bandes
-- explorerTvOnDurationMs: 1000
-  $name: Durée des animations (ms)
+- explorerUnmaximizeDurationMs: 1000
+  $name: Durée de l’animation de retour à la taille normale
   $description: "Durée en millisecondes, de 100 à 3000. Valeur par défaut : 1000."
 */
 // ==/WindhawkModSettings==
@@ -398,7 +413,12 @@ struct {
     int explorerFrameContainerHeight;
     XamlDiagnosticsHandling xamlDiagnosticsHandling;
     bool explorerTvOnEnabled = true;
-    int explorerTvOnDurationMs;
+    int explorerOpenDurationMs = 1000;
+    int explorerCloseDurationMs = 1000;
+    int explorerMinimizeDurationMs = 1000;
+    int explorerRestoreDurationMs = 1000;
+    int explorerMaximizeDurationMs = 1000;
+    int explorerUnmaximizeDurationMs = 1000;
     int explorerOpenAnimation = 0;
     int explorerCloseAnimation = 0;
     int explorerMinimizeAnimation = 0;
@@ -10779,11 +10799,12 @@ DWORD WINAPI ExplorerTvOnAnimationThreadProc(LPVOID parameter) {
     return 0;
 }
 
-bool StartExplorerTvOnAnimation(HWND overlay, ExplorerTvOnOverlay* state) {
+bool StartExplorerTvOnAnimation(HWND overlay, ExplorerTvOnOverlay* state,
+                                int durationMs) {
     if (!overlay || !state) return false;
 
     auto* params = new (std::nothrow) ExplorerTvOnAnimationThreadParams{
-        overlay, g_settings.explorerTvOnDurationMs};
+        overlay, durationMs};
     if (!params) return false;
 
     HANDLE thread = CreateThread(
@@ -10932,7 +10953,8 @@ bool TryStartExplorerTvOnRestore(HWND hWnd) {
         return false;
     }
     state->animationStyle = g_settings.explorerRestoreAnimation;
-    if (!StartExplorerTvOnAnimation(overlay, state)) {
+    if (!StartExplorerTvOnAnimation(overlay, state,
+                                    g_settings.explorerRestoreDurationMs)) {
         DestroyWindow(overlay);
         return false;
     }
@@ -11102,7 +11124,9 @@ bool TryStartExplorerTvOffAnimation(HWND hWnd, bool minimize) {
         // Hide the real window now to prevent its native frame from flashing.
         ShowWindow_Original(hWnd, SW_HIDE);
     }
-    if (!StartExplorerTvOnAnimation(overlay, state)) {
+    if (!StartExplorerTvOnAnimation(overlay, state,
+                                    minimize ? g_settings.explorerMinimizeDurationMs
+                                             : g_settings.explorerCloseDurationMs)) {
         // If the animation cannot start, restore the original window state so
         // the caller can continue with the normal minimize/close path.
         if (minimize) {
@@ -11238,7 +11262,8 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
                      SWP_NOACTIVATE | SWP_SHOWWINDOW | SWP_NOREDRAW);
         RenderExplorerTvOnFrame(overlay, state, 0.0);
 
-        if (!StartExplorerTvOnAnimation(overlay, state)) {
+        if (!StartExplorerTvOnAnimation(overlay, state,
+                                        g_settings.explorerOpenDurationMs)) {
             DestroyWindow(overlay);
             return ShowWindow_Original(hWnd, nCmdShow);
         }
@@ -11326,7 +11351,10 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
         }
 
         RenderExplorerTvOnFrame(overlay, state, 0.0);
-        if (!StartExplorerTvOnAnimation(overlay, state)) {
+        if (!StartExplorerTvOnAnimation(overlay, state,
+                                        isMaximizeTransition
+                                            ? g_settings.explorerMaximizeDurationMs
+                                            : g_settings.explorerUnmaximizeDurationMs)) {
             DestroyWindow(overlay);
             ShowWindow_Original(hWnd, nCmdShow);
         }
@@ -11778,15 +11806,28 @@ void LoadSettings() {
     g_settings.explorerMaximizeAnimation = readAnimationStyle(L"explorerMaximizeAnimation");
     g_settings.explorerUnmaximizeAnimation = readAnimationStyle(L"explorerUnmaximizeAnimation");
 
-    const int configuredDurationMs =
-        Wh_GetIntSetting(L"explorerTvOnDurationMs");
-    g_settings.explorerTvOnDurationMs = configuredDurationMs > 0
-        ? (configuredDurationMs < kExplorerTvOnMinDurationMs
-               ? kExplorerTvOnMinDurationMs
-               : (configuredDurationMs > kExplorerTvOnMaxDurationMs
-                      ? kExplorerTvOnMaxDurationMs
-                      : configuredDurationMs))
-        : kExplorerTvOnDefaultDurationMs;
+    const auto readAnimationDuration = [](PCWSTR settingName) {
+        const int configuredDurationMs = Wh_GetIntSetting(settingName);
+        return configuredDurationMs > 0
+            ? (configuredDurationMs < kExplorerTvOnMinDurationMs
+                   ? kExplorerTvOnMinDurationMs
+                   : (configuredDurationMs > kExplorerTvOnMaxDurationMs
+                          ? kExplorerTvOnMaxDurationMs
+                          : configuredDurationMs))
+            : kExplorerTvOnDefaultDurationMs;
+    };
+    g_settings.explorerOpenDurationMs =
+        readAnimationDuration(L"explorerOpenDurationMs");
+    g_settings.explorerCloseDurationMs =
+        readAnimationDuration(L"explorerCloseDurationMs");
+    g_settings.explorerMinimizeDurationMs =
+        readAnimationDuration(L"explorerMinimizeDurationMs");
+    g_settings.explorerRestoreDurationMs =
+        readAnimationDuration(L"explorerRestoreDurationMs");
+    g_settings.explorerMaximizeDurationMs =
+        readAnimationDuration(L"explorerMaximizeDurationMs");
+    g_settings.explorerUnmaximizeDurationMs =
+        readAnimationDuration(L"explorerUnmaximizeDurationMs");
 
     // Remaining settings are fixed in code.
     g_settings.explorerFrameContainerHeight = 0;
