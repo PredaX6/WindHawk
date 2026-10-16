@@ -9924,6 +9924,18 @@ std::unordered_map<HWND, RECT> g_explorerMaximizedSnapshotRects;
 
 bool CaptureExplorerBeforeMinimize(HWND hWnd,
                                    bool captureComposedDesktop = true) {
+    // Window rectangles and DWM extended frame bounds must use the same
+    // physical-pixel coordinate space as GetDC(nullptr) in
+    // CaptureDesktopRegion. Set this before querying either rectangle.
+    const DPI_AWARENESS_CONTEXT previousDpiContext =
+        SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+    struct DpiContextRestore {
+        DPI_AWARENESS_CONTEXT previous;
+        ~DpiContextRestore() {
+            if (previous) SetThreadDpiAwarenessContext(previous);
+        }
+    } dpiContextRestore{previousDpiContext};
+
     if (GetTargetWindowType(hWnd) != TargetWindowType::FileExplorer ||
         !IsWindowVisible(hWnd) || IsIconic(hWnd)) {
         return false;
@@ -11503,6 +11515,18 @@ bool TryStartExplorerTvOffAnimation(HWND hWnd, bool minimize) {
 }
 
 BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
+    // Keep GetWindowRect, DWM frame bounds, and desktop-DC captures in physical
+    // pixels. Mixing DPI-virtualized and physical coordinates can make a
+    // window-only snapshot accidentally include surrounding desktop content.
+    const DPI_AWARENESS_CONTEXT previousDpiContext =
+        SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+    struct HookDpiContextRestore {
+        DPI_AWARENESS_CONTEXT previous;
+        ~HookDpiContextRestore() {
+            if (previous) SetThreadDpiAwarenessContext(previous);
+        }
+    } hookDpiContextRestore{previousDpiContext};
+
     const bool wasMaximized = IsZoomed(hWnd) != FALSE;
     if (!g_settings.explorerTvOnEnabled) {
         return ShowWindow_Original(hWnd, nCmdShow);
@@ -11644,18 +11668,14 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
         // uses physical pixels; mixing those coordinate spaces can capture
         // surrounding windows and wallpaper instead of Explorer alone.
         RECT sourceRect{};
-        if (!GetWindowRect(hWnd, &sourceRect)) {
-            return ShowWindow_Original(hWnd, nCmdShow);
-        }
-        RECT visibleSourceRect{};
-        if (SUCCEEDED(DwmGetWindowAttribute(
-                hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, &visibleSourceRect,
-                sizeof(visibleSourceRect))) &&
-            visibleSourceRect.right > visibleSourceRect.left &&
-            visibleSourceRect.bottom > visibleSourceRect.top) {
-            sourceRect = visibleSourceRect;
-        }
-        if (sourceRect.right <= sourceRect.left ||
+        // Prefer the DWM-visible frame exclusively: it is the physical-pixel
+        // rectangle that corresponds to the composed window image. Falling
+        // back to GetWindowRect here can mix coordinate spaces on per-monitor
+        // DPI setups and capture the desktop around Explorer.
+        if (FAILED(DwmGetWindowAttribute(
+                hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, &sourceRect,
+                sizeof(sourceRect))) ||
+            sourceRect.right <= sourceRect.left ||
             sourceRect.bottom <= sourceRect.top) {
             return ShowWindow_Original(hWnd, nCmdShow);
         }
