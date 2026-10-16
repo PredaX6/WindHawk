@@ -11519,6 +11519,25 @@ bool GetExplorerAnimationCaptureRect(HWND hWnd, RECT* captureRect) {
         return false;
     }
 
+    // The caller uses PER_MONITOR_AWARE_V2 so DWM bounds and GetDC(nullptr)
+    // share physical-screen coordinates. Prefer DWM's visible frame bounds
+    // directly: validating them against GetWindowRect can reject a correct
+    // DWM rectangle when Windows reports invisible resize borders differently,
+    // causing the fallback capture to include desktop content outside Explorer.
+    RECT visibleRect{};
+    if (SUCCEEDED(DwmGetWindowAttribute(
+            hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, &visibleRect,
+            sizeof(visibleRect))) &&
+        visibleRect.right > visibleRect.left &&
+        visibleRect.bottom > visibleRect.top) {
+        *captureRect = visibleRect;
+        Wh_Log(L"Explorer animation capture uses DWM frame: (%ld,%ld)-(%ld,%ld)",
+               visibleRect.left, visibleRect.top,
+               visibleRect.right, visibleRect.bottom);
+        return true;
+    }
+
+    // Fallback only when DWM cannot provide valid visible-frame bounds.
     RECT windowRect{};
     if (!GetWindowRect(hWnd, &windowRect) ||
         windowRect.right <= windowRect.left ||
@@ -11526,42 +11545,12 @@ bool GetExplorerAnimationCaptureRect(HWND hWnd, RECT* captureRect) {
         return false;
     }
 
-    // DWM bounds are preferred because they exclude invisible resize borders.
-    // Validate them against the actual window bounds before using them as
-    // desktop-DC coordinates; an invalid/out-of-window rectangle can capture
-    // unrelated desktop content during the zoom.
-    RECT visibleRect{};
-    if (SUCCEEDED(DwmGetWindowAttribute(
-            hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, &visibleRect,
-            sizeof(visibleRect))) &&
-        visibleRect.right > visibleRect.left &&
-        visibleRect.bottom > visibleRect.top) {
-        constexpr LONG kFrameBoundsTolerance = 8;
-        const bool withinWindow =
-            visibleRect.left >= windowRect.left - kFrameBoundsTolerance &&
-            visibleRect.top >= windowRect.top - kFrameBoundsTolerance &&
-            visibleRect.right <= windowRect.right + kFrameBoundsTolerance &&
-            visibleRect.bottom <= windowRect.bottom + kFrameBoundsTolerance;
-        const LONG visibleWidth = visibleRect.right - visibleRect.left;
-        const LONG visibleHeight = visibleRect.bottom - visibleRect.top;
-        const LONG windowWidth = windowRect.right - windowRect.left;
-        const LONG windowHeight = windowRect.bottom - windowRect.top;
-        const bool plausibleSize =
-            visibleWidth <= windowWidth + 2 * kFrameBoundsTolerance &&
-            visibleHeight <= windowHeight + 2 * kFrameBoundsTolerance;
-
-        if (withinWindow && plausibleSize) {
-            *captureRect = visibleRect;
-            return true;
-        }
-    }
-
-    // The hook runs in PER_MONITOR_AWARE_V2 context, so this fallback remains
-    // in the same physical-pixel coordinate space as CaptureDesktopRegion.
     *captureRect = windowRect;
+    Wh_Log(L"Explorer animation capture falls back to window bounds: (%ld,%ld)-(%ld,%ld)",
+           windowRect.left, windowRect.top,
+           windowRect.right, windowRect.bottom);
     return true;
 }
-
 BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
     // Keep GetWindowRect, DWM frame bounds, and desktop-DC captures in physical
     // pixels. Mixing DPI-virtualized and physical coordinates can make a
