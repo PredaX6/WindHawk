@@ -11514,6 +11514,54 @@ bool TryStartExplorerTvOffAnimation(HWND hWnd, bool minimize) {
     return true;
 }
 
+bool GetExplorerAnimationCaptureRect(HWND hWnd, RECT* captureRect) {
+    if (!hWnd || !captureRect || !IsWindow(hWnd)) {
+        return false;
+    }
+
+    RECT windowRect{};
+    if (!GetWindowRect(hWnd, &windowRect) ||
+        windowRect.right <= windowRect.left ||
+        windowRect.bottom <= windowRect.top) {
+        return false;
+    }
+
+    // DWM bounds are preferred because they exclude invisible resize borders.
+    // Validate them against the actual window bounds before using them as
+    // desktop-DC coordinates; an invalid/out-of-window rectangle can capture
+    // unrelated desktop content during the zoom.
+    RECT visibleRect{};
+    if (SUCCEEDED(DwmGetWindowAttribute(
+            hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, &visibleRect,
+            sizeof(visibleRect))) &&
+        visibleRect.right > visibleRect.left &&
+        visibleRect.bottom > visibleRect.top) {
+        constexpr LONG kFrameBoundsTolerance = 8;
+        const bool withinWindow =
+            visibleRect.left >= windowRect.left - kFrameBoundsTolerance &&
+            visibleRect.top >= windowRect.top - kFrameBoundsTolerance &&
+            visibleRect.right <= windowRect.right + kFrameBoundsTolerance &&
+            visibleRect.bottom <= windowRect.bottom + kFrameBoundsTolerance;
+        const LONG visibleWidth = visibleRect.right - visibleRect.left;
+        const LONG visibleHeight = visibleRect.bottom - visibleRect.top;
+        const LONG windowWidth = windowRect.right - windowRect.left;
+        const LONG windowHeight = windowRect.bottom - windowRect.top;
+        const bool plausibleSize =
+            visibleWidth <= windowWidth + 2 * kFrameBoundsTolerance &&
+            visibleHeight <= windowHeight + 2 * kFrameBoundsTolerance;
+
+        if (withinWindow && plausibleSize) {
+            *captureRect = visibleRect;
+            return true;
+        }
+    }
+
+    // The hook runs in PER_MONITOR_AWARE_V2 context, so this fallback remains
+    // in the same physical-pixel coordinate space as CaptureDesktopRegion.
+    *captureRect = windowRect;
+    return true;
+}
+
 BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
     // Keep GetWindowRect, DWM frame bounds, and desktop-DC captures in physical
     // pixels. Mixing DPI-virtualized and physical coordinates can make a
@@ -11668,15 +11716,7 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
         // uses physical pixels; mixing those coordinate spaces can capture
         // surrounding windows and wallpaper instead of Explorer alone.
         RECT sourceRect{};
-        // Prefer the DWM-visible frame exclusively: it is the physical-pixel
-        // rectangle that corresponds to the composed window image. Falling
-        // back to GetWindowRect here can mix coordinate spaces on per-monitor
-        // DPI setups and capture the desktop around Explorer.
-        if (FAILED(DwmGetWindowAttribute(
-                hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, &sourceRect,
-                sizeof(sourceRect))) ||
-            sourceRect.right <= sourceRect.left ||
-            sourceRect.bottom <= sourceRect.top) {
+        if (!GetExplorerAnimationCaptureRect(hWnd, &sourceRect)) {
             return ShowWindow_Original(hWnd, nCmdShow);
         }
 
@@ -11877,30 +11917,7 @@ BOOL WINAPI ShowWindow_Hook(HWND hWnd, int nCmdShow) {
         // physical screen coordinates, rather than mixing DPI-virtualized
         // GetWindowRect coordinates with the physical desktop DC.
         RECT destinationRect{};
-        if (!GetWindowRect(hWnd, &destinationRect)) {
-            ShowWindow_Original(hWnd, SW_HIDE);
-            if (changedTransitionSetting) {
-                DwmSetWindowAttribute(hWnd, DWMWA_TRANSITIONS_FORCEDISABLED,
-                                      &previousTransitionsDisabled,
-                                      sizeof(previousTransitionsDisabled));
-            }
-            DestroyWindow(overlay);
-            ShowWindow_Original(hWnd, nCmdShow);
-            return previousVisibility;
-        }
-        RECT visibleDestinationRect{};
-        const HRESULT destinationBoundsResult = DwmGetWindowAttribute(
-            hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, &visibleDestinationRect,
-            sizeof(visibleDestinationRect));
-        if (SUCCEEDED(destinationBoundsResult) &&
-            visibleDestinationRect.right > visibleDestinationRect.left &&
-            visibleDestinationRect.bottom > visibleDestinationRect.top) {
-            destinationRect = visibleDestinationRect;
-        } else {
-            destinationRect = RECT{};
-        }
-        if (destinationRect.right <= destinationRect.left ||
-            destinationRect.bottom <= destinationRect.top) {
+        if (!GetExplorerAnimationCaptureRect(hWnd, &destinationRect)) {
             ShowWindow_Original(hWnd, SW_HIDE);
             if (changedTransitionSetting) {
                 DwmSetWindowAttribute(hWnd, DWMWA_TRANSITIONS_FORCEDISABLED,
