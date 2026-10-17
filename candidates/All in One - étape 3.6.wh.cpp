@@ -15315,7 +15315,7 @@ int WINAPI TaskbarFrame_OnPointerWheelChanged_Hook(void* pThis, void* pArgs) {
         return original();
     }
 
-    int steps = std::max(1, static_cast<int>(std::abs(delta)) / WHEEL_DELTA);
+    int steps = std::max(1, static_cast<int>((delta < 0 ? -delta : delta) / WHEEL_DELTA));
     bool moveForward = delta < 0;
     if (g_settings.reverseScrollingDirection) {
         moveForward = !moveForward;
