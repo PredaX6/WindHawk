@@ -2,7 +2,7 @@
 // @id              all-in-one-incremental
 // @name            All in One — Animations, molette et Explorateur
 // @description     Animations de fenêtres, navigation par molette dans la barre des tâches et transitions du contenu de l’Explorateur de fichiers.
-// @version         0.3.0
+// @version         0.3.1
 // @author          ReDrag
 // @github          https://github.com/redrag2105
 // @donateUrl       https://ko-fi.com/redrag2105
@@ -17604,6 +17604,14 @@ BOOL Wh_ModInit() {
     if (!g_classicShowDesktopOwnerDispatchMessage) {
         Wh_Log(L"Failed to register Show Desktop owner dispatch message");
         return FALSE;
+    }
+    // Initialize the Explorer animation only after fatal checks have passed.
+    if (explorerContentAnimationProcess) {
+        FileExplorerContentAnimation::g_componentInitialized =
+            FileExplorerContentAnimation::ModInit();
+        if (!FileExplorerContentAnimation::g_componentInitialized) {
+            Wh_Log(L"File Explorer Content Animation initialization failed");
+        }
     }
     g_swsOwnerRestoreMessage = RegisterWindowMessageW(
         L"Windhawk.WindowsAnimations.SwsRestore.1");
