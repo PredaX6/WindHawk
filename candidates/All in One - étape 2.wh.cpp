@@ -30,16 +30,17 @@
 
 // ==WindhawkModReadme==
 /*
-# All in One — étape 1
+# All in One — étape 2
 
-Cette version intègre actuellement **Windows Animations** : animations de réduction,
-restauration, lancement, fermeture et changement de fenêtre.
+Cette version conserve **Windows Animations** et ajoute **Taskbar Button Scroll**.
 
-Certaines fenêtres système ou protégées ne peuvent pas être animées. Les effets de
-fermeture peuvent aussi dépendre du comportement de l’application (fermeture réelle
-ou masquage dans la zone de notification).
+- Animations de réduction, restauration, lancement, fermeture et changement de fenêtre.
+- Défilement de la molette sur les boutons de la barre des tâches et les aperçus pour réduire/restaurer les fenêtres.
+- Option pour basculer entre réduire/restaurer et réduire/restaurer/agrandir.
+- Sens de défilement inversable.
+- Prise en charge des implémentations de barre des tâches Windows et ExplorerPatcher prévues par le mod d’origine.
 
-Les autres composants seront ajoutés progressivement après vérification de chaque étape.
+Les composants restent isolés dans le code et leurs réglages sont conservés dans des groupes distincts. Cette version est un candidat d’intégration à compiler et tester ; elle n’est pas déclarée validée avant le retour du test Windhawk.
 */
 // ==/WindhawkModReadme==
 
