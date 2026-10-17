@@ -17572,14 +17572,6 @@ void ModSettingsChanged() {
 // ===== End File Explorer Content Animation component =====
 
 BOOL Wh_ModInit() {
-    // Initialize the File Explorer content animation only inside explorer.exe.
-    if (IsExplorerProcess()) {
-        FileExplorerContentAnimation::g_componentInitialized =
-            FileExplorerContentAnimation::ModInit();
-        if (!FileExplorerContentAnimation::g_componentInitialized) {
-            Wh_Log(L"File Explorer Content Animation initialization failed");
-        }
-    }
     // Session 0 is isolated from the interactive desktop. Such services can
     // never own a window that this mod can animate. Chromium/Electron helper
     // roles likewise don't own their application's top-level window. Avoid
@@ -17602,7 +17594,9 @@ BOOL Wh_ModInit() {
     const bool taskbarScrollFeaturesEnabled =
         explorerProcessForTaskbarScroll &&
         TaskbarButtonScroll::IsFeatureEnabled();
-    if (!animationFeaturesEnabled && !taskbarScrollFeaturesEnabled) {
+    const bool explorerContentAnimationProcess = IsExplorerProcess();
+    if (!animationFeaturesEnabled && !taskbarScrollFeaturesEnabled &&
+        !explorerContentAnimationProcess) {
         return FALSE;
     }
     g_classicShowDesktopOwnerDispatchMessage = RegisterWindowMessageW(
