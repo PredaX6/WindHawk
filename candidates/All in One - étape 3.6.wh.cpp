@@ -34,8 +34,8 @@
 
 Cette version conserve les animations et remplace le défilement sur les boutons par une navigation entre fenêtres depuis la zone vide de la barre des tâches.
 
-- Molette vers le bas : réduit la fenêtre active et affiche la suivante.
-- Molette vers le haut : réduit la fenêtre active et affiche la précédente.
+- Molette vers le bas : réduit la fenêtre active et restaure la précédente.
+- Molette vers le haut : réduit la fenêtre active et restaure la suivante.
 - Les fenêtres déjà réduites restent incluses dans le cycle et sont restaurées lorsqu’elles sont sélectionnées.
 - Le sens peut être inversé dans les réglages.
 - Les options de navigation et les descriptions sont en français.
@@ -141,13 +141,13 @@ Cette version est un candidat à compiler et tester dans Windhawk.
   $name: Activer la navigation entre les fenêtres
   $description: >-
     Dans la zone vide de la barre des tâches, faites défiler vers le bas pour
-    réduire la fenêtre active et afficher la suivante, ou vers le haut pour
-    afficher la précédente. Les fenêtres déjà réduites sont incluses.
+    réduire la fenêtre active et restaurer la précédente, ou vers le haut pour
+    restaurer la suivante. Les fenêtres déjà réduites sont incluses.
 - reverseScrollingDirection: false
   $name: Inverser le sens de défilement
   $description: >-
-    Inverse les actions de la molette : le défilement vers le bas affiche la
-    fenêtre précédente et le défilement vers le haut affiche la suivante.
+    Inverse le sens par défaut : le défilement vers le bas restaure la fenêtre
+    suivante et le défilement vers le haut restaure la précédente.
 - oldTaskbarOnWin11: false
   $name: Personnaliser l’ancienne barre des tâches sous Windows 11
   $description: >-
@@ -15056,10 +15056,12 @@ void DispatchPendingWindowCycle() {
     if (steps == 0) {
         steps = 1;
     }
+    // Desired behavior: wheel down minimizes the active window and restores
+    // the previous window; wheel up moves to the next window.
     if (g_settings.reverseScrollingDirection) {
-        CycleTaskbarWindows(delta > 0, steps);
-    } else {
         CycleTaskbarWindows(delta < 0, steps);
+    } else {
+        CycleTaskbarWindows(delta > 0, steps);
     }
 }
 
@@ -15272,71 +15274,9 @@ bool IsFeatureEnabled() {
 
 bool g_componentInitialized = false;
 
-using TaskbarFrame_OnPointerWheelChanged_t =
-    int(WINAPI*)(void* pThis, void* pArgs);
-TaskbarFrame_OnPointerWheelChanged_t
-    TaskbarFrame_OnPointerWheelChanged_Original;
-
-int WINAPI TaskbarFrame_OnPointerWheelChanged_Hook(void* pThis, void* pArgs) {
-    auto original = [=]() {
-        return TaskbarFrame_OnPointerWheelChanged_Original(pThis, pArgs);
-    };
-
-    if (!g_settings.windowCyclingEnabled) {
-        return original();
-    }
-
-    winrt::Windows::Foundation::IInspectable taskbarFrame = nullptr;
-    ((IUnknown*)pThis)->QueryInterface(
-        winrt::guid_of<winrt::Windows::Foundation::IInspectable>(),
-        winrt::put_abi(taskbarFrame));
-    if (!taskbarFrame ||
-        winrt::get_class_name(taskbarFrame) != L"Taskbar.TaskbarFrame") {
-        return original();
-    }
-
-    UIElement element = nullptr;
-    ((IUnknown*)pThis)->QueryInterface(
-        winrt::guid_of<UIElement>(), winrt::put_abi(element));
-    if (!element) {
-        return original();
-    }
-
-    Input::PointerRoutedEventArgs args = nullptr;
-    ((IUnknown*)pArgs)->QueryInterface(
-        winrt::guid_of<Input::PointerRoutedEventArgs>(),
-        winrt::put_abi(args));
-    if (!args) {
-        return original();
-    }
-
-    double delta = args.GetCurrentPoint(element).Properties().MouseWheelDelta();
-    if (delta == 0) {
-        return original();
-    }
-
-    int steps = std::max(1, static_cast<int>((delta < 0 ? -delta : delta) / WHEEL_DELTA));
-    bool moveForward = delta < 0;
-    if (g_settings.reverseScrollingDirection) {
-        moveForward = !moveForward;
-    }
-
-    // The TaskbarFrame event is the background route used by the reference
-    // mod; button and preview wheel events are handled by their own hooks.
-    CycleTaskbarWindows(moveForward, steps);
-    args.Handled(true);
-    return 0;
-}
-
 bool HookTaskbarViewDllSymbols(HMODULE module) {
     // Taskbar.View.dll
     WindhawkUtils::SYMBOL_HOOK symbolHooks[] = {
-        {
-            {LR"(public: virtual int __cdecl winrt::impl::produce<struct winrt::Taskbar::implementation::TaskbarFrame,struct winrt::Windows::UI::Xaml::Controls::IControlOverrides>::OnPointerWheelChanged(void *))"},
-            &TaskbarFrame_OnPointerWheelChanged_Original,
-            TaskbarFrame_OnPointerWheelChanged_Hook,
-            true,
-        },
         {
             {LR"(public: virtual int __cdecl winrt::impl::produce<struct winrt::Taskbar::implementation::TaskListButton,struct winrt::Windows::UI::Xaml::Controls::IControlOverrides>::OnPointerWheelChanged(void *))"},
             &TaskListButton_OnPointerWheelChanged_Original,
@@ -15915,7 +15855,7 @@ BOOL Init() {
             (DwmpActivateLivePreview_t)GetProcAddress(dwmapiModule, (PCSTR)113);
     }
 
-    if (g_winVersion <= WinVersion::Win10 && !StartWindowCycleMouseHook()) {
+    if (!StartWindowCycleMouseHook()) {
         Wh_Log(L"Taskbar window-cycle mouse hook initialization failed");
         return FALSE;
     }
