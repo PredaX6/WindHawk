@@ -15278,7 +15278,7 @@ TaskbarFrame_OnPointerWheelChanged_t
     TaskbarFrame_OnPointerWheelChanged_Original;
 
 int WINAPI TaskbarFrame_OnPointerWheelChanged_Hook(void* pThis, void* pArgs) {
-    auto original = []() {
+    auto original = [=]() {
         return TaskbarFrame_OnPointerWheelChanged_Original(pThis, pArgs);
     };
 
