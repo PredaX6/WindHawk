@@ -49741,7 +49741,7 @@ void PromptToRestartExplorer(HRESULT statusCode) {
                 // A regular message box is available even when TaskDialogIndirect
                 // is not exposed by the active Common Controls version.
                 std::wstring fallbackPrompt = promptText;
-                fallbackPrompt += L"\\n\\nDo you want to restart Explorer now?";
+                fallbackPrompt += L"\n\nDo you want to restart Explorer now?";
                 restartExplorer =
                     MessageBoxW(nullptr, fallbackPrompt.c_str(),
                                 kRestartExplorerPromptTitle,
