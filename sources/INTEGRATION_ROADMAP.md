@@ -22,7 +22,7 @@ Rebuild incrementally with the highest priority being zero feature loss. Every c
 6. **Windows 11 Start Menu Styler** — separate Start/Search process targets and complex XAML/COM behavior.
 7. **Windows 11 Notification Center Styler** — separate shell-host targets and complex XAML/COM behavior; final because shared infrastructure and lifecycle isolation need to be proven by prior integrations.
 
-This is a provisional engineering order based on scope, size, and likely interaction risk, not a claim that any merge is already safe. File Explorer Content Animation is intentionally skipped for now at the user's request. Static source audits may change the order if they reveal a concrete dependency.
+This is a provisional engineering order based on scope, size, and likely interaction risk, not a claim that any merge is already safe. File Explorer Content Animation is intentionally skipped at the user's request. The current candidate is `candidates/All in One - étape 3 - Translucent Windows.wh.cpp`; it still requires compilation and runtime testing before acceptance. Static source audits may change the order if they reveal a concrete dependency.
 
 ## Mandatory workflow per step
 
