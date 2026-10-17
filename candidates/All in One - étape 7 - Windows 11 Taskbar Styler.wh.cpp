@@ -51389,9 +51389,8 @@ winrt::Windows::Storage::Streams::IRandomAccessStream CreateNoiseStream(
 // Blur background implementation, copied from TranslucentTB.
 ////////////////////////////////////////////////////////////////////////////////
 // clang-format off
-template <> inline constexpr winrt::guid winrt::impl::guid_v<winrt::impl::abi_t<winrt::Windows::Foundation::IPropertyValue>>{
-    winrt::impl::guid_v<winrt::Windows::Foundation::IPropertyValue>
-};
+// The IPropertyValue guid_v specialization is already supplied by the integrated
+// Start Menu Styler component; don't specialize the same template twice.
 
 typedef enum MY_D2D1_GAUSSIANBLUR_OPTIMIZATION
 {
@@ -58778,7 +58777,7 @@ void InitializeSettingsAndTap() {
 
 using RunFromWindowThreadProc_t = void(WINAPI*)(PVOID parameter);
 
-bool RunFromWindowThread(HWND hWnd,
+bool TaskbarStyler_RunFromWindowThread(HWND hWnd,
                          RunFromWindowThreadProc_t proc,
                          PVOID procParam) {
     static const UINT runFromWindowThreadRegisteredMsg =
@@ -59419,7 +59418,7 @@ void Wh_ModAfterInit() {
     HWND hTaskbarUiWnd = GetTaskbarUiWnd();
     if (hTaskbarUiWnd) {
         Wh_Log(L"Initializing - Found DesktopWindowContentBridge window");
-        RunFromWindowThread(
+        TaskbarStyler_RunFromWindowThread(
             hTaskbarUiWnd, [](PVOID) { InitializeForCurrentThread(); },
             nullptr);
         initialize = true;
@@ -59427,7 +59426,7 @@ void Wh_ModAfterInit() {
 
     for (auto hXamlHostWnd : GetXamlHostWnds()) {
         Wh_Log(L"Initializing for %08X", (DWORD)(ULONG_PTR)hXamlHostWnd);
-        RunFromWindowThread(
+        TaskbarStyler_RunFromWindowThread(
             hXamlHostWnd, [](PVOID) { InitializeForCurrentThread(); }, nullptr);
         initialize = true;
     }
@@ -59464,14 +59463,14 @@ void Wh_ModUninit() {
     HWND hTaskbarUiWnd = GetTaskbarUiWnd();
     if (hTaskbarUiWnd) {
         Wh_Log(L"Uninitializing - Found DesktopWindowContentBridge window");
-        RunFromWindowThread(
+        TaskbarStyler_RunFromWindowThread(
             hTaskbarUiWnd, [](PVOID) { UninitializeForCurrentThread(); },
             nullptr);
     }
 
     for (auto hXamlHostWnd : GetXamlHostWnds()) {
         Wh_Log(L"Uninitializing for %08X", (DWORD)(ULONG_PTR)hXamlHostWnd);
-        RunFromWindowThread(
+        TaskbarStyler_RunFromWindowThread(
             hXamlHostWnd, [](PVOID) { UninitializeForCurrentThread(); },
             nullptr);
     }
@@ -59489,7 +59488,7 @@ void Wh_ModSettingsChanged() {
     HWND hTaskbarUiWnd = GetTaskbarUiWnd();
     if (hTaskbarUiWnd) {
         Wh_Log(L"Reinitializing - Found DesktopWindowContentBridge window");
-        RunFromWindowThread(
+        TaskbarStyler_RunFromWindowThread(
             hTaskbarUiWnd,
             [](PVOID) {
                 UninitializeForCurrentThread();
@@ -59501,7 +59500,7 @@ void Wh_ModSettingsChanged() {
 
     for (auto hXamlHostWnd : GetXamlHostWnds()) {
         Wh_Log(L"Reinitializing for %08X", (DWORD)(ULONG_PTR)hXamlHostWnd);
-        RunFromWindowThread(
+        TaskbarStyler_RunFromWindowThread(
             hXamlHostWnd,
             [](PVOID) {
                 UninitializeForCurrentThread();
