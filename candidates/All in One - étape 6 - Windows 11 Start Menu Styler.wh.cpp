@@ -7,6 +7,7 @@
 // @github          https://github.com/redrag2105
 // @donateUrl       https://ko-fi.com/redrag2105
 // @include         *
+// @architecture   x86-64
 // @exclude         TextInputHost.exe
 // @exclude         ShellExperienceHost.exe
 // @exclude         dwm.exe
