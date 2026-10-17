@@ -200,6 +200,7 @@ Les composants restent isolés dans le code et leurs réglages sont conservés d
 #include <shlobj.h>
 #include <shobjidl.h>
 #include <condition_variable>
+#include <chrono>
 #include <climits>
 #include <cmath>
 #include <thread>
