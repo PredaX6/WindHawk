@@ -14950,12 +14950,12 @@ BOOL CALLBACK EnumTaskbarCycleWindowsProc(HWND hWnd, LPARAM lParam) {
         return TRUE;
     }
 
-    // Exclude owned utility windows, but keep app windows explicitly marked
-    // with WS_EX_APPWINDOW. IsWindowVisible remains true for minimized windows.
-    if (GetWindow(hWnd, GW_OWNER) && !(exStyle & WS_EX_APPWINDOW)) {
-        return TRUE;
-    }
-
+    // Keep visible top-level windows even when they have an owner. Some
+    // applications expose their main document/window as an owned top-level
+    // window without WS_EX_APPWINDOW; excluding all such windows made them
+    // impossible to reach by scrolling. Tool windows without WS_EX_APPWINDOW
+    // are still excluded above. IsWindowVisible remains true for minimized
+    // windows, so minimized application windows stay in the cycle.
     context->windows->push_back(hWnd);
     return TRUE;
 }
@@ -14972,8 +14972,24 @@ void CycleTaskbarWindows(bool moveForward, int steps) {
     }
 
     HWND foreground = GetForegroundWindow();
-    HWND current = foreground ? GetAncestor(foreground, GA_ROOTOWNER) : nullptr;
-    auto it = std::find(windows.begin(), windows.end(), current);
+    HWND current = foreground ? GetAncestor(foreground, GA_ROOT) : nullptr;
+
+    // Prefer the exact active top-level window. If the foreground belongs to
+    // a transient owned window that isn't in the list, fall back to its root
+    // owner, then to the highest owner in the chain.
+    auto it = std::find(windows.begin(), windows.end(), foreground);
+    if (it == windows.end()) {
+        it = std::find(windows.begin(), windows.end(), current);
+    }
+    if (it == windows.end() && foreground) {
+        HWND rootOwner = GetAncestor(foreground, GA_ROOTOWNER);
+        it = std::find(windows.begin(), windows.end(), rootOwner);
+        if (it != windows.end()) {
+            current = rootOwner;
+        }
+    } else if (it != windows.end()) {
+        current = *it;
+    }
     int currentIndex = it == windows.end() ? -1 : (int)(it - windows.begin());
 
     int targetIndex;
@@ -14990,24 +15006,15 @@ void CycleTaskbarWindows(bool moveForward, int steps) {
         return;
     }
 
-    // Minimize the active window first. Only after Windows reports it
-    // minimized do we restore/show the selected next or previous window.
     if (current && IsWindow(current) && IsWindowVisible(current) &&
         !IsIconic(current)) {
-        ShowWindow(current, SW_MINIMIZE);
-
-        const ULONGLONG minimizeStart = GetTickCount64();
-        constexpr ULONGLONG kMinimizeWaitLimitMs = 500;
-        while (IsWindow(current) && !IsIconic(current) &&
-               GetTickCount64() - minimizeStart < kMinimizeWaitLimitMs) {
-            Sleep(10);
-        }
+        ShowWindowAsync(current, SW_MINIMIZE);
     }
 
     if (IsIconic(target)) {
-        ShowWindow(target, SW_RESTORE);
+        ShowWindowAsync(target, SW_RESTORE);
     } else {
-        ShowWindow(target, SW_SHOW);
+        ShowWindowAsync(target, SW_SHOW);
     }
 
     BringWindowToTop(target);
