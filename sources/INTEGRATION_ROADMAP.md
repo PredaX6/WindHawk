@@ -16,13 +16,13 @@ Rebuild incrementally with the highest priority being zero feature loss. Every c
 
 1. **Windows Animations** — baseline already present. Validate this exact source on the clean branch first.
 2. **Taskbar Button Scroll** — smallest remaining source and a relatively narrow Explorer/taskbar feature. First audit its hook/lifecycle and WinRT interactions; integrate only with isolated settings/state and Explorer-only activation.
-3. **File Explorer Content Animation** — Explorer-scoped behavior, but has DirectComposition overlays and Explorer-frame hooks. Add after Taskbar Button Scroll so both can be regression-tested in Explorer.
-4. **Translucent Windows** — broad process scope and system-wide visual side effects. Integrate only after per-process activation, settings isolation, and teardown are explicit.
+3. **File Explorer Content Animation** — **skipped at the user's request**; do not integrate unless explicitly requested later.
+4. **Translucent Windows** — current candidate after the skipped step. Broad process scope and system-wide visual side effects require isolated settings, shared-hook handling, and teardown checks.
 5. **Windows 11 File Explorer Styler** — large XAML/COM-oriented component and likely interaction with Translucent Windows; integrate after the preceding Explorer-related components.
 6. **Windows 11 Start Menu Styler** — separate Start/Search process targets and complex XAML/COM behavior.
 7. **Windows 11 Notification Center Styler** — separate shell-host targets and complex XAML/COM behavior; final because shared infrastructure and lifecycle isolation need to be proven by prior integrations.
 
-This is a provisional engineering order based on scope, size, and likely interaction risk, not a claim that any merge is already safe. Static source audits may change the order if they reveal a concrete dependency.
+This is a provisional engineering order based on scope, size, and likely interaction risk, not a claim that any merge is already safe. File Explorer Content Animation is intentionally skipped for now at the user's request. Static source audits may change the order if they reveal a concrete dependency.
 
 ## Mandatory workflow per step
 
