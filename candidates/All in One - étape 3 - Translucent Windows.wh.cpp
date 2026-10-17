@@ -136,23 +136,23 @@ Ce fichier est un candidat complet à compiler et tester dans Windhawk. La compi
   $description: Mesures facultatives pour analyser les performances.
 
 - scrollOverTaskbarButtons: true
-  $name: Scroll over taskbar buttons
+  $name: Défilement sur les boutons de la barre des tâches
 - scrollOverThumbnailPreviews: true
-  $name: Scroll over thumbnail previews
+  $name: Défilement sur les aperçus des fenêtres
 - maximizeAndRestore: false
-  $name: Maximize and restore
+  $name: Alterner entre réduction, restauration et agrandissement
   $description: >-
-    By default, the mod switches between minimize/restore states on scroll. This
-    option switches to three states: minimize/restore/maximize.
+    Par défaut, la molette alterne entre réduction et restauration. Cette option
+    ajoute un troisième état : réduction, restauration et agrandissement.
 - reverseScrollingDirection: false
-  $name: Reverse scrolling direction
+  $name: Inverser le sens de défilement
 - oldTaskbarOnWin11: false
-  $name: Customize the old taskbar on Windows 11
+  $name: Personnaliser l’ancienne barre des tâches sous Windows 11
   $description: >-
-    Enable this option to customize the old taskbar on Windows 11 (if using
-    ExplorerPatcher or a similar tool).
+    Activez cette option pour personnaliser l’ancienne barre des tâches de Windows 11
+    si vous utilisez ExplorerPatcher ou un outil similaire.
 
-*/
+
 
 - translucent_windows:
   - RenderingMod:
@@ -165,12 +165,12 @@ Ce fichier est un candidat complet à compiler et tester dans Windhawk. La compi
       - SysColors: FALSE
         $name: 🔷 Nouvelles couleurs système
         $description: >-
-         Modifies additional system UI colors by calling SetSysColors API. (Requires Rendu personnalisé du thème Windows)
+         Modifie des couleurs supplémentaires de l’interface système via l’API SetSysColors. (Nécessite le rendu personnalisé du thème Windows.)
           ⚠️En cas de problème avec des processus exclus, utilisez les règles par processus dans les réglages du mod. Voir la FAQ.
       - AccentColorControls: TRUE
         $name: 🔷 Colorisation d’accent du thème Windows
         $description: >-
-         Paint with accent color parts of windows theme. (Requires Rendu personnalisé du thème Windows)
+         Applique la couleur d’accent à certaines parties du thème Windows. (Nécessite le rendu personnalisé du thème.)
     $name: 🔶 Personnalisation du thème
   - BackgroundEffects:
       - type: acrylicblur
@@ -184,7 +184,7 @@ Ce fichier est un candidat complet à compiler et tester dans Windhawk. La compi
         - mica: Mica (SystemBackdrop)
         - mica_tabbed: MicaAlt (SystemBackdrop)
       - AccentBlurBehind: "3A232323"
-        $name: 🔷 AccentBlurBehind color blend
+        $name: 🔷 Couleur de mélange du flou AccentBlurBehind
         $description: >-
           Couleur de fusion avec l’arrière-plan flou.
           Couleur au format hexadécimal ARGB, par exemple 3A232323.
@@ -193,7 +193,7 @@ Ce fichier est un candidat complet à compiler et tester dans Windhawk. La compi
     $name: 🔶 Effets des menus contextuels
     $description: >-
       Étend les effets aux menus Win32 (menus contextuels, listes déroulantes et info-bulles).
-       ✨It is recommended to enable this with both background translucent effects and Rendu personnalisé du thème Windows.
+       ✨ Il est recommandé d’activer cette option avec les effets de fond translucides et le rendu personnalisé du thème Windows.
   - RuledPrograms:
       - - target: "Notepad.exe"
           $name: 🔶 Processus
@@ -211,7 +211,7 @@ Ce fichier est un candidat complet à compiler et tester dans Windhawk. La compi
             - AccentColorControls: FALSE
               $name: 🔷 Colorisation d’accent du thème Windows
               $description: >-
-                Paint with accent color parts of windows theme. (Requires Rendu personnalisé du thème Windows)
+                Applique la couleur d’accent à certaines parties du thème Windows. (Nécessite le rendu personnalisé du thème.)
           $name: 🔶 Personnalisation du thème
         - BackgroundEffects:
           - type: none
@@ -225,17 +225,18 @@ Ce fichier est un candidat complet à compiler et tester dans Windhawk. La compi
             - mica: Mica (SystemBackdrop)
             - mica_tabbed: MicaAlt (SystemBackdrop)
           - AccentBlurBehind: "3A232323"
-            $name: 🔷 AccentBlurBehind color blend
+            $name: 🔷 Couleur de mélange du flou AccentBlurBehind
             $description: >-
              Couleur de fusion avec l’arrière-plan flou.
               Couleur au format hexadécimal ARGB, par exemple 3A232323.
           $name: 🔶 Effets de translucidité
-    $name: ⏩ Processus Rules
+    $name: ⏩ Règles par processus
     $description: >-
         Ajoutez des règles pour chaque processus indiqué ou pour les processus situés dans des sous-dossiers précis.
-         ❗ Add process rules for the excluded process instead of using Windhawk's process exclusion when the "Nouvelles couleurs système" global setting is enabled.
+         ❗ Si « Nouvelles couleurs système » est activé, ajoutez des règles pour les processus concernés au lieu de les exclure dans Windhawk.
   $name: Fenêtres translucides
   $description: Réglages des effets translucides et du rendu personnalisé du thème Windows.
+*/
 // ==/WindhawkModSettings==
 
 #ifndef NOMINMAX
