@@ -34,8 +34,8 @@
 
 Cette version conserve les animations et remplace le défilement sur les boutons par une navigation entre fenêtres depuis la zone vide de la barre des tâches.
 
-- Molette vers le bas : réduit la fenêtre active et restaure la précédente.
-- Molette vers le haut : réduit la fenêtre active et restaure la suivante.
+- Molette vers le bas : réduit la fenêtre active et affiche la suivante.
+- Molette vers le haut : réduit la fenêtre active et affiche la précédente.
 - Les fenêtres déjà réduites restent incluses dans le cycle et sont restaurées lorsqu’elles sont sélectionnées.
 - Le sens peut être inversé dans les réglages.
 - Les options de navigation et les descriptions sont en français.
@@ -141,13 +141,13 @@ Cette version est un candidat à compiler et tester dans Windhawk.
   $name: Activer la navigation entre les fenêtres
   $description: >-
     Dans la zone vide de la barre des tâches, faites défiler vers le bas pour
-    réduire la fenêtre active et restaurer la précédente, ou vers le haut pour
-    restaurer la suivante. Les fenêtres déjà réduites sont incluses.
+    réduire la fenêtre active et afficher la suivante, ou vers le haut pour
+    afficher la précédente. Les fenêtres déjà réduites sont incluses.
 - reverseScrollingDirection: false
   $name: Inverser le sens de défilement
   $description: >-
-    Inverse le sens par défaut : le défilement vers le bas restaure la fenêtre
-    suivante et le défilement vers le haut restaure la précédente.
+    Inverse les actions de la molette : le défilement vers le bas affiche la
+    fenêtre précédente et le défilement vers le haut affiche la suivante.
 - oldTaskbarOnWin11: false
   $name: Personnaliser l’ancienne barre des tâches sous Windows 11
   $description: >-
@@ -14990,15 +14990,24 @@ void CycleTaskbarWindows(bool moveForward, int steps) {
         return;
     }
 
+    // Minimize the active window first. Only after Windows reports it
+    // minimized do we restore/show the selected next or previous window.
     if (current && IsWindow(current) && IsWindowVisible(current) &&
         !IsIconic(current)) {
-        ShowWindowAsync(current, SW_MINIMIZE);
+        ShowWindow(current, SW_MINIMIZE);
+
+        const ULONGLONG minimizeStart = GetTickCount64();
+        constexpr ULONGLONG kMinimizeWaitLimitMs = 500;
+        while (IsWindow(current) && !IsIconic(current) &&
+               GetTickCount64() - minimizeStart < kMinimizeWaitLimitMs) {
+            Sleep(10);
+        }
     }
 
     if (IsIconic(target)) {
-        ShowWindowAsync(target, SW_RESTORE);
+        ShowWindow(target, SW_RESTORE);
     } else {
-        ShowWindowAsync(target, SW_SHOW);
+        ShowWindow(target, SW_SHOW);
     }
 
     BringWindowToTop(target);
@@ -15056,12 +15065,10 @@ void DispatchPendingWindowCycle() {
     if (steps == 0) {
         steps = 1;
     }
-    // Desired behavior: wheel down minimizes the active window and restores
-    // the previous window; wheel up moves to the next window.
     if (g_settings.reverseScrollingDirection) {
-        CycleTaskbarWindows(delta < 0, steps);
-    } else {
         CycleTaskbarWindows(delta > 0, steps);
+    } else {
+        CycleTaskbarWindows(delta < 0, steps);
     }
 }
 
