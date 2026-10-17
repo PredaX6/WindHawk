@@ -49713,10 +49713,43 @@ void PromptToRestartExplorer(HRESULT statusCode) {
                 },
             };
 
-            int button;
-            if (SUCCEEDED(TaskDialogIndirect(&taskDialogConfig, &button,
-                                             nullptr, nullptr)) &&
-                button == IDYES) {
+            // Resolve TaskDialogIndirect dynamically. The mod is injected into
+            // processes that might not activate Common Controls v6, so importing
+            // this function directly can prevent the entire mod DLL from loading.
+            using TaskDialogIndirectFn = HRESULT(WINAPI*)(
+                const TASKDIALOGCONFIG*, int*, int*, BOOL*);
+            HMODULE hComCtl32 = TranslucentWindows::LoadComCtlModule();
+            auto taskDialogIndirect = hComCtl32
+                ? reinterpret_cast<TaskDialogIndirectFn>(
+                      GetProcAddress(hComCtl32, "TaskDialogIndirect"))
+                : nullptr;
+
+            int button = IDNO;
+            HRESULT dialogResult = E_NOTIMPL;
+            if (taskDialogIndirect) {
+                dialogResult = taskDialogIndirect(&taskDialogConfig, &button,
+                                                  nullptr, nullptr);
+            }
+            if (hComCtl32) {
+                FreeLibrary(hComCtl32);
+            }
+
+            bool restartExplorer = false;
+            if (SUCCEEDED(dialogResult)) {
+                restartExplorer = button == IDYES;
+            } else {
+                // A regular message box is available even when TaskDialogIndirect
+                // is not exposed by the active Common Controls version.
+                std::wstring fallbackPrompt = promptText;
+                fallbackPrompt += L"\\n\\nDo you want to restart Explorer now?";
+                restartExplorer =
+                    MessageBoxW(nullptr, fallbackPrompt.c_str(),
+                                kRestartExplorerPromptTitle,
+                                MB_YESNO | MB_ICONINFORMATION | MB_TOPMOST |
+                                    MB_SETFOREGROUND) == IDYES;
+            }
+
+            if (restartExplorer) {
                 WCHAR commandLine[ARRAYSIZE(kRestartExplorerCommand)];
                 memcpy(commandLine, kRestartExplorerCommand,
                        sizeof(kRestartExplorerCommand));
