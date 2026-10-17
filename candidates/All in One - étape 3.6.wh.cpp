@@ -14929,6 +14929,8 @@ struct TaskbarWindowCycleContext {
     std::vector<HWND>* windows;
 };
 
+std::vector<HWND> g_taskbarCycleWindowOrder;
+
 BOOL CALLBACK EnumTaskbarCycleWindowsProc(HWND hWnd, LPARAM lParam) {
     auto* context = reinterpret_cast<TaskbarWindowCycleContext*>(lParam);
 
@@ -14950,71 +14952,91 @@ BOOL CALLBACK EnumTaskbarCycleWindowsProc(HWND hWnd, LPARAM lParam) {
         return TRUE;
     }
 
-    // Keep visible top-level windows even when they have an owner. Some
-    // applications expose their main document/window as an owned top-level
-    // window without WS_EX_APPWINDOW; excluding all such windows made them
-    // impossible to reach by scrolling. Tool windows without WS_EX_APPWINDOW
-    // are still excluded above. IsWindowVisible remains true for minimized
-    // windows, so minimized application windows stay in the cycle.
+    // Exclude owned utility windows, but keep app windows explicitly marked
+    // with WS_EX_APPWINDOW. Minimized windows remain eligible for cycling.
+    if (GetWindow(hWnd, GW_OWNER) && !(exStyle & WS_EX_APPWINDOW)) {
+        return TRUE;
+    }
+
     context->windows->push_back(hWnd);
     return TRUE;
 }
 
 void CycleTaskbarWindows(bool moveForward, int steps) {
-    std::vector<HWND> windows;
-    windows.reserve(64);
-    TaskbarWindowCycleContext context{&windows};
-    EnumWindows(EnumTaskbarCycleWindowsProc, reinterpret_cast<LPARAM>(&context));
+    std::vector<HWND> enumeratedWindows;
+    enumeratedWindows.reserve(64);
+    TaskbarWindowCycleContext context{&enumeratedWindows};
+    EnumWindows(EnumTaskbarCycleWindowsProc,
+                reinterpret_cast<LPARAM>(&context));
 
-    if (windows.size() < 2) {
+    if (enumeratedWindows.size() < 2) {
+        Wh_Log(L"Window cycling skipped: fewer than two eligible windows");
+        return;
+    }
+
+    // EnumWindows follows z-order, which changes whenever a window is brought
+    // to the foreground. Keep the previous order so successive wheel events
+    // continue through the same list instead of bouncing between two windows.
+    g_taskbarCycleWindowOrder.erase(
+        std::remove_if(g_taskbarCycleWindowOrder.begin(),
+                       g_taskbarCycleWindowOrder.end(),
+                       [&enumeratedWindows](HWND hWnd) {
+                           return !IsWindow(hWnd) ||
+                                  std::find(enumeratedWindows.begin(),
+                                            enumeratedWindows.end(),
+                                            hWnd) == enumeratedWindows.end();
+                       }),
+        g_taskbarCycleWindowOrder.end());
+
+    for (HWND hWnd : enumeratedWindows) {
+        if (std::find(g_taskbarCycleWindowOrder.begin(),
+                      g_taskbarCycleWindowOrder.end(),
+                      hWnd) == g_taskbarCycleWindowOrder.end()) {
+            g_taskbarCycleWindowOrder.push_back(hWnd);
+        }
+    }
+
+    if (g_taskbarCycleWindowOrder.size() < 2) {
         Wh_Log(L"Window cycling skipped: fewer than two eligible windows");
         return;
     }
 
     HWND foreground = GetForegroundWindow();
-    HWND current = foreground ? GetAncestor(foreground, GA_ROOT) : nullptr;
+    HWND current = foreground ? GetAncestor(foreground, GA_ROOTOWNER) : nullptr;
+    auto it = std::find(g_taskbarCycleWindowOrder.begin(),
+                        g_taskbarCycleWindowOrder.end(), current);
+    int currentIndex = it == g_taskbarCycleWindowOrder.end()
+                           ? -1
+                           : static_cast<int>(it - g_taskbarCycleWindowOrder.begin());
 
-    // Prefer the exact active top-level window. If the foreground belongs to
-    // a transient owned window that isn't in the list, fall back to its root
-    // owner, then to the highest owner in the chain.
-    auto it = std::find(windows.begin(), windows.end(), foreground);
-    if (it == windows.end()) {
-        it = std::find(windows.begin(), windows.end(), current);
-    }
-    if (it == windows.end() && foreground) {
-        HWND rootOwner = GetAncestor(foreground, GA_ROOTOWNER);
-        it = std::find(windows.begin(), windows.end(), rootOwner);
-        if (it != windows.end()) {
-            current = rootOwner;
-        }
-    } else if (it != windows.end()) {
-        current = *it;
-    }
-    int currentIndex = it == windows.end() ? -1 : (int)(it - windows.begin());
-
+    const int count = static_cast<int>(g_taskbarCycleWindowOrder.size());
     int targetIndex;
     if (currentIndex < 0) {
-        targetIndex = moveForward ? 0 : (int)windows.size() - 1;
+        targetIndex = moveForward ? 0 : count - 1;
     } else {
-        int count = (int)windows.size();
         int offset = steps % count;
+        if (offset == 0) {
+            offset = 1;
+        }
         targetIndex = (currentIndex + (moveForward ? offset : -offset) + count) % count;
     }
 
-    HWND target = windows[targetIndex];
+    HWND target = g_taskbarCycleWindowOrder[targetIndex];
     if (!IsWindow(target) || target == current) {
         return;
     }
 
+    // Process the minimize request first, then restore/show the destination.
+    // Synchronous ShowWindow calls avoid posting both operations concurrently.
     if (current && IsWindow(current) && IsWindowVisible(current) &&
         !IsIconic(current)) {
-        ShowWindowAsync(current, SW_MINIMIZE);
+        ShowWindow(current, SW_MINIMIZE);
     }
 
     if (IsIconic(target)) {
-        ShowWindowAsync(target, SW_RESTORE);
+        ShowWindow(target, SW_RESTORE);
     } else {
-        ShowWindowAsync(target, SW_SHOW);
+        ShowWindow(target, SW_SHOW);
     }
 
     BringWindowToTop(target);
