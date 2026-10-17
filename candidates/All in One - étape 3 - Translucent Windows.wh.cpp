@@ -154,7 +154,7 @@ Ce fichier est un candidat complet à compiler et tester dans Windhawk. La compi
 
 */
 
-  - translucent_windows:
+- translucent_windows:
   - RenderingMod:
       - ThemeBackground: TRUE
         $name: 🔷 Rendu personnalisé du thème Windows
@@ -234,8 +234,8 @@ Ce fichier est un candidat complet à compiler et tester dans Windhawk. La compi
     $description: >-
         Ajoutez des règles pour chaque processus indiqué ou pour les processus situés dans des sous-dossiers précis.
          ❗ Add process rules for the excluded process instead of using Windhawk's process exclusion when the "Nouvelles couleurs système" global setting is enabled.
-    $name: Fenêtres translucides
-    $description: Réglages des effets translucides et du rendu personnalisé du thème Windows.
+  $name: Fenêtres translucides
+  $description: Réglages des effets translucides et du rendu personnalisé du thème Windows.
 // ==/WindhawkModSettings==
 
 #ifndef NOMINMAX
@@ -13665,6 +13665,10 @@ static void HandleSwsOwnerRestore(HWND hWnd, WPARAM wParam, LPARAM lParam) {
     }
 }
 
+namespace TranslucentWindows {
+void HandleDefWindowProcW(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+}
+
 LRESULT WINAPI DefWindowProcW_Hook(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     TranslucentWindows::HandleDefWindowProcW(hWnd, msg, wParam, lParam);
     const bool classicShowDesktopOwnerDispatchMessage =
@@ -22257,9 +22261,6 @@ BOOL SettingsChanged(BOOL* bReload)
 #undef STDCALL
 #undef _STDCALL
 
-namespace TranslucentWindows {
-void HandleDefWindowProcW(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-}
 bool g_translucentWindowsInitAttempted = false;
 bool g_translucentWindowsInitialized = false;
 
