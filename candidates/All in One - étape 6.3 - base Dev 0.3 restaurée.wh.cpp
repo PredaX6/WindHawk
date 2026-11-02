@@ -225,45 +225,11 @@
 
 # Réglages intégrés — Windows 11 Start Menu Styler
 - start_menu_styler:
-  - theme: ""
-    $name: Theme
-    $description: >-
-      Themes are collections of styles. For details about the themes below, or for
-      information about submitting your own theme, refer to the relevant section
-      in the mod details.
+  - theme: TranslucentStartMenu
+    $name: Thème du menu Démarrer
+    $description: Thème conservé et appliqué au menu Démarrer.
     $options:
-    - "": None
-    - TranslucentStartMenu: TranslucentStartMenu
-    - NoRecommendedSection: NoRecommendedSection
-    - SideBySide: SideBySide
-    - SideBySide2: SideBySide2
-    - SideBySideMinimal: SideBySideMinimal
-    - Down Aero: Down Aero
-    - Windows10: Windows10
-    - Windows10_variant_Minimal: Windows10 (Minimal)
-    - Windows11_Metro10: Windows11_Metro10
-    - Fluent2Inspired: Fluent2Inspired
-    - RosePine: RosePine
-    - Windows11_Metro10Minimal: Windows11_Metro10Minimal
-    - Everblush: Everblush
-    - SunValley: SunValley
-    - 21996: SunValley (Legacy)
-    - UniMenu: UniMenu
-    - LegacyFluent: LegacyFluent
-    - OnlySearch: OnlySearch
-    - OnlySearch_variant_Minimal: OnlySearch (Minimal)
-    - WindowGlass: WindowGlass (for the redesigned Start menu)
-    - Fluid: Fluid (for the redesigned Start menu)
-    - Oversimplified&Accentuated: Oversimplified&Accentuated
-    - LiquidGlass2: LiquidGlass (for the redesigned Start menu)
-    - LiquidGlass: LiquidGlass (Legacy) (for the redesigned Start menu)
-    - Windows10X: Windows10X
-    - TintedGlass: TintedGlass
-    - LayerMicaUI: LayerMicaUI (for the redesigned Start menu)
-    - Borderless: Borderless
-    - Command Center: Command Center (for the redesigned Start menu)
-    - FullScreen: FullScreen
-    - FrostyGlass: FrostyGlass (for the redesigned Start menu)
+    - TranslucentStartMenu: TranslucentStartMenu (for the redesigned Start menu)
   - disableNewStartMenuLayout: ""
     $name: Start menu layout
     $description: >-
@@ -37456,114 +37422,15 @@ void MergeResourceVariables() {
 }
 
 const Theme* GetSelectedTheme(bool useNewLayoutVariant) {
-    PCWSTR themeName = Wh_GetStringSetting(L"start_menu_styler.theme");
-    const Theme* theme = nullptr;
-    if (wcscmp(themeName, L"TranslucentStartMenu") == 0) {
-        theme = useNewLayoutVariant
-                    ? &g_themeTranslucentStartMenu
-                    : &g_themeTranslucentStartMenu_variant_ClassicStartMenu;
-    } else if (wcscmp(themeName, L"NoRecommendedSection") == 0) {
-        theme = useNewLayoutVariant
-                    ? &g_themeNoRecommendedSection
-                    : &g_themeNoRecommendedSection_variant_ClassicStartMenu;
-    } else if (wcscmp(themeName, L"SideBySide") == 0) {
-        theme = useNewLayoutVariant
-                    ? &g_themeSideBySide
-                    : &g_themeSideBySide_variant_ClassicStartMenu;
-    } else if (wcscmp(themeName, L"SideBySide2") == 0) {
-        theme = useNewLayoutVariant
-                    ? &g_themeSideBySide2
-                    : &g_themeSideBySide2_variant_ClassicStartMenu;
-    } else if (wcscmp(themeName, L"SideBySideMinimal") == 0) {
-        theme = useNewLayoutVariant
-                    ? &g_themeSideBySideMinimal
-                    : &g_themeSideBySideMinimal_variant_ClassicStartMenu;
-    } else if (wcscmp(themeName, L"Down Aero") == 0) {
-        theme = useNewLayoutVariant
-                    ? &g_themeDown_Aero
-                    : &g_themeDown_Aero_variant_ClassicStartMenu;
-    } else if (wcscmp(themeName, L"Windows10") == 0) {
-        theme = useNewLayoutVariant
-                    ? &g_themeWindows10
-                    : &g_themeWindows10_variant_ClassicStartMenu;
-    } else if (wcscmp(themeName, L"Windows10_variant_Minimal") == 0) {
-        theme = useNewLayoutVariant
-                    ? &g_themeWindows10_variant_Minimal
-                    : &g_themeWindows10_variant_Minimal_ClassicStartMenu;
-    } else if (wcscmp(themeName, L"Windows11_Metro10") == 0) {
-        theme = useNewLayoutVariant
-                    ? &g_themeWindows11_Metro10
-                    : &g_themeWindows11_Metro10_variant_ClassicStartMenu;
-    } else if (wcscmp(themeName, L"Fluent2Inspired") == 0) {
-        theme = useNewLayoutVariant
-                    ? &g_themeFluent2Inspired
-                    : &g_themeFluent2Inspired_variant_ClassicStartMenu;
-    } else if (wcscmp(themeName, L"RosePine") == 0) {
-        theme = useNewLayoutVariant ? &g_themeRosePine
-                                    : &g_themeRosePine_variant_ClassicStartMenu;
-    } else if (wcscmp(themeName, L"Windows11_Metro10Minimal") == 0) {
-        theme = useNewLayoutVariant
-                    ? &g_themeWindows11_Metro10Minimal
-                    : &g_themeWindows11_Metro10Minimal_variant_ClassicStartMenu;
-    } else if (wcscmp(themeName, L"Everblush") == 0) {
-        theme = useNewLayoutVariant
-                    ? &g_themeEverblush
-                    : &g_themeEverblush_variant_ClassicStartMenu;
-    } else if (wcscmp(themeName, L"SunValley") == 0) {
-        theme = &g_themeSunValley;
-    } else if (wcscmp(themeName, L"21996") == 0) {
-        theme = useNewLayoutVariant ? &g_theme21996
-                                    : &g_theme21996_variant_ClassicStartMenu;
-    } else if (wcscmp(themeName, L"UniMenu") == 0) {
-        theme = useNewLayoutVariant ? &g_themeUniMenu
-                                    : &g_themeUniMenu_variant_ClassicStartMenu;
-    } else if (wcscmp(themeName, L"LegacyFluent") == 0) {
-        theme = useNewLayoutVariant
-                    ? &g_themeLegacyFluent
-                    : &g_themeLegacyFluent_variant_ClassicStartMenu;
-    } else if (wcscmp(themeName, L"OnlySearch") == 0) {
-        theme = useNewLayoutVariant
-                    ? &g_themeOnlySearch
-                    : &g_themeOnlySearch_variant_ClassicStartMenu;
-    } else if (wcscmp(themeName, L"OnlySearch_variant_Minimal") == 0) {
-        theme = &g_themeOnlySearch_variant_Minimal;
-    } else if (wcscmp(themeName, L"WindowGlass") == 0) {
-        theme = &g_themeWindowGlass;
-    } else if (wcscmp(themeName, L"WindowGlass_variant_Minimal") == 0) {
-        // Same as WindowGlass, kept for backward compatibility.
-        theme = &g_themeWindowGlass;
-    } else if (wcscmp(themeName, L"Fluid") == 0) {
-        theme = &g_themeFluid;
-    } else if (wcscmp(themeName, L"Oversimplified&Accentuated") == 0) {
-        theme = &g_themeOversimplified_Accentuated;
-    } else if (wcscmp(themeName, L"LiquidGlass2") == 0) {
-        theme = &g_themeLiquidGlass2;
-    } else if (wcscmp(themeName, L"LiquidGlass") == 0) {
-        theme = &g_themeLiquidGlass;
-    } else if (wcscmp(themeName, L"Windows10X") == 0) {
-        theme = useNewLayoutVariant
-                    ? &g_themeWindows10X
-                    : &g_themeWindows10X_variant_ClassicStartMenu;
-    } else if (wcscmp(themeName, L"TintedGlass") == 0) {
-        theme = useNewLayoutVariant
-                    ? &g_themeTintedGlass
-                    : &g_themeTintedGlass_variant_ClassicStartMenu;
-    } else if (wcscmp(themeName, L"LayerMicaUI") == 0) {
-        theme = &g_themeLayerMicaUI;
-    } else if (wcscmp(themeName, L"Borderless") == 0) {
-        theme = &g_themeBorderless;
-    } else if (wcscmp(themeName, L"Command Center") == 0) {
-        theme = &g_themeCommand_Center;
-    } else if (wcscmp(themeName, L"FullScreen") == 0) {
-        theme = useNewLayoutVariant ? &g_themeFullScreen
-                                    : &g_themeFullScreen_variant_1;
-    } else if (wcscmp(themeName, L"FrostyGlass") == 0) {
-        theme = &g_themeFrostyGlass;
-    }
-    Wh_FreeStringSetting(themeName);
-    return theme;
-}
+    // Keep only TranslucentStartMenu, regardless of any previously saved theme value.
+    string_setting_unique_ptr themeName(
+        Wh_GetStringSetting(L"start_menu_styler.theme"));
+    (void)themeName;
 
+    return useNewLayoutVariant
+               ? &g_themeTranslucentStartMenu
+               : &g_themeTranslucentStartMenu_variant_ClassicStartMenu;
+}
 void ProcessAllStylesFromSettings() {
     const Theme* theme = GetSelectedTheme(g_isRedesignedStartMenu);
 
