@@ -30913,13 +30913,7 @@ HMODULE GetCurrentModuleHandle() {
 #include <Unknwn.h>
 #include <winrt/base.h>
 
-// forward declare namespaces we alias
-namespace winrt {
-    namespace Windows {
-        namespace Foundation {}
-        namespace UI::Xaml {}
-    }
-}
+
 
 // alias some long namespaces for convenience
 namespace wf = winrt::Windows::Foundation;
@@ -38822,7 +38816,7 @@ bool RunFromWindowThread(HWND hWnd,
     return true;
 }
 
-bool RunFromWindowThreadViaPostMessage(HWND hWnd,
+bool NotificationCenterStyler_RunFromWindowThreadViaPostMessage(HWND hWnd,
                                        RunFromWindowThreadProc_t proc,
                                        PVOID procParam) {
     static const UINT runFromWindowThreadRegisteredMsgViaPostMessage =
@@ -38879,7 +38873,7 @@ bool RunFromWindowThreadViaPostMessage(HWND hWnd,
     return true;
 }
 
-void OnWindowCreated(HWND hWnd, LPCWSTR lpClassName, PCSTR funcName) {
+void NotificationCenterStyler_OnWindowCreated(HWND hWnd, LPCWSTR lpClassName, PCSTR funcName) {
     BOOL bTextualClassName = ((ULONG_PTR)lpClassName & ~(ULONG_PTR)0xffff) != 0;
 
     switch (g_target) {
@@ -38898,7 +38892,7 @@ void OnWindowCreated(HWND hWnd, LPCWSTR lpClassName, PCSTR funcName) {
                 Wh_Log(L"Initializing - Created core window: %08X via %S",
                        (DWORD)(ULONG_PTR)hWnd, funcName);
                 // Initializing at this point is too early and doesn't work.
-                RunFromWindowThreadViaPostMessage(
+                NotificationCenterStyler_RunFromWindowThreadViaPostMessage(
                     hWnd, [](PVOID) { InitializeSettingsAndTap(); }, nullptr);
             }
             break;
@@ -38939,7 +38933,7 @@ HWND WINAPI CreateWindowInBand_Hook(DWORD dwExStyle,
         return hWnd;
     }
 
-    OnWindowCreated(hWnd, lpClassName, __FUNCTION__);
+    NotificationCenterStyler_OnWindowCreated(hWnd, lpClassName, __FUNCTION__);
 
     return hWnd;
 }
@@ -38980,7 +38974,7 @@ HWND WINAPI CreateWindowInBandEx_Hook(DWORD dwExStyle,
         return hWnd;
     }
 
-    OnWindowCreated(hWnd, lpClassName, __FUNCTION__);
+    NotificationCenterStyler_OnWindowCreated(hWnd, lpClassName, __FUNCTION__);
 
     return hWnd;
 }
@@ -58947,7 +58941,7 @@ bool TaskbarStyler_RunFromWindowThread(HWND hWnd,
     return true;
 }
 
-void OnWindowCreated(HWND hWnd,
+void NotificationCenterStyler_OnWindowCreated(HWND hWnd,
                      HWND hWndParent,
                      LPCWSTR lpClassName,
                      PCSTR funcName) {
@@ -59004,7 +58998,7 @@ HWND WINAPI CreateWindowExW_Hook(DWORD dwExStyle,
         return hWnd;
     }
 
-    OnWindowCreated(hWnd, hWndParent, lpClassName, __FUNCTION__);
+    NotificationCenterStyler_OnWindowCreated(hWnd, hWndParent, lpClassName, __FUNCTION__);
 
     return hWnd;
 }
@@ -59043,7 +59037,7 @@ HWND WINAPI CreateWindowInBand_Hook(DWORD dwExStyle,
         return hWnd;
     }
 
-    OnWindowCreated(hWnd, hWndParent, lpClassName, __FUNCTION__);
+    NotificationCenterStyler_OnWindowCreated(hWnd, hWndParent, lpClassName, __FUNCTION__);
 
     return hWnd;
 }
@@ -59084,7 +59078,7 @@ HWND WINAPI CreateWindowInBandEx_Hook(DWORD dwExStyle,
         return hWnd;
     }
 
-    OnWindowCreated(hWnd, hWndParent, lpClassName, __FUNCTION__);
+    NotificationCenterStyler_OnWindowCreated(hWnd, hWndParent, lpClassName, __FUNCTION__);
 
     return hWnd;
 }
@@ -63222,7 +63216,13 @@ thread_local bool g_reportCompositionDiagAsDisabled;
 
 
 
-
+// forward declare namespaces we alias
+namespace winrt {
+    namespace Windows {
+        namespace Foundation {}
+        namespace UI::Xaml {}
+    }
+}
 
 // alias some long namespaces for convenience
 namespace wf = winrt::Windows::Foundation;
@@ -71176,7 +71176,7 @@ bool NotificationCenterStyler_RunFromWindowThread(HWND hWnd,
     return true;
 }
 
-bool RunFromWindowThreadViaPostMessage(HWND hWnd,
+bool NotificationCenterStyler_RunFromWindowThreadViaPostMessage(HWND hWnd,
                                        RunFromWindowThreadProc_t proc,
                                        PVOID procParam) {
     static const UINT runFromWindowThreadRegisteredMsgViaPostMessage =
@@ -71233,7 +71233,7 @@ bool RunFromWindowThreadViaPostMessage(HWND hWnd,
     return true;
 }
 
-void OnWindowCreated(HWND hWnd, LPCWSTR lpClassName, PCSTR funcName) {
+void NotificationCenterStyler_OnWindowCreated(HWND hWnd, LPCWSTR lpClassName, PCSTR funcName) {
     BOOL bTextualClassName = ((ULONG_PTR)lpClassName & ~(ULONG_PTR)0xffff) != 0;
 
     switch (g_target) {
@@ -71254,7 +71254,7 @@ void OnWindowCreated(HWND hWnd, LPCWSTR lpClassName, PCSTR funcName) {
                     L"Initializing - Created ControlCenterWindow: %08X via %S",
                     (DWORD)(ULONG_PTR)hWnd, funcName);
                 // Initializing at this point is too early and doesn't work.
-                RunFromWindowThreadViaPostMessage(
+                NotificationCenterStyler_RunFromWindowThreadViaPostMessage(
                     hWnd,
                     [](PVOID) {
                         InitializeForCurrentThread();
@@ -71300,7 +71300,7 @@ HWND WINAPI CreateWindowInBand_Hook(DWORD dwExStyle,
         return hWnd;
     }
 
-    OnWindowCreated(hWnd, lpClassName, __FUNCTION__);
+    NotificationCenterStyler_OnWindowCreated(hWnd, lpClassName, __FUNCTION__);
 
     return hWnd;
 }
@@ -71341,7 +71341,7 @@ HWND WINAPI CreateWindowInBandEx_Hook(DWORD dwExStyle,
         return hWnd;
     }
 
-    OnWindowCreated(hWnd, lpClassName, __FUNCTION__);
+    NotificationCenterStyler_OnWindowCreated(hWnd, lpClassName, __FUNCTION__);
 
     return hWnd;
 }
