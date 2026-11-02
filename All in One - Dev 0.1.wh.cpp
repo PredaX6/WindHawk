@@ -63222,13 +63222,7 @@ thread_local bool g_reportCompositionDiagAsDisabled;
 
 
 
-// forward declare namespaces we alias
-namespace winrt {
-    namespace Windows {
-        namespace Foundation {}
-        namespace UI::Xaml {}
-    }
-}
+
 
 // alias some long namespaces for convenience
 namespace wf = winrt::Windows::Foundation;
