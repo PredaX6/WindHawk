@@ -37422,11 +37422,7 @@ void MergeResourceVariables() {
 }
 
 const Theme* GetSelectedTheme(bool useNewLayoutVariant) {
-    // Keep only TranslucentStartMenu, regardless of any previously saved theme value.
-    string_setting_unique_ptr themeName(
-        Wh_GetStringSetting(L"start_menu_styler.theme"));
-    (void)themeName;
-
+    // Only TranslucentStartMenu is retained.
     return useNewLayoutVariant
                ? &g_themeTranslucentStartMenu
                : &g_themeTranslucentStartMenu_variant_ClassicStartMenu;
