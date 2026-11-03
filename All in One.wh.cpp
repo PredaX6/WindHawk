@@ -229,7 +229,8 @@
     $name: Thème du menu Démarrer
     $description: Thème conservé et appliqué au menu Démarrer.
     $options:
-    - TranslucentStartMenu: TranslucentStartMenu (for the redesigned Start menu)
+    - "": TranslucentStartMenu (valeur par défaut historique)
+    - TranslucentStartMenu: TranslucentStartMenu
   - disableNewStartMenuLayout: ""
     $name: Start menu layout
     $description: >-
