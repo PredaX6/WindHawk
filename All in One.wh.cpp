@@ -223,28 +223,6 @@
   $name: Fenêtres translucides
   $description: Réglages des effets translucides et du rendu personnalisé du thème Windows.
 
-# Réglages intégrés — Windows 11 Start Menu Styler
-- start_menu_styler:
-  - themeResourceVariables: [""]
-    $name: Resource variables
-    $description: >-
-      Use "Key=Value" to override an existing resource with a new value.
-
-      Use "Key@Dark=Value" or "Key@Light=Value" to define theme-aware resources
-      that can be referenced with {ThemeResource Key} in styles.
-
-      The ":=" syntax can be used to set a XAML value. For details, refer to the
-      mod description.
-  - webContentStyles:
-    - - target: ""
-        $name: Target
-      - styles: [""]
-        $name: Styles
-    $name: Search WebView styles
-  - webContentCustomJs: ""
-    $name: Search WebView custom JavaScript code
-  $name: Windows 11 Start Menu Styler
-  $description: Réglages isolés du moteur de personnalisation du menu Démarrer et de la recherche.
 
 */
 // ==/WindhawkModSettings==
