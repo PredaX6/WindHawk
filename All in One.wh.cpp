@@ -227,10 +227,7 @@
 - start_menu_styler:
   - theme: TranslucentStartMenu
     $name: Thème du menu Démarrer
-    $description: Thème conservé et appliqué au menu Démarrer.
-    $options:
-    - "": TranslucentStartMenu (valeur par défaut historique)
-    - TranslucentStartMenu: TranslucentStartMenu
+    $description: Thème unique conservé et appliqué automatiquement au menu Démarrer.
   - disableNewStartMenuLayout: ""
     $name: Start menu layout
     $description: >-
