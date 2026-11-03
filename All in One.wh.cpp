@@ -223,6 +223,11 @@
 #include <utility>
 #include <windhawk_utils.h>
 
+// Legacy USER32 message used by the internal DefWindowProc worker.
+#ifndef WM_CTLCOLOR
+#define WM_CTLCOLOR 0x0019
+#endif
+
 
 using Microsoft::WRL::ComPtr;
 #ifndef DWMWA_EXTENDED_FRAME_BOUNDS
