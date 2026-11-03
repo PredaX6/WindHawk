@@ -42,21 +42,6 @@
   - launch_animation: false
     $name: Animer l’ouverture des applications
     $description: Utiliser l’animation de restauration à l’ouverture d’une fenêtre.
-  - random_effect: false
-    $name: Mélanger les styles d’animation
-    $description: Parcourir les effets dans un ordre aléatoire sans répétition avant la fin du cycle. Ignore le style choisi ci-dessous.
-  - effect_style: genie
-    $name: Style d’animation
-    $description: Effet utilisé pour réduire et restaurer les fenêtres. Ignoré si le mélange est activé.
-    $options:
-    - genie: Génie — aspiration vers la barre des tâches
-    - windows10: Windows 10 — repli vers la barre des tâches
-    - ink_splash: Éclaboussure d’encre
-    - scorch: Brûlure depuis un coin
-    - splinter: Fissure centrale
-    - mirage: Scintillement ondulé
-    - stipple: Explosion en points
-    - swell: Expansion et fondu
   - duration_ms: 360
     $name: Durée (ms)
     $description: Durée de base, de 200 à 1 400 ms. Certains styles ajustent le rythme.
@@ -81,19 +66,6 @@
   - hide_as_close: false
     $name: Animer le masquage dans la zone de notification
     $description: Animer certaines applications qui masquent leur fenêtre au lieu de la fermer.
-  - random_effect: false
-    $name: Mélanger les styles d’animation
-    $description: Parcourir les effets de fermeture dans un ordre aléatoire sans répétition avant la fin du cycle. Ignore le style choisi ci-dessous.
-  - effect_style: thanos
-    $name: Style d’animation
-    $description: Effet utilisé à la fermeture. Ignoré si le mélange est activé.
-    $options:
-    - shatter: Explosion en carrés
-    - thanos: Désintégration
-    - perlin: Dissolution organique
-    - glitch: Distorsion numérique
-    - tv_off: Extinction de téléviseur cathodique
-    - pixel_melt: Fonte en pixels
   - duration_ms: 630
     $name: Durée (ms)
     $description: Durée de base de l’animation de fermeture, de 50 à 5 000 ms.
@@ -8644,12 +8616,14 @@ public:
         neckW = Clamp((horizontalTaskbar ? W : H) * 0.03f,
                       12.0f, 60.0f);
         blockSizeSetting = std::max(1, g_shatterBlockSize.load(std::memory_order_relaxed));
+        // One coherent CRT lifecycle: TV OFF for close/minimize,
+        // and the exact reverse (TV ON) for restore/launch.
         if (data->isClosing) {
-            closeEffect = data->effectStyle;
+            closeEffect = 4;  // RenderCrtOff.
             minRestoreEffect = 0;
         } else {
             closeEffect = 1;
-            minRestoreEffect = data->effectStyle;
+            minRestoreEffect = 8;  // Reserved CPU-rendered CRT lifecycle.
         }
         keepGhostBelowTaskbar =
             !data->isClosing && (minRestoreEffect == 0 || minRestoreEffect == 7);
@@ -8727,6 +8701,18 @@ public:
                 std::max(monTop, std::min(origTop, targetTop) - pad);
             const int boundBottom = std::min(
                 monBottom, std::max(origTop + H, targetBottom) + pad);
+            boundW = boundRight - boundLeft;
+            boundH = boundBottom - boundTop;
+        } else if (minRestoreEffect == 8) {
+            // CRT effects stay inside the window rectangle; a small safety
+            // border keeps the beam and final phosphor dot from clipping.
+            constexpr int crtBoundsPad = 4;
+            boundLeft = std::max(monLeft, origLeft - crtBoundsPad);
+            boundTop = std::max(monTop, origTop - crtBoundsPad);
+            const int boundRight =
+                std::min(monRight, origLeft + W + crtBoundsPad);
+            const int boundBottom =
+                std::min(monBottom, origTop + H + crtBoundsPad);
             boundW = boundRight - boundLeft;
             boundH = boundBottom - boundTop;
         } else {
@@ -9093,7 +9079,8 @@ public:
         } else {
             static constexpr PCWSTR minRestoreNames[] = {
                 L"genie", L"ink", L"scorch", L"splinter",
-                L"mirage", L"stipple", L"swell", L"windows10"};
+                L"mirage", L"stipple", L"swell", L"windows10",
+                L"crt_on"};
             if (effectStyle >= 0 && effectStyle < static_cast<int>(
                                                     ARRAYSIZE(minRestoreNames))) {
                 effect = minRestoreNames[effectStyle];
@@ -10139,6 +10126,10 @@ public:
                     else if (closeEffect == 4) RenderCrtOff(progress);
                     else if (closeEffect == 5) RenderPixelMelt(progress);
                     else RenderThanos(progress);
+                } else if (minRestoreEffect == 8) {
+                    const float crtProgress =
+                        data->isRising ? (1.0f - progress) : progress;
+                    RenderCrtOff(crtProgress);
                 } else if (minRestoreEffect == 1) {
                     RenderInkSplash(progress);
                 } else if (minRestoreEffect == 2) {
