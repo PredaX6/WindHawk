@@ -225,12 +225,6 @@
 
 # Réglages intégrés — Windows 11 Start Menu Styler
 - start_menu_styler:
-  - controlStyles:
-    - - target: ""
-        $name: Target
-      - styles: [""]
-        $name: Styles
-    $name: Control styles
   - themeResourceVariables: [""]
     $name: Resource variables
     $description: >-
