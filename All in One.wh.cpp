@@ -20730,6 +20730,7 @@ BOOL Wh_ModInit() {
         g_closeAnimation.load(std::memory_order_relaxed) ||
         g_switchAnimation.load(std::memory_order_relaxed) ||
         g_launchAnimation.load(std::memory_order_relaxed);
+    if (!animationFeaturesEnabled) {
         g_translucentWindowsInitAttempted = true;
         g_translucentWindowsInitialized = TranslucentWindows::Init();
         if (g_taskbarStylerProcess) {
