@@ -86,12 +86,6 @@
     $description: Durée de l’animation de changement de fenêtre, de 50 à 1 000 ms.
   $name: Changement de fenêtre
   $description: Réglages de l’animation de sélection d’une fenêtre.
-- diagnostics:
-  - performance_telemetry: false
-    $name: Journaliser les mesures de performances
-    $description: Enregistrer des mesures de performances pour diagnostiquer les animations. À activer uniquement pendant les tests.
-  $name: Diagnostic
-  $description: Mesures facultatives pour analyser les performances.
 
 
 
