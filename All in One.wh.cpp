@@ -251,19 +251,6 @@
 #include <utility>
 #include <windhawk_utils.h>
 
-// Taskbar Button Scroll integration dependencies.
-#include <commctrl.h>
-#include <psapi.h>
-#include <windowsx.h>
-#undef GetCurrentTime
-#include <winrt/Windows.Foundation.Collections.h>
-#include <winrt/Windows.UI.Input.h>
-#include <winrt/Windows.UI.Xaml.Controls.h>
-#include <winrt/Windows.UI.Xaml.Input.h>
-#include <winrt/Windows.UI.Xaml.Media.h>
-#include <regex>
-#include <string_view>
-
 
 using Microsoft::WRL::ComPtr;
 #ifndef DWMWA_EXTENDED_FRAME_BOUNDS
