@@ -225,27 +225,6 @@
 
 # Réglages intégrés — Windows 11 Start Menu Styler
 - start_menu_styler:
-  - theme: TranslucentStartMenu
-    $name: Thème du menu Démarrer
-    $description: Thème unique conservé et appliqué automatiquement au menu Démarrer.
-  - disableNewStartMenuLayout: ""
-    $name: Start menu layout
-    $description: >-
-      Allows to revert to the classic Start menu layout on supported Windows
-      versions, or to select an alternative layout.
-    $options:
-    - "": Default for the selected theme
-    - default: Windows default
-    - disableNewLayoutKeepPhoneLink: Classic layout (removed in 26100.8524)
-    - legacyClassicLayout: Legacy classic layout (removed in 26100.8328)
-    - forceNewLayout: Force new layout (if available)
-    - newLayoutSideBySide: New layout + side by side
-  - styleConstants: [""]
-    $name: Style constants
-    $description: >-
-      Some themes support style constants for customization, such as colors. Refer
-      to the theme page for available constants. For technical details, refer to
-      the mod description.
   - controlStyles:
     - - target: ""
         $name: Target
@@ -29926,20 +29905,9 @@ StyleConstants LoadStyleConstants(
         result.insert(insertIndex, std::move(sc));
     };
 
+    // Load only the constants bundled with the retained theme.
     for (const auto themeStyleConstant : themeStyleConstants) {
         if (auto parsed = ParseStyleConstant(themeStyleConstant, result)) {
-            addToResult(std::move(*parsed));
-        }
-    }
-
-    for (int i = 0;; i++) {
-        string_setting_unique_ptr constantSetting(
-            Wh_GetStringSetting(L"start_menu_styler.styleConstants[%d]", i));
-        if (!*constantSetting.get()) {
-            break;
-        }
-
-        if (auto parsed = ParseStyleConstant(constantSetting.get(), result)) {
             addToResult(std::move(*parsed));
         }
     }
@@ -31338,42 +31306,12 @@ void StopStatsTimer() {
 
 DisableNewStartMenuLayout GetDisableNewStartMenuLayout(
     bool useNewLayoutVariant) {
-    PCWSTR disableNewStartMenuLayoutStr =
-        Wh_GetStringSetting(L"start_menu_styler.disableNewStartMenuLayout");
-    std::optional<DisableNewStartMenuLayout> explicitLayout;
-    if (wcscmp(disableNewStartMenuLayoutStr, L"default") == 0) {
-        explicitLayout = DisableNewStartMenuLayout::windowsDefault;
-    } else if (wcscmp(disableNewStartMenuLayoutStr,
-                      L"disableNewLayoutKeepPhoneLink") == 0) {
-        explicitLayout =
-            DisableNewStartMenuLayout::disableNewLayoutKeepPhoneLink;
-    } else if (wcscmp(disableNewStartMenuLayoutStr, L"legacyClassicLayout") ==
-               0) {
-        explicitLayout =
-            DisableNewStartMenuLayout::disableNewLayoutAndPhoneLink;
-    } else if (wcscmp(disableNewStartMenuLayoutStr, L"forceNewLayout") == 0) {
-        explicitLayout = DisableNewStartMenuLayout::forceNewLayout;
-    } else if (wcscmp(disableNewStartMenuLayoutStr, L"newLayoutSideBySide") ==
-               0) {
-        explicitLayout = DisableNewStartMenuLayout::newLayoutSideBySide;
-    } else if (wcscmp(disableNewStartMenuLayoutStr, L"1") == 0) {
-        // "1" is kept for backward compatibility, previously it meant
-        // disableNewLayoutAndPhoneLink, but now it means
-        // disableNewLayoutKeepPhoneLink because disableNewLayoutAndPhoneLink is
-        // removed in newer builds, and some themes were updated to only support
-        // disableNewLayoutKeepPhoneLink.
-        explicitLayout =
-            DisableNewStartMenuLayout::disableNewLayoutKeepPhoneLink;
-    }
-    Wh_FreeStringSetting(disableNewStartMenuLayoutStr);
-
+    // The layout is selected automatically from the retained theme variant.
     DisableNewStartMenuLayout disableNewStartMenuLayout =
-        explicitLayout.value_or(DisableNewStartMenuLayout::windowsDefault);
+        DisableNewStartMenuLayout::windowsDefault;
 
-    if (!explicitLayout) {
-        if (const Theme* theme = GetSelectedTheme(useNewLayoutVariant)) {
-            disableNewStartMenuLayout = theme->startMenuLayout;
-        }
+    if (const Theme* theme = GetSelectedTheme(useNewLayoutVariant)) {
+        disableNewStartMenuLayout = theme->startMenuLayout;
     }
 
     switch (disableNewStartMenuLayout) {
